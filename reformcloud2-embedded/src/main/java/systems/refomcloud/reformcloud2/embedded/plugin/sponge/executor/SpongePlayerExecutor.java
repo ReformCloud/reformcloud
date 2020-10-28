@@ -70,13 +70,13 @@ public class SpongePlayerExecutor extends PlayerAPIExecutor {
     public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
         Sponge.getServer().getPlayer(player).ifPresent(val -> {
             Title spongeTitle = Title
-                    .builder()
-                    .title(Text.of(title))
-                    .subtitle(Text.of(subTitle))
-                    .fadeIn(fadeIn)
-                    .stay(stay)
-                    .fadeOut(fadeOut)
-                    .build();
+                .builder()
+                .title(Text.of(title))
+                .subtitle(Text.of(subTitle))
+                .fadeIn(fadeIn)
+                .stay(stay)
+                .fadeOut(fadeOut)
+                .build();
             val.sendTitle(spongeTitle);
         });
     }

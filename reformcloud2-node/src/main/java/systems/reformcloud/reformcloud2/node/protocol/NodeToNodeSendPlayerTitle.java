@@ -36,6 +36,13 @@ import java.util.UUID;
 
 public class NodeToNodeSendPlayerTitle extends ProtocolPacket {
 
+    private UUID uniqueId;
+    private String title;
+    private String subTitle;
+    private int fadeIn;
+    private int stay;
+    private int fadeOut;
+
     public NodeToNodeSendPlayerTitle() {
     }
 
@@ -48,13 +55,6 @@ public class NodeToNodeSendPlayerTitle extends ProtocolPacket {
         this.fadeOut = fadeOut;
     }
 
-    private UUID uniqueId;
-    private String title;
-    private String subTitle;
-    private int fadeIn;
-    private int stay;
-    private int fadeOut;
-
     @Override
     public int getId() {
         return NetworkUtil.NODE_BUS + 34;
@@ -63,7 +63,7 @@ public class NodeToNodeSendPlayerTitle extends ProtocolPacket {
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.uniqueId)
-                .ifPresent(player -> player.sendTitle(this.title, this.subTitle, this.fadeIn, this.stay, this.fadeOut));
+            .ifPresent(player -> player.sendTitle(this.title, this.subTitle, this.fadeIn, this.stay, this.fadeOut));
     }
 
     @Override

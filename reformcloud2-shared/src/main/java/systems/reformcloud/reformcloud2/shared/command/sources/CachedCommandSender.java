@@ -32,11 +32,11 @@ import java.util.Collection;
 
 public class CachedCommandSender implements CommandSender {
 
+    private final Collection<String> messageCache;
+
     public CachedCommandSender(@NotNull Collection<String> messageCache) {
         this.messageCache = messageCache;
     }
-
-    private final Collection<String> messageCache;
 
     @Override
     public void sendMessage(@NotNull String message) {

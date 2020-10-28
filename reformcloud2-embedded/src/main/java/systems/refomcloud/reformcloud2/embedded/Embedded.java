@@ -76,9 +76,6 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public abstract class Embedded extends ExecutorAPI {
 
-    protected ProcessInformation processInformation;
-    protected IngameMessages ingameMessages = new IngameMessages();
-
     protected final ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
     protected final NetworkClient networkClient = new DefaultNetworkClient();
     protected final EmbeddedConfig config = new EmbeddedConfig();
@@ -91,6 +88,9 @@ public abstract class Embedded extends ExecutorAPI {
     private final ProcessGroupProvider processGroupProvider = new DefaultEmbeddedProcessGroupProvider();
     private final ProcessProvider processProvider = new DefaultEmbeddedProcessProvider();
     private final DependencyLoader dependencyLoader = new DefaultDependencyLoader();
+
+    protected ProcessInformation processInformation;
+    protected IngameMessages ingameMessages = new IngameMessages();
 
     protected Embedded() {
         ExecutorAPI.setInstance(this);

@@ -36,6 +36,9 @@ import java.util.UUID;
 
 public class NodeToNodeDisconnectPlayer extends ProtocolPacket {
 
+    private UUID playerUniqueId;
+    private String reason;
+
     public NodeToNodeDisconnectPlayer() {
     }
 
@@ -43,9 +46,6 @@ public class NodeToNodeDisconnectPlayer extends ProtocolPacket {
         this.playerUniqueId = playerUniqueId;
         this.reason = reason;
     }
-
-    private UUID playerUniqueId;
-    private String reason;
 
     @Override
     public int getId() {

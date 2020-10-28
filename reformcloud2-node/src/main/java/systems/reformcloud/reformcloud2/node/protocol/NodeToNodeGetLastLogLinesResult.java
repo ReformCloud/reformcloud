@@ -34,14 +34,14 @@ import java.util.Queue;
 
 public class NodeToNodeGetLastLogLinesResult extends QueryResultPacket {
 
+    private Queue<String> lastLogLines;
+
     public NodeToNodeGetLastLogLinesResult() {
     }
 
     public NodeToNodeGetLastLogLinesResult(Queue<String> lastLogLines) {
         this.lastLogLines = lastLogLines;
     }
-
-    private Queue<String> lastLogLines;
 
     public Queue<String> getLastLogLines() {
         return this.lastLogLines;

@@ -29,14 +29,15 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.SubjectData;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
-import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
-import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
-import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 import systems.reformcloud.reformcloud2.permissions.sponge.subject.AbstractSpongeSubjectData;
-import systems.reformcloud.reformcloud2.permissions.sponge.subject.util.SubjectGroupPermissionCalculator;
+import systems.reformcloud.reformcloud2.permissions.util.PermissionPluginUtil;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class SpongeSubjectData extends AbstractSpongeSubjectData {
 
@@ -59,33 +60,8 @@ public class SpongeSubjectData extends AbstractSpongeSubjectData {
     }
 
     private Map<String, Boolean> getPermissions() {
-        Map<String, Boolean> out = new HashMap<>();
-        PermissionUser user = PermissionManagement.getInstance().loadUser(this.uniqueID);
-
-        for (PermissionNode permissionNode : user.getPermissionNodes()) {
-            if (permissionNode.isValid()) {
-                out.putIfAbsent(permissionNode.getActualPermission(), permissionNode.isSet());
-            }
-        }
-
-        for (NodeGroup group : user.getGroups()) {
-            if (!group.isValid()) {
-                continue;
-            }
-
-            PermissionManagement.getInstance().getPermissionGroup(group.getGroupName()).ifPresent(permissionGroup -> {
-                out.putAll(this.getPermissionsOf(permissionGroup));
-                for (String sub : permissionGroup.getSubGroups()) {
-                    PermissionManagement.getInstance().getPermissionGroup(sub)
-                            .ifPresent(subGroup -> out.putAll(this.getPermissionsOf(subGroup)));
-                }
-            });
-        }
-
-        return out;
-    }
-
-    private Map<String, Boolean> getPermissionsOf(PermissionGroup group) {
-        return SubjectGroupPermissionCalculator.getPermissionsOf(group);
+        return PermissionPluginUtil.collectPermissionsOfUser(PermissionManagement.getInstance().loadUser(this.uniqueID))
+            .stream()
+            .collect(Collectors.toMap(PermissionNode::getActualPermission, PermissionNode::isSet));
     }
 }

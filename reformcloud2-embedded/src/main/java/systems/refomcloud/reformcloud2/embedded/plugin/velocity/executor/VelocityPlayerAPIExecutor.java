@@ -36,11 +36,11 @@ import java.util.UUID;
 
 public class VelocityPlayerAPIExecutor extends PlayerAPIExecutor {
 
+    private final ProxyServer proxyServer;
+
     public VelocityPlayerAPIExecutor(@NotNull ProxyServer proxyServer) {
         this.proxyServer = proxyServer;
     }
-
-    private final ProxyServer proxyServer;
 
     @Override
     public void executeSendMessage(UUID player, String message) {

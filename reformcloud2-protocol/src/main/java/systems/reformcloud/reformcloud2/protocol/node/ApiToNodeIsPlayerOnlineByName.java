@@ -34,14 +34,14 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodeIsPlayerOnlineByName extends ProtocolPacket {
 
+    private String playerName;
+
     public ApiToNodeIsPlayerOnlineByName() {
     }
 
     public ApiToNodeIsPlayerOnlineByName(String playerName) {
         this.playerName = playerName;
     }
-
-    private String playerName;
 
     @Override
     public int getId() {

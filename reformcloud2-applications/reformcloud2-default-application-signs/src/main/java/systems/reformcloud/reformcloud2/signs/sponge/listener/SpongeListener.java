@@ -45,12 +45,12 @@ public class SpongeListener {
         BlockState blockState = event.getTargetBlock().getState();
         if (blockState.getType().equals(BlockTypes.STANDING_SIGN) || blockState.getType().equals(BlockTypes.WALL_SIGN)) {
             if (event.getTargetBlock().getLocation().isPresent()
-                    && event.getTargetBlock().getLocation().get().getTileEntity().isPresent()
-                    && event.getTargetBlock().getLocation().get().getTileEntity().orElse(null) instanceof Sign
+                && event.getTargetBlock().getLocation().get().getTileEntity().isPresent()
+                && event.getTargetBlock().getLocation().get().getTileEntity().orElse(null) instanceof Sign
             ) {
                 Sign sign = (Sign) event.getTargetBlock().getLocation().get().getTileEntity().get();
                 CloudSign cloudSign = SpongeSignSystemAdapter.getInstance().getSignAt(
-                        SpongeSignSystemAdapter.getInstance().getSignConverter().to(sign)
+                    SpongeSignSystemAdapter.getInstance().getSignConverter().to(sign)
                 );
                 if (cloudSign == null) {
                     return;
@@ -58,13 +58,13 @@ public class SpongeListener {
 
                 boolean canConnect = SignSystemAdapter.getInstance().canConnect(cloudSign, player::hasPermission);
                 if (!ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new UserSignPreConnectEvent(
-                        player.getUniqueId(), player::hasPermission, cloudSign, canConnect
+                    player.getUniqueId(), player::hasPermission, cloudSign, canConnect
                 )).isAllowConnection()) {
                     return;
                 }
 
                 ExecutorAPI.getInstance().getPlayerProvider().getPlayer(player.getUniqueId())
-                        .ifPresent(wrapper -> wrapper.connect(cloudSign.getCurrentTarget().getProcessDetail().getName()));
+                    .ifPresent(wrapper -> wrapper.connect(cloudSign.getCurrentTarget().getProcessDetail().getName()));
             }
         }
     }

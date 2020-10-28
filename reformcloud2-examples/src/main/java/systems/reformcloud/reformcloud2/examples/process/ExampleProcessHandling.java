@@ -36,26 +36,26 @@ public class ExampleProcessHandling {
     // Starts a new process of the lobby group
     public static void startProcessFromGroup() {
         ExecutorAPI.getInstance().getProcessProvider().createProcess() // get a new process builder
-                .group("Lobby") // Use the group lobby. REQUIRED
-                .prepare() // Prepare the process
-                .thenAccept(wrapper -> wrapper.setRuntimeState(ProcessState.STARTED)); // start the process
+            .group("Lobby") // Use the group lobby. REQUIRED
+            .prepare() // Prepare the process
+            .thenAccept(wrapper -> wrapper.setRuntimeState(ProcessState.STARTED)); // start the process
     }
 
     // Starts a new process of the group lobby with the template default
     public static void startProcessFromGroupWithTemplate() {
         Optional<ProcessGroup> group = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup("Lobby");
         ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup("Lobby")
-                .ifPresent(processGroup -> {
-                    Template template = processGroup.getTemplate("default");
-                    if (template == null) {
-                        return;
-                    }
+            .ifPresent(processGroup -> {
+                Template template = processGroup.getTemplate("default");
+                if (template == null) {
+                    return;
+                }
 
-                    ExecutorAPI.getInstance().getProcessProvider().createProcess()
-                            .group("Lobby") // Use the group lobby. REQUIRED
-                            .template(template) // Set the template to 'default'
-                            .prepare() // Prepare the process
-                            .thenAccept(wrapper -> wrapper.setRuntimeState(ProcessState.STARTED)); // start the process
-                });
+                ExecutorAPI.getInstance().getProcessProvider().createProcess()
+                    .group("Lobby") // Use the group lobby. REQUIRED
+                    .template(template) // Set the template to 'default'
+                    .prepare() // Prepare the process
+                    .thenAccept(wrapper -> wrapper.setRuntimeState(ProcessState.STARTED)); // start the process
+            });
     }
 }

@@ -56,13 +56,13 @@ public class NukkitListener implements Listener {
 
                 boolean canConnect = SignSystemAdapter.getInstance().canConnect(cloudSign, event.getPlayer()::hasPermission);
                 if (!ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new UserSignPreConnectEvent(
-                        event.getPlayer().getUniqueId(), event.getPlayer()::hasPermission, cloudSign, canConnect
+                    event.getPlayer().getUniqueId(), event.getPlayer()::hasPermission, cloudSign, canConnect
                 )).isAllowConnection()) {
                     return;
                 }
 
                 ExecutorAPI.getInstance().getPlayerProvider().getPlayer(event.getPlayer().getUniqueId())
-                        .ifPresent(wrapper -> wrapper.connect(cloudSign.getCurrentTarget().getProcessDetail().getName()));
+                    .ifPresent(wrapper -> wrapper.connect(cloudSign.getCurrentTarget().getProcessDetail().getName()));
             }
         }
     }

@@ -38,15 +38,15 @@ import java.util.Optional;
 
 public final class SQLDatabaseTableWrapper implements DatabaseTableWrapper {
 
-    SQLDatabaseTableWrapper(@NotNull String name, @NotNull AbstractSQLDatabaseProvider provider) {
+    private final String name;
+    private final AbstractSQLDatabaseProvider provider;
+
+    protected SQLDatabaseTableWrapper(@NotNull String name, @NotNull AbstractSQLDatabaseProvider provider) {
         this.name = name;
         this.provider = provider;
 
         provider.executeUpdate("CREATE TABLE IF NOT EXISTS `" + name + "` (`key` TEXT, `identifier` TEXT, `data` LONGBLOB);");
     }
-
-    private final String name;
-    private final AbstractSQLDatabaseProvider provider;
 
     @Override
     public void insert(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration data) {
@@ -54,8 +54,8 @@ public final class SQLDatabaseTableWrapper implements DatabaseTableWrapper {
             this.update(key, id, data);
         } else {
             this.provider.executeUpdate(
-                    "INSERT INTO `" + this.name + "` (`key`, `identifier`, `data`) VALUES (?, ?, ?);",
-                    key, id, data.toPrettyBytes()
+                "INSERT INTO `" + this.name + "` (`key`, `identifier`, `data`) VALUES (?, ?, ?);",
+                key, id, data.toPrettyBytes()
             );
         }
     }
@@ -63,16 +63,16 @@ public final class SQLDatabaseTableWrapper implements DatabaseTableWrapper {
     @Override
     public void update(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration newData) {
         this.provider.executeUpdate(
-                "UPDATE `" + this.name + "` SET `data` = ? WHERE `key` = ? AND (`identifier` = ? OR `identifier` IS NULL)",
-                newData.toPrettyBytes(), key, id
+            "UPDATE `" + this.name + "` SET `data` = ? WHERE `key` = ? AND (`identifier` = ? OR `identifier` IS NULL)",
+            newData.toPrettyBytes(), key, id
         );
     }
 
     @Override
     public void remove(@NotNull String key, @NotNull String id) {
         this.provider.executeUpdate(
-                "DELETE FROM `" + this.name + "` WHERE `key` = ? AND (`identifier` = ? OR `identifier` IS NULL)",
-                key, id
+            "DELETE FROM `" + this.name + "` WHERE `key` = ?" + (id.isEmpty() ? "" : " AND (`identifier` = ? OR `identifier` IS NULL)"),
+            key, id.isEmpty() ? null : id
         );
     }
 
@@ -80,24 +80,24 @@ public final class SQLDatabaseTableWrapper implements DatabaseTableWrapper {
     @Override
     public Optional<JsonConfiguration> get(@NotNull String key, @NotNull String id) {
         return this.provider.executeQuery(
-                "SELECT `data` FROM `" + this.name + "` WHERE `key` = ? AND (`identifier` = ? OR `identifier` IS NULL)",
-                resultSet -> {
-                    if (!resultSet.next()) {
-                        return Optional.empty();
-                    }
+            "SELECT `data` FROM `" + this.name + "` WHERE `key` = ?" + (id.isEmpty() ? "" : " AND (`identifier` = ? OR `identifier` IS NULL)"),
+            resultSet -> {
+                if (!resultSet.next()) {
+                    return Optional.empty();
+                }
 
-                    byte[] bytes = resultSet.getBytes("data");
-                    if (bytes == null) {
-                        return Optional.empty();
-                    }
+                byte[] bytes = resultSet.getBytes("data");
+                if (bytes == null) {
+                    return Optional.empty();
+                }
 
-                    try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
-                        return Optional.of(new JsonConfiguration(inputStream));
-                    } catch (final IOException ex) {
-                        ex.printStackTrace();
-                        return Optional.empty();
-                    }
-                }, Optional.empty(), key, id
+                try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
+                    return Optional.of(new JsonConfiguration(inputStream));
+                } catch (final IOException ex) {
+                    ex.printStackTrace();
+                    return Optional.empty();
+                }
+            }, Optional.empty(), key, id.isEmpty() ? null : id
         );
     }
 
@@ -105,29 +105,29 @@ public final class SQLDatabaseTableWrapper implements DatabaseTableWrapper {
     @Override
     public @UnmodifiableView Collection<String> getEntryNames() {
         return this.provider.executeQuery(
-                "SELECT `key` FROM " + this.name,
-                resultSet -> {
-                    Collection<String> result = new ArrayList<>();
-                    while (resultSet.next()) {
-                        result.add(resultSet.getString("key"));
-                    }
+            "SELECT `key` FROM " + this.name,
+            resultSet -> {
+                Collection<String> result = new ArrayList<>();
+                while (resultSet.next()) {
+                    result.add(resultSet.getString("key"));
+                }
 
-                    return result;
-                }, new ArrayList<>()
+                return result;
+            }, new ArrayList<>()
         );
     }
 
     @Override
     public long count() {
         return this.provider.executeQuery(
-                "SELECT COUNT(*) FROM " + this.name,
-                resultSet -> {
-                    if (resultSet.next()) {
-                        return resultSet.getLong(1);
-                    }
+            "SELECT COUNT(*) FROM " + this.name,
+            resultSet -> {
+                if (resultSet.next()) {
+                    return resultSet.getLong(1);
+                }
 
-                    return -1L;
-                }, -1L);
+                return -1L;
+            }, -1L);
     }
 
     @Override
@@ -139,34 +139,34 @@ public final class SQLDatabaseTableWrapper implements DatabaseTableWrapper {
     @Override
     public @UnmodifiableView Collection<JsonConfiguration> getAll() {
         return this.provider.executeQuery(
-                "SELECT `data` FROM " + this.name,
-                resultSet -> {
-                    Collection<JsonConfiguration> result = new ArrayList<>();
-                    while (resultSet.next()) {
-                        byte[] bytes = resultSet.getBytes("data");
-                        if (bytes == null) {
-                            continue;
-                        }
-
-                        try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
-                            result.add(new JsonConfiguration(inputStream));
-                        } catch (final IOException ex) {
-                            ex.printStackTrace();
-                        }
+            "SELECT `data` FROM " + this.name,
+            resultSet -> {
+                Collection<JsonConfiguration> result = new ArrayList<>();
+                while (resultSet.next()) {
+                    byte[] bytes = resultSet.getBytes("data");
+                    if (bytes == null) {
+                        continue;
                     }
 
-                    return result;
-                }, new ArrayList<>()
+                    try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
+                        result.add(new JsonConfiguration(inputStream));
+                    } catch (final IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+
+                return result;
+            }, new ArrayList<>()
         );
     }
 
     @Override
     public boolean has(@NotNull String key) {
         return this.provider.executeQuery(
-                "SELECT `key` FROM " + this.name + " WHERE `key` = ?",
-                resultSet -> resultSet.next() && resultSet.getString("key") != null,
-                false,
-                key
+            "SELECT `key` FROM " + this.name + " WHERE `key` = ?",
+            resultSet -> resultSet.next() && resultSet.getString("key") != null,
+            false,
+            key
         );
     }
 }

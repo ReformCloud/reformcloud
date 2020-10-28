@@ -39,6 +39,7 @@ import java.sql.*;
 public class H2DatabaseProvider extends AbstractSQLDatabaseProvider {
 
     private static final Path DB_PATH = Paths.get(System.getProperty("systems.reformcloud.h2-db-path", "reformcloud/.database/h2/h2_db"));
+    private final Connection connection;
 
     public H2DatabaseProvider() {
         if (Files.isDirectory(DB_PATH)) {
@@ -53,20 +54,10 @@ public class H2DatabaseProvider extends AbstractSQLDatabaseProvider {
         }
     }
 
-    private final Connection connection;
-
     @Override
     public void executeUpdate(@NotNull String query, @NonNls Object... objects) {
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(query)) {
-            int i = 1;
-            for (Object object : objects) {
-                if (object instanceof byte[]) {
-                    preparedStatement.setBytes(i++, (byte[]) object);
-                } else {
-                    preparedStatement.setString(i++, object.toString());
-                }
-            }
-
+            this.appendObjectsToPreparedStatement(preparedStatement, objects);
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
             exception.printStackTrace();
@@ -75,17 +66,9 @@ public class H2DatabaseProvider extends AbstractSQLDatabaseProvider {
 
     @Override
     @NotNull
-    public <T> T executeQuery(@NotNull String query, SQLFunction<ResultSet, T> function, @NotNull T defaultValue, @NonNls Object... objects) {
+    public <T> T executeQuery(@NotNull String query, @NotNull SQLFunction<ResultSet, T> function, @NotNull T defaultValue, @NonNls Object... objects) {
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(query)) {
-            int i = 1;
-            for (Object object : objects) {
-                if (object instanceof byte[]) {
-                    preparedStatement.setBytes(i++, (byte[]) object);
-                } else {
-                    preparedStatement.setString(i++, object.toString());
-                }
-            }
-
+            this.appendObjectsToPreparedStatement(preparedStatement, objects);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 return function.apply(resultSet);
             } catch (Throwable throwable) {

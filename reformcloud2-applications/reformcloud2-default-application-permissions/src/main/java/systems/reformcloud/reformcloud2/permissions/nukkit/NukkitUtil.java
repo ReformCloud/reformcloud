@@ -32,24 +32,24 @@ import java.lang.reflect.Field;
 
 public final class NukkitUtil {
 
-    private NukkitUtil() {
-        throw new UnsupportedOperationException();
-    }
-
-    private static final Field perm;
+    private static final Field PERM;
 
     static {
         try {
-            perm = Player.class.getDeclaredField("perm");
-            perm.setAccessible(true);
+            PERM = Player.class.getDeclaredField("perm");
+            PERM.setAccessible(true);
         } catch (NoSuchFieldException exception) {
             throw new RuntimeException(exception);
         }
     }
 
+    private NukkitUtil() {
+        throw new UnsupportedOperationException();
+    }
+
     public static void inject(@NotNull Player player) {
         try {
-            perm.set(player, new DefaultPermissible(player));
+            PERM.set(player, new DefaultPermissible(player));
         } catch (IllegalAccessException exception) {
             exception.printStackTrace();
         }

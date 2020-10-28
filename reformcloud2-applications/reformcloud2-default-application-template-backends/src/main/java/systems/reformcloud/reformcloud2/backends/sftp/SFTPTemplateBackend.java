@@ -65,6 +65,26 @@ public final class SFTPTemplateBackend implements TemplateBackend {
         this.ensureConnected();
     }
 
+    public static void load(Path configPath) {
+        if (Files.notExists(configPath)) {
+            new JsonConfiguration().add("config", new SFTPConfig(
+                false, "127.0.0.1", 22, "rc", "password", "rc/templates"
+            )).write(configPath);
+        }
+
+        SFTPConfig config = JsonConfiguration.read(configPath).get("config", SFTPConfig.class);
+        if (config == null || !config.isEnabled()) {
+            return;
+        }
+
+        config.validate();
+        TemplateBackendManager.registerBackend(new SFTPTemplateBackend(config));
+    }
+
+    public static void unload() {
+        TemplateBackendManager.unregisterBackend("SFTP");
+    }
+
     @Override
     public boolean existsTemplate(@NotNull String group, @NotNull String template) {
         this.ensureConnected();
@@ -278,24 +298,10 @@ public final class SFTPTemplateBackend implements TemplateBackend {
         }
     }
 
-    public static void load(String basePath) {
-        if (Files.notExists(Paths.get(basePath, "sftp.json"))) {
-            new JsonConfiguration().add("config", new SFTPConfig(
-                    false, "127.0.0.1", 22, "rc", "password", "rc/templates"
-            )).write(Paths.get(basePath, "sftp.json"));
-        }
+    @FunctionalInterface
+    private interface ExceptionRunnable {
 
-        SFTPConfig config = JsonConfiguration.read(Paths.get(basePath, "sftp.json")).get("config", SFTPConfig.class);
-        if (config == null || !config.isEnabled()) {
-            return;
-        }
-
-        config.validate();
-        TemplateBackendManager.registerBackend(new SFTPTemplateBackend(config));
-    }
-
-    public static void unload() {
-        TemplateBackendManager.unregisterBackend("SFTP");
+        void run() throws Exception;
     }
 
     private static class InternalConfig extends DefaultConfig {
@@ -319,11 +325,5 @@ public final class SFTPTemplateBackend implements TemplateBackend {
         public Logger getLogger(Class<?> clazz) {
             return NOPLogger.NOP_LOGGER;
         }
-    }
-
-    @FunctionalInterface
-    private interface ExceptionRunnable {
-
-        void run() throws Exception;
     }
 }

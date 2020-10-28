@@ -95,7 +95,7 @@ public class NukkitSignSystemAdapter extends SharedSignSystemAdapter<BlockEntity
     @Override
     protected void runTasks() {
         Server.getInstance().getScheduler().scheduleRepeatingTask(
-                this.plugin, this::updateSigns, CommonHelper.longToInt(Math.round(20 / super.signConfig.getUpdateInterval()))
+            this.plugin, this::updateSigns, CommonHelper.longToInt(Math.round(20 / super.signConfig.getUpdateInterval()))
         );
 
         double distance = super.signConfig.getKnockBackDistance();
@@ -108,7 +108,7 @@ public class NukkitSignSystemAdapter extends SharedSignSystemAdapter<BlockEntity
 
                 Location location = blockEntitySign.getLocation();
                 AxisAlignedBB alignedBB = new SimpleAxisAlignedBB(location, location)
-                        .expand(distance, distance, distance);
+                    .expand(distance, distance, distance);
 
                 for (Entity entity : location.getLevel().getNearbyEntities(alignedBB)) {
                     if (!(entity instanceof Player)) {
@@ -121,9 +121,9 @@ public class NukkitSignSystemAdapter extends SharedSignSystemAdapter<BlockEntity
                     }
 
                     Vector3 vector = player.getPosition()
-                            .subtract(location)
-                            .normalize()
-                            .multiply(super.signConfig.getKnockBackStrength());
+                        .subtract(location)
+                        .normalize()
+                        .multiply(super.signConfig.getKnockBackStrength());
                     vector.y = 0.2D;
                     player.setMotion(vector);
                 }

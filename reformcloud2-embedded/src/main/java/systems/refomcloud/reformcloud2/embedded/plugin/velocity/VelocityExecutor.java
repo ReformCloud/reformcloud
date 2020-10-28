@@ -88,8 +88,8 @@ public final class VelocityExecutor extends Embedded {
 
     private void fixInvalidPlayers() {
         SharedInvalidPlayerFixer.start(
-                uuid -> this.proxyServer.getPlayer(uuid).isPresent(),
-                this.proxyServer::getPlayerCount
+            uuid -> this.proxyServer.getPlayer(uuid).isPresent(),
+            this.proxyServer::getPlayerCount
         );
     }
 }

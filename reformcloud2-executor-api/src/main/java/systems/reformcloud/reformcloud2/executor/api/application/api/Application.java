@@ -32,15 +32,19 @@ import systems.reformcloud.reformcloud2.executor.api.application.LoadedApplicati
 import systems.reformcloud.reformcloud2.executor.api.application.loader.AppClassLoader;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader;
+import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.network.netty.concurrent.FastNettyThreadFactory;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Application {
 
+    private Path dataDirectory;
     private LoadedApplication application;
     private ExecutorService executorService;
     private AppClassLoader appClassLoader;
@@ -49,6 +53,11 @@ public class Application {
         this.application = application;
         this.executorService = Executors.newCachedThreadPool(new FastNettyThreadFactory("Application-Thread-%d"));
         this.appClassLoader = loader;
+
+        this.dataDirectory = application.getApplicationLoader().getApplicationFolder().resolve(application.getName());
+        if (Files.notExists(this.dataDirectory)) {
+            IOUtils.createDirectory(this.dataDirectory);
+        }
     }
 
     public void onLoad() {
@@ -69,8 +78,15 @@ public class Application {
     }
 
     @NotNull
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
     public final File getDataFolder() {
-        return new File("reformcloud/applications", this.application.getName());
+        return this.dataDirectory.toFile();
+    }
+
+    @NotNull
+    public Path getDataDirectory() {
+        return this.dataDirectory;
     }
 
     @Nullable

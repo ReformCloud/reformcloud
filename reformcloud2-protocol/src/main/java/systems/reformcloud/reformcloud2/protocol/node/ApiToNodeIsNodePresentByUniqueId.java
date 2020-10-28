@@ -36,14 +36,14 @@ import java.util.UUID;
 
 public class ApiToNodeIsNodePresentByUniqueId extends ProtocolPacket {
 
+    private UUID uniqueId;
+
     public ApiToNodeIsNodePresentByUniqueId() {
     }
 
     public ApiToNodeIsNodePresentByUniqueId(UUID uniqueId) {
         this.uniqueId = uniqueId;
     }
-
-    private UUID uniqueId;
 
     @Override
     public int getId() {

@@ -51,8 +51,8 @@ public class GroupSubject extends AbstractGroupSubject {
     @Override
     protected boolean has(String permission) {
         return PermissionManagement.getInstance().getPermissionGroup(this.group)
-                .map(group -> PermissionManagement.getInstance().hasPermission(group, permission.toLowerCase()))
-                .orElse(Boolean.FALSE);
+            .map(group -> PermissionManagement.getInstance().hasPermission(group, permission.toLowerCase()))
+            .orElse(Boolean.FALSE);
     }
 
     @Override

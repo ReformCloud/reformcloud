@@ -90,7 +90,6 @@ import systems.reformcloud.reformcloud2.shared.network.packet.DefaultQueryManage
 import systems.reformcloud.reformcloud2.shared.network.server.DefaultNetworkServer;
 import systems.reformcloud.reformcloud2.shared.registry.service.DefaultServiceRegistry;
 
-import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Random;
@@ -105,19 +104,17 @@ public final class NodeExecutor extends ExecutorAPI {
     private final NodeNetworkClient networkClient = new NodeNetworkClient();
 
     private final NodeExecutorConfig nodeExecutorConfig = new NodeExecutorConfig();
-    private NodeConfig nodeConfig;
-
     private final ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
     private final DefaultNodeProcessProvider processProvider = new DefaultNodeProcessProvider();
     private final PlayerProvider playerProvider = new DefaultNodePlayerProvider();
     private final ChannelMessageProvider channelMessageProvider = new DefaultNodeChannelMessageProvider();
-    private DefaultNodeMainGroupProvider mainGroupProvider;
-    private DefaultNodeProcessGroupProvider processGroupProvider;
-    private DefaultNodeNodeInformationProvider nodeInformationProvider;
-
     private final TickedTaskScheduler taskScheduler = new TickedTaskScheduler();
     private final CloudTickWorker cloudTickWorker = new CloudTickWorker(this.taskScheduler);
 
+    private NodeConfig nodeConfig;
+    private DefaultNodeMainGroupProvider mainGroupProvider;
+    private DefaultNodeProcessGroupProvider processGroupProvider;
+    private DefaultNodeNodeInformationProvider nodeInformationProvider;
     private DefaultNodeConsole console;
     private CloudLogger logger;
     private ArgumentParser argumentParser;
@@ -125,7 +122,7 @@ public final class NodeExecutor extends ExecutorAPI {
     private NodeInformation currentNodeInformation;
 
     protected NodeExecutor(DependencyLoader dependencyLoader) {
-        Conditions.isTrue(new File(".").getAbsolutePath().indexOf('!') == -1, "Cannot run ReformCloud in directory with ! in path.");
+        Conditions.isTrue(Paths.get("").toAbsolutePath().toString().indexOf('!') == -1, "Cannot run ReformCloud in directory with ! in path.");
 
         ExecutorAPI.setInstance(this);
         super.type = ExecutorType.NODE;
@@ -140,6 +137,15 @@ public final class NodeExecutor extends ExecutorAPI {
 
         this.dependencyLoader = dependencyLoader;
         this.registerDefaultServices();
+    }
+
+    @NotNull
+    public static NodeExecutor getInstance() {
+        return (NodeExecutor) ExecutorAPI.getInstance();
+    }
+
+    public static boolean isRunning() {
+        return running;
     }
 
     protected synchronized void bootstrap(@NotNull ArgumentParser argumentParser) {
@@ -261,7 +267,7 @@ public final class NodeExecutor extends ExecutorAPI {
         System.out.println(LanguageManager.get("application-stop-processes"));
         this.processProvider.closeNow(); // important to close the scheduler BEFORE the processes to prevent new processes to start
         System.out.println(LanguageManager.get("application-stop-remove-temp-dir"));
-        IOUtils.deleteDirectory(Paths.get("reformcloud/temp"));
+        IOUtils.deleteDirectorySilently(Paths.get("reformcloud/temp"));
 
         System.out.println(LanguageManager.get("application-stop-finished"));
 
@@ -314,11 +320,6 @@ public final class NodeExecutor extends ExecutorAPI {
                 ));
             }
         }
-    }
-
-    @NotNull
-    public static NodeExecutor getInstance() {
-        return (NodeExecutor) ExecutorAPI.getInstance();
     }
 
     @NotNull
@@ -451,13 +452,9 @@ public final class NodeExecutor extends ExecutorAPI {
         return this.nodeConfig.getName().equals(name);
     }
 
-    public static boolean isRunning() {
-        return running;
-    }
-
     private void loadCommands() {
         this.serviceRegistry.getProviderUnchecked(CommandManager.class)
-            .registerCommand(new CommandProcess(), "Management of local and remote processes", "p", "process", "sever", "proxy")
+            .registerCommand(new CommandProcess(), "Management of local and remote processes", "p", "process", "server", "proxy")
             .registerCommand(new CommandCluster(), "Management of nodes in the cluster", "clu", "cluster", "c")
             .registerCommand(new CommandPlayers(), "Management of players on processes", "pl", "players")
             .registerCommand(new CommandGroup(), "Administration of Main/Sub groups", "g", "group", "groups")

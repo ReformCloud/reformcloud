@@ -34,14 +34,14 @@ import java.util.Collection;
 
 public class ApiToNodeGetNodeObjectsResult extends QueryResultPacket {
 
+    private Collection<NodeInformation> nodeInformation;
+
     public ApiToNodeGetNodeObjectsResult() {
     }
 
     public ApiToNodeGetNodeObjectsResult(Collection<NodeInformation> nodeInformation) {
         this.nodeInformation = nodeInformation;
     }
-
-    private Collection<NodeInformation> nodeInformation;
 
     public Collection<NodeInformation> getNodeInformation() {
         return this.nodeInformation;

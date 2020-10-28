@@ -34,14 +34,14 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodeIsNodePresentByName extends ProtocolPacket {
 
+    private String name;
+
     public ApiToNodeIsNodePresentByName() {
     }
 
     public ApiToNodeIsNodePresentByName(String name) {
         this.name = name;
     }
-
-    private String name;
 
     @Override
     public int getId() {

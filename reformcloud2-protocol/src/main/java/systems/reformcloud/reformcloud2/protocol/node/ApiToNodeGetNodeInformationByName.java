@@ -37,14 +37,14 @@ import java.util.Optional;
 
 public class ApiToNodeGetNodeInformationByName extends ProtocolPacket {
 
+    private String name;
+
     public ApiToNodeGetNodeInformationByName() {
     }
 
     public ApiToNodeGetNodeInformationByName(String name) {
         this.name = name;
     }
-
-    private String name;
 
     @Override
     public int getId() {

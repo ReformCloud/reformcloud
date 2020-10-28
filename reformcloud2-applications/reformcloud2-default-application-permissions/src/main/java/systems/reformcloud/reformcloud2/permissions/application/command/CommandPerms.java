@@ -43,48 +43,48 @@ import java.util.concurrent.TimeUnit;
 public class CommandPerms implements Command {
 
     private static final String[] HELP = new String[]{
-            "perms groups",
-            "perms group [groupname]",
-            "perms group [groupname] create",
-            "perms group [groupname] create [default]",
-            "perms group [groupname] delete",
-            "perms group [groupname] clear",
-            "perms group [groupname] clear [groups/permissions]",
-            "perms group [groupname] setdefault [default]",
-            "perms group [groupname] setpriority [priority]",
-            "perms group [groupname] setprefix [prefix]",
-            "perms group [groupname] setsuffix [suffix]",
-            "perms group [groupname] setdisplay [display]",
-            "perms group [groupname] setcolor [color]",
-            "perms group [groupname] addgroup [groupname]",
-            "perms group [groupname] delgroup [groupname]",
-            "perms group [groupname] addperm [permission] [positive]",
-            "perms group [groupname] addperm [permission] [positive] [timeout] [s/m/h/d/mo]",
-            "perms group [groupname] addperm [processgroup] [permission] [positive]",
-            "perms group [groupname] addperm [processgroup] [permission] [positive] [timeout] [s/m/h/d/mo]",
-            "perms group [groupname] delperm [permission]",
-            "perms group [groupname] delperm [processgroup] [permission]",
-            "perms group [groupname] parent clear",
-            " ",
-            "perms user [user]",
-            "perms user [user] delete",
-            "perms user [user] clear",
-            "perms user [user] clear [groups/permissions]",
-            "perms user [user] setprefix [prefix]",
-            "perms user [user] setsuffix [suffix]",
-            "perms user [user] setdisplay [display]",
-            "perms user [user] setcolor [color]",
-            "perms user [user] addperm [permission] [positive]",
-            "perms user [user] addperm [permission] [positive] [timeout] [s/m/h/d/mo]",
-            "perms user [user] addperm [processgroup] [permission] [positive]",
-            "perms user [user] addperm [processgroup] [permission] [positive] [timeout] [s/m/h/d/mo]",
-            "perms user [user] delperm [permission]",
-            "perms user [user] delperm [processgroup] [permission]",
-            "perms user [user] addgroup [group]",
-            "perms user [user] addgroup [group] [timeout] [s/m/h/d/mo]",
-            "perms user [user] setgroup [group]",
-            "perms user [user] setgroup [group] [timeout] [s/m/h/d/mo]",
-            "perms user [user] delgroup [group]"
+        "perms groups",
+        "perms group [groupname]",
+        "perms group [groupname] create",
+        "perms group [groupname] create [default]",
+        "perms group [groupname] delete",
+        "perms group [groupname] clear",
+        "perms group [groupname] clear [groups/permissions]",
+        "perms group [groupname] setdefault [default]",
+        "perms group [groupname] setpriority [priority]",
+        "perms group [groupname] setprefix [prefix]",
+        "perms group [groupname] setsuffix [suffix]",
+        "perms group [groupname] setdisplay [display]",
+        "perms group [groupname] setcolor [color]",
+        "perms group [groupname] addgroup [groupname]",
+        "perms group [groupname] delgroup [groupname]",
+        "perms group [groupname] addperm [permission] [positive]",
+        "perms group [groupname] addperm [permission] [positive] [timeout] [s/m/h/d/mo]",
+        "perms group [groupname] addperm [processgroup] [permission] [positive]",
+        "perms group [groupname] addperm [processgroup] [permission] [positive] [timeout] [s/m/h/d/mo]",
+        "perms group [groupname] delperm [permission]",
+        "perms group [groupname] delperm [processgroup] [permission]",
+        "perms group [groupname] parent clear",
+        " ",
+        "perms user [user]",
+        "perms user [user] delete",
+        "perms user [user] clear",
+        "perms user [user] clear [groups/permissions]",
+        "perms user [user] setprefix [prefix]",
+        "perms user [user] setsuffix [suffix]",
+        "perms user [user] setdisplay [display]",
+        "perms user [user] setcolor [color]",
+        "perms user [user] addperm [permission] [positive]",
+        "perms user [user] addperm [permission] [positive] [timeout] [s/m/h/d/mo]",
+        "perms user [user] addperm [processgroup] [permission] [positive]",
+        "perms user [user] addperm [processgroup] [permission] [positive] [timeout] [s/m/h/d/mo]",
+        "perms user [user] delperm [permission]",
+        "perms user [user] delperm [processgroup] [permission]",
+        "perms user [user] addgroup [group]",
+        "perms user [user] addgroup [group] [timeout] [s/m/h/d/mo]",
+        "perms user [user] setgroup [group]",
+        "perms user [user] setgroup [group] [timeout] [s/m/h/d/mo]",
+        "perms user [user] delgroup [group]"
     };
 
     @NotNull
@@ -166,7 +166,7 @@ public class CommandPerms implements Command {
                 result.addAll(Streams.map(PermissionManagement.getInstance().getPermissionGroups(), PermissionGroup::getName));
             } else if (bufferIndex == 2) {
                 result.addAll(Arrays.asList("create", "delete", "clear", "setdefault", "setpriority", "setprefix", "setsuffix",
-                        "setdisplay", "setcolor", "addgroup", "delgroup", "addperm", "delperm", "parent"));
+                    "setdisplay", "setcolor", "addgroup", "delgroup", "addperm", "delperm", "parent"));
             } else if (bufferIndex == 3) {
                 if (strings[2].equalsIgnoreCase("create") || strings[2].equalsIgnoreCase("setdefault")) {
                     result.addAll(Arrays.asList("true", "false"));
@@ -189,12 +189,12 @@ public class CommandPerms implements Command {
         } else if (bufferIndex >= 2 && strings[0].equalsIgnoreCase("user")) {
             if (bufferIndex == 2) {
                 result.addAll(Arrays.asList("delete", "clear", "setprefix", "setsuffix", "setdisplay", "setcolor",
-                        "addgroup", "delgroup", "setgroup", "addperm", "delperm"));
+                    "addgroup", "delgroup", "setgroup", "addperm", "delperm"));
             } else if (bufferIndex == 3) {
                 if (strings[2].equalsIgnoreCase("clear")) {
                     result.addAll(Arrays.asList("true", "false"));
                 } else if (strings[2].equalsIgnoreCase("addgroup") || strings[2].equalsIgnoreCase("setgroup")
-                        || strings[2].equalsIgnoreCase("delgroup")) {
+                    || strings[2].equalsIgnoreCase("delgroup")) {
                     result.addAll(Streams.map(PermissionManagement.getInstance().getPermissionGroups(), PermissionGroup::getName));
                 } else if (strings[2].equalsIgnoreCase("delperm") || strings[2].equalsIgnoreCase("addperm")) {
                     result.addAll(ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroupNames());
@@ -465,7 +465,7 @@ public class CommandPerms implements Command {
                 permissionUser.getGroups().add(new NodeGroup(System.currentTimeMillis(), timeout, optionalPermissionGroup.get().getName()));
                 PermissionManagement.getInstance().updateUser(permissionUser);
                 source.sendMessage("The user " + strings[1] + " is now in the group " + strings[3] + " "
-                        + (timeout == -1 ? "lifetime" : "until " + CommonHelper.DATE_FORMAT.format(timeout)));
+                    + (timeout == -1 ? "lifetime" : "until " + CommonHelper.DATE_FORMAT.format(timeout)));
                 return;
             }
 
@@ -497,7 +497,7 @@ public class CommandPerms implements Command {
                 permissionUser.getGroups().add(new NodeGroup(System.currentTimeMillis(), timeout, optionalPermissionGroup.get().getName()));
                 PermissionManagement.getInstance().updateUser(permissionUser);
                 source.sendMessage("The user " + strings[1] + " is now in the group " + strings[3] + " "
-                        + (timeout == -1 ? "lifetime" : "until " + CommonHelper.DATE_FORMAT.format(timeout)));
+                    + (timeout == -1 ? "lifetime" : "until " + CommonHelper.DATE_FORMAT.format(timeout)));
                 return;
             }
 
@@ -556,7 +556,7 @@ public class CommandPerms implements Command {
             permissionUser.getPermissionNodes().add(PermissionNode.createNode(strings[3], timeout, positive));
             PermissionManagement.getInstance().updateUser(permissionUser);
             source.sendMessage("The user " + strings[1] + " has now the permission " + strings[3] + " "
-                    + (timeout == -1 ? "lifetime " : "until " + CommonHelper.DATE_FORMAT.format(timeout)));
+                + (timeout == -1 ? "lifetime " : "until " + CommonHelper.DATE_FORMAT.format(timeout)));
             return;
         }
 
@@ -596,7 +596,7 @@ public class CommandPerms implements Command {
             permissionUser.getPerGroupPermissions().get(strings[3]).add(PermissionNode.createNode(strings[4], timeout, positive));
             PermissionManagement.getInstance().updateUser(permissionUser);
             source.sendMessage("The user " + strings[1] + " has now the permission " + strings[3] + " "
-                    + (timeout == -1 ? "lifetime" : "until " + CommonHelper.DATE_FORMAT.format(timeout)) + " om the process group " + strings[3]);
+                + (timeout == -1 ? "lifetime" : "until " + CommonHelper.DATE_FORMAT.format(timeout)) + " om the process group " + strings[3]);
             return;
         }
 
@@ -622,12 +622,12 @@ public class CommandPerms implements Command {
             }
 
             PermissionManagement.getInstance().createPermissionGroup(new PermissionGroup(
-                    new ArrayList<>(),
-                    new HashMap<>(),
-                    new ArrayList<>(),
-                    strings[1],
-                    0,
-                    defaultGroup
+                new ArrayList<>(),
+                new HashMap<>(),
+                new ArrayList<>(),
+                strings[1],
+                0,
+                defaultGroup
             ));
             source.sendMessage("Successfully created new permission group " + strings[1]);
             return;

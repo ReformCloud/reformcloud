@@ -35,14 +35,14 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class NodeToNodeUnregisterProcess extends ProtocolPacket {
 
+    private String name;
+
     public NodeToNodeUnregisterProcess() {
     }
 
     public NodeToNodeUnregisterProcess(String name) {
         this.name = name;
     }
-
-    private String name;
 
     @Override
     public int getId() {

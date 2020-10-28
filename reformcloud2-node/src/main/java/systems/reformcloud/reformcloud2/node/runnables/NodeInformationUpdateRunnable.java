@@ -33,6 +33,6 @@ public class NodeInformationUpdateRunnable implements Runnable {
     @Override
     public void run() {
         ExecutorAPI.getInstance().getServiceRegistry().getProvider(ClusterManager.class)
-                .ifPresent(e -> e.publishNodeUpdate(NodeExecutor.getInstance().updateCurrentNodeInformation()));
+            .ifPresent(e -> e.publishNodeUpdate(NodeExecutor.getInstance().updateCurrentNodeInformation()));
     }
 }

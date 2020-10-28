@@ -35,17 +35,15 @@ import java.util.UUID;
 
 public class PlayerFallbackChooseEvent extends Event {
 
+    private final UUID playerUniqueId;
+    private final Collection<ProcessInformation> allLobbies;
+    private ProcessInformation filteredFallback;
+
     public PlayerFallbackChooseEvent(UUID playerUniqueId, ProcessInformation filteredFallback, Collection<ProcessInformation> allLobbies) {
         this.playerUniqueId = playerUniqueId;
         this.filteredFallback = filteredFallback;
         this.allLobbies = allLobbies;
     }
-
-    private final UUID playerUniqueId;
-
-    private ProcessInformation filteredFallback;
-
-    private final Collection<ProcessInformation> allLobbies;
 
     @NotNull
     public UUID getPlayerUniqueId() {

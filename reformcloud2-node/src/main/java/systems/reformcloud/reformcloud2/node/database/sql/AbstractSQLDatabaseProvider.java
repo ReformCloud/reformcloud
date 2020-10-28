@@ -31,7 +31,9 @@ import systems.reformcloud.reformcloud2.executor.api.provider.DatabaseProvider;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.DatabaseTableWrapper;
 import systems.reformcloud.reformcloud2.node.database.util.SQLFunction;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -56,15 +58,15 @@ public abstract class AbstractSQLDatabaseProvider implements DatabaseProvider {
     @Override
     public @UnmodifiableView Collection<String> getTableNames() {
         return this.executeQuery(
-                "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA='PUBLIC'",
-                resultSet -> {
-                    Collection<String> collection = new ArrayList<>();
-                    while (resultSet.next()) {
-                        collection.add(resultSet.getString("table_name"));
-                    }
+            "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA='PUBLIC'",
+            resultSet -> {
+                Collection<String> collection = new ArrayList<>();
+                while (resultSet.next()) {
+                    collection.add(resultSet.getString("table_name"));
+                }
 
-                    return collection;
-                }, new ArrayList<>()
+                return collection;
+            }, new ArrayList<>()
         );
     }
 
@@ -84,5 +86,20 @@ public abstract class AbstractSQLDatabaseProvider implements DatabaseProvider {
     public abstract void executeUpdate(@NotNull String query, @NonNls Object... objects);
 
     @NotNull
-    public abstract <T> T executeQuery(@NotNull String query, SQLFunction<ResultSet, T> function, @NotNull T defaultValue, @NonNls Object... objects);
+    public abstract <T> T executeQuery(@NotNull String query, @NotNull SQLFunction<ResultSet, T> function, @NotNull T defaultValue, @NonNls Object... objects);
+
+    protected void appendObjectsToPreparedStatement(@NotNull PreparedStatement statement, @NonNls Object... objects) throws SQLException {
+        int i = 1;
+        for (Object object : objects) {
+            if (object == null) {
+                continue;
+            }
+
+            if (object instanceof byte[]) {
+                statement.setBytes(i++, (byte[]) object);
+            } else {
+                statement.setString(i++, object.toString());
+            }
+        }
+    }
 }

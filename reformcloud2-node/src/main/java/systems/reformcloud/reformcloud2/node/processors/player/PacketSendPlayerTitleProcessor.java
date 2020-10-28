@@ -33,6 +33,6 @@ public class PacketSendPlayerTitleProcessor extends PlayerApiToNodePacketProcess
     @Override
     public void process(@NotNull NetworkChannel channel, @NotNull PacketSendPlayerTitle packet) {
         this.getPlayerProvider().getPlayer(packet.getUniqueId())
-                .ifPresent(wrapper -> wrapper.sendTitle(packet.getTitle(), packet.getSubTitle(), packet.getFadeIn(), packet.getStay(), packet.getFadeOut()));
+            .ifPresent(wrapper -> wrapper.sendTitle(packet.getTitle(), packet.getSubTitle(), packet.getFadeIn(), packet.getStay(), packet.getFadeOut()));
     }
 }

@@ -1,4 +1,4 @@
-This file is part of server4je, licensed under the MIT License (MIT).
+This file is part of reformcloud2, licensed under the MIT License (MIT).
 
 Copyright (c) ReformCloud <https://github.com/ReformCloud>
 Copyright (c) contributors

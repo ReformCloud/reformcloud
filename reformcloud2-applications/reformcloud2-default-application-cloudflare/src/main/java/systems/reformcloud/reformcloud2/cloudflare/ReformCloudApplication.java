@@ -41,10 +41,9 @@ import java.util.Properties;
 
 public class ReformCloudApplication extends Application {
 
-    private final ApplicationUpdateRepository applicationUpdateRepository = new CloudFlareAddonUpdater(this);
-
     private static final ProcessListener LISTENER = new ProcessListener();
     private static boolean loaded = false;
+    private final ApplicationUpdateRepository applicationUpdateRepository = new CloudFlareAddonUpdater(this);
 
     @Override
     public void onEnable() {
@@ -56,7 +55,7 @@ public class ReformCloudApplication extends Application {
             ex.printStackTrace();
         }
 
-        if (CloudFlareHelper.init(this.getDataFolder().getPath())) {
+        if (CloudFlareHelper.init(this.getDataDirectory().resolve("config.json"))) {
             System.err.println(LanguageManager.get("cloudflare-first-init"));
             return;
         }

@@ -43,13 +43,13 @@ public class DefaultEmbeddedProcessGroupProvider implements ProcessGroupProvider
     @Override
     public Optional<ProcessGroup> getProcessGroup(@NotNull String name) {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessGroup(name))
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetProcessGroupResult) {
-                        return ((ApiToNodeGetProcessGroupResult) result).getProcessGroup();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetProcessGroupResult) {
+                    return ((ApiToNodeGetProcessGroupResult) result).getProcessGroup();
+                }
 
-                    return null;
-                });
+                return null;
+            });
     }
 
     @Override
@@ -66,38 +66,38 @@ public class DefaultEmbeddedProcessGroupProvider implements ProcessGroupProvider
     @Override
     public @UnmodifiableView Collection<ProcessGroup> getProcessGroups() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessGroupObjects())
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetProcessGroupObjectsResult) {
-                        return ((ApiToNodeGetProcessGroupObjectsResult) result).getProcessGroups();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetProcessGroupObjectsResult) {
+                    return ((ApiToNodeGetProcessGroupObjectsResult) result).getProcessGroups();
+                }
 
-                    return new ArrayList<ProcessGroup>();
-                }).orElseGet(Collections::emptyList);
+                return new ArrayList<ProcessGroup>();
+            }).orElseGet(Collections::emptyList);
     }
 
     @Override
     public long getProcessGroupCount() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessGroupCount())
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetProcessGroupCountResult) {
-                        return ((ApiToNodeGetProcessGroupCountResult) result).getCount();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetProcessGroupCountResult) {
+                    return ((ApiToNodeGetProcessGroupCountResult) result).getCount();
+                }
 
-                    return 0L;
-                }).orElseGet(() -> 0L);
+                return 0L;
+            }).orElseGet(() -> 0L);
     }
 
     @NotNull
     @Override
     public @UnmodifiableView Collection<String> getProcessGroupNames() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessGroupNames())
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetStringCollectionResult) {
-                        return ((ApiToNodeGetStringCollectionResult) result).getResult();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetStringCollectionResult) {
+                    return ((ApiToNodeGetStringCollectionResult) result).getResult();
+                }
 
-                    return new ArrayList<String>();
-                }).orElseGet(Collections::emptyList);
+                return new ArrayList<String>();
+            }).orElseGet(Collections::emptyList);
     }
 
     @NotNull

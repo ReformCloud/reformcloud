@@ -37,14 +37,14 @@ import java.util.UUID;
 
 public class NodeToNodeGetLastLogLines extends ProtocolPacket {
 
+    private UUID uniqueId;
+
     public NodeToNodeGetLastLogLines() {
     }
 
     public NodeToNodeGetLastLogLines(UUID uniqueId) {
         this.uniqueId = uniqueId;
     }
-
-    private UUID uniqueId;
 
     @Override
     public int getId() {

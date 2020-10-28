@@ -44,7 +44,7 @@ class DefaultCommandManagerTest {
     void testCommandAllCommands() {
         Assertions.assertEquals(1, this.commandManager.getCommands().size());
         Assertions.assertThrows(UnsupportedOperationException.class, () -> this.commandManager.getCommands().add(
-                new DefaultCommandContainer(Collections.singletonList("v"), "test", new TestCommand())
+            new DefaultCommandContainer(Collections.singletonList("v"), "test", new TestCommand())
         ));
     }
 

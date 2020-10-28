@@ -35,6 +35,14 @@ import java.util.UUID;
 
 public class PacketSetPlayerLocation extends ProtocolPacket {
 
+    protected UUID uniqueId;
+    protected String world;
+    protected double x;
+    protected double y;
+    protected double z;
+    protected float yaw;
+    protected float pitch;
+
     public PacketSetPlayerLocation() {
     }
 
@@ -47,14 +55,6 @@ public class PacketSetPlayerLocation extends ProtocolPacket {
         this.yaw = yaw;
         this.pitch = pitch;
     }
-
-    protected UUID uniqueId;
-    protected String world;
-    protected double x;
-    protected double y;
-    protected double z;
-    protected float yaw;
-    protected float pitch;
 
     public UUID getUniqueId() {
         return this.uniqueId;

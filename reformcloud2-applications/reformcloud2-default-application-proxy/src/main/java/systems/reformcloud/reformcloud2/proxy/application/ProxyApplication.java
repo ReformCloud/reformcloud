@@ -51,7 +51,7 @@ public class ProxyApplication extends Application {
     @Override
     public void onLoad() {
         instance = this;
-        ConfigHelper.init(this.getDataFolder());
+        ConfigHelper.init(this.getDataDirectory().resolve("config.json"));
 
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ProcessInclusionHandler());
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketRequestConfig.class);

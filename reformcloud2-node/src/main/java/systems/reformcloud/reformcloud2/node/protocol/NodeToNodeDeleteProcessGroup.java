@@ -36,14 +36,14 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class NodeToNodeDeleteProcessGroup extends ProtocolPacket {
 
+    private ProcessGroup processGroup;
+
     public NodeToNodeDeleteProcessGroup() {
     }
 
     public NodeToNodeDeleteProcessGroup(ProcessGroup processGroup) {
         this.processGroup = processGroup;
     }
-
-    private ProcessGroup processGroup;
 
     @Override
     public int getId() {

@@ -60,9 +60,9 @@ public class PermissionUser implements SerializableObject {
     }
 
     public PermissionUser(
-            @NotNull UUID uuid,
-            @NotNull Collection<PermissionNode> permissionNodes,
-            @NotNull Collection<NodeGroup> groups
+        @NotNull UUID uuid,
+        @NotNull Collection<PermissionNode> permissionNodes,
+        @NotNull Collection<NodeGroup> groups
     ) {
         this.uuid = uuid;
         this.permissionNodes = permissionNodes;
@@ -184,10 +184,6 @@ public class PermissionUser implements SerializableObject {
         }
 
         permission = permission.toLowerCase();
-        if (permission.equalsIgnoreCase("bukkit.brodcast") || permission.equalsIgnoreCase("bukkit.brodcast.admin")) {
-            return true;
-        }
-
         Boolean general = GeneralCheck.hasPermission(this, permission);
         if (general != null) {
             return general;

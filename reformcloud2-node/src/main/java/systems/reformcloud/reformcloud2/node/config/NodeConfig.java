@@ -34,7 +34,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
-public final class NodeConfig {
+public class NodeConfig {
 
     protected static final Path PATH = Paths.get(System.getProperty("systems.reformcloud.node-config-path", "reformcloud/config.json"));
 
@@ -104,12 +104,12 @@ public final class NodeConfig {
         return this.clusterNodes;
     }
 
-    public void setSendAnonymousErrorReports(boolean sendAnonymousErrorReports) {
-        this.sendAnonymousErrorReports = sendAnonymousErrorReports;
-    }
-
     public boolean isSendAnonymousErrorReports() {
         return this.sendAnonymousErrorReports;
+    }
+
+    public void setSendAnonymousErrorReports(boolean sendAnonymousErrorReports) {
+        this.sendAnonymousErrorReports = sendAnonymousErrorReports;
     }
 
     public void save() {

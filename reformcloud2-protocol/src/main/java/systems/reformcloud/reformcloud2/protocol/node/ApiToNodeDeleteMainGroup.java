@@ -34,14 +34,14 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodeDeleteMainGroup extends ProtocolPacket {
 
+    private String name;
+
     public ApiToNodeDeleteMainGroup() {
     }
 
     public ApiToNodeDeleteMainGroup(String name) {
         this.name = name;
     }
-
-    private String name;
 
     @Override
     public int getId() {

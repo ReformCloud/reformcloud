@@ -24,6 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.application;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
@@ -44,8 +45,11 @@ public interface LoadedApplication extends Nameable {
 
     /**
      * @return The current instance of the {@link ExecutorAPI}
+     * @deprecated It makes no sense to have an accessor to the executor api in this class.
      */
     @NotNull
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.11.0")
     ExecutorAPI api();
 
     /**

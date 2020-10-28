@@ -40,10 +40,10 @@ public class BukkitCommandSigns implements CommandExecutor {
 
     @Override
     public boolean onCommand(
-            @NotNull CommandSender commandSender,
-            @NotNull Command command,
-            @NotNull String s,
-            @NotNull String[] strings
+        @NotNull CommandSender commandSender,
+        @NotNull Command command,
+        @NotNull String s,
+        @NotNull String[] strings
     ) {
         if (!(commandSender.hasPermission("reformcloud.command.signs")) || !(commandSender instanceof Player)) {
             return true;
@@ -61,7 +61,7 @@ public class BukkitCommandSigns implements CommandExecutor {
                 Sign sign = (Sign) block.getState();
 
                 CloudSign cloudSign = BukkitSignSystemAdapter.getInstance().getSignAt(
-                        BukkitSignSystemAdapter.getInstance().getSignConverter().to(sign)
+                    BukkitSignSystemAdapter.getInstance().getSignConverter().to(sign)
                 );
                 if (cloudSign != null) {
                     commandSender.sendMessage("§cThe sign already exists");
@@ -82,7 +82,7 @@ public class BukkitCommandSigns implements CommandExecutor {
             if (block.getState() instanceof Sign) {
                 Sign sign = (Sign) block.getState();
                 CloudSign cloudSign = BukkitSignSystemAdapter.getInstance().getSignAt(
-                        BukkitSignSystemAdapter.getInstance().getSignConverter().to(sign)
+                    BukkitSignSystemAdapter.getInstance().getSignConverter().to(sign)
                 );
 
                 if (cloudSign == null) {

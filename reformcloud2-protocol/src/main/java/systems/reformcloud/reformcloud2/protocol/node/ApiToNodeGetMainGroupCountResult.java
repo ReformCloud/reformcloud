@@ -31,14 +31,14 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryR
 
 public class ApiToNodeGetMainGroupCountResult extends QueryResultPacket {
 
+    private long count;
+
     public ApiToNodeGetMainGroupCountResult() {
     }
 
     public ApiToNodeGetMainGroupCountResult(long count) {
         this.count = count;
     }
-
-    private long count;
 
     public long getCount() {
         return this.count;

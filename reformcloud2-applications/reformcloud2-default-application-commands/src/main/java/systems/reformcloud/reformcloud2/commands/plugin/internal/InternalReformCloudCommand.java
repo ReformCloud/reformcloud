@@ -52,27 +52,27 @@ public final class InternalReformCloudCommand {
     ) {
         if (strings.length == 1 && strings[0].equalsIgnoreCase("list")) {
             ExecutorAPI.getInstance()
-                    .getProcessProvider()
-                    .getProcessesAsync()
-                    .onComplete(processes -> {
-                        for (ProcessInformation process : processes) {
-                            String state = "§coffline";
-                            if (process.getProcessDetail().getProcessState().isStartedOrOnline() && !process.getNetworkInfo().isConnected()) {
-                                state = "§econnecting";
-                            } else if (process.getProcessDetail().getProcessState().isOnline()) {
-                                state = "§aonline";
-                            }
-
-                            messageSender.accept(String.format(
-                                    PROCESS_DISPLAY_FORMAT,
-                                    process.getProcessDetail().getName(),
-                                    process.getProcessDetail().getParentName(),
-                                    process.getProcessPlayerManager().getOnlineCount(),
-                                    process.getProcessDetail().getMaxPlayers(),
-                                    state
-                            ));
+                .getProcessProvider()
+                .getProcessesAsync()
+                .onComplete(processes -> {
+                    for (ProcessInformation process : processes) {
+                        String state = "§coffline";
+                        if (process.getProcessDetail().getProcessState().isStartedOrOnline() && !process.getNetworkInfo().isConnected()) {
+                            state = "§econnecting";
+                        } else if (process.getProcessDetail().getProcessState().isOnline()) {
+                            state = "§aonline";
                         }
-                    });
+
+                        messageSender.accept(String.format(
+                            PROCESS_DISPLAY_FORMAT,
+                            process.getProcessDetail().getName(),
+                            process.getProcessDetail().getParentName(),
+                            process.getProcessPlayerManager().getOnlineCount(),
+                            process.getProcessDetail().getMaxPlayers(),
+                            state
+                        ));
+                    }
+                });
             return;
         }
 
@@ -80,72 +80,72 @@ public final class InternalReformCloudCommand {
             switch (strings[0].toLowerCase()) {
                 case "copy": {
                     ExecutorAPI.getInstance()
-                            .getProcessProvider()
-                            .getProcessByNameAsync(strings[1])
-                            .onComplete(process -> {
-                                if (!process.isPresent()) {
-                                    messageSender.accept(prefix + "§cThis process is unknown");
-                                    return;
-                                }
+                        .getProcessProvider()
+                        .getProcessByNameAsync(strings[1])
+                        .onComplete(process -> {
+                            if (!process.isPresent()) {
+                                messageSender.accept(prefix + "§cThis process is unknown");
+                                return;
+                            }
 
-                                ProcessWrapper wrapper = process.get();
-                                wrapper.copy(wrapper.getProcessInformation().getProcessDetail().getTemplate());
-                                messageSender.accept(commandSuccessMessage);
-                            });
+                            ProcessWrapper wrapper = process.get();
+                            wrapper.copy(wrapper.getProcessInformation().getProcessDetail().getTemplate());
+                            messageSender.accept(commandSuccessMessage);
+                        });
                     return;
                 }
 
                 case "start": {
                     ExecutorAPI.getInstance()
-                            .getProcessGroupProvider()
-                            .getProcessGroupAsync(strings[1])
-                            .thenAccept(processGroup -> {
-                                if (!processGroup.isPresent()) {
-                                    messageSender.accept(prefix + "§cThe specified group is unknown");
-                                    return;
-                                }
+                        .getProcessGroupProvider()
+                        .getProcessGroupAsync(strings[1])
+                        .thenAccept(processGroup -> {
+                            if (!processGroup.isPresent()) {
+                                messageSender.accept(prefix + "§cThe specified group is unknown");
+                                return;
+                            }
 
-                                ExecutorAPI.getInstance()
-                                        .getProcessProvider()
-                                        .createProcess()
-                                        .group(strings[1])
-                                        .prepare()
-                                        .onComplete(processWrapper -> processWrapper.setRuntimeState(ProcessState.STARTED));
-                                messageSender.accept(commandSuccessMessage);
-                            });
+                            ExecutorAPI.getInstance()
+                                .getProcessProvider()
+                                .createProcess()
+                                .group(strings[1])
+                                .prepare()
+                                .onComplete(processWrapper -> processWrapper.setRuntimeState(ProcessState.STARTED));
+                            messageSender.accept(commandSuccessMessage);
+                        });
                     return;
                 }
 
                 case "stop": {
                     ExecutorAPI.getInstance()
-                            .getProcessProvider()
-                            .getProcessByNameAsync(strings[1])
-                            .onComplete(processWrapper -> {
-                                if (!processWrapper.isPresent()) {
-                                    messageSender.accept(prefix + "§cThis process is unknown");
-                                    return;
-                                }
+                        .getProcessProvider()
+                        .getProcessByNameAsync(strings[1])
+                        .onComplete(processWrapper -> {
+                            if (!processWrapper.isPresent()) {
+                                messageSender.accept(prefix + "§cThis process is unknown");
+                                return;
+                            }
 
-                                processWrapper.get().setRuntimeState(ProcessState.STOPPED);
-                                messageSender.accept(commandSuccessMessage);
-                            });
+                            processWrapper.get().setRuntimeState(ProcessState.STOPPED);
+                            messageSender.accept(commandSuccessMessage);
+                        });
                     return;
                 }
 
                 case "maintenance": {
                     ExecutorAPI.getInstance()
-                            .getProcessGroupProvider()
-                            .getProcessGroupAsync(strings[1])
-                            .onComplete(processGroup -> {
-                                if (!processGroup.isPresent()) {
-                                    messageSender.accept(prefix + "§cThe specified group is unknown");
-                                    return;
-                                }
+                        .getProcessGroupProvider()
+                        .getProcessGroupAsync(strings[1])
+                        .onComplete(processGroup -> {
+                            if (!processGroup.isPresent()) {
+                                messageSender.accept(prefix + "§cThe specified group is unknown");
+                                return;
+                            }
 
-                                processGroup.get().getPlayerAccessConfiguration().toggleMaintenance();
-                                ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(processGroup.get());
-                                messageSender.accept(commandSuccessMessage);
-                            });
+                            processGroup.get().getPlayerAccessConfiguration().toggleMaintenance();
+                            ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(processGroup.get());
+                            messageSender.accept(commandSuccessMessage);
+                        });
                     return;
                 }
 
@@ -164,10 +164,10 @@ public final class InternalReformCloudCommand {
 
                 for (int started = 1; started <= count; started++) {
                     ExecutorAPI.getInstance().getProcessProvider()
-                            .createProcess()
-                            .group(strings[1])
-                            .prepare()
-                            .onComplete(wrapper -> wrapper.setRuntimeState(ProcessState.STARTED));
+                        .createProcess()
+                        .group(strings[1])
+                        .prepare()
+                        .onComplete(wrapper -> wrapper.setRuntimeState(ProcessState.STARTED));
                 }
 
                 messageSender.accept(commandSuccessMessage);
@@ -182,17 +182,17 @@ public final class InternalReformCloudCommand {
             }
 
             ExecutorAPI.getInstance()
-                    .getProcessProvider()
-                    .getProcessByNameAsync(strings[1])
-                    .onComplete(processWrapper -> {
-                        if (!processWrapper.isPresent()) {
-                            messageSender.accept(prefix + "§cThis process is unknown");
-                            return;
-                        }
+                .getProcessProvider()
+                .getProcessByNameAsync(strings[1])
+                .onComplete(processWrapper -> {
+                    if (!processWrapper.isPresent()) {
+                        messageSender.accept(prefix + "§cThis process is unknown");
+                        return;
+                    }
 
-                        processWrapper.get().sendCommand(stringBuilder.toString());
-                        messageSender.accept(commandSuccessMessage);
-                    });
+                    processWrapper.get().sendCommand(stringBuilder.toString());
+                    messageSender.accept(commandSuccessMessage);
+                });
             return;
         }
 
@@ -209,21 +209,21 @@ public final class InternalReformCloudCommand {
             }
 
             ExecutorAPI.getInstance()
-                    .getNodeInformationProvider()
-                    .getNodeInformationAsync(Embedded.getInstance().getCurrentProcessInformation().getProcessDetail().getParentUniqueID())
-                    .onComplete(nodeProcessWrapper -> {
-                        if (!nodeProcessWrapper.isPresent()) {
-                            messageSender.accept(prefix + "§cAn internal error occurred");
-                            return;
-                        }
+                .getNodeInformationProvider()
+                .getNodeInformationAsync(Embedded.getInstance().getCurrentProcessInformation().getProcessDetail().getParentUniqueID())
+                .onComplete(nodeProcessWrapper -> {
+                    if (!nodeProcessWrapper.isPresent()) {
+                        messageSender.accept(prefix + "§cAn internal error occurred");
+                        return;
+                    }
 
-                        nodeProcessWrapper.get().sendCommandLineAsync(stringBuilder.toString()).onComplete(result -> {
-                            for (String s : result) {
-                                messageSender.accept("§7" + s);
-                            }
-                        });
-                        messageSender.accept(commandSuccessMessage);
+                    nodeProcessWrapper.get().sendCommandLineAsync(stringBuilder.toString()).onComplete(result -> {
+                        for (String s : result) {
+                            messageSender.accept("§7" + s);
+                        }
                     });
+                    messageSender.accept(commandSuccessMessage);
+                });
             return;
         }
 

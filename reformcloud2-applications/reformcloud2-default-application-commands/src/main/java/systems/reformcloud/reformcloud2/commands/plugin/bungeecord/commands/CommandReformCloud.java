@@ -43,11 +43,11 @@ public class CommandReformCloud extends Command {
     public void execute(CommandSender commandSender, String[] strings) {
         String prefix = Embedded.getInstance().getIngameMessages().getPrefix();
         InternalReformCloudCommand.execute(
-                message -> commandSender.sendMessage(TextComponent.fromLegacyText(message)),
-                strings,
-                prefix.endsWith(" ") ? prefix : prefix + " ",
-                this.getCommandSuccessMessage(),
-                super.getName()
+            message -> commandSender.sendMessage(TextComponent.fromLegacyText(message)),
+            strings,
+            prefix.endsWith(" ") ? prefix : prefix + " ",
+            this.getCommandSuccessMessage(),
+            super.getName()
         );
     }
 

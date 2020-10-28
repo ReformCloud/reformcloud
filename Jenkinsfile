@@ -3,7 +3,7 @@ pipeline {
     agent any
 
     tools {
-        jdk "1.8.0_222"
+        jdk "11.0.8"
     }
 
     options {
@@ -101,12 +101,12 @@ pipeline {
 
         stage('Archive') {
             steps {
-                archiveArtifacts artifacts: 'ReformCloud2.zip'
-                archiveArtifacts artifacts: 'ReformCloud2-Applications.zip'
-                archiveArtifacts artifacts: 'ReformCloud2-Plugins.zip'
-                archiveArtifacts artifacts: 'reformcloud2-runner/target/runner.jar'
-                archiveArtifacts artifacts: 'reformcloud2-node/target/executor.jar'
-                archiveArtifacts artifacts: 'reformcloud2-embedded/target/embedded.jar'
+                archiveArtifacts artifacts: 'ReformCloud2.zip', fingerprint: true
+                archiveArtifacts artifacts: 'ReformCloud2-Applications.zip', fingerprint: true
+                archiveArtifacts artifacts: 'ReformCloud2-Plugins.zip', fingerprint: true
+                archiveArtifacts artifacts: 'reformcloud2-runner/target/runner.jar', fingerprint: true
+                archiveArtifacts artifacts: 'reformcloud2-node/target/executor.jar', fingerprint: true
+                archiveArtifacts artifacts: 'reformcloud2-embedded/target/embedded.jar', fingerprint: true
             }
         }
     }

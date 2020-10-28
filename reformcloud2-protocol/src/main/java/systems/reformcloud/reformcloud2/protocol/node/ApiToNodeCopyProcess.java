@@ -37,6 +37,11 @@ import java.util.UUID;
 
 public class ApiToNodeCopyProcess extends ProtocolPacket {
 
+    private UUID processUniqueId;
+    private String templateGroup;
+    private String templateName;
+    private String templateBackend;
+
     public ApiToNodeCopyProcess() {
     }
 
@@ -47,11 +52,6 @@ public class ApiToNodeCopyProcess extends ProtocolPacket {
         this.templateBackend = templateBackend;
     }
 
-    private UUID processUniqueId;
-    private String templateGroup;
-    private String templateName;
-    private String templateBackend;
-
     @Override
     public int getId() {
         return NetworkUtil.EMBEDDED_BUS + 86;
@@ -60,7 +60,7 @@ public class ApiToNodeCopyProcess extends ProtocolPacket {
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(this.processUniqueId)
-                .ifPresent(wrapper -> wrapper.copy(this.templateGroup, this.templateName, this.templateBackend));
+            .ifPresent(wrapper -> wrapper.copy(this.templateGroup, this.templateName, this.templateBackend));
     }
 
     @Override

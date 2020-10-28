@@ -52,16 +52,16 @@ public class VelocityCommandConfigHandler extends CommandConfigHandler {
         if (commandsConfig.isLeaveCommandEnabled() && commandsConfig.getLeaveCommands().size() > 0) {
             this.commandLeave = new CommandLeave(commandsConfig.getLeaveCommands());
             this.proxyServer.getCommandManager().register(
-                    this.forAliases(commandsConfig.getLeaveCommands().toArray(new String[0])),
-                    this.commandLeave
+                this.forAliases(commandsConfig.getLeaveCommands().toArray(new String[0])),
+                this.commandLeave
             );
         }
 
         if (commandsConfig.isReformCloudCommandEnabled() && commandsConfig.getReformCloudCommands().size() > 0) {
             this.commandReformCloud = new CommandReformCloud(commandsConfig.getReformCloudCommands());
             this.proxyServer.getCommandManager().register(
-                    this.forAliases(commandsConfig.getReformCloudCommands().toArray(new String[0])),
-                    this.commandReformCloud
+                this.forAliases(commandsConfig.getReformCloudCommands().toArray(new String[0])),
+                this.commandReformCloud
             );
         }
     }

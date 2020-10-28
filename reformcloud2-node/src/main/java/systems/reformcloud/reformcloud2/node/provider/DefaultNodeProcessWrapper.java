@@ -42,11 +42,11 @@ import java.util.concurrent.TimeUnit;
 
 public class DefaultNodeProcessWrapper implements NodeProcessWrapper {
 
-    DefaultNodeProcessWrapper(@NotNull NodeInformation nodeInformation) {
+    protected NodeInformation nodeInformation;
+
+    protected DefaultNodeProcessWrapper(@NotNull NodeInformation nodeInformation) {
         this.nodeInformation = nodeInformation;
     }
-
-    protected NodeInformation nodeInformation;
 
     @NotNull
     @Override
@@ -63,8 +63,8 @@ public class DefaultNodeProcessWrapper implements NodeProcessWrapper {
         }
 
         Packet packet = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class)
-                .sendPacketQuery(channel.get(), new NodeToNodeRequestNodeInformationUpdate())
-                .getUninterruptedly(TimeUnit.SECONDS, 5);
+            .sendPacketQuery(channel.get(), new NodeToNodeRequestNodeInformationUpdate())
+            .getUninterruptedly(TimeUnit.SECONDS, 5);
         if (!(packet instanceof NodeToNodeRequestNodeInformationUpdateResult)) {
             return Optional.empty();
         }
@@ -81,8 +81,8 @@ public class DefaultNodeProcessWrapper implements NodeProcessWrapper {
         }
 
         Packet packet = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class)
-                .sendPacketQuery(channel.get(), new NodeToNodeProcessCommand(commandLine))
-                .getUninterruptedly(TimeUnit.SECONDS, 5);
+            .sendPacketQuery(channel.get(), new NodeToNodeProcessCommand(commandLine))
+            .getUninterruptedly(TimeUnit.SECONDS, 5);
         if (!(packet instanceof NodeToNodeProcessCommandResult)) {
             return Collections.emptyList();
         }
@@ -99,8 +99,8 @@ public class DefaultNodeProcessWrapper implements NodeProcessWrapper {
         }
 
         Packet packet = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class)
-                .sendPacketQuery(channel.get(), new NodeToNodeTabCompleteCommand(commandLine))
-                .getUninterruptedly(TimeUnit.SECONDS, 5);
+            .sendPacketQuery(channel.get(), new NodeToNodeTabCompleteCommand(commandLine))
+            .getUninterruptedly(TimeUnit.SECONDS, 5);
         if (!(packet instanceof NodeToNodeTabCompleteCommandResult)) {
             return Collections.emptyList();
         }

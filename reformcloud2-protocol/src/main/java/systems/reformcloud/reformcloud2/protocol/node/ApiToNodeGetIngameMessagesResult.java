@@ -32,14 +32,14 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryR
 
 public class ApiToNodeGetIngameMessagesResult extends QueryResultPacket {
 
+    private IngameMessages messages;
+
     public ApiToNodeGetIngameMessagesResult() {
     }
 
     public ApiToNodeGetIngameMessagesResult(IngameMessages messages) {
         this.messages = messages;
     }
-
-    private IngameMessages messages;
 
     public IngameMessages getMessages() {
         return this.messages;

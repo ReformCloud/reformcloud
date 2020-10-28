@@ -39,9 +39,9 @@ public class TemplateBackendApplication extends Application {
             DependencyFileLoader.collectDependenciesFromFile(TemplateBackendApplication.class.getClassLoader().getResourceAsStream("dependencies.txt"))
         );
 
-        FTPTemplateBackend.load(this.getDataFolder().getPath());
-        SFTPTemplateBackend.load(this.getDataFolder().getPath());
-        URLTemplateBackend.load(this.getDataFolder().getPath());
+        FTPTemplateBackend.load(this.getDataDirectory().resolve("ftp.json"));
+        SFTPTemplateBackend.load(this.getDataDirectory().resolve("sftp.json"));
+        URLTemplateBackend.load(this.getDataDirectory().resolve("url.json"));
     }
 
     @Override

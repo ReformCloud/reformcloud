@@ -35,14 +35,14 @@ import java.util.Collection;
 
 public class ApiToNodeGetAllTableEntriesResult extends QueryResultPacket {
 
+    private Collection<JsonConfiguration> all;
+
     public ApiToNodeGetAllTableEntriesResult() {
     }
 
     public ApiToNodeGetAllTableEntriesResult(Collection<JsonConfiguration> all) {
         this.all = all;
     }
-
-    private Collection<JsonConfiguration> all;
 
     public Collection<JsonConfiguration> getAll() {
         return this.all;

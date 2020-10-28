@@ -43,12 +43,12 @@ public final class CommandCluster implements Command {
 
     private void describeCommandToSender(@NotNull CommandSender source) {
         source.sendMessages((
-                "cluster list                      | Lists all connected nodes and all other nodes from the config\n" +
-                        "cluster me                        | Shows information about the current node\n" +
-                        "cluster head                      | Shows information about the head node\n" +
-                        "cluster info <name>               | Shows information about the specified node\n" +
-                        "cluster create <ip/domain> <port> | Creates a new node in the config for the specified host and port\n" +
-                        "cluster delete <ip/domain>        | Deletes the specified node from the config"
+            "cluster list                      | Lists all connected nodes and all other nodes from the config\n" +
+                "cluster me                        | Shows information about the current node\n" +
+                "cluster head                      | Shows information about the head node\n" +
+                "cluster info <name>               | Shows information about the specified node\n" +
+                "cluster create <ip/domain> <port> | Creates a new node in the config for the specified host and port\n" +
+                "cluster delete <ip/domain>        | Deletes the specified node from the config"
         ).split("\n"));
     }
 
@@ -118,8 +118,8 @@ public final class CommandCluster implements Command {
             }
 
             NetworkAddress address = Streams.filter(
-                    NodeExecutor.getInstance().getNodeConfig().getClusterNodes(),
-                    e -> e.getHost().equals(ip.trim())
+                NodeExecutor.getInstance().getNodeConfig().getClusterNodes(),
+                e -> e.getHost().equals(ip.trim())
             );
             if (address == null) {
                 sender.sendMessage(LanguageManager.get("command-cluster-node-not-exists", ip));
@@ -167,11 +167,11 @@ public final class CommandCluster implements Command {
 
     private boolean existsNode(@NotNull String host) {
         return NodeExecutor
-                .getInstance()
-                .getNodeConfig()
-                .getClusterNodes()
-                .stream()
-                .anyMatch(e -> e.getHost().equals(host.trim()));
+            .getInstance()
+            .getNodeConfig()
+            .getClusterNodes()
+            .stream()
+            .anyMatch(e -> e.getHost().equals(host.trim()));
     }
 
     private void showInformationAboutToSender(@NotNull CommandSender source, @NotNull NodeInformation information) {

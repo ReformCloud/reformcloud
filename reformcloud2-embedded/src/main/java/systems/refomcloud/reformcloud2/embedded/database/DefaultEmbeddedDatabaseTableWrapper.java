@@ -37,11 +37,11 @@ import java.util.Optional;
 
 public class DefaultEmbeddedDatabaseTableWrapper implements DatabaseTableWrapper {
 
+    private final String tableName;
+
     public DefaultEmbeddedDatabaseTableWrapper(String tableName) {
         this.tableName = tableName;
     }
-
-    private final String tableName;
 
     @Override
     public void insert(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration data) {
@@ -62,38 +62,38 @@ public class DefaultEmbeddedDatabaseTableWrapper implements DatabaseTableWrapper
     @Override
     public Optional<JsonConfiguration> get(@NotNull String key, @NotNull String id) {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetDatabaseDocument(this.tableName, key, id))
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetDatabaseDocumentResult) {
-                        return ((ApiToNodeGetDatabaseDocumentResult) result).getResult();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetDatabaseDocumentResult) {
+                    return ((ApiToNodeGetDatabaseDocumentResult) result).getResult();
+                }
 
-                    return new JsonConfiguration();
-                });
+                return new JsonConfiguration();
+            });
     }
 
     @NotNull
     @Override
     public @UnmodifiableView Collection<String> getEntryNames() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetTableEntryNames(this.tableName))
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetTableEntryNamesResult) {
-                        return ((ApiToNodeGetTableEntryNamesResult) result).getNames();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetTableEntryNamesResult) {
+                    return ((ApiToNodeGetTableEntryNamesResult) result).getNames();
+                }
 
-                    return new ArrayList<String>();
-                }).orElseGet(ArrayList::new);
+                return new ArrayList<String>();
+            }).orElseGet(ArrayList::new);
     }
 
     @Override
     public long count() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetDatabaseEntryCount(this.tableName))
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetDatabaseEntryCountResult) {
-                        return ((ApiToNodeGetDatabaseEntryCountResult) result).getCount();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetDatabaseEntryCountResult) {
+                    return ((ApiToNodeGetDatabaseEntryCountResult) result).getCount();
+                }
 
-                    return 0L;
-                }).orElseGet(() -> 0L);
+                return 0L;
+            }).orElseGet(() -> 0L);
     }
 
     @Override
@@ -105,24 +105,24 @@ public class DefaultEmbeddedDatabaseTableWrapper implements DatabaseTableWrapper
     @Override
     public @UnmodifiableView Collection<JsonConfiguration> getAll() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetAllTableEntries(this.tableName))
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetAllTableEntriesResult) {
-                        return ((ApiToNodeGetAllTableEntriesResult) result).getAll();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetAllTableEntriesResult) {
+                    return ((ApiToNodeGetAllTableEntriesResult) result).getAll();
+                }
 
-                    return new ArrayList<JsonConfiguration>();
-                }).orElseGet(ArrayList::new);
+                return new ArrayList<JsonConfiguration>();
+            }).orElseGet(ArrayList::new);
     }
 
     @Override
     public boolean has(@NotNull String key) {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeHasTableDocument(this.tableName, key))
-                .map(result -> {
-                    if (result instanceof ApiToNodeHasTableDocumentResult) {
-                        return ((ApiToNodeHasTableDocumentResult) result).has();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeHasTableDocumentResult) {
+                    return ((ApiToNodeHasTableDocumentResult) result).has();
+                }
 
-                    return false;
-                }).orElseGet(() -> false);
+                return false;
+            }).orElseGet(() -> false);
     }
 }

@@ -14,8 +14,6 @@ class DefaultServiceRegistryTest {
     @Test
     @Order(1)
     void testSetProvider() {
-        this.serviceRegistry.setProvider(AService.class, new AService());
-        Assertions.assertEquals(1, this.serviceRegistry.getRegisteredServices().size());
         this.serviceRegistry.setProvider(AService.class, new AService(), true);
         Assertions.assertEquals(1, this.serviceRegistry.getRegisteredServices().size());
         Assertions.assertThrows(ProviderImmutableException.class, () -> this.serviceRegistry.setProvider(AService.class, new AService()));

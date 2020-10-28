@@ -26,13 +26,16 @@ package systems.reformcloud.reformcloud2.executor.api.io;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -43,8 +46,8 @@ public final class IOUtils {
         throw new UnsupportedOperationException();
     }
 
-    public static void deleteFile(File file) {
-        deleteFile(file.toPath());
+    public static void deleteFile(String path) {
+        deleteFile(Paths.get(path));
     }
 
     public static void deleteFile(Path file) {
@@ -56,9 +59,9 @@ public final class IOUtils {
     }
 
     public static void createFile(Path path) {
-        if (!Files.exists(path)) {
+        if (Files.notExists(path)) {
             Path parent = path.getParent();
-            if (parent != null && !Files.exists(parent)) {
+            if (parent != null && Files.notExists(parent)) {
                 try {
                     Files.createDirectories(parent);
                     Files.createFile(path);
@@ -69,8 +72,12 @@ public final class IOUtils {
         }
     }
 
-    public static void rename(File file, String newName) {
-        Conditions.isTrue(file.renameTo(new File(newName)));
+    public static void rename(Path file, String newName) {
+        try {
+            Files.move(file, file.resolveSibling(newName));
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
     }
 
     public static void createDirectory(@Nullable Path path) {
@@ -85,16 +92,11 @@ public final class IOUtils {
         }
     }
 
-    public static void doCopy(String from, String target) {
-        try (FileInputStream fileInputStream = new FileInputStream(from);
-             FileOutputStream fileOutputStream = new FileOutputStream(target)) {
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = fileInputStream.read(buffer)) > 0) {
-                fileOutputStream.write(buffer, 0, length);
-            }
-        } catch (final IOException ex) {
-            ex.printStackTrace();
+    public static void doCopy(String from, Path target) {
+        try (InputStream inputStream = Files.newInputStream(Paths.get(from))) {
+            doCopy(inputStream, target, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
     }
 
@@ -111,19 +113,51 @@ public final class IOUtils {
     }
 
     public static void deleteDirectory(Path dirPath) {
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(dirPath)) {
-            for (Path path : directoryStream) {
-                if (Files.isDirectory(path)) {
-                    deleteDirectory(path);
-                } else {
-                    deleteFile(path);
-                }
-            }
+        try {
+            doDeleteDirectory(dirPath);
         } catch (IOException exception) {
             exception.printStackTrace();
         }
+    }
 
-        deleteFile(dirPath);
+    public static void deleteDirectorySilently(Path dirPath) {
+        try {
+            doDeleteDirectory(dirPath);
+        } catch (IOException ignored) {
+        }
+    }
+
+    private static void doDeleteDirectory(Path dirPath) throws IOException {
+        Collection<IOException> exceptions = new ArrayList<>();
+        deleteDirectoryChecked(dirPath, exceptions);
+
+        if (!exceptions.isEmpty()) {
+            throw new IOException("Caught " + exceptions.size() + " exceptions: " + exceptions.stream().map(IOException::getMessage).collect(Collectors.joining(", ")));
+        }
+    }
+
+    private static void deleteDirectoryChecked(Path dir, Collection<IOException> exceptions) {
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(dir)) {
+            for (Path path : directoryStream) {
+                if (Files.isDirectory(path)) {
+                    deleteDirectoryChecked(path, exceptions);
+                } else {
+                    try {
+                        Files.delete(path);
+                    } catch (IOException exception) {
+                        exceptions.add(exception);
+                    }
+                }
+            }
+        } catch (IOException exception) {
+            exceptions.add(exception);
+        }
+
+        try {
+            Files.delete(dir);
+        } catch (IOException exception) {
+            exceptions.add(exception);
+        }
     }
 
     public static void recreateDirectory(Path path) {
@@ -131,7 +165,7 @@ public final class IOUtils {
             if (path.toFile().isDirectory()) {
                 deleteDirectory(path);
             } else {
-                deleteFile(path.toFile());
+                deleteFile(path);
             }
         }
 
@@ -175,7 +209,7 @@ public final class IOUtils {
                     Path targetFile = Paths.get(target.toString(), path.relativize(file).toString());
                     Path parent = targetFile.getParent();
 
-                    if (parent != null && !Files.exists(parent)) {
+                    if (parent != null && Files.notExists(parent)) {
                         Files.createDirectories(parent);
                     }
 
@@ -196,23 +230,22 @@ public final class IOUtils {
         }
     }
 
-    public static void unZip(File zippedPath, String destinationPath) {
-        byte[] buffer = new byte[0x1FFF];
-        File destDir = new File(destinationPath);
-        if (!destDir.exists()) {
-            createDirectory(destDir.toPath());
+    public static void unZip(Path zippedPath, Path destinationPath) {
+        if (Files.notExists(destinationPath)) {
+            createDirectory(destinationPath);
+        } else if (!Files.isDirectory(destinationPath)) {
+            throw new UnsupportedOperationException("Cannot unzip to non-directory target");
         }
 
-        try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zippedPath))) {
+        byte[] buffer = new byte[8191];
+        try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(zippedPath), StandardCharsets.UTF_8)) {
             ZipEntry zipEntry;
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-                File newFile = new File(destinationPath + "/" + zipEntry.getName());
+                Path target = destinationPath.resolve(zipEntry.getName());
                 if (zipEntry.isDirectory()) {
-                    createDirectory(newFile.toPath());
+                    createDirectory(target);
                 } else {
-                    createFile(newFile.toPath());
-
-                    try (OutputStream outputStream = Files.newOutputStream(newFile.toPath())) {
+                    try (OutputStream outputStream = Files.newOutputStream(target)) {
                         int length;
                         while ((length = zipInputStream.read(buffer)) != -1) {
                             outputStream.write(buffer, 0, length);
@@ -222,8 +255,8 @@ public final class IOUtils {
 
                 zipInputStream.closeEntry();
             }
-        } catch (final IOException ex) {
-            ex.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
     }
 }

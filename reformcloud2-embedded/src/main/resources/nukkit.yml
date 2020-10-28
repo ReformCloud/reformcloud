@@ -2,7 +2,7 @@ name: 'ReformCloud2NukkitExecutor'
 author: 'derklaro'
 version: '2'
 main: systems.refomcloud.reformcloud2.embedded.plugin.nukkit.NukkitLauncher
-api: ['1.0.0']
+api: [ '1.0.0' ]
 
 load: STARTUP
 # Additional

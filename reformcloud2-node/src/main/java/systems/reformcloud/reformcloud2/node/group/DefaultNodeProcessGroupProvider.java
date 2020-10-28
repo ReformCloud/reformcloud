@@ -44,17 +44,17 @@ import java.util.Optional;
 
 public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
 
+    private final Collection<ProcessGroup> processGroups;
+    private final FileRegistry fileRegistry;
+
     public DefaultNodeProcessGroupProvider(@NotNull String registryFolder) {
         this.fileRegistry = new DefaultFileRegistry(registryFolder);
         this.processGroups = this.fileRegistry.readKeys(
-                e -> e.get("key", ProcessGroup.TYPE),
-                path -> System.err.println(LanguageManager.get("startup-unable-to-read-file",
-                        "Process-Group", path.toAbsolutePath().toString()))
+            e -> e.get("key", ProcessGroup.TYPE),
+            path -> System.err.println(LanguageManager.get("startup-unable-to-read-file",
+                "Process-Group", path.toAbsolutePath().toString()))
         );
     }
-
-    private final Collection<ProcessGroup> processGroups;
-    private final FileRegistry fileRegistry;
 
     @NotNull
     @Override
@@ -137,9 +137,9 @@ public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
     public void reload() {
         this.processGroups.clear();
         this.processGroups.addAll(this.fileRegistry.readKeys(
-                e -> e.get("key", ProcessGroup.TYPE),
-                path -> System.err.println(LanguageManager.get("startup-unable-to-read-file",
-                        "Process-Group", path.toAbsolutePath().toString()))
+            e -> e.get("key", ProcessGroup.TYPE),
+            path -> System.err.println(LanguageManager.get("startup-unable-to-read-file",
+                "Process-Group", path.toAbsolutePath().toString()))
         ));
     }
 }

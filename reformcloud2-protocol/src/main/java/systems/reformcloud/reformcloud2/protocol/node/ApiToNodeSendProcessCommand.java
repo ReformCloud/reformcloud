@@ -37,6 +37,9 @@ import java.util.UUID;
 
 public class ApiToNodeSendProcessCommand extends ProtocolPacket {
 
+    private UUID processUniqueId;
+    private String commandLine;
+
     public ApiToNodeSendProcessCommand() {
     }
 
@@ -44,9 +47,6 @@ public class ApiToNodeSendProcessCommand extends ProtocolPacket {
         this.processUniqueId = information.getProcessDetail().getProcessUniqueID();
         this.commandLine = commandLine;
     }
-
-    private UUID processUniqueId;
-    private String commandLine;
 
     @Override
     public int getId() {

@@ -42,7 +42,7 @@ public final class RunnerPremain {
         }
 
         Path path = Paths.get(System.getProperty("reformcloud.lib.path") + "/reformcloud/.bin/libs/");
-        if (!Files.exists(path) || !Files.isDirectory(path)) {
+        if (Files.notExists(path) || !Files.isDirectory(path)) {
             throw new RuntimeException("Unable to parse runtime libs path");
         }
 

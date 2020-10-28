@@ -35,17 +35,6 @@ import java.util.Objects;
 
 public final class StartupConfiguration implements SerializableObject {
 
-    public static StartupConfiguration createDefault() {
-        return new StartupConfiguration(
-            -1,
-            1,
-            0,
-            "java",
-            true,
-            Collections.emptyList()
-        );
-    }
-
     private int maxOnlineProcesses;
     private int minOnlineProcesses;
     private int alwaysPreparedProcesses;
@@ -84,6 +73,17 @@ public final class StartupConfiguration implements SerializableObject {
         this.automaticStartupConfiguration = automaticStartupConfiguration;
         this.searchBestClientAlone = searchBestClientAlone;
         this.useOnlyTheseClients = useOnlyTheseClients;
+    }
+
+    public static StartupConfiguration createDefault() {
+        return new StartupConfiguration(
+            -1,
+            1,
+            0,
+            "java",
+            true,
+            Collections.emptyList()
+        );
     }
 
     public int getMaxOnlineProcesses() {

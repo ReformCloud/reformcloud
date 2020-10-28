@@ -5,7 +5,7 @@ main: systems.reformcloud.reformcloud2.signs.nukkit.NukkitPlugin
 
 load: STARTUP
 
-api: ['1.0.0']
+api: [ '1.0.0' ]
 depend:
   - ReformCloud2NukkitExecutor
 

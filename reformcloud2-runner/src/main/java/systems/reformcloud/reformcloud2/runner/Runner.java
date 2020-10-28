@@ -54,7 +54,7 @@ public final class Runner {
     private final Updater cloudVersionUpdater;
     private final String[] args;
 
-    Runner(@NotNull String[] args) {
+    protected Runner(@NotNull String[] args) {
         this.interpreter
             .registerInterpreterCommand(new CheckForUpdatesCommand(this))
             .registerInterpreterCommand(new CheckIfDevModeCommand())
@@ -74,16 +74,16 @@ public final class Runner {
             .registerInterpreterVariable(new SetupRequiredVariable());
 
         this.applicationsUpdater = new ApplicationsUpdater(RunnerUtils.APP_UPDATE_FOLDER);
-        this.cloudVersionUpdater = new CloudVersionUpdater(RunnerUtils.GLOBAL_SCRIPT_FILE);
+        this.cloudVersionUpdater = new CloudVersionUpdater(RunnerUtils.GLOBAL_REFORM_SCRIPT_FILE);
         this.args = args;
     }
 
     public void bootstrap() {
-        if (!RunnerUtils.GLOBAL_SCRIPT_FILE.exists()) {
-            RunnerUtils.copyCompiledFile("global.reformscript", RunnerUtils.GLOBAL_SCRIPT_FILE);
+        if (Files.notExists(RunnerUtils.GLOBAL_REFORM_SCRIPT_FILE)) {
+            RunnerUtils.copyCompiledFile("global.reformscript", RunnerUtils.GLOBAL_REFORM_SCRIPT_FILE);
         }
 
-        InterpretedReformScript global = this.interpreter.interpret(RunnerUtils.GLOBAL_SCRIPT_FILE);
+        InterpretedReformScript global = this.interpreter.interpret(RunnerUtils.GLOBAL_REFORM_SCRIPT_FILE);
         if (global == null) {
             throw new RuntimeException("Unable to interpret global reform script! Please recheck the syntax");
         }

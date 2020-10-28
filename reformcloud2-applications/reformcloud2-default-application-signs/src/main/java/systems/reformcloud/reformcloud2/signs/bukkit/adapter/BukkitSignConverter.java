@@ -66,25 +66,25 @@ public class BukkitSignConverter implements SignConverter<Sign> {
         }
 
         return new Location(
-                Bukkit.getWorld(location.getWorld()),
-                location.getX(),
-                location.getY(),
-                location.getZ(),
-                location.getYaw(),
-                location.getPitch()
+            Bukkit.getWorld(location.getWorld()),
+            location.getX(),
+            location.getY(),
+            location.getZ(),
+            location.getYaw(),
+            location.getPitch()
         );
     }
 
     private CloudLocation accumulate(Location location) {
         Conditions.isTrue(location.getWorld() != null);
         return new CloudLocation(
-                location.getWorld().getName(),
-                Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
-                location.getX(),
-                location.getY(),
-                location.getZ(),
-                location.getYaw(),
-                location.getPitch()
+            location.getWorld().getName(),
+            Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
+            location.getX(),
+            location.getY(),
+            location.getZ(),
+            location.getYaw(),
+            location.getPitch()
         );
     }
 }

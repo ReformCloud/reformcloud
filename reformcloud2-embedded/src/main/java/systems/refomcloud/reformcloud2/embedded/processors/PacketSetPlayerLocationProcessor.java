@@ -33,6 +33,6 @@ public class PacketSetPlayerLocationProcessor extends PlayerApiToNodePacketProce
     @Override
     public void process(@NotNull NetworkChannel channel, @NotNull PacketSetPlayerLocation packet) {
         this.getPlayerExecutor()
-                .executeTeleport(packet.getUniqueId(), packet.getWorld(), packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch());
+            .executeTeleport(packet.getUniqueId(), packet.getWorld(), packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch());
     }
 }

@@ -37,11 +37,11 @@ import systems.reformcloud.reformcloud2.tab.ReformCloudTabPlugin;
 
 public class CloudTabListeners {
 
+    private final Plugin plugin;
+
     public CloudTabListeners(Plugin plugin) {
         this.plugin = plugin;
     }
-
-    private final Plugin plugin;
 
     @Listener
     public void handle(final @NotNull PermissionUserUpdateEvent event) {

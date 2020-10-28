@@ -50,7 +50,12 @@ public class DefaultServiceRegistry implements ServiceRegistry {
             throw new ProviderImmutableException(service);
         }
 
-        this.entries.put(service, new DefaultServiceRegistryEntry<>(service, provider, immutable, needsReplacement));
+        this.entries.put(service, new DefaultServiceRegistryEntry<>(
+            service,
+            provider,
+            current == null ? immutable : current.isImmutable(),
+            current == null ? needsReplacement : current.needsReplacement()
+        ));
     }
 
     @NotNull
@@ -103,6 +108,10 @@ public class DefaultServiceRegistry implements ServiceRegistry {
             throw new ProviderNeedsReplacementException(service);
         }
 
-        this.entries.remove(service);
+        if (replacement == null) {
+            this.entries.remove(service);
+        } else {
+            this.entries.put(service, new DefaultServiceRegistryEntry<>(service, replacement, entry.isImmutable(), entry.needsReplacement()));
+        }
     }
 }

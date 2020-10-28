@@ -36,14 +36,14 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodeGetPlayerUniqueIdFromName extends ProtocolPacket {
 
+    private String playerName;
+
     public ApiToNodeGetPlayerUniqueIdFromName() {
     }
 
     public ApiToNodeGetPlayerUniqueIdFromName(String playerName) {
         this.playerName = playerName;
     }
-
-    private String playerName;
 
     @Override
     public int getId() {

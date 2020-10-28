@@ -32,11 +32,11 @@ import java.util.regex.Pattern;
 
 public final class PlaceHolderUtil {
 
+    private static final Pattern PATTERN = Pattern.compile(".*?(%sign_layout_place_holder_(\\w+)%).*?", Pattern.CASE_INSENSITIVE);
+
     private PlaceHolderUtil() {
         throw new UnsupportedOperationException();
     }
-
-    private static final Pattern PATTERN = Pattern.compile(".*?(%sign_layout_place_holder_(\\w+)%).*?", Pattern.CASE_INSENSITIVE);
 
     public static <T> T format(String line, String group, ProcessInformation processInformation, Function<String, T> colorize) {
         line = line.replace("%group%", group);
@@ -51,7 +51,7 @@ public final class PlaceHolderUtil {
         line = line.replace("%online%", Integer.toString(processInformation.getProcessPlayerManager().getOnlineCount()));
         line = line.replace("%max%", Integer.toString(processInformation.getProcessDetail().getMaxPlayers()));
         line = line.replace("%whitelist%",
-                Boolean.toString(processInformation.getProcessGroup().getPlayerAccessConfiguration().isJoinOnlyPerPermission()));
+            Boolean.toString(processInformation.getProcessGroup().getPlayerAccessConfiguration().isJoinOnlyPerPermission()));
         line = line.replace("%lobby%", Boolean.toString(processInformation.getProcessGroup().isCanBeUsedAsLobby()));
         line = line.replace("%static%", Boolean.toString(processInformation.getProcessGroup().isCanBeUsedAsLobby()));
         line = line.replace("%motd%", processInformation.getProcessDetail().getMessageOfTheDay());

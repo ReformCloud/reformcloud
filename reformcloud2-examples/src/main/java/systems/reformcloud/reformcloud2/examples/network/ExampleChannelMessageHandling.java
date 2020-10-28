@@ -35,8 +35,8 @@ public class ExampleChannelMessageHandling {
     // Sends a channel message to all nodes and processes
     public static void sendCustomChannelMessage() {
         ExecutorAPI.getInstance().getChannelMessageProvider().publishChannelMessage(
-                "testChannel", // The name of the channel which is accessible for better identifying of the message
-                new JsonConfiguration().add("extra", "hello") // The data which should get sent to the network components
+            "testChannel", // The name of the channel which is accessible for better identifying of the message
+            new JsonConfiguration().add("extra", "hello") // The data which should get sent to the network components
         );
     }
 

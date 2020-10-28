@@ -88,6 +88,10 @@ public final class Template implements Nameable, SerializableObject {
         return this.priority;
     }
 
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
     @NotNull
     @Override
     public String getName() {
@@ -98,8 +102,16 @@ public final class Template implements Nameable, SerializableObject {
         return this.global;
     }
 
+    public void setGlobal(boolean global) {
+        this.global = global;
+    }
+
     public boolean isAutoReleaseOnClose() {
         return this.autoReleaseOnClose;
+    }
+
+    public void setAutoReleaseOnClose(boolean autoReleaseOnClose) {
+        this.autoReleaseOnClose = autoReleaseOnClose;
     }
 
     @NotNull
@@ -107,9 +119,17 @@ public final class Template implements Nameable, SerializableObject {
         return this.backend;
     }
 
+    public void setBackend(String backend) {
+        this.backend = backend;
+    }
+
     @Nullable
     public String getServerNameSplitter() {
         return this.serverNameSplitter;
+    }
+
+    public void setServerNameSplitter(String serverNameSplitter) {
+        this.serverNameSplitter = serverNameSplitter;
     }
 
     @NotNull
@@ -122,32 +142,12 @@ public final class Template implements Nameable, SerializableObject {
         return this.version;
     }
 
-    public boolean isServer() {
-        return this.version.isServer();
-    }
-
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
-
-    public void setGlobal(boolean global) {
-        this.global = global;
-    }
-
-    public void setAutoReleaseOnClose(boolean autoReleaseOnClose) {
-        this.autoReleaseOnClose = autoReleaseOnClose;
-    }
-
-    public void setBackend(String backend) {
-        this.backend = backend;
-    }
-
-    public void setServerNameSplitter(String serverNameSplitter) {
-        this.serverNameSplitter = serverNameSplitter;
-    }
-
     public void setVersion(Version version) {
         this.version = version;
+    }
+
+    public boolean isServer() {
+        return this.version.isServer();
     }
 
     /* Needs null check, added in version 2.0.4 */

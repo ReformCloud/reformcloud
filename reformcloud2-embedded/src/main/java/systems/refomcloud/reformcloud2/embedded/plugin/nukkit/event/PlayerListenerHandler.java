@@ -45,17 +45,17 @@ public final class PlayerListenerHandler implements Listener {
         if (!Embedded.getInstance().isReady()) {
             event.setCancelled(true);
             event.setKickMessage(NukkitExecutor.getInstance().getIngameMessages().format(
-                    NukkitExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
+                NukkitExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
             ));
             return;
         }
 
         Duo<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
-                event.getPlayer()::hasPermission,
-                NukkitExecutor.getInstance().getIngameMessages(),
-                null,
-                event.getPlayer().getUniqueId(),
-                event.getPlayer().getName()
+            event.getPlayer()::hasPermission,
+            NukkitExecutor.getInstance().getIngameMessages(),
+            null,
+            event.getPlayer().getUniqueId(),
+            event.getPlayer().getName()
         );
         if (!checked.getFirst() && checked.getSecond() != null) {
             event.setCancelled(true);
@@ -72,8 +72,8 @@ public final class PlayerListenerHandler implements Listener {
 
         Server.getInstance().getScheduler().scheduleTask(NukkitExecutor.getInstance().getPlugin(), () -> {
             if (Server.getInstance().getOnlinePlayers().size() < current.getProcessDetail().getMaxPlayers()
-                    && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-                    && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
                 current.getProcessDetail().setProcessState(ProcessState.READY);
             }
 

@@ -25,8 +25,21 @@
 package systems.reformcloud.reformcloud2.permissions.util;
 
 import org.jetbrains.annotations.NotNull;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
+import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
+import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
+import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
+import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 import systems.reformcloud.reformcloud2.permissions.packets.PacketHelper;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 public final class PermissionPluginUtil {
 
@@ -38,5 +51,61 @@ public final class PermissionPluginUtil {
         PermissionManagement.setup();
         PacketHelper.addPacketHandler();
         then.run();
+    }
+
+    @NotNull
+    public static Collection<PermissionNode> collectPermissionsOfUser(@NotNull PermissionUser permissionUser) {
+        Collection<PermissionNode> permissionNodes = permissionUser.getPermissionNodes()
+            .stream()
+            .filter(PermissionNode::isValid)
+            .collect(Collectors.toCollection(CopyOnWriteArrayList::new));
+        Collection<PermissionNode> groupPerms = permissionUser.getPerGroupPermissions().get(Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName());
+        if (groupPerms != null) {
+            permissionNodes.addAll(groupPerms
+                .stream()
+                .filter(PermissionNode::isValid)
+                .filter(node -> permissionNodes.stream().noneMatch(setNode -> setNode.getActualPermission().equals(node.getActualPermission())))
+                .collect(Collectors.toList()));
+        }
+
+        Set<String> travelledGroups = new HashSet<>();
+        permissionUser.getGroups().stream()
+            .filter(NodeGroup::isValid)
+            .map(group -> PermissionManagement.getInstance().getPermissionGroup(group.getGroupName()).orElse(null))
+            .filter(Objects::nonNull)
+            .forEach(group -> {
+                // we have to recheck because we travel over each group which may has the group as sub-group
+                if (!travelledGroups.contains(group.getName())) {
+                    collectPermissionsOfGroup(group, permissionNodes, travelledGroups);
+                }
+            });
+
+        return permissionNodes;
+    }
+
+    @NotNull
+    public static Collection<PermissionNode> collectPermissionsOfGroup(@NotNull PermissionGroup permissionGroup) {
+        Collection<PermissionNode> permissionNodes = new CopyOnWriteArrayList<>();
+        collectPermissionsOfGroup(permissionGroup, permissionNodes, new HashSet<>());
+        return permissionNodes;
+    }
+
+    private static void collectPermissionsOfGroup(@NotNull PermissionGroup permissionGroup, @NotNull Collection<PermissionNode> permissionNodes, @NotNull Set<String> travelledGroups) {
+        permissionNodes.addAll(permissionGroup.getPermissionNodes()
+            .stream()
+            .filter(PermissionNode::isValid)
+            .filter(node -> permissionNodes.stream().noneMatch(setNode -> setNode.getActualPermission().equals(node.getActualPermission())))
+            .collect(Collectors.toList()));
+        permissionGroup.getSubGroups()
+            .stream()
+            .filter(Streams.negate(travelledGroups::contains))
+            .map(group -> PermissionManagement.getInstance().getPermissionGroup(group).orElse(null))
+            .filter(Objects::nonNull)
+            .forEach(group -> {
+                // we have to recheck because we travel over each group which may has the group as sub-group
+                if (!travelledGroups.contains(group.getName())) {
+                    collectPermissionsOfGroup(group, permissionNodes, travelledGroups);
+                }
+            });
     }
 }

@@ -40,7 +40,10 @@ import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -90,15 +93,14 @@ public final class FTPTemplateBackend implements TemplateBackend {
         });
     }
 
-    public static void load(String basePath) {
-        if (Files.notExists(Paths.get(basePath, "ftp.json"))) {
-            new JsonConfiguration()
-                    .add("config", new FTPConfig(
-                            false, false, "127.0.0.1", 21, "rc", "password", "rc/templates"
-                    )).write(Paths.get(basePath, "ftp.json"));
+    public static void load(Path configPath) {
+        if (Files.notExists(configPath)) {
+            new JsonConfiguration().add("config", new FTPConfig(
+                false, false, "127.0.0.1", 21, "rc", "password", "rc/templates"
+            )).write(configPath);
         }
 
-        FTPConfig config = JsonConfiguration.read(Paths.get(basePath, "ftp.json")).get("config", new TypeToken<FTPConfig>() {
+        FTPConfig config = JsonConfiguration.read(configPath).get("config", new TypeToken<FTPConfig>() {
         });
         if (config == null || !config.isEnabled()) {
             return;
@@ -188,8 +190,8 @@ public final class FTPTemplateBackend implements TemplateBackend {
                 Files.createFile(target);
             }
 
-            try (FileOutputStream fileOutputStream = new FileOutputStream(target.toFile(), false)) {
-                this.ftpClient.retrieveFile(path, fileOutputStream);
+            try (OutputStream outputStream = Files.newOutputStream(target)) {
+                this.ftpClient.retrieveFile(path, outputStream);
             }
         }
 
@@ -204,8 +206,8 @@ public final class FTPTemplateBackend implements TemplateBackend {
         }
 
         return future(() ->
-                Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(this.getName())
-                        && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target))
+            Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(this.getName())
+                && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target))
         );
     }
 
@@ -239,42 +241,28 @@ public final class FTPTemplateBackend implements TemplateBackend {
             return;
         }
 
-        File[] localFiles = current.toFile().listFiles(e -> {
-            String full = e.getAbsolutePath()
-                    .replaceFirst(current.toFile().getAbsolutePath(), "")
-                    .replaceFirst("\\\\", "");
-            return !collection.contains(full);
-        });
-        if (localFiles == null || localFiles.length == 0) {
-            return;
-        }
-
         future(() -> {
-            try {
-                for (File localFile : localFiles) {
-                    this.writeFile(group + "/" + template, localFile);
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(current, path -> !Streams.hasMatch(collection, path::endsWith))) {
+                for (Path path : stream) {
+                    this.writeFile(group + "/" + template, path, collection);
                 }
-            } catch (final IOException ex) {
-                ex.printStackTrace();
+            } catch (IOException exception) {
+                exception.printStackTrace();
             }
         });
     }
 
-    private void writeFile(String path, File local) throws IOException {
-        String remotePath = path + "/" + local.getName();
-        if (local.isDirectory()) {
-            File[] localFiles = local.listFiles();
-            if (localFiles == null || localFiles.length == 0) {
-                return;
-            }
-
+    private void writeFile(String path, Path local, Collection<String> collection) throws IOException {
+        String remotePath = path + "/" + local.getFileName().toString();
+        if (Files.isDirectory(local)) {
             this.makeDirectory(remotePath);
-
-            for (File localFile : localFiles) {
-                this.writeFile(remotePath, localFile);
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(local, p -> !Streams.hasMatch(collection, p::endsWith))) {
+                for (Path file : stream) {
+                    this.writeFile(remotePath, file, collection);
+                }
             }
-        } else if (local.isFile()) {
-            try (InputStream inputStream = new FileInputStream(local)) {
+        } else {
+            try (InputStream inputStream = Files.newInputStream(local)) {
                 this.ftpClient.storeFile(remotePath, inputStream);
             }
         }

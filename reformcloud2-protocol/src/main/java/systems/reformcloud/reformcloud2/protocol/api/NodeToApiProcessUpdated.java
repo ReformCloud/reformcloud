@@ -37,14 +37,14 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class NodeToApiProcessUpdated extends ProtocolPacket {
 
+    private ProcessInformation processInformation;
+
     public NodeToApiProcessUpdated() {
     }
 
     public NodeToApiProcessUpdated(ProcessInformation processInformation) {
         this.processInformation = processInformation;
     }
-
-    private ProcessInformation processInformation;
 
     @Override
     public int getId() {
@@ -54,7 +54,7 @@ public class NodeToApiProcessUpdated extends ProtocolPacket {
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class)
-                .callEvent(new ProcessUpdateEvent(this.processInformation));
+            .callEvent(new ProcessUpdateEvent(this.processInformation));
     }
 
     @Override

@@ -65,8 +65,8 @@ public final class NukkitExecutor extends Embedded {
 
     private void fixInvalidPlayers() {
         SharedInvalidPlayerFixer.start(
-                uuid -> Server.getInstance().getPlayer(uuid).isPresent(),
-                () -> Server.getInstance().getOnlinePlayers().size()
+            uuid -> Server.getInstance().getPlayer(uuid).isPresent(),
+            () -> Server.getInstance().getOnlinePlayers().size()
         );
     }
 }

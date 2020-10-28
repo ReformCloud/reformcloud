@@ -35,6 +35,10 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodePublishNodeChannelMessage extends ProtocolPacket {
 
+    private String node;
+    private String channel;
+    private JsonConfiguration data;
+
     public ApiToNodePublishNodeChannelMessage() {
     }
 
@@ -44,10 +48,6 @@ public class ApiToNodePublishNodeChannelMessage extends ProtocolPacket {
         this.data = data;
     }
 
-    private String node;
-    private String channel;
-    private JsonConfiguration data;
-
     @Override
     public int getId() {
         return NetworkUtil.EMBEDDED_BUS + 23;
@@ -56,7 +56,7 @@ public class ApiToNodePublishNodeChannelMessage extends ProtocolPacket {
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         ExecutorAPI.getInstance().getChannelMessageProvider().publishChannelMessageToAll(
-                this.node, this.channel, this.data
+            this.node, this.channel, this.data
         );
     }
 

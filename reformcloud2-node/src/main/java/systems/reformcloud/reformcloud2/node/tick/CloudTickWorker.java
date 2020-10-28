@@ -37,20 +37,17 @@ public final class CloudTickWorker {
     static final long SEC_IN_NANO = 1_000_000_000;
     private static final long TICK_TIME = SEC_IN_NANO / TPS;
     private static final long MAX_CATCHUP_BUFFER = TICK_TIME * TPS * 60L;
-
+    protected static long currentTick = 0;
     private final TickAverageCounter tps1 = new TickAverageCounter(60);
     private final TickAverageCounter tps5 = new TickAverageCounter(60 * 5);
     private final TickAverageCounter tps15 = new TickAverageCounter(60 * 15);
-
-    static long currentTick = 0;
+    private final TickedTaskScheduler taskScheduler;
+    private final Thread mainThread;
 
     public CloudTickWorker(@NotNull TickedTaskScheduler taskScheduler) {
         this.taskScheduler = taskScheduler;
         this.mainThread = Thread.currentThread();
     }
-
-    private final TickedTaskScheduler taskScheduler;
-    private final Thread mainThread;
 
     public void startTick() {
         long start = System.nanoTime();

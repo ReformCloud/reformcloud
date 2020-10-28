@@ -37,6 +37,6 @@ public class ChannelMessageProcessor implements PacketProcessor<PacketChannelMes
     @Override
     public void process(@NotNull NetworkChannel channel, @NotNull PacketChannelMessage packet) {
         ExecutorAPI.getInstance().getServiceRegistry().getProvider(EventManager.class)
-                .ifPresent(eventManager -> eventManager.callEvent(new ChannelMessageReceiveEvent(packet.getChannel(), packet.getData())));
+            .ifPresent(eventManager -> eventManager.callEvent(new ChannelMessageReceiveEvent(packet.getChannel(), packet.getData())));
     }
 }

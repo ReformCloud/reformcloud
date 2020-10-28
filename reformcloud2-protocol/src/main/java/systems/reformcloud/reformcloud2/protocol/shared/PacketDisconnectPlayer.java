@@ -35,16 +35,15 @@ import java.util.UUID;
 
 public class PacketDisconnectPlayer extends ProtocolPacket {
 
+    private UUID player;
+    private String reason;
+
     public PacketDisconnectPlayer() {
     }
-
     public PacketDisconnectPlayer(UUID player, String reason) {
         this.player = player;
         this.reason = reason;
     }
-
-    private UUID player;
-    private String reason;
 
     public UUID getPlayer() {
         return this.player;

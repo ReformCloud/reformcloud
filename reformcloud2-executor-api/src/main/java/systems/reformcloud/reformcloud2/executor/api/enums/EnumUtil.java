@@ -34,12 +34,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class EnumUtil {
 
+    private static final Map<Class<? extends Enum<?>>, Entry> CACHE = new ConcurrentHashMap<>();
+    private static final IllegalStateException BASE_NULL = new IllegalStateException("Entry base evaluated null instead of enum set");
+
     private EnumUtil() {
         throw new UnsupportedOperationException();
     }
-
-    private static final Map<Class<? extends Enum<?>>, Entry> CACHE = new ConcurrentHashMap<>();
-    private static final IllegalStateException BASE_NULL = new IllegalStateException("Entry base evaluated null instead of enum set");
 
     /**
      * Tries to find an enum field by the given name, using a weak cache
@@ -129,7 +129,7 @@ public final class EnumUtil {
 
     private static final class Entry {
 
-        public static final Entry EMPTY = new Entry();
+        protected static final Entry EMPTY = new Entry();
 
         private final Map<String, Enum<?>> namesToConstant;
         private final Map<Integer, Enum<?>> indexToConstant;

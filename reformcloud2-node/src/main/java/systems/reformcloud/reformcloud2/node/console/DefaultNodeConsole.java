@@ -60,10 +60,10 @@ public class DefaultNodeConsole implements Console {
         try {
             this.terminal = TerminalBuilder.builder().system(true).encoding(StandardCharsets.UTF_8).build();
             this.lineReader = LineReaderBuilder.builder()
-                    .completer(new DefaultNodeCommandCompleter())
-                    .terminal(this.terminal)
-                    .option(LineReader.Option.DISABLE_EVENT_EXPANSION, true)
-                    .build();
+                .completer(new DefaultNodeCommandCompleter())
+                .terminal(this.terminal)
+                .option(LineReader.Option.DISABLE_EVENT_EXPANSION, true)
+                .build();
         } catch (IOException exception) {
             System.err.println("Unable to create terminal or line reader");
             throw new RuntimeException(exception);

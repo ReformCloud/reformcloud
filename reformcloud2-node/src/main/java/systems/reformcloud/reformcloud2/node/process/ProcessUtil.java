@@ -52,31 +52,24 @@ import java.util.stream.Collectors;
 
 final class ProcessUtil {
 
+    private static final String IP_REPLACEMENT = "ip_address";
+    // https://regex101.com/r/vO55z5/1
+    private static final Pattern IPV4_PATTERN = Pattern.compile("^(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}$");
+    // https://regex101.com/r/vO55z5/2
+    private static final Pattern IPV6_STD_PATTERN = Pattern.compile("^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$");
+    // https://regex101.com/r/vO55z5/3
+    private static final Pattern IPV6_HEX_COMPRESSED_PATTERN = Pattern.compile("^((?:[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4})*)?)::((?:[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4})*)?)$");
+    // https://regex101.com/r/vO55z5/4
+    private static final Pattern IPV6_MIXED_COMPRESSED_PATTERN = Pattern.compile("^((?:[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4})*)?)::((?:[0-9A-Fa-f]{1,4}:(?:[0-9A-Fa-f]{1,4}:)*)?)$");
+
     private ProcessUtil() {
         throw new UnsupportedOperationException();
     }
 
-    private static final Pattern IP_PATTERN = Pattern.compile(
-            "(?<!\\d|\\d\\.)" +
-                    "(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
-                    "(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
-                    "(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
-                    "(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])" +
-                    "(?!\\d|\\.\\d)"
-    );
-
     static @NotNull Optional<String> uploadLog(@NotNull Collection<String> logLines) {
         StringBuilder stringBuilder = new StringBuilder();
         for (String cachedLogLine : logLines) {
-            Matcher matcher = IP_PATTERN.matcher(cachedLogLine);
-            if (matcher.find()) {
-                String ip = matcher.group();
-                stringBuilder.append(cachedLogLine.replace(ip, "***.***.***.***"));
-            } else {
-                stringBuilder.append(cachedLogLine);
-            }
-
-            stringBuilder.append("\n");
+            stringBuilder.append(replaceContainedIps(cachedLogLine)).append("\n");
         }
 
         String text = stringBuilder.toString();
@@ -93,8 +86,8 @@ final class ProcessUtil {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(pasteServerUrl + "/documents").openConnection();
             connection.setRequestProperty(
-                    "User-Agent",
-                    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11"
+                "User-Agent",
+                "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11"
             );
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
@@ -119,6 +112,31 @@ final class ProcessUtil {
         }
     }
 
+    @NotNull
+    private static String replaceContainedIps(@NotNull String line) {
+        Matcher ipv4 = IPV4_PATTERN.matcher(line);
+        if (ipv4.find()) {
+            return line.replace(ipv4.group(), IP_REPLACEMENT);
+        }
+
+        Matcher ipv6Std = IPV6_STD_PATTERN.matcher(line);
+        if (ipv6Std.find()) {
+            return line.replace(ipv6Std.group(), IP_REPLACEMENT);
+        }
+
+        Matcher ipv6HexCompressed = IPV6_HEX_COMPRESSED_PATTERN.matcher(line);
+        if (ipv6HexCompressed.find()) {
+            return line.replace(ipv6HexCompressed.group(), IP_REPLACEMENT);
+        }
+
+        Matcher ipv6MixedCompressed = IPV6_MIXED_COMPRESSED_PATTERN.matcher(line);
+        if (ipv6MixedCompressed.find()) {
+            return line.replace(ipv6MixedCompressed.group(), IP_REPLACEMENT);
+        }
+
+        return line;
+    }
+
     static void loadInclusions(@NotNull Path processPath, @NotNull Collection<ProcessInclusion> inclusions) {
         inclusions.forEach(inclusion -> {
             Path target = Paths.get("reformcloud/files/inclusions", inclusion.getName());
@@ -127,20 +145,20 @@ final class ProcessUtil {
             }
 
             DownloadHelper.openConnection(
-                    inclusion.getUrl(),
-                    new HashMap<>(),
-                    stream -> {
-                        try {
-                            IOUtils.createDirectory(target.getParent());
-                            Files.copy(stream, target);
-                        } catch (final Throwable throwable) {
-                            System.err.println("Unable to prepare inclusion " + inclusion.getName() + "!");
-                            System.err.println("The error was: " + throwable.getMessage());
-                        }
-                    }, throwable -> {
-                        System.err.println("Unable to open connection to given download server " + inclusion.getUrl());
-                        System.err.println("The error was: " + CommonHelper.formatThrowable(throwable));
+                inclusion.getUrl(),
+                new HashMap<>(),
+                stream -> {
+                    try {
+                        IOUtils.createDirectory(target.getParent());
+                        Files.copy(stream, target);
+                    } catch (final Throwable throwable) {
+                        System.err.println("Unable to prepare inclusion " + inclusion.getName() + "!");
+                        System.err.println("The error was: " + throwable.getMessage());
                     }
+                }, throwable -> {
+                    System.err.println("Unable to open connection to given download server " + inclusion.getUrl());
+                    System.err.println("The error was: " + CommonHelper.formatThrowable(throwable));
+                }
             );
         });
 
