@@ -41,6 +41,7 @@ public class ApiToNodeConnectPlayerToPlayer extends ProtocolPacket {
 
     public ApiToNodeConnectPlayerToPlayer() {
     }
+
     public ApiToNodeConnectPlayerToPlayer(UUID playerUniqueId, UUID otherPlayer) {
         this.playerUniqueId = playerUniqueId;
         this.otherPlayer = otherPlayer;

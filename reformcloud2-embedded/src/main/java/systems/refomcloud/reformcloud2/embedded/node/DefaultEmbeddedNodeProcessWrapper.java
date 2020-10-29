@@ -29,7 +29,11 @@ import org.jetbrains.annotations.UnmodifiableView;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.NodeProcessWrapper;
-import systems.reformcloud.reformcloud2.protocol.node.*;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeCompleteCommandLine;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeDispatchCommandLine;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetNodeInformationResult;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetStringCollectionResult;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeRequestNodeInformationUpdate;
 
 import java.util.ArrayList;
 import java.util.Collection;

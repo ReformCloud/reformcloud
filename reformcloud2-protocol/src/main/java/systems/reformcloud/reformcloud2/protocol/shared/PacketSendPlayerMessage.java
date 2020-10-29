@@ -40,6 +40,7 @@ public class PacketSendPlayerMessage extends ProtocolPacket {
 
     public PacketSendPlayerMessage() {
     }
+
     public PacketSendPlayerMessage(UUID player, String message) {
         this.player = player;
         this.message = message;

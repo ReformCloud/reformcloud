@@ -44,6 +44,7 @@ public class ApiToNodeSetProcessRuntimeState extends ProtocolPacket {
 
     public ApiToNodeSetProcessRuntimeState() {
     }
+
     public ApiToNodeSetProcessRuntimeState(ProcessInformation information, ProcessState runtimeState) {
         this.processUniqueId = information.getProcessDetail().getProcessUniqueID();
         this.runtimeState = runtimeState;

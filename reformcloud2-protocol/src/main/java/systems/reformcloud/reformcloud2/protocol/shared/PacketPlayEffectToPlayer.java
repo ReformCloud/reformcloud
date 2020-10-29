@@ -40,6 +40,7 @@ public class PacketPlayEffectToPlayer extends ProtocolPacket {
 
     public PacketPlayEffectToPlayer() {
     }
+
     public PacketPlayEffectToPlayer(UUID uniqueId, String effect) {
         this.uniqueId = uniqueId;
         this.effect = effect;

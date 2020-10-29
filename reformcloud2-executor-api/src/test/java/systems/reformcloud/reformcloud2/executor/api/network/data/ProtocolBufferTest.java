@@ -2,7 +2,13 @@ package systems.reformcloud.reformcloud2.executor.api.network.data;
 
 import io.netty.buffer.Unpooled;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
 import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
 
 import java.util.Arrays;

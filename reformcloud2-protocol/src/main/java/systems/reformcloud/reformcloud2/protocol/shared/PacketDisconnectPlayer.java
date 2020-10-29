@@ -40,6 +40,7 @@ public class PacketDisconnectPlayer extends ProtocolPacket {
 
     public PacketDisconnectPlayer() {
     }
+
     public PacketDisconnectPlayer(UUID player, String reason) {
         this.player = player;
         this.reason = reason;

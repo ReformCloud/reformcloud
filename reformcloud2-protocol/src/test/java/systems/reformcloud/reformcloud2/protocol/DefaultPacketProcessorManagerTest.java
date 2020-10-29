@@ -1,6 +1,11 @@
 package systems.reformcloud.reformcloud2.protocol;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.Mockito;
 import systems.reformcloud.reformcloud2.protocol.processor.PacketProcessor;
 import systems.reformcloud.reformcloud2.protocol.processor.PacketProcessorManager;

@@ -32,9 +32,26 @@ import systems.reformcloud.reformcloud2.executor.api.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.provider.ProcessProvider;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
-import systems.reformcloud.reformcloud2.protocol.node.*;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessCount;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessCountByProcessGroup;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessCountResult;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessInformationByName;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessInformationByUniqueId;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessInformationObjects;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessInformationObjectsByMainGroup;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessInformationObjectsByProcessGroup;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessInformationObjectsByVersion;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessInformationObjectsResult;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessInformationResult;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessUniqueIds;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessUniqueIdsResult;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeUpdateProcessInformation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.UUID;
 
 public class DefaultEmbeddedProcessProvider implements ProcessProvider {
 

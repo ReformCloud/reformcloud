@@ -30,7 +30,16 @@ import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.builder.ProcessGroupBuilder;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.provider.ProcessGroupProvider;
-import systems.reformcloud.reformcloud2.protocol.node.*;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeDeleteProcessGroup;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessGroup;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessGroupCount;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessGroupCountResult;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessGroupNames;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessGroupObjects;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessGroupObjectsResult;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessGroupResult;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetStringCollectionResult;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeUpdateProcessGroup;
 
 import java.util.ArrayList;
 import java.util.Collection;

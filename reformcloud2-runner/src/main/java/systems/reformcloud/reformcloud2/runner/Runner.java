@@ -25,7 +25,17 @@
 package systems.reformcloud.reformcloud2.runner;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.runner.commands.*;
+import systems.reformcloud.reformcloud2.runner.commands.CheckForUpdatesCommand;
+import systems.reformcloud.reformcloud2.runner.commands.CheckIfDevModeCommand;
+import systems.reformcloud.reformcloud2.runner.commands.CheckIfSnapshotApplyCommand;
+import systems.reformcloud.reformcloud2.runner.commands.ExecuteCommand;
+import systems.reformcloud.reformcloud2.runner.commands.IfCommand;
+import systems.reformcloud.reformcloud2.runner.commands.PrintlnCommand;
+import systems.reformcloud.reformcloud2.runner.commands.SetSystemPropertiesCommand;
+import systems.reformcloud.reformcloud2.runner.commands.StartApplicationCommand;
+import systems.reformcloud.reformcloud2.runner.commands.UnpackApplicationCommand;
+import systems.reformcloud.reformcloud2.runner.commands.VariableCommand;
+import systems.reformcloud.reformcloud2.runner.commands.WriteEnvCommand;
 import systems.reformcloud.reformcloud2.runner.reformscript.InterpretedReformScript;
 import systems.reformcloud.reformcloud2.runner.reformscript.ReformScriptInterpreter;
 import systems.reformcloud.reformcloud2.runner.reformscript.basic.RunnerReformScriptInterpreter;

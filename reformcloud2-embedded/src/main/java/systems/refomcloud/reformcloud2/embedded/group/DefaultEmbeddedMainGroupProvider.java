@@ -30,7 +30,16 @@ import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.builder.MainGroupBuilder;
 import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.provider.MainGroupProvider;
-import systems.reformcloud.reformcloud2.protocol.node.*;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeDeleteMainGroup;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetMainGroup;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetMainGroupCount;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetMainGroupCountResult;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetMainGroupNames;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetMainGroupObjects;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetMainGroupObjectsResult;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetMainGroupResult;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetStringCollectionResult;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeUpdateMainGroup;
 
 import java.util.ArrayList;
 import java.util.Collection;

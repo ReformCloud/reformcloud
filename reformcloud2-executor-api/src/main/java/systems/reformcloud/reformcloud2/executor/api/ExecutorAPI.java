@@ -28,7 +28,13 @@ import io.netty.util.ResourceLeakDetector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
 import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader;
-import systems.reformcloud.reformcloud2.executor.api.provider.*;
+import systems.reformcloud.reformcloud2.executor.api.provider.ChannelMessageProvider;
+import systems.reformcloud.reformcloud2.executor.api.provider.DatabaseProvider;
+import systems.reformcloud.reformcloud2.executor.api.provider.MainGroupProvider;
+import systems.reformcloud.reformcloud2.executor.api.provider.NodeInformationProvider;
+import systems.reformcloud.reformcloud2.executor.api.provider.PlayerProvider;
+import systems.reformcloud.reformcloud2.executor.api.provider.ProcessGroupProvider;
+import systems.reformcloud.reformcloud2.executor.api.provider.ProcessProvider;
 import systems.reformcloud.reformcloud2.executor.api.registry.service.ServiceRegistry;
 
 import java.util.Objects;

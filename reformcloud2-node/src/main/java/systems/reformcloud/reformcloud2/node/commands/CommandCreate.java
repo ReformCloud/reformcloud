@@ -42,7 +42,14 @@ import systems.reformcloud.reformcloud2.executor.api.groups.utils.StartupConfigu
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
 
 public final class CommandCreate implements Command {
 

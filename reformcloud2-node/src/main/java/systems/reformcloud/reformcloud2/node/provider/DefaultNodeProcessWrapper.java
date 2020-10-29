@@ -33,7 +33,12 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryManager;
 import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.NodeProcessWrapper;
-import systems.reformcloud.reformcloud2.node.protocol.*;
+import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeProcessCommand;
+import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeProcessCommandResult;
+import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeRequestNodeInformationUpdate;
+import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeRequestNodeInformationUpdateResult;
+import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeTabCompleteCommand;
+import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeTabCompleteCommandResult;
 
 import java.util.Collection;
 import java.util.Collections;

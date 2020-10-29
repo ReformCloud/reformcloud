@@ -57,6 +57,21 @@ public enum JavaVersion {
         this.versionName = this.ordinal() >= FIRST_MAJOR_VERSION_ORDINAL ? this.getMajorVersion() : "1." + this.getMajorVersion();
     }
 
+    @NotNull
+    public static JavaVersion getVersionForMajor(int major) {
+        return EnumUtil.findEnumFieldByIndex(JavaVersion.class, major - 1).orElse(JavaVersion.VERSION_UNKNOWN);
+    }
+
+    @NotNull
+    public static JavaVersion current() {
+        return CURRENT;
+    }
+
+    @NotNull
+    public static JavaVersion forClassVersion(int classVersion) {
+        return getVersionForMajor(classVersion - 44);
+    }
+
     public boolean isCompatibleWith(@NotNull JavaVersion otherVersion) {
         return this.compareTo(otherVersion) >= 0;
     }
@@ -72,20 +87,5 @@ public enum JavaVersion {
     @Override
     public String toString() {
         return this.versionName;
-    }
-
-    @NotNull
-    public static JavaVersion getVersionForMajor(int major) {
-        return EnumUtil.findEnumFieldByIndex(JavaVersion.class, major - 1).orElse(JavaVersion.VERSION_UNKNOWN);
-    }
-
-    @NotNull
-    public static JavaVersion current() {
-        return CURRENT;
-    }
-
-    @NotNull
-    public static JavaVersion forClassVersion(int classVersion) {
-        return getVersionForMajor(classVersion - 44);
     }
 }

@@ -30,9 +30,24 @@ import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.provider.NodeInformationProvider;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.NodeProcessWrapper;
-import systems.reformcloud.reformcloud2.protocol.node.*;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetNodeInformationByName;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetNodeInformationByUniqueId;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetNodeInformationResult;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetNodeNames;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetNodeNamesResult;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetNodeObjects;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetNodeObjectsResult;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetNodeUniqueIds;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetNodeUniqueIdsResult;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeIsNodePresentByName;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeIsNodePresentByUniqueId;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeIsNodePresentResult;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.UUID;
 
 public class DefaultEmbeddedNodeInformationProvider implements NodeInformationProvider {
 

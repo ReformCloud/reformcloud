@@ -44,6 +44,7 @@ public class ApiToNodeCompleteCommandLine extends ProtocolPacket {
 
     public ApiToNodeCompleteCommandLine() {
     }
+
     public ApiToNodeCompleteCommandLine(UUID nodeUniqueId, String commandLine) {
         this.nodeUniqueId = nodeUniqueId;
         this.commandLine = commandLine;

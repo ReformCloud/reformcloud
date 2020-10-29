@@ -38,7 +38,13 @@ import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusio
 import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.UUID;
 
 public final class CommandLaunch implements Command {
 

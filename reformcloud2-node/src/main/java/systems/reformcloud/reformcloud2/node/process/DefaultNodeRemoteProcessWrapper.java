@@ -36,7 +36,15 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryM
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
-import systems.reformcloud.reformcloud2.node.protocol.*;
+import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeCopyProcessToTemplate;
+import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeGetLastLogLines;
+import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeGetLastLogLinesResult;
+import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeRequestProcessUpdate;
+import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeRequestProcessUpdateResult;
+import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeSendProcessCommand;
+import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeSetProcessRuntimeState;
+import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeUploadProcessLog;
+import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeUploadProcessLogResult;
 
 import java.util.Optional;
 import java.util.Queue;

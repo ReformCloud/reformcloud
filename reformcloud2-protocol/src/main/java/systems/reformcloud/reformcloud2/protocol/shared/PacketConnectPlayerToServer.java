@@ -40,6 +40,7 @@ public class PacketConnectPlayerToServer extends ProtocolPacket {
 
     public PacketConnectPlayerToServer() {
     }
+
     public PacketConnectPlayerToServer(UUID uniqueId, String server) {
         this.uniqueId = uniqueId;
         this.server = server;
