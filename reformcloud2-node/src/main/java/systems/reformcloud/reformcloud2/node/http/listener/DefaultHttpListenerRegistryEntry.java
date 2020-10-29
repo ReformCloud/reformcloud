@@ -22,21 +22,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.node.http.listener;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.http.listener.HttpListener;
+import systems.reformcloud.reformcloud2.executor.api.http.listener.HttpListenerRegistryEntry;
+import systems.reformcloud.reformcloud2.executor.api.http.request.RequestMethod;
 
-import java.util.function.Supplier;
+final class DefaultHttpListenerRegistryEntry implements HttpListenerRegistryEntry {
 
-public interface NetworkServer extends Server {
+    private final HttpListener listener;
+    private final RequestMethod[] requestMethods;
+    private final int priority;
 
-    /**
-     * Binds to the given ip:port
-     *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
-     */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    DefaultHttpListenerRegistryEntry(HttpListener listener, RequestMethod[] requestMethods, int priority) {
+        this.listener = listener;
+        this.requestMethods = requestMethods;
+        this.priority = priority;
+    }
+
+    @Override
+    public @NotNull HttpListener getListener() {
+        return this.listener;
+    }
+
+    @Override
+    public @NotNull RequestMethod[] getHandlingRequestMethods() {
+        return this.requestMethods;
+    }
+
+    @Override
+    public int priority() {
+        return this.priority;
+    }
 }

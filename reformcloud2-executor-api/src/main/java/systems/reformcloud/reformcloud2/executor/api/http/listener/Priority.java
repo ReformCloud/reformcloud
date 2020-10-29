@@ -22,21 +22,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.executor.api.http.listener;
 
-import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import java.util.function.Supplier;
-
-public interface NetworkServer extends Server {
-
+/**
+ * Sets the priority of a {@link HttpListener}.
+ *
+ * @author derklaro
+ * @since 25. October 2020
+ */
+@Documented
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Priority {
     /**
-     * Binds to the given ip:port
+     * Get the priority of a listener method.
      *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
+     * @return the priority of a listener method.
      */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    int value() default 0;
 }

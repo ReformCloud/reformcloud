@@ -22,21 +22,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.node.http;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.http.Headers;
+import systems.reformcloud.reformcloud2.executor.api.http.HttpInformation;
+import systems.reformcloud.reformcloud2.executor.api.http.HttpVersion;
+import systems.reformcloud.reformcloud2.executor.api.http.decode.DecodeResult;
+import systems.reformcloud.reformcloud2.node.http.decode.DefaultDecodeResultHolder;
 
-import java.util.function.Supplier;
+public abstract class DefaultHttpInformation<T extends HttpInformation<T>> extends DefaultDecodeResultHolder<T> implements HttpInformation<T>, InstanceHolder<T> {
 
-public interface NetworkServer extends Server {
+    protected final Headers headers;
+    protected HttpVersion httpVersion;
 
-    /**
-     * Binds to the given ip:port
-     *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
-     */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    protected DefaultHttpInformation(HttpVersion httpVersion, Headers headers, DecodeResult decodeResult) {
+        super(decodeResult);
+        this.headers = headers;
+        this.httpVersion = httpVersion;
+    }
+
+    @Override
+    public @NotNull HttpVersion httpVersion() {
+        return this.httpVersion;
+    }
+
+    @Override
+    public @NotNull T httpVersion(@NotNull HttpVersion httpVersion) {
+        this.httpVersion = httpVersion;
+        return this.self();
+    }
+
+    @Override
+    public @NotNull Headers headers() {
+        return this.headers;
+    }
 }

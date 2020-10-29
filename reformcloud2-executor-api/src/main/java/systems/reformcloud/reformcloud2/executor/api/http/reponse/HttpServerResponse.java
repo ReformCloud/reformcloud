@@ -22,21 +22,52 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.executor.api.http.reponse;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.http.HttpStatusCode;
+import systems.reformcloud.reformcloud2.executor.api.http.cookie.CookieHolder;
 
-import java.util.function.Supplier;
-
-public interface NetworkServer extends Server {
+/**
+ * Represents a server HTTP response.
+ *
+ * @param <T> the type of the implementing api
+ * @author derklaro
+ * @since 25. October 2020
+ */
+public interface HttpServerResponse<T extends HttpServerResponse<T>> extends CookieHolder<T> {
 
     /**
-     * Binds to the given ip:port
+     * Get the response status.
      *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
+     * @return the response status.
      */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    @NotNull
+    HttpStatusCode status();
+
+    /**
+     * Sets the response status.
+     *
+     * @param httpStatusCode the new response status.
+     * @return the same instance of this class, for chaining
+     */
+    @NotNull
+    T status(@NotNull HttpStatusCode httpStatusCode);
+
+    /**
+     * Get the response body sent to the client.
+     *
+     * @return the response body sent to the client.
+     */
+    @NotNull
+    byte[] body();
+
+    /**
+     * Sets the body of the result sent to the client.
+     *
+     * @param response the body response to send to the client.
+     * @return the same instance of this class, for chaining
+     */
+    @NotNull
+    T body(byte[] response);
 }

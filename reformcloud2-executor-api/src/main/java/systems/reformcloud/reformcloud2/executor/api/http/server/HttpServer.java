@@ -22,21 +22,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.executor.api.http.server;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.http.listener.HttpListenerRegistry;
+import systems.reformcloud.reformcloud2.executor.api.network.server.Server;
 
-import java.util.function.Supplier;
-
-public interface NetworkServer extends Server {
+/**
+ * Represents a server extension with HTTP support.
+ *
+ * @author derklaro
+ * @since 25. October 200
+ */
+public interface HttpServer extends Server {
 
     /**
-     * Binds to the given ip:port
+     * Binds the HTTP server to the given host and port.
      *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
+     * @param host the host to bind to.
+     * @param port the port to bind to.
+     * @return if the server was bound successfully
      */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    boolean bind(@NotNull String host, int port);
+
+    /**
+     * Get the listener registry this server is using.
+     *
+     * @return the listener registry this server is using.
+     */
+    @NotNull
+    HttpListenerRegistry getListenerRegistry();
 }

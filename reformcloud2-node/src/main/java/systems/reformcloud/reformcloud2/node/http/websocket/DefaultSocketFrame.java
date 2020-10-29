@@ -22,21 +22,54 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.node.http.websocket;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrame;
+import systems.reformcloud.reformcloud2.node.http.InstanceHolder;
 
-import java.util.function.Supplier;
+public abstract class DefaultSocketFrame<T extends DefaultSocketFrame<T>> implements SocketFrame<T>, InstanceHolder<T> {
 
-public interface NetworkServer extends Server {
+    private int rsv;
+    private byte[] content;
+    private boolean finalFragment;
 
-    /**
-     * Binds to the given ip:port
-     *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
-     */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    public DefaultSocketFrame(int rsv, boolean finalFragment, byte[] content) {
+        this.rsv = rsv;
+        this.finalFragment = finalFragment;
+        this.content = content;
+    }
+
+    @Override
+    public @NotNull byte[] content() {
+        return this.content;
+    }
+
+    @Override
+    public @NotNull T content(@NotNull byte[] content) {
+        this.content = content;
+        return this.self();
+    }
+
+    @Override
+    public boolean finalFragment() {
+        return this.finalFragment;
+    }
+
+    @Override
+    public @NotNull T finalFragment(boolean finalFragment) {
+        this.finalFragment = finalFragment;
+        return this.self();
+    }
+
+    @Override
+    public int rsv() {
+        return this.rsv;
+    }
+
+    @Override
+    public @NotNull T rsv(int rsv) {
+        this.rsv = rsv;
+        return this.self();
+    }
 }

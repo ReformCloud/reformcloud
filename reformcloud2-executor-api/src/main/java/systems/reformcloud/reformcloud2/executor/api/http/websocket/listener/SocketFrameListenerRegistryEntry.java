@@ -22,21 +22,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.executor.api.http.websocket.listener;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrameType;
 
-import java.util.function.Supplier;
-
-public interface NetworkServer extends Server {
+/**
+ * Represents an entry of the listener registry.
+ *
+ * @author derklaro
+ * @since 27. October 2020
+ */
+public interface SocketFrameListenerRegistryEntry {
 
     /**
-     * Binds to the given ip:port
+     * Get the actual listeners this entry is for.
      *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
+     * @return the actual listener.
      */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    @NotNull
+    SocketFrameListener getListener();
+
+    /**
+     * Get the socket frame types a socket listener handles.
+     *
+     * @return the socket frame types a socket listener handles.
+     */
+    @NotNull
+    SocketFrameType[] getHandlingFrameTypes();
+
+    /**
+     * Get the priority of this listener.
+     *
+     * @return the priority of this listener.
+     */
+    int priority();
 }

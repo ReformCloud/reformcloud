@@ -22,21 +22,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.executor.api.http.websocket.request;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrame;
 
-import java.util.function.Supplier;
-
-public interface NetworkServer extends Server {
+/**
+ * Represents a request frame which holds two information: the actual frame
+ * sent to the server and the source of the frame.
+ *
+ * @author derklaro
+ * @since 27. October 2020
+ */
+public interface RequestFrameHolder {
 
     /**
-     * Binds to the given ip:port
+     * Get the request frame the client sent to the server.
      *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
+     * @return the request frame the client sent to the server.
      */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    @NotNull
+    SocketFrame<?> request();
+
+    /**
+     * Get the source the frame was sent from.
+     *
+     * @return the source the frame was sent from.
+     */
+    @NotNull
+    SocketFrameSource source();
 }

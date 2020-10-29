@@ -22,21 +22,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.node.http.utils;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufHolder;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 
-import java.util.function.Supplier;
+public final class BinaryUtils {
 
-public interface NetworkServer extends Server {
+    private BinaryUtils() {
+        throw new UnsupportedOperationException();
+    }
 
-    /**
-     * Binds to the given ip:port
-     *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
-     */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    @NotNull
+    public static byte[] binaryArrayFromByteBuf(@NotNull ByteBufHolder holder) {
+        return binaryArrayFromByteBuf(holder.content());
+    }
+
+    public static byte[] binaryArrayFromByteBuf(@NotNull ByteBuf holder) {
+        if (holder.hasArray()) {
+            return holder.array();
+        } else {
+            byte[] body = new byte[holder.readableBytes()];
+            holder.getBytes(holder.readerIndex(), body);
+            return body;
+        }
+    }
 }

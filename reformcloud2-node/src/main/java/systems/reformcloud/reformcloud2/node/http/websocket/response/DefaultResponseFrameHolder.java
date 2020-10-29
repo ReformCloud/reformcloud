@@ -22,21 +22,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.node.http.websocket.response;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrame;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.response.ResponseFrameHolder;
 
-import java.util.function.Supplier;
+public class DefaultResponseFrameHolder implements ResponseFrameHolder<DefaultResponseFrameHolder> {
 
-public interface NetworkServer extends Server {
+    private final SocketFrame<?> response;
+    private boolean lastHandler;
+    private boolean closeAfterSent;
 
-    /**
-     * Binds to the given ip:port
-     *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
-     */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    public DefaultResponseFrameHolder(SocketFrame<?> response) {
+        this.response = response;
+    }
+
+    @Override
+    public @NotNull SocketFrame<?> response() {
+        return this.response;
+    }
+
+    @Override
+    public boolean lastHandler() {
+        return this.lastHandler;
+    }
+
+    @Override
+    public @NotNull DefaultResponseFrameHolder lastHandler(boolean lastHandler) {
+        this.lastHandler = lastHandler;
+        return this;
+    }
+
+    @Override
+    public boolean closeAfterSent() {
+        return this.closeAfterSent;
+    }
+
+    @Override
+    public @NotNull DefaultResponseFrameHolder closeAfterSent(boolean close) {
+        this.closeAfterSent = close;
+        return this;
+    }
 }

@@ -22,21 +22,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.executor.api.http.decode;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 
-import java.util.function.Supplier;
-
-public interface NetworkServer extends Server {
+/**
+ * Holds the decode result of a http message.
+ *
+ * @param <T> the type of the implementing api
+ * @author derklaro
+ * @since 25. October 2020
+ */
+public interface DecodeResultHolder<T extends DecodeResultHolder<T>> {
 
     /**
-     * Binds to the given ip:port
+     * Get the result of decoding this object.
      *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
+     * @return the result of decoding this object.
      */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    @NotNull
+    DecodeResult result();
+
+    /**
+     * Updates the decode result of this object. This method is not supposed to be used
+     * by directly and is not a supported api. You may use it if you know what you are doing.
+     *
+     * @param decodeResult the new decode result.
+     * @return the same instance of this class, for chaining
+     */
+    @NotNull
+    T result(@NotNull DecodeResult decodeResult);
 }

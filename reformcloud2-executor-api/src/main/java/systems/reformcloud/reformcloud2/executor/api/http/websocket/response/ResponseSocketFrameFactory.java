@@ -22,21 +22,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.executor.api.http.websocket.response;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrame;
 
-import java.util.function.Supplier;
+import java.util.concurrent.atomic.AtomicReference;
 
-public interface NetworkServer extends Server {
+/**
+ * Represents a factory for socket responses.
+ *
+ * @author derklaro
+ * @since 27. October 2020
+ */
+public abstract class ResponseSocketFrameFactory {
+    /**
+     * The default response factory.
+     */
+    @ApiStatus.Internal
+    protected static final AtomicReference<ResponseSocketFrameFactory> DEFAULT = new AtomicReference<>();
 
     /**
-     * Binds to the given ip:port
+     * Creates a new response which uses as message the given socket frame.
      *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
+     * @param socketFrame the response frame which should be sent to the client.
+     * @return the created response frame.
      */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    @NotNull
+    public abstract ResponseFrameHolder<?> forFrame(@NotNull SocketFrame<?> socketFrame);
 }

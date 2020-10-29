@@ -22,21 +22,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.node.http.websocket.request;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrame;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.request.RequestFrameHolder;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.request.SocketFrameSource;
 
-import java.util.function.Supplier;
+public class DefaultRequestFrameHolder implements RequestFrameHolder {
 
-public interface NetworkServer extends Server {
+    private final SocketFrame<?> socketFrame;
+    private final SocketFrameSource frameSource;
 
-    /**
-     * Binds to the given ip:port
-     *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
-     */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    public DefaultRequestFrameHolder(SocketFrame<?> socketFrame, SocketFrameSource frameSource) {
+        this.socketFrame = socketFrame;
+        this.frameSource = frameSource;
+    }
+
+    @Override
+    public @NotNull SocketFrame<?> request() {
+        return this.socketFrame;
+    }
+
+    @Override
+    public @NotNull SocketFrameSource source() {
+        return this.frameSource;
+    }
 }

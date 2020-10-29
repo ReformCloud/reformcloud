@@ -22,21 +22,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.node.http.websocket;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.TextSocketFrame;
 
-import java.util.function.Supplier;
+import java.nio.charset.StandardCharsets;
 
-public interface NetworkServer extends Server {
+public class DefaultTextSocketFrame extends DefaultSocketFrame<DefaultTextSocketFrame> implements TextSocketFrame<DefaultTextSocketFrame> {
 
-    /**
-     * Binds to the given ip:port
-     *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
-     */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    private String text;
+
+    public DefaultTextSocketFrame(int rsv, boolean finalFragment, String text) {
+        super(rsv, finalFragment, text.isEmpty() ? new byte[0] : text.getBytes(StandardCharsets.UTF_8));
+        this.text = text;
+    }
+
+    @Override
+    public @NotNull String text() {
+        return this.text;
+    }
+
+    @Override
+    public @NotNull DefaultTextSocketFrame text(@NotNull String text) {
+        this.text = text;
+        super.content(text.getBytes(StandardCharsets.UTF_8));
+        return this;
+    }
+
+    @Override
+    public @NotNull DefaultTextSocketFrame self() {
+        return this;
+    }
 }

@@ -22,21 +22,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.node.http.websocket.listener;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrameType;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.listener.SocketFrameListener;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.listener.SocketFrameListenerRegistryEntry;
 
-import java.util.function.Supplier;
+final class DefaultSocketFrameListenerRegistryEntry implements SocketFrameListenerRegistryEntry {
 
-public interface NetworkServer extends Server {
+    private final SocketFrameListener listener;
+    private final SocketFrameType[] socketFrameType;
+    private final int priority;
 
-    /**
-     * Binds to the given ip:port
-     *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
-     */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    DefaultSocketFrameListenerRegistryEntry(SocketFrameListener listener, SocketFrameType[] socketFrameType, int priority) {
+        this.listener = listener;
+        this.socketFrameType = socketFrameType;
+        this.priority = priority;
+    }
+
+    @Override
+    public @NotNull SocketFrameListener getListener() {
+        return this.listener;
+    }
+
+    @Override
+    public @NotNull SocketFrameType[] getHandlingFrameTypes() {
+        return this.socketFrameType;
+    }
+
+    @Override
+    public int priority() {
+        return this.priority;
+    }
 }

@@ -22,21 +22,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.executor.api.http.websocket;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 
-import java.util.function.Supplier;
-
-public interface NetworkServer extends Server {
+/**
+ * A socket frame which holds a binary encoded UTF-8 string.
+ *
+ * @param <T> the type of the implementing api
+ * @author derklaro
+ * @see SocketFrame#textFrame(String)
+ * @since 27. October 2020
+ */
+public interface TextSocketFrame<T extends TextSocketFrame<T>> extends SocketFrame<T> {
 
     /**
-     * Binds to the given ip:port
+     * Get the text data of this frame.
      *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
+     * @return the text data of this frame.
      */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    @NotNull
+    String text();
+
+    /**
+     * Sets the text data of this frame.
+     *
+     * @param text the text data of this frame.
+     * @return the same instance of this class, for chaining
+     */
+    @NotNull
+    T text(@NotNull String text);
+
+    /**
+     * {@inheritDoc}
+     */
+    @NotNull
+    @Override
+    default SocketFrameType type() {
+        return SocketFrameType.TEXT;
+    }
 }

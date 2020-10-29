@@ -22,21 +22,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.node.http.decode;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.http.decode.DecodeResult;
+import systems.reformcloud.reformcloud2.executor.api.http.decode.DecodeResultHolder;
+import systems.reformcloud.reformcloud2.node.http.InstanceHolder;
 
-import java.util.function.Supplier;
+public abstract class DefaultDecodeResultHolder<T extends DecodeResultHolder<T>> implements DecodeResultHolder<T>, InstanceHolder<T> {
 
-public interface NetworkServer extends Server {
+    protected DecodeResult decodeResult;
 
-    /**
-     * Binds to the given ip:port
-     *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
-     */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    protected DefaultDecodeResultHolder(DecodeResult decodeResult) {
+        this.decodeResult = decodeResult;
+    }
+
+    @Override
+    public @NotNull DecodeResult result() {
+        return this.decodeResult;
+    }
+
+    @Override
+    public @NotNull T result(@NotNull DecodeResult decodeResult) {
+        this.decodeResult = decodeResult;
+        return this.self();
+    }
 }
