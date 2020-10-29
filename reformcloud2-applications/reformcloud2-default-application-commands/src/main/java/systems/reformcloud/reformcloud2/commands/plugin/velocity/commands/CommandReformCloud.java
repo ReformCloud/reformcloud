@@ -24,16 +24,16 @@
  */
 package systems.reformcloud.reformcloud2.commands.plugin.velocity.commands;
 
-import com.velocitypowered.api.command.Command;
-import com.velocitypowered.api.command.CommandSource;
-import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
+import com.velocitypowered.api.command.SimpleCommand;
+import net.kyori.adventure.identity.Identity;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
+import systems.refomcloud.reformcloud2.embedded.plugin.velocity.VelocityExecutor;
 import systems.reformcloud.reformcloud2.commands.plugin.internal.InternalReformCloudCommand;
 
 import java.util.List;
 
-public class CommandReformCloud implements Command {
+public class CommandReformCloud implements SimpleCommand {
 
     private final List<String> aliases;
 
@@ -42,15 +42,20 @@ public class CommandReformCloud implements Command {
     }
 
     @Override
-    public void execute(CommandSource commandSender, @NotNull String[] strings) {
+    public void execute(Invocation invocation) {
         String prefix = Embedded.getInstance().getIngameMessages().getPrefix();
         InternalReformCloudCommand.execute(
-            message -> commandSender.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(message)),
-            strings,
+            message -> invocation.source().sendMessage(Identity.nil(), VelocityExecutor.SERIALIZER.deserialize(message)),
+            invocation.arguments(),
             prefix.endsWith(" ") ? prefix : prefix + " ",
             this.getCommandSuccessMessage(),
             this.aliases.isEmpty() ? "rc" : this.aliases.get(0)
         );
+    }
+
+    @Override
+    public boolean hasPermission(Invocation invocation) {
+        return invocation.source().hasPermission("reformcloud.command.reformcloud");
     }
 
     @NotNull
@@ -62,10 +67,5 @@ public class CommandReformCloud implements Command {
     @NotNull
     public List<String> getAliases() {
         return this.aliases;
-    }
-
-    @Override
-    public boolean hasPermission(CommandSource source, @NotNull String[] args) {
-        return source.hasPermission("reformcloud.command.reformcloud");
     }
 }

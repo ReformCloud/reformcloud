@@ -44,19 +44,15 @@ import systems.reformcloud.reformcloud2.permissions.velocity.listener.VelocityPe
 )
 public class VelocityPermissionPlugin {
 
-    private static ProxyServer proxy;
+    private final ProxyServer proxy;
 
     @Inject
     public VelocityPermissionPlugin(ProxyServer proxyServer) {
-        proxy = proxyServer;
-    }
-
-    public static ProxyServer getProxy() {
-        return proxy;
+        this.proxy = proxyServer;
     }
 
     @Subscribe
     public void handleInit(ProxyInitializeEvent event) {
-        PermissionPluginUtil.awaitConnection(() -> proxy.getEventManager().register(this, new VelocityPermissionListener()));
+        PermissionPluginUtil.awaitConnection(() -> this.proxy.getEventManager().register(this, new VelocityPermissionListener()));
     }
 }

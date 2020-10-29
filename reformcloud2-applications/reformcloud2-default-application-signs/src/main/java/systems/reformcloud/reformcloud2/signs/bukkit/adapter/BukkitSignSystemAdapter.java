@@ -124,6 +124,7 @@ public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
         this.run(super::cleanSigns);
     }
 
+    @SuppressWarnings("deprecation") // Not happy with it but it's the backport to 1.8 :/
     private void changeBlockBehind(@NotNull Sign sign, @NotNull SignSubLayout layout) {
         BlockState blockState = sign.getLocation().getBlock().getState();
         BlockFace blockFace = this.getSignFacing(blockState);
