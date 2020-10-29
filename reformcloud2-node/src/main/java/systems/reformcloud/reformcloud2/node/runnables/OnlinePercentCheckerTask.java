@@ -24,18 +24,56 @@
  */
 package systems.reformcloud.reformcloud2.node.runnables;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.utils.AutomaticStartupConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class OnlinePercentCheckerTask implements Runnable {
 
     private final Map<String, Long> checkGroups = new ConcurrentHashMap<>();
+
+    private static void startPreparedOfGroup(@NotNull Collection<ProcessInformation> processes, @NotNull ProcessGroup processGroup) {
+        ProcessInformation prepared = Streams.filter(processes, e -> e.getProcessDetail().getProcessState() == ProcessState.PREPARED);
+        if (prepared != null) {
+            Optional<ProcessWrapper> processWrapper = ExecutorAPI.getInstance().getProcessProvider()
+                .getProcessByUniqueId(prepared.getProcessDetail().getProcessUniqueID());
+            if (processWrapper.isPresent()) {
+                processWrapper.get().setRuntimeState(ProcessState.STARTED);
+                System.out.println(LanguageManager.get("process-start-process", processGroup.getName()));
+            } else {
+                ExecutorAPI.getInstance().getProcessProvider().createProcess()
+                    .group(processGroup)
+                    .prepare()
+                    .onComplete(wrapper -> {
+                        if (wrapper != null) {
+                            wrapper.setRuntimeState(ProcessState.STARTED);
+                            System.out.println(LanguageManager.get("process-start-process", processGroup.getName()));
+                        }
+                    });
+            }
+        } else {
+            ExecutorAPI.getInstance().getProcessProvider().createProcess()
+                .group(processGroup)
+                .prepare()
+                .onComplete(wrapper -> {
+                    if (wrapper != null) {
+                        wrapper.setRuntimeState(ProcessState.STARTED);
+                        System.out.println(LanguageManager.get("process-start-process", processGroup.getName()));
+                    }
+                });
+        }
+    }
 
     @Override
     public void run() {
@@ -62,7 +100,9 @@ public class OnlinePercentCheckerTask implements Runnable {
                 continue;
             }
 
-            int max = processes.stream().mapToInt(process -> process.getProcessDetail().getMaxPlayers()).sum();
+            int max = processes.stream()
+                .filter(process -> process.getProcessDetail().getProcessState().isStartedOrOnline())
+                .mapToInt(process -> process.getProcessDetail().getMaxPlayers()).sum();
             int online = processes.stream().mapToInt(process -> process.getProcessPlayerManager().getOnlineCount()).sum();
 
             if (this.getPercentOf(online, max) < configuration.getMaxPercentOfPlayers()) {
@@ -75,7 +115,7 @@ public class OnlinePercentCheckerTask implements Runnable {
                 continue;
             }
 
-            AutoStartRunnable.startPreparedOfGroup(processes, processGroup);
+            startPreparedOfGroup(processes, processGroup);
             this.checkGroups.put(processGroup.getName(), configuration.getCheckIntervalInSeconds());
         }
     }
