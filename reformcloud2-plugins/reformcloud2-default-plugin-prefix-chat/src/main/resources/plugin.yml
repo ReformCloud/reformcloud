@@ -1,5 +1,5 @@
 name: ReformCloud2Chat
-version: '2.10.1-SNAPSHOT'
+version: '2.10.1'
 author: derklaro
 main: systems.reformcloud.reformcloud2.chat.BukkitChatPlugin
 api-version: '1.13'
