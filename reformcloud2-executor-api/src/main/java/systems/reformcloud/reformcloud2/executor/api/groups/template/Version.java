@@ -53,6 +53,8 @@ public enum Version {
         "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.15.2.jar", 1, 41000),
     SPIGOT_1_16_3("Spigot 1.16.3", "1.16.3",
         "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.16.3.jar", 1, 41000),
+    SPIGOT_1_16_4("Spigot 1.16.4", "1.16.4",
+        "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.16.4.jar", 1, 41000),
 
     /**
      * Paper Versions
@@ -75,6 +77,8 @@ public enum Version {
         "https://dl.reformcloud.systems/mcversions/paper/paper-1.15.2.jar", 1, 41000),
     PAPER_1_16_3("Paper 1.16.3", "1.16.3",
         "https://dl.reformcloud.systems/mcversions/paper/paper-1.16.3.jar", 1, 41000),
+    PAPER_1_16_4("Paper 1.16.4", "1.16.4",
+        "https://dl.reformcloud.systems/mcversions/paper/paper-1.16.4.jar", 1, 41000),
 
     /**
      * Tuinity versions
@@ -83,6 +87,8 @@ public enum Version {
         "https://dl.reformcloud.systems/mcversions/tuinity/tuinity-1.15.2.jar", 1, 41000),
     TUINITY_1_16_3("Tuinity 1.16.3", "1.16.3",
         "https://dl.reformcloud.systems/mcversions/tuinity/tuinity-1.16.3.jar", 1, 41000),
+    TUINITY_1_16_4("Tuinity 1.16.4", "1.16.4",
+        "https://dl.reformcloud.systems/mcversions/tuinity/tuinity-1.16.4.jar", 1, 41000),
 
     /**
      * SpongeVanilla Versions
