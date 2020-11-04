@@ -44,7 +44,7 @@ final class ChatFormatUtil {
                               @NotNull String playerName, @NotNull String playerDisplayName,
                               @NotNull Function<String, Boolean> permissionChecker, @NotNull BiFunction<Character, String, String> colourReplacer) {
         return PermissionManagement.getInstance().getExistingUser(playerUniqueId).map(user -> {
-            String usableMessage = permissionChecker.apply("reformcloud.chat.coloured")
+            final String usableMessage = permissionChecker.apply("reformcloud.chat.coloured")
                 ? colourReplacer.apply('&', message.replace("%", "%%"))
                 : message.replace("%", "%%");
             if (usableMessage.trim().isEmpty()) {
@@ -52,7 +52,7 @@ final class ChatFormatUtil {
             }
 
             PermissionGroup permissionGroup = user.getHighestPermissionGroup().orElse(null);
-            return format
+            final String finalFormat = format
                 .replace("%name%", playerName)
                 .replace("%player_display%", playerDisplayName)
                 .replace("%group%", permissionGroup == null ? "" : permissionGroup.getName())
@@ -60,8 +60,8 @@ final class ChatFormatUtil {
                 .replace("%prefix%", user.getPrefix().orElse(""))
                 .replace("%suffix%", user.getSuffix().orElse(""))
                 .replace("%display%", user.getDisplay().orElse(""))
-                .replace("%colour%", user.getColour().orElse(""))
-                .replace("%message%", message);
+                .replace("%colour%", user.getColour().orElse(""));
+            return colourReplacer.apply('&', finalFormat).replace("%message%", usableMessage);
         }).orElse(null);
     }
 }
