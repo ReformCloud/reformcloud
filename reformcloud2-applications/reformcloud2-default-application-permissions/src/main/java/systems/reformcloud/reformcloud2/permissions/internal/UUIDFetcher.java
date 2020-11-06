@@ -99,7 +99,7 @@ public final class UUIDFetcher {
             ""
         );
 
-        return !configuration.isPresent() || !configuration.get().has("id") ? null : configuration.get().get("id", UUID.class);
+        return configuration.isEmpty() || !configuration.get().has("id") ? null : configuration.get().get("id", UUID.class);
     }
 
     @NotNull

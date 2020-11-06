@@ -18,7 +18,7 @@ import systems.reformcloud.reformcloud2.executor.api.http.reponse.ListeningHttpS
 import systems.reformcloud.reformcloud2.executor.api.http.request.HttpRequest;
 import systems.reformcloud.reformcloud2.executor.api.http.request.RequestMethod;
 import systems.reformcloud.reformcloud2.executor.api.http.server.HttpServer;
-import systems.reformcloud.reformcloud2.executor.api.utility.PortUtil;
+import systems.reformcloud.reformcloud2.shared.network.NetworkUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,7 +42,7 @@ class DefaultHttpServerTest {
     private static final String TEST_REQUEST_HEADER_KEY = "header_key";
     private static final String TEST_COOKIE_VALUE = "test_cookie_value";
     private static final String TEST_REQUEST_HEADER_VALUE = "header_val";
-    private static final int HTTP_PORT = PortUtil.checkPort(2000);
+    private static final int HTTP_PORT = NetworkUtils.checkAndReplacePortIfInUse(2000);
 
     private final HttpServer httpServer = new DefaultHttpServer();
     private final CookieManager cookieManager = new CookieManager();

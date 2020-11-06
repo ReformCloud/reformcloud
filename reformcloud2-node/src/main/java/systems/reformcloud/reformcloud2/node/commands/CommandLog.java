@@ -46,7 +46,7 @@ public final class CommandLog implements Command {
         }
 
         Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByName(strings[0]);
-        if (!wrapper.isPresent()) {
+        if (wrapper.isEmpty()) {
             sender.sendMessage(LanguageManager.get("command-process-process-unknown", strings[0]));
             return;
         }

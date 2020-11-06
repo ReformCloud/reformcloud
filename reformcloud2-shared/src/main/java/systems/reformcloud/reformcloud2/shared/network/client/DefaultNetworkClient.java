@@ -31,13 +31,11 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.client.NetworkClient;
 import systems.reformcloud.reformcloud2.executor.api.network.transport.EventLoopGroupType;
 
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 @SuppressWarnings("deprecation") // 1.8 is too old to use the new channel factory
@@ -70,7 +68,7 @@ public class DefaultNetworkClient implements NetworkClient {
             .option(ChannelOption.AUTO_READ, true)
             .option(ChannelOption.IP_TOS, 24)
             .option(ChannelOption.TCP_NODELAY, true)
-            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CommonHelper.longToInt(TimeUnit.SECONDS.toMillis(5)))
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
             .handler(new ClientChannelInitializer(supplier))
             .connect(host, port)
             .addListeners(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE_ON_FAILURE);

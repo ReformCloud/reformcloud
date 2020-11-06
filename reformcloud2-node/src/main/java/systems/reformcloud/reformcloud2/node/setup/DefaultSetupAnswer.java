@@ -26,11 +26,15 @@ package systems.reformcloud.reformcloud2.node.setup;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
+import systems.reformcloud.reformcloud2.shared.parser.Parsers;
 
+import java.util.Set;
 import java.util.function.Function;
 
 public class DefaultSetupAnswer implements SetupAnswer {
+
+    private static final Set<String> NO_ANSWERS = Set.of("false", "no");
+    private static final Set<String> YES_ANSWERS = Set.of("true", "yes");
 
     private final String originalAnswer;
 
@@ -45,26 +49,23 @@ public class DefaultSetupAnswer implements SetupAnswer {
 
     @Override
     public @Nullable Integer getAsInt() {
-        return CommonHelper.fromString(this.originalAnswer);
+        return Parsers.INT.parse(this.originalAnswer);
     }
 
     @Override
     public @Nullable Long getAsLong() {
-        return CommonHelper.longFromString(this.originalAnswer);
+        return Parsers.LONG.parse(this.originalAnswer);
     }
 
     @Override
     public @Nullable Boolean getAsBoolean() {
-        Boolean result = CommonHelper.booleanFromString(this.originalAnswer);
-        if (result != null) {
-            return result;
+        if (YES_ANSWERS.contains(this.originalAnswer.toLowerCase())) {
+            return true;
+        } else if (NO_ANSWERS.contains(this.originalAnswer.toLowerCase())) {
+            return false;
+        } else {
+            return null;
         }
-
-        if (this.originalAnswer.equalsIgnoreCase("yes") || this.originalAnswer.equalsIgnoreCase("no")) {
-            return this.originalAnswer.equalsIgnoreCase("yes");
-        }
-
-        return null;
     }
 
     @Override

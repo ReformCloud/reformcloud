@@ -34,7 +34,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.shared.SharedEndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
+import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
@@ -92,7 +92,7 @@ public class NodeServerEndpointChannelReader extends SharedEndpointChannelReader
 
             if (packet.getType() == 1) {
                 NodeNetworkClient.CONNECTIONS.remove(super.networkChannel.getAddress());
-                NodeInformation nodeInformation = packet.getData().get("node", NodeInformation.TYPE);
+                DefaultNodeInformation nodeInformation = packet.getData().get("node", DefaultNodeInformation.TYPE);
                 if (nodeInformation == null) {
                     // invalid type to id
                     super.networkChannel.close();
@@ -127,7 +127,7 @@ public class NodeServerEndpointChannelReader extends SharedEndpointChannelReader
                 }
 
                 Optional<DefaultNodeLocalProcessWrapper> wrapper = NodeExecutor.getInstance().getDefaultNodeProcessProvider().getProcessWrapperByUniqueId(processUniqueId);
-                if (!wrapper.isPresent()) {
+                if (wrapper.isEmpty()) {
                     // either the process is not registered or not running on the local node
                     super.networkChannel.close();
                     return;

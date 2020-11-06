@@ -142,7 +142,7 @@ public abstract class Embedded extends ExecutorAPI {
                 throw new RuntimeException(exception);
             }
 
-            if (!this.serviceRegistry.getProviderUnchecked(ChannelManager.class).getFirstChannel().isPresent()) {
+            if (this.serviceRegistry.getProviderUnchecked(ChannelManager.class).getFirstChannel().isEmpty()) {
                 System.exit(-1);
             }
         } finally {

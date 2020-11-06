@@ -30,7 +30,7 @@ import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConf
 import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
-import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
+import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
@@ -48,11 +48,11 @@ public interface ClusterManager {
                                        @NotNull JsonConfiguration jsonConfiguration, @NotNull ProcessState initialState,
                                        @NotNull UUID uniqueId, int memory, int id, int maxPlayers, @Nullable String targetProcessFactory);
 
-    void handleNodeConnect(@NotNull NodeInformation nodeInformation);
+    void handleNodeConnect(@NotNull DefaultNodeInformation nodeInformation);
 
-    void handleNodeUpdate(@NotNull NodeInformation nodeInformation);
+    void handleNodeUpdate(@NotNull DefaultNodeInformation nodeInformation);
 
-    void publishNodeUpdate(@NotNull NodeInformation nodeInformation);
+    void publishNodeUpdate(@NotNull DefaultNodeInformation nodeInformation);
 
     void handleNodeDisconnect(@NotNull String name);
 
@@ -106,5 +106,5 @@ public interface ClusterManager {
 
     boolean isHeadNode();
 
-    @NotNull NodeInformation getHeadNode();
+    @NotNull DefaultNodeInformation getHeadNode();
 }

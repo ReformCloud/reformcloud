@@ -42,7 +42,7 @@ public final class ApplicationConfigBuilder {
 
     private String website = "https://reformcloud.systems";
 
-    private String implementedVersion = "2.10.1";
+    private String implementedVersion = "2.11.0-SNAPSHOT";
 
     public ApplicationConfigBuilder(String name, String main, String author, String version, File appFile, JarEntry descFile) {
         this.name = name;

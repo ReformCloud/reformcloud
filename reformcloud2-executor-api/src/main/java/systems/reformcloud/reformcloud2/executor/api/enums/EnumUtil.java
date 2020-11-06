@@ -25,7 +25,6 @@
 package systems.reformcloud.reformcloud2.executor.api.enums;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.maps.CaseInsensitiveConcurrentHashMap;
 
 import java.util.EnumSet;
 import java.util.Map;
@@ -53,7 +52,7 @@ public final class EnumUtil {
     public static <T extends Enum<T>> Optional<T> findEnumFieldByName(@NotNull Class<T> enumClass, @NotNull String field) {
         checkClass(enumClass);
 
-        Enum<?> reference = CACHE.get(enumClass).namesToConstant.get(field);
+        Enum<?> reference = CACHE.get(enumClass).namesToConstant.get(field.toLowerCase());
         return reference == null ? Optional.empty() : Optional.of(enumClass.cast(reference));
     }
 
@@ -108,7 +107,7 @@ public final class EnumUtil {
     private static <T extends Enum<T>> Entry generateEntry(@NotNull EnumSet<T> enums) {
         Entry entry = new Entry(enums);
         for (Enum<T> anEnum : enums) {
-            entry.namesToConstant.put(anEnum.name(), anEnum);
+            entry.namesToConstant.put(anEnum.name().toLowerCase(), anEnum);
             entry.indexToConstant.put(anEnum.ordinal(), anEnum);
         }
 
@@ -142,7 +141,7 @@ public final class EnumUtil {
         }
 
         private Entry(@NotNull EnumSet<?> set) {
-            this.namesToConstant = new CaseInsensitiveConcurrentHashMap<>(set.size());
+            this.namesToConstant = new ConcurrentHashMap<>(set.size());
             this.indexToConstant = new ConcurrentHashMap<>(set.size());
             this.base = set;
         }

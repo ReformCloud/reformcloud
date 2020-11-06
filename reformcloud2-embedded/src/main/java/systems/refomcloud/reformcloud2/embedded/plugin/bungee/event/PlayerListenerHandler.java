@@ -45,7 +45,7 @@ import systems.refomcloud.reformcloud2.embedded.shared.SharedPlayerFallbackFilte
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
+import systems.reformcloud.reformcloud2.shared.collect.Entry2;
 
 public final class PlayerListenerHandler implements Listener {
 
@@ -59,14 +59,12 @@ public final class PlayerListenerHandler implements Listener {
                 event.getPlayer()::hasPermission,
                 BungeeFallbackExtraFilter.INSTANCE,
                 null
-            )
-                .ifPresent(processInformation -> event.setTarget(ProxyServer.getInstance().getServerInfo(processInformation.getProcessDetail().getName())))
-                .ifEmpty(v -> {
-                    event.getPlayer().disconnect(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getIngameMessages().format(
-                        Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
-                    )));
-                    event.setCancelled(true);
-                });
+            ).ifPresentOrElse(info -> event.setTarget(ProxyServer.getInstance().getServerInfo(info.getProcessDetail().getName())), () -> {
+                event.getPlayer().disconnect(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getIngameMessages().format(
+                    Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
+                )));
+                event.setCancelled(true);
+            });
         }
     }
 
@@ -80,7 +78,7 @@ public final class PlayerListenerHandler implements Listener {
             return;
         }
 
-        Duo<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
+        Entry2<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
             perm -> new EmptyProxiedPlayer(event.getConnection()).hasPermission(perm),
             BungeeExecutor.getInstance().getIngameMessages(),
             this.getServerController().getCachedProxies(),
@@ -101,7 +99,7 @@ public final class PlayerListenerHandler implements Listener {
             event.getPlayer()::hasPermission,
             BungeeFallbackExtraFilter.INSTANCE,
             event.getKickedFrom() == null ? null : event.getKickedFrom().getName()
-        ).ifPresent(processInformation -> {
+        ).ifPresentOrElse(processInformation -> {
             ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(processInformation.getProcessDetail().getName());
             if (serverInfo != null) {
                 event.setCancelServer(serverInfo);
@@ -112,7 +110,7 @@ public final class PlayerListenerHandler implements Listener {
             event.getPlayer().disconnect(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getIngameMessages().format(
                 BungeeExecutor.getInstance().getIngameMessages().getNoHubServerAvailable()
             )));
-        }).ifEmpty(v -> event.getPlayer().disconnect(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getIngameMessages().format(
+        }, () -> event.getPlayer().disconnect(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getIngameMessages().format(
             BungeeExecutor.getInstance().getIngameMessages().getNoHubServerAvailable()
         ))));
     }

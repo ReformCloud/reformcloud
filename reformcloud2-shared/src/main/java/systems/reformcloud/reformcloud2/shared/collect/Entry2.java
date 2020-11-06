@@ -22,38 +22,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.utility;
+package systems.reformcloud.reformcloud2.shared.collect;
 
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public final class PortUtil {
+import java.util.Map;
 
-    private PortUtil() {
-        throw new UnsupportedOperationException();
+public class Entry2<F, S> implements Map.Entry<F, S> {
+
+    private final F first;
+    private S second;
+
+    public Entry2(@NotNull F first, @Nullable S second) {
+        this.first = first;
+        this.second = second;
     }
 
-    /**
-     * Checks if a specific port is free
-     *
-     * @param startPort The port which should be checked and counted up
-     * @return The next free port
-     */
-    public static int checkPort(int startPort) {
-        startPort = Math.max(startPort, 0);
-        while (isPortInUse(startPort) && startPort < 65536) {
-            startPort++;
-        }
-
-        return Math.min(startPort, 65535);
+    @NotNull
+    public F getFirst() {
+        return this.first;
     }
 
-    private static boolean isPortInUse(int port) {
-        try (ServerSocket serverSocket = new ServerSocket()) {
-            serverSocket.bind(new InetSocketAddress(port));
-            return false;
-        } catch (final Throwable throwable) {
-            return true;
-        }
+    public S getSecond() {
+        return this.second;
+    }
+
+    @Override
+    public F getKey() {
+        return this.first;
+    }
+
+    @Override
+    public S getValue() {
+        return this.second;
+    }
+
+    @Override
+    public S setValue(S value) {
+        final S before = this.second;
+        this.second = value;
+        return before;
     }
 }

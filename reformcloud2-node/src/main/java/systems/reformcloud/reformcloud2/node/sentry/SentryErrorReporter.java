@@ -27,8 +27,8 @@ package systems.reformcloud.reformcloud2.node.sentry;
 import io.sentry.Sentry;
 import io.sentry.SentryEvent;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.shared.platform.Platform;
 
 /* package */ final class SentryErrorReporter {
 
@@ -55,7 +55,7 @@ import systems.reformcloud.reformcloud2.node.NodeExecutor;
         event.setExtra("system.user_dir", System.getProperty("user.dir"));
         event.setExtra("system.os", System.getProperty("os.name") + " (Version: " + System.getProperty("os.version") + " Arch: " + System.getProperty("os.arch") + ")");
         event.setExtra("system.cpu", Runtime.getRuntime().availableProcessors());
-        event.setExtra("system.memory", formatBytes(CommonHelper.getTotalSystemMemory()));
+        event.setExtra("system.memory", formatBytes(Platform.getTotalSystemMemory()));
         event.setExtra("system.current_thread", Thread.currentThread().getName());
 
         return event;

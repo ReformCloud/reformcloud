@@ -31,7 +31,7 @@ import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import systems.refomcloud.reformcloud2.embedded.plugin.sponge.event.PlayerListenerHandler;
-import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
+import systems.reformcloud.reformcloud2.shared.language.LanguageLoader;
 
 @Plugin(
     id = "reformcloud_2_api_executor",

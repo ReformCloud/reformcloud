@@ -27,7 +27,6 @@ package systems.reformcloud.reformcloud2.executor.api.utility.list;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.utility.optional.ReferencedOptional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +35,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -136,12 +136,12 @@ public final class Streams {
      * @param in        The incoming list
      * @param predicate The predicate which checks if the current object equals the the filter
      * @param <T>       The object parameter of the values in the list
-     * @return A new {@link ReferencedOptional} with the value or {@code null} if no value in the list equals to the filter
+     * @return the first element of the given {@code in} collection which matches the {@code predicate}
      * @see #filter(Collection, Predicate)
      */
     @NotNull
-    public static <T> ReferencedOptional<T> filterToReference(@NotNull Collection<T> in, @NotNull Predicate<T> predicate) {
-        return ReferencedOptional.build(filter(in, predicate));
+    public static <T> Optional<T> findFirst(@NotNull Collection<T> in, @NotNull Predicate<T> predicate) {
+        return Optional.ofNullable(filter(in, predicate));
     }
 
     /**
@@ -151,21 +151,21 @@ public final class Streams {
      * @param predicate The predicate which checks if the current object equals the the filter
      * @param <K>       The object parameter of the keys in the map
      * @param <V>       The object parameter of the values in the map
-     * @return A new {@link ReferencedOptional} with the value or {@code null} if no value in the map equals to the filter
+     * @return the first value of the map which associated key passes the {@code predicate}
      */
     @NotNull
-    public static <K, V> ReferencedOptional<V> filterToReference(@NotNull Map<K, V> in, @NotNull Predicate<K> predicate) {
+    public static <K, V> Optional<V> findFirst(@NotNull Map<K, V> in, @NotNull Predicate<K> predicate) {
         if (in.isEmpty()) {
-            return ReferencedOptional.empty();
+            return Optional.empty();
         }
 
         for (Map.Entry<K, V> entry : in.entrySet()) {
             if (predicate.test(entry.getKey())) {
-                return ReferencedOptional.build(entry.getValue());
+                return Optional.of(entry.getValue());
             }
         }
 
-        return ReferencedOptional.empty();
+        return Optional.empty();
     }
 
     /**

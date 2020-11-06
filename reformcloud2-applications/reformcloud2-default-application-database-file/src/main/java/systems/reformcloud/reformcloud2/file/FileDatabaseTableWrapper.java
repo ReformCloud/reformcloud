@@ -30,7 +30,7 @@ import de.derklaro.projects.deer.api.provider.DatabaseProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
+import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.DatabaseTableWrapper;
 
 import java.io.IOException;

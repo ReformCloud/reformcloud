@@ -96,7 +96,7 @@ public final class ProcessPlayerManager {
      * @return If the player is currently connected to the process
      */
     public boolean isPlayerOnlineOnCurrentProcess(@NotNull UUID playerUniqueID) {
-        return Streams.filterToReference(this.onlinePlayers, e -> e.getUniqueID().equals(playerUniqueID)).isPresent();
+        return Streams.findFirst(this.onlinePlayers, e -> e.getUniqueID().equals(playerUniqueID)).isPresent();
     }
 
     /**
@@ -106,7 +106,7 @@ public final class ProcessPlayerManager {
      * @return If the player is currently connected to the process
      */
     public boolean isPlayerOnlineOnCurrentProcess(@NotNull String playerName) {
-        return Streams.filterToReference(this.onlinePlayers, e -> e.getName().equals(playerName)).isPresent();
+        return Streams.findFirst(this.onlinePlayers, e -> e.getName().equals(playerName)).isPresent();
     }
 
     /**

@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.utility.random;
+package systems.reformcloud.reformcloud2.shared.random;
 
 import org.jetbrains.annotations.NotNull;
 

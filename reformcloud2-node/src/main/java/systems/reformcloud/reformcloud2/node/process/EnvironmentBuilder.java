@@ -30,12 +30,12 @@ import systems.reformcloud.reformcloud2.executor.api.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.inclusion.Inclusion;
 import systems.reformcloud.reformcloud2.executor.api.io.DownloadHelper;
-import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.process.NetworkInfo;
 import systems.reformcloud.reformcloud2.executor.api.utility.NetworkAddress;
-import systems.reformcloud.reformcloud2.executor.api.utility.PortUtil;
-import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.shared.Constants;
+import systems.reformcloud.reformcloud2.shared.io.IOUtils;
+import systems.reformcloud.reformcloud2.shared.network.NetworkUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -68,7 +68,7 @@ final class EnvironmentBuilder {
      */
     static void constructEnvFor(@NotNull DefaultNodeLocalProcessWrapper runningProcess, boolean firstStart, @NotNull String connectionKey) {
         NetworkInfo networkInfo = runningProcess.getProcessInformation().getNetworkInfo();
-        networkInfo.setPort(PortUtil.checkPort(networkInfo.getPort()));
+        networkInfo.setPort(NetworkUtils.checkAndReplacePortIfInUse(networkInfo.getPort()));
 
         if (!runningProcess.getProcessInformation().getProcessGroup().isStaticProcess() || firstStart) {
             loadTemplateInclusions(runningProcess, Inclusion.InclusionLoadType.PRE);
@@ -83,7 +83,7 @@ final class EnvironmentBuilder {
         }
 
         if (Files.notExists(Paths.get("reformcloud/files/runner.jar"))) {
-            DownloadHelper.downloadAndDisconnect(StringUtil.RUNNER_DOWNLOAD_URL, "reformcloud/files/runner.jar");
+            DownloadHelper.downloadAndDisconnect(Constants.RUNNER_DOWNLOAD_URL, "reformcloud/files/runner.jar");
         }
 
         IOUtils.createDirectory(Paths.get(runningProcess.getPath() + "/plugins"));

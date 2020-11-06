@@ -24,15 +24,15 @@
  */
 package systems.reformcloud.reformcloud2.node;
 
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader;
-import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
 import systems.reformcloud.reformcloud2.node.argument.ArgumentParser;
 import systems.reformcloud.reformcloud2.node.argument.DefaultArgumentParser;
+import systems.reformcloud.reformcloud2.shared.Constants;
 import systems.reformcloud.reformcloud2.shared.dependency.DefaultDependencyLoader;
 import systems.reformcloud.reformcloud2.shared.dependency.DependencyFileLoader;
+import systems.reformcloud.reformcloud2.shared.io.IOUtils;
+import systems.reformcloud.reformcloud2.shared.language.LanguageLoader;
 
 import java.nio.file.Paths;
 
@@ -63,7 +63,7 @@ public final class NodeLauncher {
         nodeExecutor.bootstrap(argumentParser);
 
         double bootTime = (System.currentTimeMillis() - startTime) / 1000d;
-        System.out.println(LanguageManager.get("startup-done", CommonHelper.DECIMAL_FORMAT.format(bootTime)));
+        System.out.println(LanguageManager.get("startup-done", Constants.TWO_POINT_THREE_DECIMAL_FORMAT.format(bootTime)));
 
         nodeExecutor.getCloudTickWorker().startTick();
     }

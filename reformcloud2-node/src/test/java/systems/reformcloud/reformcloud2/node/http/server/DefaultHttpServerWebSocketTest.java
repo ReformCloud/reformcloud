@@ -50,7 +50,7 @@ import systems.reformcloud.reformcloud2.executor.api.http.websocket.listener.Soc
 import systems.reformcloud.reformcloud2.executor.api.http.websocket.request.RequestFrameHolder;
 import systems.reformcloud.reformcloud2.executor.api.http.websocket.request.SocketFrameSource;
 import systems.reformcloud.reformcloud2.executor.api.http.websocket.response.ResponseFrameHolder;
-import systems.reformcloud.reformcloud2.executor.api.utility.PortUtil;
+import systems.reformcloud.reformcloud2.shared.network.NetworkUtils;
 
 import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
@@ -75,7 +75,7 @@ public class DefaultHttpServerWebSocketTest {
     private static final String SERVER_HI_RESPONSE = "Morning";
     private static final String SERVER_GOODBYE_MESSAGE = "ByeBye";
     private static final String CLIENT_CLOSE_REQUEST_TEXT = "Ok Bye!";
-    private static final int HTTP_PORT = PortUtil.checkPort(2000);
+    private static final int HTTP_PORT = NetworkUtils.checkAndReplacePortIfInUse(2000);
     private static final int SERVER_CLOSE_REASON_CODE = CloseSocketFrame.CloseStatus.SERVICE_RESTART.code();
 
     private final HttpServer httpServer = new DefaultHttpServer();

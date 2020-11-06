@@ -196,7 +196,7 @@ public class SpongeSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
 
     private void changeBlock0(@NotNull Sign sign, @NotNull SignSubLayout layout) {
         Optional<DirectionalData> directionalData = sign.getLocation().get(DirectionalData.class);
-        if (!directionalData.isPresent()) {
+        if (directionalData.isEmpty()) {
             return;
         }
 

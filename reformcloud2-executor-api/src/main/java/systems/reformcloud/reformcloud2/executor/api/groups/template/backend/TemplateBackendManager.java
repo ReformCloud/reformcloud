@@ -79,7 +79,7 @@ public final class TemplateBackendManager {
      * @param templateBackend The template backend which should get registered
      */
     public static void registerBackend(@NotNull TemplateBackend templateBackend) {
-        Streams.filterToReference(LOADED, e -> e.getName().equalsIgnoreCase(templateBackend.getName())).ifEmpty(e -> LOADED.add(templateBackend));
+        Streams.findFirst(LOADED, e -> e.getName().equalsIgnoreCase(templateBackend.getName())).ifEmpty(e -> LOADED.add(templateBackend));
     }
 
     /**
@@ -88,7 +88,7 @@ public final class TemplateBackendManager {
      * @param name The name of the backend which should get unregistered
      */
     public static void unregisterBackend(@NotNull String name) {
-        Streams.filterToReference(LOADED, e -> e.getName().equalsIgnoreCase(name)).ifPresent(LOADED::remove);
+        Streams.findFirst(LOADED, e -> e.getName().equalsIgnoreCase(name)).ifPresent(LOADED::remove);
     }
 
     /**

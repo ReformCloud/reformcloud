@@ -30,10 +30,10 @@ import systems.refomcloud.reformcloud2.embedded.event.PlayerFallbackChooseEvent;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.utility.optional.ReferencedOptional;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -45,13 +45,13 @@ public final class SharedPlayerFallbackFilter {
     }
 
     @NotNull
-    public static ReferencedOptional<ProcessInformation> filterFallback(@NotNull UUID playerUniqueId,
-                                                                        @NotNull Collection<ProcessInformation> lobbies,
-                                                                        @NotNull Function<String, Boolean> permissionChecker,
-                                                                        @NotNull Predicate<ProcessInformation> extraFilter,
-                                                                        @Nullable String currentServer) {
+    public static Optional<ProcessInformation> filterFallback(@NotNull UUID playerUniqueId,
+                                                              @NotNull Collection<ProcessInformation> lobbies,
+                                                              @NotNull Function<String, Boolean> permissionChecker,
+                                                              @NotNull Predicate<ProcessInformation> extraFilter,
+                                                              @Nullable String currentServer) {
         if (lobbies.isEmpty()) {
-            return ReferencedOptional.empty();
+            return Optional.empty();
         }
 
         ProcessInformation filtered = lobbies

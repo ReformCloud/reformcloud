@@ -27,7 +27,6 @@ package systems.reformcloud.reformcloud2.proxy.defaults;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
@@ -36,6 +35,7 @@ import systems.reformcloud.reformcloud2.proxy.ProxyConfigurationHandler;
 import systems.reformcloud.reformcloud2.proxy.config.MotdConfiguration;
 import systems.reformcloud.reformcloud2.proxy.config.TabListConfiguration;
 import systems.reformcloud.reformcloud2.proxy.event.ProxyConfigurationUpdateEvent;
+import systems.reformcloud.reformcloud2.shared.Constants;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -112,7 +112,7 @@ public abstract class AbstractProxyConfigurationHandler extends ProxyConfigurati
     }
 
     private void startTasks() {
-        CommonHelper.EXECUTOR.execute(() -> {
+        Constants.CACHED_THREAD_POOL.execute(() -> {
             while (!Thread.interrupted()) {
                 if (this.proxyConfiguration == null || this.proxyConfiguration.getMotdDefaultConfig().isEmpty()) {
                     try {
@@ -137,7 +137,7 @@ public abstract class AbstractProxyConfigurationHandler extends ProxyConfigurati
             }
         });
 
-        CommonHelper.EXECUTOR.execute(() -> {
+        Constants.CACHED_THREAD_POOL.execute(() -> {
             while (!Thread.interrupted()) {
                 if (this.proxyConfiguration == null || this.proxyConfiguration.getMotdMaintenanceConfig().isEmpty()) {
                     try {
@@ -162,7 +162,7 @@ public abstract class AbstractProxyConfigurationHandler extends ProxyConfigurati
             }
         });
 
-        CommonHelper.EXECUTOR.execute(() -> {
+        Constants.CACHED_THREAD_POOL.execute(() -> {
             while (!Thread.interrupted()) {
                 if (this.proxyConfiguration == null || this.proxyConfiguration.getTabListConfigurations().isEmpty()) {
                     try {

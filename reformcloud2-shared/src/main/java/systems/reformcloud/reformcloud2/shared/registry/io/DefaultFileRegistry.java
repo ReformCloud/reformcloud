@@ -27,7 +27,7 @@ package systems.reformcloud.reformcloud2.shared.registry.io;
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
+import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.registry.io.FileRegistry;
 
 import java.io.IOException;

@@ -25,7 +25,6 @@
 package systems.reformcloud.reformcloud2.node;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.application.ApplicationLoader;
@@ -36,15 +35,12 @@ import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.http.server.HttpServer;
-import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryManager;
 import systems.reformcloud.reformcloud2.executor.api.network.server.NetworkServer;
-import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.provider.ChannelMessageProvider;
 import systems.reformcloud.reformcloud2.executor.api.provider.DatabaseProvider;
@@ -126,12 +122,17 @@ import systems.reformcloud.reformcloud2.protocol.shared.PacketPlaySoundToPlayer;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketSendPlayerMessage;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketSendPlayerTitle;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketSetPlayerLocation;
+import systems.reformcloud.reformcloud2.shared.Constants;
 import systems.reformcloud.reformcloud2.shared.command.DefaultCommandManager;
 import systems.reformcloud.reformcloud2.shared.event.DefaultEventManager;
+import systems.reformcloud.reformcloud2.shared.io.IOUtils;
+import systems.reformcloud.reformcloud2.shared.language.LanguageLoader;
 import systems.reformcloud.reformcloud2.shared.network.channel.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.shared.network.packet.DefaultPacketProvider;
 import systems.reformcloud.reformcloud2.shared.network.packet.DefaultQueryManager;
 import systems.reformcloud.reformcloud2.shared.network.server.DefaultNetworkServer;
+import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
+import systems.reformcloud.reformcloud2.shared.platform.Platform;
 import systems.reformcloud.reformcloud2.shared.registry.service.DefaultServiceRegistry;
 
 import java.nio.file.Paths;
@@ -164,7 +165,7 @@ public final class NodeExecutor extends ExecutorAPI {
     private CloudLogger logger;
     private ArgumentParser argumentParser;
 
-    private NodeInformation currentNodeInformation;
+    private DefaultNodeInformation currentNodeInformation;
 
     protected NodeExecutor(DependencyLoader dependencyLoader) {
         Conditions.isTrue(Paths.get("").toAbsolutePath().toString().indexOf('!') == -1, "Cannot run ReformCloud in directory with ! in path.");
@@ -207,7 +208,7 @@ public final class NodeExecutor extends ExecutorAPI {
         this.nodeExecutorConfig.init();
         this.nodeConfig = this.nodeExecutorConfig.getNodeConfig();
         SentryLoggingLoader.loadSentryLogging(this); // load after config
-        this.nodeInformationProvider = new DefaultNodeNodeInformationProvider(this.currentNodeInformation = new NodeInformation(
+        this.nodeInformationProvider = new DefaultNodeNodeInformationProvider(this.currentNodeInformation = new DefaultNodeInformation(
             this.nodeConfig.getName(),
             this.nodeConfig.getUniqueID(),
             System.currentTimeMillis(),
@@ -266,7 +267,7 @@ public final class NodeExecutor extends ExecutorAPI {
         LanguageLoader.doReload();
         this.nodeConfig = this.nodeExecutorConfig.reload();
 
-        this.currentNodeInformation = new NodeInformation(
+        this.currentNodeInformation = new DefaultNodeInformation(
             this.currentNodeInformation.getName(),
             this.currentNodeInformation.getNodeUniqueID(),
             this.currentNodeInformation.getStartupTime(),
@@ -285,7 +286,7 @@ public final class NodeExecutor extends ExecutorAPI {
         this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).loadApplications();
         this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).enableApplications();
 
-        System.out.println(LanguageManager.get("runtime-reload-done", CommonHelper.DECIMAL_FORMAT.format((System.currentTimeMillis() - startTime) / 1000d)));
+        System.out.println(LanguageManager.get("runtime-reload-done", Constants.TWO_POINT_THREE_DECIMAL_FORMAT.format((System.currentTimeMillis() - startTime) / 1000d)));
     }
 
     public void shutdown() throws Exception {
@@ -454,13 +455,13 @@ public final class NodeExecutor extends ExecutorAPI {
     }
 
     @NotNull
-    public NodeInformation updateCurrentNodeInformation() {
+    public DefaultNodeInformation updateCurrentNodeInformation() {
         this.currentNodeInformation.update();
         return this.currentNodeInformation;
     }
 
     @NotNull
-    public NodeInformation getCurrentNodeInformation() {
+    public DefaultNodeInformation getCurrentNodeInformation() {
         return this.currentNodeInformation;
     }
 
@@ -537,7 +538,7 @@ public final class NodeExecutor extends ExecutorAPI {
             return false;
         }
 
-        double cpuUsageSystem = CommonHelper.operatingSystemMXBean().getSystemCpuLoad();
+        double cpuUsageSystem = Platform.getOperatingSystemMxBean().getSystemCpuLoad();
         return cpuUsageSystem <= 0 || cpuUsageSystem * 100 < this.nodeConfig.getMaxSystemCpuUsage();
     }
 

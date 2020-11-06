@@ -26,10 +26,10 @@ package systems.reformcloud.reformcloud2.executor.api.process;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 
+import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -91,28 +91,27 @@ public class ProcessRuntimeInformation implements SerializableObject {
     }
 
     public static ProcessRuntimeInformation create() {
-        long[] longs = CommonHelper.threadMXBean().findDeadlockedThreads();
         return new ProcessRuntimeInformation(
-            CommonHelper.operatingSystemMXBean().getSystemCpuLoad() * 100,
-            CommonHelper.operatingSystemMXBean().getProcessCpuLoad() * 100,
-            CommonHelper.operatingSystemMXBean().getSystemLoadAverage() * 100,
+            0,//ManagementFactory.getOperatingSystemMXBean().getSystemCpuLoad() * 100,
+            0,//CommonHelper.operatingSystemMXBean().getProcessCpuLoad() * 100,
+            0,//CommonHelper.operatingSystemMXBean().getSystemLoadAverage() * 100,
             Runtime.getRuntime().availableProcessors(),
             Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory(),
-            CommonHelper.memoryMXBean().getHeapMemoryUsage().getUsed() / MEGABYTE,
-            CommonHelper.memoryMXBean().getNonHeapMemoryUsage().getUsed() / MEGABYTE,
-            CommonHelper.memoryPoolMXBeanCollectionUsage(),
-            CommonHelper.classLoadingMXBean().getLoadedClassCount(),
-            CommonHelper.classLoadingMXBean().getUnloadedClassCount(),
-            CommonHelper.classLoadingMXBean().getTotalLoadedClassCount(),
+            ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / MEGABYTE,
+            ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getUsed() / MEGABYTE,
+            0,//CommonHelper.memoryPoolMXBeanCollectionUsage(),
+            ManagementFactory.getClassLoadingMXBean().getLoadedClassCount(),
+            ManagementFactory.getClassLoadingMXBean().getUnloadedClassCount(),
+            ManagementFactory.getClassLoadingMXBean().getTotalLoadedClassCount(),
             System.getProperty("os.name"),
             System.getProperty("java.version"),
             System.getProperty("os.arch"),
-            CommonHelper.runtimeMXBean().getInputArguments().toArray(new String[0]),
+            ManagementFactory.getRuntimeMXBean().getInputArguments().toArray(new String[0]),
             Thread.getAllStackTraces().size(),
-            longs == null ? new long[0] : longs,
-            CommonHelper.runtimeMXBean().getSystemProperties(),
-            CommonHelper.runtimeMXBean().getClassPath(),
-            CommonHelper.runtimeMXBean().isBootClassPathSupported() ? CommonHelper.runtimeMXBean().getBootClassPath() : "unknown"
+            null,//Platform,
+            ManagementFactory.getRuntimeMXBean().getSystemProperties(),
+            ManagementFactory.getRuntimeMXBean().getClassPath(),
+            ManagementFactory.getRuntimeMXBean().isBootClassPathSupported() ? ManagementFactory.getRuntimeMXBean().getBootClassPath() : "unknown"
         );
     }
 

@@ -36,7 +36,7 @@ import systems.refomcloud.reformcloud2.embedded.plugin.spigot.SpigotExecutor;
 import systems.refomcloud.reformcloud2.embedded.shared.SharedJoinAllowChecker;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
+import systems.reformcloud.reformcloud2.shared.collect.Entry2;
 
 public final class PlayerListenerHandler implements Listener {
 
@@ -50,7 +50,7 @@ public final class PlayerListenerHandler implements Listener {
             return;
         }
 
-        Duo<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
+        Entry2<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
             event.getPlayer()::hasPermission,
             SpigotExecutor.getInstance().getIngameMessages(),
             null,

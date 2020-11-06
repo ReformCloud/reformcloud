@@ -52,13 +52,13 @@ public abstract class ExecutorAPI {
             ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
         }
 
-        CommonHelper.setSystemPropertyIfUnset("io.netty.allocator.maxOrder", "9");
-        CommonHelper.setSystemPropertyIfUnset("io.netty.noPreferDirect", "true");
-        CommonHelper.setSystemPropertyIfUnset("io.netty.maxDirectMemory", "0");
-        CommonHelper.setSystemPropertyIfUnset("io.netty.recycler.maxCapacity", "0");
-        CommonHelper.setSystemPropertyIfUnset("io.netty.recycler.maxCapacity.default", "0");
-        CommonHelper.setSystemPropertyIfUnset("io.netty.selectorAutoRebuildThreshold", "0");
-        CommonHelper.setSystemPropertyIfUnset("io.netty.allocator.type", "UNPOOLED");
+        System.getProperties().putIfAbsent("io.netty.allocator.maxOrder", "9");
+        System.getProperties().putIfAbsent("io.netty.noPreferDirect", "true");
+        System.getProperties().putIfAbsent("io.netty.maxDirectMemory", "0");
+        System.getProperties().putIfAbsent("io.netty.recycler.maxCapacity", "0");
+        System.getProperties().putIfAbsent("io.netty.recycler.maxCapacity.default", "0");
+        System.getProperties().putIfAbsent("io.netty.selectorAutoRebuildThreshold", "0");
+        System.getProperties().putIfAbsent("io.netty.allocator.type", "UNPOOLED");
 
         Thread.setDefaultUncaughtExceptionHandler((t, ex) -> ex.printStackTrace());
     }

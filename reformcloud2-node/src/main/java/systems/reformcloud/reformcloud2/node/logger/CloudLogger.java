@@ -28,7 +28,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jline.reader.LineReader;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
-import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
+import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.event.logger.LogRecordProcessEvent;
 
@@ -97,7 +97,7 @@ public class CloudLogger extends Logger {
      * @param logRecord The log record to check
      * @return {@code true} if the record should be printed, {@code false} otherwise
      */
-    @ApiStatus.AvailableSince("2.10.1-SNAPSHOT")
+    @ApiStatus.AvailableSince("2.11.0-SNAPSHOT-SNAPSHOT")
     protected boolean preProcessRecord(@NotNull LogRecord logRecord) {
         return !NodeExecutor.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class)
             .callEvent(new LogRecordProcessEvent(logRecord))

@@ -25,7 +25,6 @@
 package systems.reformcloud.reformcloud2.node.commands;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
@@ -40,7 +39,8 @@ import systems.reformcloud.reformcloud2.executor.api.groups.utils.AutomaticStart
 import systems.reformcloud.reformcloud2.executor.api.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.utils.StartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
+import systems.reformcloud.reformcloud2.shared.StringUtil;
+import systems.reformcloud.reformcloud2.shared.parser.Parsers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -131,14 +131,14 @@ public final class CommandCreate implements Command {
             return;
         }
 
-        Properties properties = StringUtil.calcProperties(strings, 3);
+        Properties properties = StringUtil.parseProperties(strings, 3);
         if (properties.containsKey("sub-groups")) {
             String[] subGroupsStrings = properties.getProperty("sub-groups").contains(";")
                 ? properties.getProperty("sub-groups").split(";")
                 : new String[]{properties.getProperty("sub-groups")};
 
             for (String subGroup : subGroupsStrings) {
-                if (!ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(subGroup).isPresent()) {
+                if (ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(subGroup).isEmpty()) {
                     source.sendMessage(LanguageManager.get("command-create-sub-group-does-not-exists", subGroup));
                     return;
                 }
@@ -173,7 +173,7 @@ public final class CommandCreate implements Command {
             return;
         }
 
-        Properties properties = StringUtil.calcProperties(strings, 4);
+        Properties properties = StringUtil.parseProperties(strings, 4);
 
         int port = version.getDefaultPort();
         int memory = 512;
@@ -187,7 +187,7 @@ public final class CommandCreate implements Command {
         List<String> clients = new ArrayList<>();
 
         if (properties.containsKey("start-port")) {
-            Integer startPort = CommonHelper.fromString(properties.getProperty("start-port"));
+            Integer startPort = Parsers.INT.parse(properties.getProperty("start-port"));
             if (startPort == null || startPort <= 0) {
                 source.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("start-port")));
                 return;
@@ -197,7 +197,7 @@ public final class CommandCreate implements Command {
         }
 
         if (properties.containsKey("max-players")) {
-            Integer maxPlayerCount = CommonHelper.fromString(properties.getProperty("max-players"));
+            Integer maxPlayerCount = Parsers.INT.parse(properties.getProperty("max-players"));
             if (maxPlayerCount == null || maxPlayerCount <= 0) {
                 source.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("max-players")));
                 return;
@@ -207,7 +207,7 @@ public final class CommandCreate implements Command {
         }
 
         if (properties.containsKey("max-memory")) {
-            Integer maxMemory = CommonHelper.fromString(properties.getProperty("max-memory"));
+            Integer maxMemory = Parsers.INT.parse(properties.getProperty("max-memory"));
             if (maxMemory == null || maxMemory <= 50) {
                 source.sendMessage(LanguageManager.get("command-integer-failed", 50, properties.getProperty("max-memory")));
                 return;
@@ -217,7 +217,7 @@ public final class CommandCreate implements Command {
         }
 
         if (properties.containsKey("min-process-count")) {
-            Integer minProcessCount = CommonHelper.fromString(properties.getProperty("min-process-count"));
+            Integer minProcessCount = Parsers.INT.parse(properties.getProperty("min-process-count"));
             if (minProcessCount == null || minProcessCount <= -1) {
                 source.sendMessage(LanguageManager.get("command-integer-failed", -1, properties.getProperty("min-process-count")));
                 return;
@@ -227,7 +227,7 @@ public final class CommandCreate implements Command {
         }
 
         if (properties.containsKey("max-process-count")) {
-            Integer maxProcessCount = CommonHelper.fromString(properties.getProperty("max-process-count"));
+            Integer maxProcessCount = Parsers.INT.parse(properties.getProperty("max-process-count"));
             if (maxProcessCount == null || maxProcessCount <= -2) {
                 source.sendMessage(LanguageManager.get("command-integer-failed", -2, properties.getProperty("max-process-count")));
                 return;
@@ -237,7 +237,7 @@ public final class CommandCreate implements Command {
         }
 
         if (properties.containsKey("always-prepared")) {
-            Integer alwaysPrepared = CommonHelper.fromString(properties.getProperty("always-prepared"));
+            Integer alwaysPrepared = Parsers.INT.parse(properties.getProperty("always-prepared"));
             if (alwaysPrepared == null || alwaysPrepared <= -1) {
                 source.sendMessage(LanguageManager.get("command-integer-failed", -1, properties.getProperty("always-prepared")));
                 return;
@@ -247,7 +247,7 @@ public final class CommandCreate implements Command {
         }
 
         if (properties.containsKey("static")) {
-            Boolean isStatic = CommonHelper.booleanFromString(properties.getProperty("static"));
+            Boolean isStatic = Parsers.BOOLEAN.parse(properties.getProperty("static"));
             if (isStatic == null) {
                 source.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("static")));
                 return;
@@ -257,7 +257,7 @@ public final class CommandCreate implements Command {
         }
 
         if (properties.containsKey("lobby")) {
-            Boolean isLobby = CommonHelper.booleanFromString(properties.getProperty("lobby"));
+            Boolean isLobby = Parsers.BOOLEAN.parse(properties.getProperty("lobby"));
             if (isLobby == null) {
                 source.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("lobby")));
                 return;
@@ -267,7 +267,7 @@ public final class CommandCreate implements Command {
         }
 
         if (properties.containsKey("maintenance")) {
-            Boolean isMaintenance = CommonHelper.booleanFromString(properties.getProperty("maintenance"));
+            Boolean isMaintenance = Parsers.BOOLEAN.parse(properties.getProperty("maintenance"));
             if (isMaintenance == null) {
                 source.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("maintenance")));
                 return;
@@ -284,7 +284,7 @@ public final class CommandCreate implements Command {
             Collection<MainGroup> basedOn = new ArrayList<>();
             for (String mainGroup : mainGroups) {
                 Optional<MainGroup> group = ExecutorAPI.getInstance().getMainGroupProvider().getMainGroup(mainGroup);
-                if (!group.isPresent()) {
+                if (group.isEmpty()) {
                     source.sendMessage(LanguageManager.get("command-create-main-group-does-not-exists", mainGroup));
                     return;
                 }

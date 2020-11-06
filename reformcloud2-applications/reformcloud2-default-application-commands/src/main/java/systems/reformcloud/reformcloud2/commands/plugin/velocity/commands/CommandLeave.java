@@ -59,7 +59,7 @@ public class CommandLeave implements SimpleCommand {
         }
 
         Player player = (Player) invocation.source();
-        if (!player.getCurrentServer().isPresent()) {
+        if (player.getCurrentServer().isEmpty()) {
             player.sendMessage(Identity.nil(), VelocityExecutor.SERIALIZER.deserialize(Embedded.getInstance().getIngameMessages().format(
                 Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
             )));
@@ -81,9 +81,9 @@ public class CommandLeave implements SimpleCommand {
             player::hasPermission,
             VelocityFallbackExtraFilter.INSTANCE,
             null // ignored because we are sure the player is not on a lobby
-        ).ifPresent(processInformation -> {
+        ).ifPresentOrElse(processInformation -> {
             Optional<RegisteredServer> lobby = VelocityExecutor.getInstance().getProxyServer().getServer(processInformation.getProcessDetail().getName());
-            if (!lobby.isPresent()) {
+            if (lobby.isEmpty()) {
                 player.sendMessage(Identity.nil(), VelocityExecutor.SERIALIZER.deserialize(Embedded.getInstance().getIngameMessages().format(
                     Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
                 )));
@@ -94,7 +94,7 @@ public class CommandLeave implements SimpleCommand {
                 Embedded.getInstance().getIngameMessages().getConnectingToHub(), processInformation.getProcessDetail().getName()
             )));
             player.createConnectionRequest(lobby.get()).fireAndForget();
-        }).ifEmpty(v -> player.sendMessage(Identity.nil(), VelocityExecutor.SERIALIZER.deserialize(Embedded.getInstance().getIngameMessages().format(
+        }, () -> player.sendMessage(Identity.nil(), VelocityExecutor.SERIALIZER.deserialize(Embedded.getInstance().getIngameMessages().format(
             Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
         ))));
     }

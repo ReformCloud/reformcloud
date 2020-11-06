@@ -35,7 +35,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.configuration.Configurable;
-import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -49,14 +48,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.text.DateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
 public class JsonConfiguration implements Configurable<JsonElement, JsonConfiguration> {
-
-    public static final JsonConfiguration EMPTY = new JsonConfiguration();
 
     private Gson gson = new GsonBuilder()
         .setPrettyPrinting()
@@ -427,17 +425,7 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
 
     @Override
     public <T> T getOrDefaultIf(String key, Class<T> type, T def, Predicate<T> predicate) {
-        JsonElement jsonElement = this.getElement(key);
-        if (jsonElement == null) {
-            return def;
-        }
-
-        T result = this.gson.fromJson(jsonElement, type);
-        if (predicate.test(result)) {
-            return result;
-        }
-
-        return def;
+        return this.getOrDefaultIf(key, (Type) type, def, predicate);
     }
 
     @Override
@@ -553,10 +541,7 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
 
     @Override
     public void write(Path path) {
-        IOUtils.deleteFile(path);
-        IOUtils.createFile(path);
-
-        try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(Files.newOutputStream(path), StandardCharsets.UTF_8)) {
+        try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(Files.newOutputStream(path, StandardOpenOption.CREATE), StandardCharsets.UTF_8)) {
             this.gson.toJson(this.jsonObject, outputStreamWriter);
         } catch (final IOException ex) {
             ex.printStackTrace();

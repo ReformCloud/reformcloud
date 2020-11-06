@@ -27,7 +27,7 @@ package systems.refomcloud.reformcloud2.embedded.plugin.spigot;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import systems.refomcloud.reformcloud2.embedded.plugin.spigot.event.PlayerListenerHandler;
-import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
+import systems.reformcloud.reformcloud2.shared.language.LanguageLoader;
 
 public final class SpigotLauncher extends JavaPlugin {
 

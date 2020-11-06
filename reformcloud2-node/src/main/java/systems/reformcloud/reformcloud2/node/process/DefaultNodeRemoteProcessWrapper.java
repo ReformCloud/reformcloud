@@ -27,7 +27,6 @@ package systems.reformcloud.reformcloud2.node.process;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
@@ -45,6 +44,7 @@ import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeSendProcessComma
 import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeSetProcessRuntimeState;
 import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeUploadProcessLog;
 import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeUploadProcessLogResult;
+import systems.reformcloud.reformcloud2.shared.Constants;
 
 import java.util.Optional;
 import java.util.Queue;
@@ -95,7 +95,7 @@ public class DefaultNodeRemoteProcessWrapper implements ProcessWrapper {
     public @UnmodifiableView Queue<String> getLastLogLines() {
         Packet result = this.sendQueryToProcessNode(new NodeToNodeGetLastLogLines(this.processInformation.getProcessDetail().getProcessUniqueID()));
         if (!(result instanceof NodeToNodeGetLastLogLinesResult)) {
-            return CommonHelper.EMPTY_STRING_QUEUE;
+            return Constants.EMPTY_STRING_QUEUE;
         }
 
         return ((NodeToNodeGetLastLogLinesResult) result).getLastLogLines();

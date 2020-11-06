@@ -26,7 +26,6 @@ package systems.reformcloud.reformcloud2.permissions.application.command;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
@@ -36,6 +35,8 @@ import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
 import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
 import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
+import systems.reformcloud.reformcloud2.shared.Constants;
+import systems.reformcloud.reformcloud2.shared.parser.Parsers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -98,11 +99,11 @@ public class CommandPerms implements Command {
     private static String formatPermissionNode(@NotNull PermissionNode node) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("   - ").append(node.getActualPermission()).append(" | Since: ").append(CommonHelper.DATE_FORMAT.format(node.getAddTime())).append(" | Until: ");
+        stringBuilder.append("   - ").append(node.getActualPermission()).append(" | Since: ").append(Constants.FULL_DATE_FORMAT.format(node.getAddTime())).append(" | Until: ");
         if (node.getTimeout() == -1) {
             stringBuilder.append("lifetime");
         } else {
-            stringBuilder.append(CommonHelper.DATE_FORMAT.format(node.getTimeout()));
+            stringBuilder.append(Constants.FULL_DATE_FORMAT.format(node.getTimeout()));
         }
 
         return stringBuilder.append("\n").toString();
@@ -224,7 +225,7 @@ public class CommandPerms implements Command {
 
     private void handleUserCommand(@NotNull CommandSender source, @NotNull String[] strings) {
         Optional<PermissionUser> permissionUserOptional = PermissionManagement.getInstance().loadUser(strings[1]);
-        if (!permissionUserOptional.isPresent()) {
+        if (permissionUserOptional.isEmpty()) {
             source.sendMessage("The permission user " + strings[1] + " is not present");
             return;
         }
@@ -271,7 +272,7 @@ public class CommandPerms implements Command {
 
             if (strings[2].equalsIgnoreCase("addgroup")) {
                 Optional<PermissionGroup> permissionGroup = PermissionManagement.getInstance().getPermissionGroup(strings[3]);
-                if (!permissionGroup.isPresent()) {
+                if (permissionGroup.isEmpty()) {
                     source.sendMessage("Unable to find permission group " + strings[3]);
                     return;
                 }
@@ -289,7 +290,7 @@ public class CommandPerms implements Command {
 
             if (strings[2].equalsIgnoreCase("setgroup")) {
                 Optional<PermissionGroup> permissionGroup = PermissionManagement.getInstance().getPermissionGroup(strings[3]);
-                if (!permissionGroup.isPresent()) {
+                if (permissionGroup.isEmpty()) {
                     source.sendMessage("Unable to find permission group " + strings[3]);
                     return;
                 }
@@ -427,7 +428,7 @@ public class CommandPerms implements Command {
                     return;
                 }
 
-                Boolean positive = CommonHelper.booleanFromString(strings[4]);
+                Boolean positive = Parsers.BOOLEAN.parse(strings[4]);
                 if (positive == null) {
                     source.sendMessage("Please provide a boolean as 5. argument (true/false)");
                     return;
@@ -443,7 +444,7 @@ public class CommandPerms implements Command {
         if (strings.length == 6) {
             if (strings[2].equalsIgnoreCase("addgroup")) {
                 Optional<PermissionGroup> optionalPermissionGroup = PermissionManagement.getInstance().getPermissionGroup(strings[3]);
-                if (!optionalPermissionGroup.isPresent()) {
+                if (optionalPermissionGroup.isEmpty()) {
                     source.sendMessage("The permission group " + strings[3] + " is not present");
                     return;
                 }
@@ -453,7 +454,7 @@ public class CommandPerms implements Command {
                     return;
                 }
 
-                Long requestedTimeout = CommonHelper.longFromString(strings[4]);
+                Long requestedTimeout = Parsers.LONG.parse(strings[4]);
                 if (requestedTimeout == null) {
                     source.sendMessage("Please provide a valid timeout time instead of " + strings[4]);
                     return;
@@ -472,18 +473,18 @@ public class CommandPerms implements Command {
                 permissionUser.getGroups().add(new NodeGroup(System.currentTimeMillis(), timeout, optionalPermissionGroup.get().getName()));
                 PermissionManagement.getInstance().updateUser(permissionUser);
                 source.sendMessage("The user " + strings[1] + " is now in the group " + strings[3] + " "
-                    + (timeout == -1 ? "lifetime" : "until " + CommonHelper.DATE_FORMAT.format(timeout)));
+                    + (timeout == -1 ? "lifetime" : "until " + Constants.FULL_DATE_FORMAT.format(timeout)));
                 return;
             }
 
             if (strings[2].equalsIgnoreCase("setgroup")) {
                 Optional<PermissionGroup> optionalPermissionGroup = PermissionManagement.getInstance().getPermissionGroup(strings[3]);
-                if (!optionalPermissionGroup.isPresent()) {
+                if (optionalPermissionGroup.isEmpty()) {
                     source.sendMessage("The permission group " + strings[3] + " is not present");
                     return;
                 }
 
-                Long requestedTimeout = CommonHelper.longFromString(strings[4]);
+                Long requestedTimeout = Parsers.LONG.parse(strings[4]);
                 if (requestedTimeout == null) {
                     source.sendMessage("Please provide a valid timeout time instead of " + strings[4]);
                     return;
@@ -504,7 +505,7 @@ public class CommandPerms implements Command {
                 permissionUser.getGroups().add(new NodeGroup(System.currentTimeMillis(), timeout, optionalPermissionGroup.get().getName()));
                 PermissionManagement.getInstance().updateUser(permissionUser);
                 source.sendMessage("The user " + strings[1] + " is now in the group " + strings[3] + " "
-                    + (timeout == -1 ? "lifetime" : "until " + CommonHelper.DATE_FORMAT.format(timeout)));
+                    + (timeout == -1 ? "lifetime" : "until " + Constants.FULL_DATE_FORMAT.format(timeout)));
                 return;
             }
 
@@ -515,7 +516,7 @@ public class CommandPerms implements Command {
                     return;
                 }
 
-                Boolean positive = CommonHelper.booleanFromString(strings[5]);
+                Boolean positive = Parsers.BOOLEAN.parse(strings[5]);
                 if (positive == null) {
                     source.sendMessage("Please provide a boolean as 6. argument (true/false)");
                     return;
@@ -538,7 +539,7 @@ public class CommandPerms implements Command {
                 return;
             }
 
-            Long requestedTimeout = CommonHelper.longFromString(strings[5]);
+            Long requestedTimeout = Parsers.LONG.parse(strings[5]);
             if (requestedTimeout == null) {
                 source.sendMessage("Please provide a valid timeout time instead of " + strings[5]);
                 return;
@@ -554,7 +555,7 @@ public class CommandPerms implements Command {
                 return;
             }
 
-            Boolean positive = CommonHelper.booleanFromString(strings[4]);
+            Boolean positive = Parsers.BOOLEAN.parse(strings[4]);
             if (positive == null) {
                 source.sendMessage("Please provide a boolean as 6. argument (true/false)");
                 return;
@@ -563,7 +564,7 @@ public class CommandPerms implements Command {
             permissionUser.getPermissionNodes().add(PermissionNode.createNode(strings[3], timeout, positive));
             PermissionManagement.getInstance().updateUser(permissionUser);
             source.sendMessage("The user " + strings[1] + " has now the permission " + strings[3] + " "
-                + (timeout == -1 ? "lifetime " : "until " + CommonHelper.DATE_FORMAT.format(timeout)));
+                + (timeout == -1 ? "lifetime " : "until " + Constants.FULL_DATE_FORMAT.format(timeout)));
             return;
         }
 
@@ -574,7 +575,7 @@ public class CommandPerms implements Command {
                 return;
             }
 
-            Long requestedTimeout = CommonHelper.longFromString(strings[6]);
+            Long requestedTimeout = Parsers.LONG.parse(strings[6]);
             if (requestedTimeout == null) {
                 source.sendMessage("Please provide a valid timeout time instead of " + strings[6]);
                 return;
@@ -590,7 +591,7 @@ public class CommandPerms implements Command {
                 return;
             }
 
-            Boolean positive = CommonHelper.booleanFromString(strings[5]);
+            Boolean positive = Parsers.BOOLEAN.parse(strings[5]);
             if (positive == null) {
                 source.sendMessage("Please provide a boolean as argument (true/false)");
                 return;
@@ -603,7 +604,7 @@ public class CommandPerms implements Command {
             permissionUser.getPerGroupPermissions().get(strings[3]).add(PermissionNode.createNode(strings[4], timeout, positive));
             PermissionManagement.getInstance().updateUser(permissionUser);
             source.sendMessage("The user " + strings[1] + " has now the permission " + strings[3] + " "
-                + (timeout == -1 ? "lifetime" : "until " + CommonHelper.DATE_FORMAT.format(timeout)) + " om the process group " + strings[3]);
+                + (timeout == -1 ? "lifetime" : "until " + Constants.FULL_DATE_FORMAT.format(timeout)) + " om the process group " + strings[3]);
             return;
         }
 
@@ -620,7 +621,7 @@ public class CommandPerms implements Command {
 
             Boolean defaultGroup = false;
             if (strings.length == 4) {
-                defaultGroup = CommonHelper.booleanFromString(strings[3]);
+                defaultGroup = Parsers.BOOLEAN.parse(strings[3]);
             }
 
             if (defaultGroup == null) {
@@ -640,7 +641,7 @@ public class CommandPerms implements Command {
             return;
         }
 
-        if (!optionalPermissionGroup.isPresent()) {
+        if (optionalPermissionGroup.isEmpty()) {
             source.sendMessage("The permission group " + strings[1] + " is not present");
             return;
         }
@@ -687,7 +688,7 @@ public class CommandPerms implements Command {
             }
 
             if (strings[2].equalsIgnoreCase("setdefault")) {
-                Boolean defaultGroup = CommonHelper.booleanFromString(strings[3]);
+                Boolean defaultGroup = Parsers.BOOLEAN.parse(strings[3]);
                 if (defaultGroup == null) {
                     source.sendMessage("Please provide a correct value (true/false)");
                     return;
@@ -710,7 +711,7 @@ public class CommandPerms implements Command {
             }
 
             if (strings[2].equalsIgnoreCase("setpriority")) {
-                Integer priority = CommonHelper.fromString(strings[3]);
+                Integer priority = Parsers.INT.parse(strings[3]);
                 if (priority == null) {
                     source.sendMessage("Please provide a valid int as priority");
                     return;
@@ -818,7 +819,7 @@ public class CommandPerms implements Command {
                 }
 
                 Optional<PermissionGroup> other = PermissionManagement.getInstance().getPermissionGroup(strings[3]);
-                if (!other.isPresent()) {
+                if (other.isEmpty()) {
                     source.sendMessage("The permission group " + strings[3] + " does not exists");
                     return;
                 }
@@ -848,7 +849,7 @@ public class CommandPerms implements Command {
                     return;
                 }
 
-                Boolean positive = CommonHelper.booleanFromString(strings[4]);
+                Boolean positive = Parsers.BOOLEAN.parse(strings[4]);
                 if (positive == null) {
                     source.sendMessage("Please provide a valid boolean as 5. argument (true/false)");
                     return;
@@ -880,7 +881,7 @@ public class CommandPerms implements Command {
                 return;
             }
 
-            Boolean positive = CommonHelper.booleanFromString(strings[5]);
+            Boolean positive = Parsers.BOOLEAN.parse(strings[5]);
             if (positive == null) {
                 source.sendMessage("Please provide a valid boolean as 6. argument (true/false)");
                 return;
@@ -902,13 +903,13 @@ public class CommandPerms implements Command {
                 return;
             }
 
-            Boolean positive = CommonHelper.booleanFromString(strings[4]);
+            Boolean positive = Parsers.BOOLEAN.parse(strings[4]);
             if (positive == null) {
                 source.sendMessage("Please provide a valid boolean as 5. argument (true/false)");
                 return;
             }
 
-            Long requestedTimeout = CommonHelper.longFromString(strings[5]);
+            Long requestedTimeout = Parsers.LONG.parse(strings[5]);
             if (requestedTimeout == null) {
                 source.sendMessage("Please provide a valid timeout instead of " + strings[5]);
                 return;
@@ -937,13 +938,13 @@ public class CommandPerms implements Command {
                 return;
             }
 
-            Boolean positive = CommonHelper.booleanFromString(strings[5]);
+            Boolean positive = Parsers.BOOLEAN.parse(strings[5]);
             if (positive == null) {
                 source.sendMessage("Please provide a valid boolean as 6. argument (true/false)");
                 return;
             }
 
-            Long requestedTimeout = CommonHelper.longFromString(strings[6]);
+            Long requestedTimeout = Parsers.LONG.parse(strings[6]);
             if (requestedTimeout == null) {
                 source.sendMessage("Please provide a valid timeout instead of " + strings[6]);
                 return;
@@ -1027,11 +1028,11 @@ public class CommandPerms implements Command {
                 continue;
             }
 
-            stringBuilder.append("  ").append(group.getGroupName()).append(" | Since: ").append(CommonHelper.DATE_FORMAT.format(group.getAddTime())).append(" | Until: ");
+            stringBuilder.append("  ").append(group.getGroupName()).append(" | Since: ").append(Constants.FULL_DATE_FORMAT.format(group.getAddTime())).append(" | Until: ");
             if (group.getTimeout() == -1) {
                 stringBuilder.append("lifetime");
             } else {
-                stringBuilder.append(CommonHelper.DATE_FORMAT.format(group.getTimeout()));
+                stringBuilder.append(Constants.FULL_DATE_FORMAT.format(group.getTimeout()));
             }
 
             stringBuilder.append("\n");

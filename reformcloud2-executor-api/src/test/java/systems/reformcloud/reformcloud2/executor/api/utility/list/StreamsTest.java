@@ -2,7 +2,6 @@ package systems.reformcloud.reformcloud2.executor.api.utility.list;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import systems.reformcloud.reformcloud2.executor.api.utility.optional.ReferencedOptional;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 class StreamsTest {
 
@@ -43,20 +43,20 @@ class StreamsTest {
     }
 
     @Test
-    void testFilterToReferenceCollection() {
-        ReferencedOptional<String> optional = Streams.filterToReference(Arrays.asList("test", "lol", "ok", "derklaro"), t -> t.equals("ok"));
+    void testFindFirst() {
+        Optional<String> optional = Streams.findFirst(Arrays.asList("test", "lol", "ok", "derklaro"), t -> t.equals("ok"));
         Assertions.assertTrue(optional.isPresent());
         Assertions.assertEquals("ok", optional.get());
     }
 
     @Test
-    void testFilterToReferenceMap() {
+    void testFindFirstMap() {
         Map<String, String> map = new HashMap<>();
         map.put("ok", "cool");
         map.put("derklaro", "cool");
         map.put("reformcloud", "good");
 
-        ReferencedOptional<String> optional = Streams.filterToReference(map, t -> t.equals("ok"));
+        Optional<String> optional = Streams.findFirst(map, t -> t.equals("ok"));
         Assertions.assertTrue(optional.isPresent());
         Assertions.assertEquals("cool", optional.get());
     }

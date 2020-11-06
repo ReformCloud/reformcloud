@@ -25,7 +25,6 @@
 package systems.reformcloud.reformcloud2.node.commands;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
@@ -36,6 +35,10 @@ import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.NodeProcessWrapper;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
+import systems.reformcloud.reformcloud2.shared.Constants;
+import systems.reformcloud.reformcloud2.shared.parser.Parsers;
+import systems.reformcloud.reformcloud2.shared.network.NetworkUtils;
+import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,14 +77,14 @@ public final class CommandCluster implements Command {
         }
 
         if (strings.length == 1 && strings[0].equalsIgnoreCase("head")) {
-            NodeInformation head = NodeExecutor.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).getHeadNode();
+            DefaultNodeInformation head = NodeExecutor.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).getHeadNode();
             this.showInformationAboutToSender(sender, head);
             return;
         }
 
         if (strings.length == 2 && strings[0].equalsIgnoreCase("info")) {
             Optional<NodeProcessWrapper> information = NodeExecutor.getInstance().getNodeInformationProvider().getNodeInformation(strings[1]);
-            if (!information.isPresent()) {
+            if (information.isEmpty()) {
                 sender.sendMessage(LanguageManager.get("command-cluster-node-not-connected", strings[1]));
                 return;
             }
@@ -91,7 +94,7 @@ public final class CommandCluster implements Command {
         }
 
         if (strings.length == 3 && strings[0].equalsIgnoreCase("create")) {
-            String ip = CommonHelper.getIpAddress(strings[1]);
+            String ip = NetworkUtils.validateAndGetIpAddress(strings[1]);
             if (ip == null) {
                 sender.sendMessage(LanguageManager.get("node-setup-question-address-wrong"));
                 return;
@@ -102,7 +105,7 @@ public final class CommandCluster implements Command {
                 return;
             }
 
-            Integer port = CommonHelper.fromString(strings[2]);
+            Integer port = Parsers.INT.parse(strings[2]);
             if (port == null || port < 0) {
                 sender.sendMessage(LanguageManager.get("command-integer-failed", 0, strings[2]));
                 return;
@@ -115,7 +118,7 @@ public final class CommandCluster implements Command {
         }
 
         if (strings.length == 2 && strings[0].equalsIgnoreCase("delete")) {
-            String ip = CommonHelper.getIpAddress(strings[1]);
+            String ip = NetworkUtils.validateAndGetIpAddress(strings[1]);
             if (ip == null) {
                 sender.sendMessage(LanguageManager.get("node-setup-question-address-wrong"));
                 return;
@@ -187,7 +190,7 @@ public final class CommandCluster implements Command {
         }
 
         stringBuilder.append("\n");
-        stringBuilder.append(" > UniqueID        - ").append(information.getNodeUniqueID()).append("\n");
+        stringBuilder.append(" > UniqueID        - ").append(information.getUniqueId()).append("\n");
         stringBuilder.append(" > Memory          - ").append(information.getUsedMemory()).append("MB/").append(information.getMaxMemory()).append("MB\n");
         stringBuilder.append(" > OS              - ").append(information.getProcessRuntimeInformation().getOsVersion()).append("\n");
         stringBuilder.append(" > OS-Arch         - ").append(information.getProcessRuntimeInformation().getSystemArchitecture()).append("\n");
@@ -195,10 +198,10 @@ public final class CommandCluster implements Command {
         stringBuilder.append(" > Cores           - ").append(information.getProcessRuntimeInformation().getProcessorCount()).append("\n");
         stringBuilder.append(" > Heap Memory     - ").append(information.getProcessRuntimeInformation().getMemoryUsageInternal()).append("MB").append("\n");
         stringBuilder.append(" > Non-Heap Memory - ").append(information.getProcessRuntimeInformation().getNonHeapMemoryUsage()).append("MB").append("\n");
-        stringBuilder.append(" > CPU             - ").append(CommonHelper.DECIMAL_FORMAT.format(information.getProcessRuntimeInformation().getCpuUsageSystem())).append("%").append("\n");
-        stringBuilder.append(" > Load average    - ").append(CommonHelper.DECIMAL_FORMAT.format(information.getProcessRuntimeInformation().getLoadAverageSystem())).append("MB").append("\n");
-        stringBuilder.append(" > Start time      - ").append(CommonHelper.DATE_FORMAT.format(information.getStartupTime())).append("\n");
-        stringBuilder.append(" > Last Update     - ").append(CommonHelper.DATE_FORMAT.format(information.getLastUpdate())).append("\n");
+        stringBuilder.append(" > CPU             - ").append(Constants.TWO_POINT_THREE_DECIMAL_FORMAT.format(information.getProcessRuntimeInformation().getCpuUsageSystem())).append("%").append("\n");
+        stringBuilder.append(" > Load average    - ").append(Constants.TWO_POINT_THREE_DECIMAL_FORMAT.format(information.getProcessRuntimeInformation().getLoadAverageSystem())).append("MB").append("\n");
+        stringBuilder.append(" > Start time      - ").append(Constants.FULL_DATE_FORMAT.format(information.getStartupMillis())).append("\n");
+        stringBuilder.append(" > Last Update     - ").append(Constants.FULL_DATE_FORMAT.format(information.getLastUpdateTimestamp())).append("\n");
 
         source.sendMessages(stringBuilder.toString().split("\n"));
     }
@@ -217,8 +220,7 @@ public final class CommandCluster implements Command {
 
         stringBuilder.append("Connected nodes (").append(connectedNodes.size()).append(")").append("\n");
         for (NodeInformation connectedNode : connectedNodes) {
-            stringBuilder.append(" > ").append(connectedNode.getName()).append("/").append(connectedNode.getNodeUniqueID());
-
+            stringBuilder.append(" > ").append(connectedNode.getName()).append("/").append(connectedNode.getUniqueId());
             if (NodeExecutor.getInstance().isOwnIdentity(connectedNode.getName())) {
                 stringBuilder.append(" (me)");
             }

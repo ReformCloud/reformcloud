@@ -24,133 +24,26 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.node;
 
-import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
-import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessRuntimeInformation;
+import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
 
-import java.util.Objects;
 import java.util.UUID;
 
-public class NodeInformation implements SerializableObject {
-
-    public static final TypeToken<NodeInformation> TYPE = new TypeToken<NodeInformation>() {
-    };
-
-    private String name;
-    private UUID nodeUniqueID;
-
-    private long startupTime;
-    private long lastUpdate;
-    private long usedMemory;
-    private long maxMemory;
-
-    private ProcessRuntimeInformation processRuntimeInformation;
-
-    public NodeInformation() {
-    }
-
-    public NodeInformation(String name, UUID nodeUniqueID, long startupTime, long usedMemory, long maxMemory) {
-        this.name = name;
-        this.nodeUniqueID = nodeUniqueID;
-        this.startupTime = this.lastUpdate = startupTime;
-        this.usedMemory = usedMemory;
-        this.maxMemory = maxMemory;
-        this.processRuntimeInformation = ProcessRuntimeInformation.create();
-    }
+public interface NodeInformation extends Nameable, SerializableObject {
 
     @NotNull
-    public String getName() {
-        return this.name;
-    }
+    UUID getUniqueId();
+
+    long getStartupMillis();
+
+    long getLastUpdateTimestamp();
+
+    long getUsedMemory();
+
+    long getMaxMemory();
 
     @NotNull
-    public UUID getNodeUniqueID() {
-        return this.nodeUniqueID;
-    }
-
-    public long getStartupTime() {
-        return this.startupTime;
-    }
-
-    public long getLastUpdate() {
-        return this.lastUpdate;
-    }
-
-    public long getUsedMemory() {
-        return this.usedMemory;
-    }
-
-    public long getMaxMemory() {
-        return this.maxMemory;
-    }
-
-    public void setMaxMemory(long maxMemory) {
-        this.maxMemory = maxMemory;
-    }
-
-    @NotNull
-    public ProcessRuntimeInformation getProcessRuntimeInformation() {
-        return this.processRuntimeInformation;
-    }
-
-    public void addUsedMemory(int memory) {
-        this.usedMemory += memory;
-    }
-
-    public void removeUsedMemory(int memory) {
-        this.usedMemory -= memory;
-    }
-
-    public void update() {
-        this.processRuntimeInformation = ProcessRuntimeInformation.create();
-        this.lastUpdate = System.currentTimeMillis();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (!(o instanceof NodeInformation)) {
-            return false;
-        }
-
-        NodeInformation that = (NodeInformation) o;
-        return this.getStartupTime() == that.getStartupTime()
-            && this.getLastUpdate() == that.getLastUpdate()
-            && this.getUsedMemory() == that.getUsedMemory()
-            && this.getMaxMemory() == that.getMaxMemory()
-            && Objects.equals(this.getName(), that.getName())
-            && Objects.equals(this.getNodeUniqueID(), that.getNodeUniqueID())
-            && Objects.equals(this.getProcessRuntimeInformation(), that.getProcessRuntimeInformation());
-    }
-
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.name);
-        buffer.writeUniqueId(this.nodeUniqueID);
-
-        buffer.writeLong(this.startupTime);
-        buffer.writeLong(this.lastUpdate);
-        buffer.writeLong(this.usedMemory);
-        buffer.writeLong(this.maxMemory);
-
-        buffer.writeObject(this.processRuntimeInformation);
-    }
-
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.name = buffer.readString();
-        this.nodeUniqueID = buffer.readUniqueId();
-
-        this.startupTime = buffer.readLong();
-        this.lastUpdate = buffer.readLong();
-        this.usedMemory = buffer.readLong();
-        this.maxMemory = buffer.readLong();
-
-        this.processRuntimeInformation = buffer.readObject(ProcessRuntimeInformation.class);
-    }
+    ProcessRuntimeInformation getProcessRuntimeInformation();
 }

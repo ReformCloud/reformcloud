@@ -39,7 +39,7 @@ import systems.reformcloud.reformcloud2.executor.api.application.updater.Applica
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.io.DownloadHelper;
-import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
+import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.node.event.application.ApplicationDisableEvent;
@@ -127,7 +127,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
 
     @Override
     public void fetchUpdates(@NotNull String application) {
-        Streams.filterToReference(this.loadedApplications.values(), e -> e.getApplication().getName().equals(application)).ifPresent(this::handleUpdate);
+        Streams.findFirst(this.loadedApplications.values(), e -> e.getApplication().getName().equals(application)).ifPresent(this::handleUpdate);
     }
 
     @Override
@@ -153,7 +153,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
 
     @Override
     public boolean doSpecificApplicationUninstall(@NotNull LoadedApplication loadedApplication) {
-        return Streams.filterToReference(
+        return Streams.findFirst(
             this.loadedApplications.values(),
             e -> e.getApplication().getName().equals(loadedApplication.getName())
         ).ifPresent(this::disableApplication).isPresent();

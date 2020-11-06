@@ -29,6 +29,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
 import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
+import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 
 public class ApiToNodeGetNodeInformationResult extends QueryResultPacket {
 
@@ -57,6 +58,6 @@ public class ApiToNodeGetNodeInformationResult extends QueryResultPacket {
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.nodeInformation = buffer.readObject(NodeInformation.class);
+        this.nodeInformation = buffer.readObject(DefaultNodeInformation.class);
     }
 }

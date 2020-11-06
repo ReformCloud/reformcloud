@@ -101,7 +101,7 @@ public final class ApplicationsUpdater implements Updater {
 
     @Override
     public boolean hasNewVersion() {
-        return this.oldToNewUpdates.size() > 0;
+        return !this.oldToNewUpdates.isEmpty();
     }
 
     @Override

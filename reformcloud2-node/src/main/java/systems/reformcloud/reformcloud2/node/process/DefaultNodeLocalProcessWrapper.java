@@ -30,7 +30,6 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
-import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
@@ -40,9 +39,8 @@ import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
-import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
+import systems.reformcloud.reformcloud2.shared.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
-import systems.reformcloud.reformcloud2.executor.api.utility.process.JavaProcessHelper;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.node.event.process.LocalProcessPrePrepareEvent;
@@ -50,6 +48,9 @@ import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreen;
 import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreenController;
 import systems.reformcloud.reformcloud2.protocol.api.NodeToApiRequestProcessInformationUpdate;
 import systems.reformcloud.reformcloud2.protocol.api.NodeToApiRequestProcessInformationUpdateResult;
+import systems.reformcloud.reformcloud2.shared.Constants;
+import systems.reformcloud.reformcloud2.shared.io.IOUtils;
+import systems.reformcloud.reformcloud2.shared.platform.Platform;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -223,7 +224,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
         command.addAll(this.processInformation.getProcessDetail().getTemplate().getRuntimeConfiguration().getJvmOptions());
         command.addAll(Arrays.asList(
             "-Xmx" + this.processInformation.getProcessDetail().getMaxMemory() + "M",
-            "-cp", StringUtil.NULL_PATH,
+            "-cp", Constants.DEV_NULL_PATH,
             "-javaagent:runner.jar",
             "systems.reformcloud.reformcloud2.runner.RunnerExecutor"
         ));
@@ -265,7 +266,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
         }
 
         if (this.isStarted()) {
-            JavaProcessHelper.shutdown(this.process, true, true, TimeUnit.SECONDS.toMillis(15), this.getShutdownCommands());
+            Platform.closeProcess(this.process, true, TimeUnit.SECONDS.toMillis(15), this.getShutdownCommands());
             this.process = null;
         }
 

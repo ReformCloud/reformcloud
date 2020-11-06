@@ -26,7 +26,6 @@ package systems.reformcloud.reformcloud2.node.commands;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
@@ -37,13 +36,15 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChan
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
+import systems.reformcloud.reformcloud2.shared.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreen;
 import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreenController;
 import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeToggleProcessScreen;
+import systems.reformcloud.reformcloud2.shared.Constants;
+import systems.reformcloud.reformcloud2.shared.parser.Parsers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,7 +58,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
 
-import static systems.reformcloud.reformcloud2.executor.api.CommonHelper.DECIMAL_FORMAT;
+import static systems.reformcloud.reformcloud2.shared.Constants.TWO_POINT_THREE_DECIMAL_FORMAT;
 
 public final class CommandProcess implements Command {
 
@@ -88,11 +89,11 @@ public final class CommandProcess implements Command {
             return;
         }
 
-        Properties properties = StringUtil.calcProperties(strings, 1);
+        Properties properties = StringUtil.parseProperties(strings, 1);
         if (strings[0].equalsIgnoreCase("list")) {
             if (properties.containsKey("group")) {
                 Optional<ProcessGroup> group = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(properties.getProperty("group"));
-                if (!group.isPresent()) {
+                if (group.isEmpty()) {
                     commandSource.sendMessage(LanguageManager.get("command-process-group-unavailable", properties.getProperty("group")));
                     return;
                 }
@@ -132,7 +133,7 @@ public final class CommandProcess implements Command {
             } else {
                 Optional<NetworkChannel> channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
                     .getChannel(target.getProcessDetail().getParentName());
-                if (!channel.isPresent()) {
+                if (channel.isEmpty()) {
                     commandSource.sendMessage(LanguageManager.get(
                         "command-process-screen-node-not-connected",
                         strings[0],
@@ -154,7 +155,7 @@ public final class CommandProcess implements Command {
 
         if (strings.length == 2 && strings[1].equalsIgnoreCase("copy")) {
             Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(target.getProcessDetail().getProcessUniqueID());
-            if (!wrapper.isPresent()) {
+            if (wrapper.isEmpty()) {
                 commandSource.sendMessage(LanguageManager.get("command-process-process-unknown", strings[0]));
                 return;
             }
@@ -171,7 +172,7 @@ public final class CommandProcess implements Command {
 
         if (strings.length >= 2 && strings[1].equalsIgnoreCase("info")) {
             if (properties.containsKey("full")) {
-                Boolean full = CommonHelper.booleanFromString(properties.getProperty("full"));
+                Boolean full = Parsers.BOOLEAN.parse(properties.getProperty("full"));
                 if (full == null) {
                     commandSource.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("full")));
                     return;
@@ -187,7 +188,7 @@ public final class CommandProcess implements Command {
 
         if (strings.length == 2 && (strings[1].equalsIgnoreCase("stop") || strings[1].equalsIgnoreCase("kill"))) {
             Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(target.getProcessDetail().getProcessUniqueID());
-            if (!wrapper.isPresent()) {
+            if (wrapper.isEmpty()) {
                 commandSource.sendMessage(LanguageManager.get("command-process-process-unknown", strings[0]));
                 return;
             }
@@ -199,7 +200,7 @@ public final class CommandProcess implements Command {
 
         if (strings.length == 2 && strings[1].equalsIgnoreCase("start")) {
             Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(target.getProcessDetail().getProcessUniqueID());
-            if (!wrapper.isPresent()) {
+            if (wrapper.isEmpty()) {
                 commandSource.sendMessage(LanguageManager.get("command-process-process-unknown", strings[0]));
                 return;
             }
@@ -211,7 +212,7 @@ public final class CommandProcess implements Command {
 
         if (strings.length == 2 && strings[1].equalsIgnoreCase("restart")) {
             Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(target.getProcessDetail().getProcessUniqueID());
-            if (!wrapper.isPresent()) {
+            if (wrapper.isEmpty()) {
                 commandSource.sendMessage(LanguageManager.get("command-process-process-unknown", strings[0]));
                 return;
             }
@@ -223,7 +224,7 @@ public final class CommandProcess implements Command {
 
         if (strings.length == 2 && strings[1].equalsIgnoreCase("pause")) {
             Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(target.getProcessDetail().getProcessUniqueID());
-            if (!wrapper.isPresent()) {
+            if (wrapper.isEmpty()) {
                 commandSource.sendMessage(LanguageManager.get("command-process-process-unknown", strings[0]));
                 return;
             }
@@ -237,7 +238,7 @@ public final class CommandProcess implements Command {
             || strings[1].equalsIgnoreCase("cmd")
             || strings[1].equalsIgnoreCase("execute"))) {
             Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(target.getProcessDetail().getProcessUniqueID());
-            if (!wrapper.isPresent()) {
+            if (wrapper.isEmpty()) {
                 commandSource.sendMessage(LanguageManager.get("command-process-process-unknown", strings[0]));
                 return;
             }
@@ -287,7 +288,7 @@ public final class CommandProcess implements Command {
         builder.append(" > Address      - ").append(information.getNetworkInfo().getHostPlain())
             .append(":").append(information.getNetworkInfo().getPort()).append("\n");
         if (information.getNetworkInfo().isConnected()) {
-            builder.append(" > Connected at - ").append(CommonHelper.DATE_FORMAT.format(information.getNetworkInfo().getConnectTime())).append("\n");
+            builder.append(" > Connected at - ").append(Constants.FULL_DATE_FORMAT.format(information.getNetworkInfo().getConnectTime())).append("\n");
         }
 
         builder.append(" ").append("\n");
@@ -313,7 +314,7 @@ public final class CommandProcess implements Command {
         builder.append("  > OS           - ").append(information.getProcessDetail().getProcessRuntimeInformation().getOsVersion()).append("\n");
         builder.append("  > OS-Arch      - ").append(information.getProcessDetail().getProcessRuntimeInformation().getSystemArchitecture()).append("\n");
         builder.append("  > Java         - ").append(information.getProcessDetail().getProcessRuntimeInformation().getJavaVersion()).append("\n");
-        builder.append("  > CPU          - ").append(DECIMAL_FORMAT.format(information.getProcessDetail().getProcessRuntimeInformation().getCpuUsageInternal())).append("%").append("\n");
+        builder.append("  > CPU          - ").append(TWO_POINT_THREE_DECIMAL_FORMAT.format(information.getProcessDetail().getProcessRuntimeInformation().getCpuUsageInternal())).append("%").append("\n");
         builder.append("  > Memory       - ").append(information.getProcessDetail().getProcessRuntimeInformation().getMemoryUsageInternal()).append("MB").append("\n");
         builder.append("  > Non-Heap     - ").append(information.getProcessDetail().getProcessRuntimeInformation().getNonHeapMemoryUsage()).append("MB").append("\n");
         builder.append("  > Dead Threads - ").append(information.getProcessDetail().getProcessRuntimeInformation().getDeadLockedThreads().length);
@@ -329,7 +330,7 @@ public final class CommandProcess implements Command {
 
     @Nullable
     private ProcessInformation getProcess(String s) {
-        UUID process = CommonHelper.tryParse(s);
+        UUID process = Parsers.UNIQUE_ID.parse(s);
         if (process != null) {
             return ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(process)
                 .map(ProcessWrapper::getProcessInformation)

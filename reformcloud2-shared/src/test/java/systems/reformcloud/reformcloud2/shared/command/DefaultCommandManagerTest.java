@@ -12,7 +12,7 @@ import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandContainer;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
-import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
+import systems.reformcloud.reformcloud2.shared.StringUtil;
 import systems.reformcloud.reformcloud2.shared.command.sources.ConsoleCommandSender;
 
 import java.util.Collections;
@@ -82,7 +82,7 @@ class DefaultCommandManagerTest {
             Assertions.assertEquals(4, strings.length);
             Assertions.assertEquals("test 54gr 44tg4 t4t44t4 test=true", commandLine);
 
-            Properties properties = StringUtil.calcProperties(strings, 0);
+            Properties properties = StringUtil.parseProperties(strings, 0);
             Assertions.assertEquals(1, properties.size());
             Assertions.assertEquals("true", properties.getProperty("test"));
         }

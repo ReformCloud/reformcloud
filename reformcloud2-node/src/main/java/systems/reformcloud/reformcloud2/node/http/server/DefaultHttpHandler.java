@@ -46,7 +46,7 @@ import systems.reformcloud.reformcloud2.executor.api.http.listener.HttpListenerR
 import systems.reformcloud.reformcloud2.executor.api.http.reponse.ListeningHttpServerResponse;
 import systems.reformcloud.reformcloud2.executor.api.http.request.HttpRequest;
 import systems.reformcloud.reformcloud2.executor.api.http.request.RequestMethod;
-import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
+import systems.reformcloud.reformcloud2.shared.StringUtil;
 import systems.reformcloud.reformcloud2.node.http.DefaultHeaders;
 import systems.reformcloud.reformcloud2.node.http.cookie.CookieCoder;
 import systems.reformcloud.reformcloud2.node.http.request.DefaultHttpRequest;

@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandManager;
-import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
+import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.shared.command.sources.CachedCommandSender;
 import systems.reformcloud.reformcloud2.shared.command.sources.ConsoleCommandSender;
@@ -39,12 +39,12 @@ import java.util.Optional;
 
 public class LocalNodeProcessWrapper extends DefaultNodeProcessWrapper {
 
-    LocalNodeProcessWrapper(@NotNull NodeInformation nodeInformation) {
+    LocalNodeProcessWrapper(@NotNull DefaultNodeInformation nodeInformation) {
         super(nodeInformation);
     }
 
     @Override
-    public @NotNull Optional<NodeInformation> requestNodeInformationUpdate() {
+    public @NotNull Optional<DefaultNodeInformation> requestNodeInformationUpdate() {
         return Optional.of(super.nodeInformation = NodeExecutor.getInstance().updateCurrentNodeInformation());
     }
 

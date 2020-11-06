@@ -41,8 +41,8 @@ import org.cloudburstmc.server.utils.Identifier;
 import org.cloudburstmc.server.utils.TextFormat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.shared.parser.Parsers;
 import systems.reformcloud.reformcloud2.signs.SharedSignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.cloudburst.listener.CloudBurstListener;
 import systems.reformcloud.reformcloud2.signs.util.PlaceHolderUtil;
@@ -52,6 +52,7 @@ import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignSubLayout;
 
 import java.lang.reflect.Field;
+import java.util.Objects;
 
 public class CloudBurstSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
 
@@ -84,7 +85,9 @@ public class CloudBurstSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
     @Override
     protected void runTasks() {
         Server.getInstance().getScheduler().scheduleRepeatingTask(
-            this.plugin, this::updateSigns, CommonHelper.longToInt(Math.round(20 / super.signConfig.getUpdateInterval()))
+            this.plugin,
+            this::updateSigns,
+            Objects.requireNonNull(Parsers.LONG_TO_INT.parse(Math.round(20 / super.signConfig.getUpdateInterval())))
         );
 
         float distance = (float) super.signConfig.getKnockBackDistance();

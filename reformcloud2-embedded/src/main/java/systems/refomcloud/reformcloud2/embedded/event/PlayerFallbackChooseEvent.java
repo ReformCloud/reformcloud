@@ -28,9 +28,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.event.Event;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.utility.optional.ReferencedOptional;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.UUID;
 
 public class PlayerFallbackChooseEvent extends Event {
@@ -51,8 +51,8 @@ public class PlayerFallbackChooseEvent extends Event {
     }
 
     @NotNull
-    public ReferencedOptional<ProcessInformation> getFilteredFallback() {
-        return ReferencedOptional.build(this.filteredFallback);
+    public Optional<ProcessInformation> getFilteredFallback() {
+        return Optional.ofNullable(this.filteredFallback);
     }
 
     public void setFilteredFallback(@Nullable ProcessInformation filteredFallback) {

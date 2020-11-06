@@ -27,7 +27,7 @@ package systems.refomcloud.reformcloud2.embedded.plugin.nukkit;
 import cn.nukkit.Server;
 import cn.nukkit.plugin.PluginBase;
 import systems.refomcloud.reformcloud2.embedded.plugin.nukkit.event.PlayerListenerHandler;
-import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
+import systems.reformcloud.reformcloud2.shared.language.LanguageLoader;
 
 public final class NukkitLauncher extends PluginBase {
 

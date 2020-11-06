@@ -33,7 +33,7 @@ import systems.reformcloud.reformcloud2.executor.api.application.api.Application
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
+import systems.reformcloud.reformcloud2.shared.language.LanguageLoader;
 
 import java.io.IOException;
 import java.io.InputStream;

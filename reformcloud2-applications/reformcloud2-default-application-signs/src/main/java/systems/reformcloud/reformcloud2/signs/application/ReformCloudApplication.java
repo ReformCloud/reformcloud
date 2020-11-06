@@ -86,7 +86,7 @@ public class ReformCloudApplication extends Application {
             return;
         }
 
-        Streams.filterToReference(signs, e -> e.getLocation().equals(cloudSign.getLocation())).ifPresent(signs::remove);
+        Streams.findFirst(signs, e -> e.getLocation().equals(cloudSign.getLocation())).ifPresent(signs::remove);
         databaseEntry.add("signs", signs);
 
         insert();

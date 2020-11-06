@@ -26,13 +26,13 @@ package systems.reformcloud.reformcloud2.commands.plugin.internal;
 
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
+import systems.reformcloud.reformcloud2.shared.parser.Parsers;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -83,7 +83,7 @@ public final class InternalReformCloudCommand {
                         .getProcessProvider()
                         .getProcessByNameAsync(strings[1])
                         .onComplete(process -> {
-                            if (!process.isPresent()) {
+                            if (process.isEmpty()) {
                                 messageSender.accept(prefix + "§cThis process is unknown");
                                 return;
                             }
@@ -100,7 +100,7 @@ public final class InternalReformCloudCommand {
                         .getProcessGroupProvider()
                         .getProcessGroupAsync(strings[1])
                         .thenAccept(processGroup -> {
-                            if (!processGroup.isPresent()) {
+                            if (processGroup.isEmpty()) {
                                 messageSender.accept(prefix + "§cThe specified group is unknown");
                                 return;
                             }
@@ -121,7 +121,7 @@ public final class InternalReformCloudCommand {
                         .getProcessProvider()
                         .getProcessByNameAsync(strings[1])
                         .onComplete(processWrapper -> {
-                            if (!processWrapper.isPresent()) {
+                            if (processWrapper.isEmpty()) {
                                 messageSender.accept(prefix + "§cThis process is unknown");
                                 return;
                             }
@@ -137,7 +137,7 @@ public final class InternalReformCloudCommand {
                         .getProcessGroupProvider()
                         .getProcessGroupAsync(strings[1])
                         .onComplete(processGroup -> {
-                            if (!processGroup.isPresent()) {
+                            if (processGroup.isEmpty()) {
                                 messageSender.accept(prefix + "§cThe specified group is unknown");
                                 return;
                             }
@@ -156,7 +156,7 @@ public final class InternalReformCloudCommand {
 
         if (strings.length == 3) {
             if ("start".equals(strings[0].toLowerCase())) {
-                Integer count = CommonHelper.fromString(strings[2]);
+                Integer count = Parsers.INT.parse(strings[2]);
                 if (count == null || count <= 0) {
                     messageSender.accept(prefix + "§cPlease provide a valid count!");
                     return;
@@ -185,7 +185,7 @@ public final class InternalReformCloudCommand {
                 .getProcessProvider()
                 .getProcessByNameAsync(strings[1])
                 .onComplete(processWrapper -> {
-                    if (!processWrapper.isPresent()) {
+                    if (processWrapper.isEmpty()) {
                         messageSender.accept(prefix + "§cThis process is unknown");
                         return;
                     }
@@ -203,7 +203,7 @@ public final class InternalReformCloudCommand {
             }
 
             Optional<NetworkChannel> channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getFirstChannel();
-            if (!channel.isPresent()) {
+            if (channel.isEmpty()) {
                 messageSender.accept(prefix + "§cThe target node is not connected");
                 return;
             }
@@ -212,7 +212,7 @@ public final class InternalReformCloudCommand {
                 .getNodeInformationProvider()
                 .getNodeInformationAsync(Embedded.getInstance().getCurrentProcessInformation().getProcessDetail().getParentUniqueID())
                 .onComplete(nodeProcessWrapper -> {
-                    if (!nodeProcessWrapper.isPresent()) {
+                    if (nodeProcessWrapper.isEmpty()) {
                         messageSender.accept(prefix + "§cAn internal error occurred");
                         return;
                     }

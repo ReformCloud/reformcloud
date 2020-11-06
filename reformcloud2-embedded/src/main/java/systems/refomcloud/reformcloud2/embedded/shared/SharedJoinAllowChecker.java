@@ -31,7 +31,7 @@ import systems.reformcloud.reformcloud2.executor.api.groups.messages.IngameMessa
 import systems.reformcloud.reformcloud2.executor.api.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
+import systems.reformcloud.reformcloud2.shared.collect.Entry2;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -44,34 +44,34 @@ public final class SharedJoinAllowChecker {
     }
 
     @NotNull
-    public static Duo<Boolean, String> checkIfConnectAllowed(@NotNull Function<String, Boolean> permissionChecker,
-                                                             @NotNull IngameMessages messages,
-                                                             @Nullable Collection<ProcessInformation> checkedConnectedServices,
-                                                             @NotNull UUID playerUniqueId,
-                                                             @NotNull String username) {
+    public static Entry2<Boolean, String> checkIfConnectAllowed(@NotNull Function<String, Boolean> permissionChecker,
+                                                                @NotNull IngameMessages messages,
+                                                                @Nullable Collection<ProcessInformation> checkedConnectedServices,
+                                                                @NotNull UUID playerUniqueId,
+                                                                @NotNull String username) {
         ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
         PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
 
         if (checkedConnectedServices != null
             && checkedConnectedServices.stream().anyMatch(e -> e.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(playerUniqueId))) {
-            return new Duo<>(false, messages.format(messages.getAlreadyConnectedToNetwork()));
+            return new Entry2<>(false, messages.format(messages.getAlreadyConnectedToNetwork()));
         }
 
         if (current.getProcessDetail().getMaxPlayers() <= current.getProcessPlayerManager().getOnlineCount()
             && !permissionChecker.apply(configuration.getFullJoinPermission())) {
-            return new Duo<>(false, messages.format(messages.getProcessFullMessage()));
+            return new Entry2<>(false, messages.format(messages.getProcessFullMessage()));
         }
 
         if (configuration.isJoinOnlyPerPermission() && !permissionChecker.apply(configuration.getJoinPermission())) {
-            return new Duo<>(false, messages.format(messages.getProcessEnterPermissionNotSet()));
+            return new Entry2<>(false, messages.format(messages.getProcessEnterPermissionNotSet()));
         }
 
         if (configuration.isMaintenance() && !permissionChecker.apply(configuration.getMaintenanceJoinPermission())) {
-            return new Duo<>(false, messages.format(messages.getProcessInMaintenanceMessage()));
+            return new Entry2<>(false, messages.format(messages.getProcessInMaintenanceMessage()));
         }
 
         if (!current.getProcessPlayerManager().onLogin(playerUniqueId, username)) {
-            return new Duo<>(false, messages.format(messages.getAlreadyConnectedMessage()));
+            return new Entry2<>(false, messages.format(messages.getAlreadyConnectedMessage()));
         }
 
         if (configuration.isUseCloudPlayerLimit()
@@ -81,6 +81,6 @@ public final class SharedJoinAllowChecker {
         }
 
         Embedded.getInstance().updateCurrentProcessInformation();
-        return new Duo<>(true, null);
+        return new Entry2<>(true, null);
     }
 }

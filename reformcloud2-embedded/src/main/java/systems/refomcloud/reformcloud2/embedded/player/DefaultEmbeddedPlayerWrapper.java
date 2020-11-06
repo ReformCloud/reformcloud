@@ -29,7 +29,7 @@ import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
+import systems.reformcloud.reformcloud2.shared.collect.Entry2;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.PlayerWrapper;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeConnectPlayerToPlayer;
@@ -55,14 +55,14 @@ public class DefaultEmbeddedPlayerWrapper implements PlayerWrapper {
     }
 
     @NotNull
-    private Optional<Duo<UUID, UUID>> getPlayerProcess() {
+    private Optional<Entry2<UUID, UUID>> getPlayerProcess() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetCurrentPlayerProcessUniqueIds(this.playerUniqueId))
             .map(result -> {
                 if (result instanceof ApiToNodeGetCurrentPlayerProcessUniqueIdsResult) {
                     return Optional.ofNullable(((ApiToNodeGetCurrentPlayerProcessUniqueIdsResult) result).getResult());
                 }
 
-                return Optional.<Duo<UUID, UUID>>empty();
+                return Optional.<Entry2<UUID, UUID>>empty();
             }).orElseGet(Optional::empty);
     }
 
@@ -82,12 +82,12 @@ public class DefaultEmbeddedPlayerWrapper implements PlayerWrapper {
 
     @Override
     public @NotNull Optional<UUID> getConnectedProxyUniqueId() {
-        return this.getPlayerProcess().map(Duo::getFirst);
+        return this.getPlayerProcess().map(Entry2::getFirst);
     }
 
     @Override
     public @NotNull Optional<UUID> getConnectedServerUniqueId() {
-        return this.getPlayerProcess().map(Duo::getSecond);
+        return this.getPlayerProcess().map(Entry2::getSecond);
     }
 
     @Override

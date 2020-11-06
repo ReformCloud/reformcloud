@@ -22,33 +22,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.utility.list;
+package systems.reformcloud.reformcloud2.shared.collect;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public final class Duo<F, S> {
+@FunctionalInterface
+public interface Function1E<I, O, T extends Throwable> {
 
-    private final F first;
-    private final S second;
-
-    public Duo(@NotNull F first, @Nullable S second) {
-        this.first = first;
-        this.second = second;
-    }
-
-    /**
-     * @return The key of this pair
-     */
     @NotNull
-    public F getFirst() {
-        return this.first;
-    }
-
-    /**
-     * @return The value of the this pair or {@code null} if the value is undefined
-     */
-    public S getSecond() {
-        return this.second;
-    }
+    O apply(@NotNull I i) throws T;
 }

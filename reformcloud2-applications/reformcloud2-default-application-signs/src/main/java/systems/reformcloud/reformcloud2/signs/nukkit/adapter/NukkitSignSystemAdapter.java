@@ -39,8 +39,8 @@ import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.shared.parser.Parsers;
 import systems.reformcloud.reformcloud2.signs.SharedSignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.nukkit.commands.NukkitCommandSigns;
 import systems.reformcloud.reformcloud2.signs.nukkit.listener.NukkitListener;
@@ -52,6 +52,7 @@ import systems.reformcloud.reformcloud2.signs.util.sign.config.SignSubLayout;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class NukkitSignSystemAdapter extends SharedSignSystemAdapter<BlockEntitySign> {
@@ -95,7 +96,9 @@ public class NukkitSignSystemAdapter extends SharedSignSystemAdapter<BlockEntity
     @Override
     protected void runTasks() {
         Server.getInstance().getScheduler().scheduleRepeatingTask(
-            this.plugin, this::updateSigns, CommonHelper.longToInt(Math.round(20 / super.signConfig.getUpdateInterval()))
+            this.plugin,
+            this::updateSigns,
+            Objects.requireNonNull(Parsers.LONG_TO_INT.parse(Math.round(20 / super.signConfig.getUpdateInterval())))
         );
 
         double distance = super.signConfig.getKnockBackDistance();

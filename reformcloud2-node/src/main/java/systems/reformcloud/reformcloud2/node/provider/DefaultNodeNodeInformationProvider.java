@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.node.provider;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
-import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
+import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.provider.NodeInformationProvider;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.NodeProcessWrapper;
@@ -40,7 +40,7 @@ public class DefaultNodeNodeInformationProvider implements NodeInformationProvid
 
     private final Collection<DefaultNodeProcessWrapper> nodeInformation = new CopyOnWriteArrayList<>();
 
-    public DefaultNodeNodeInformationProvider(@NotNull NodeInformation currentNode) {
+    public DefaultNodeNodeInformationProvider(@NotNull DefaultNodeInformation currentNode) {
         this.nodeInformation.add(new LocalNodeProcessWrapper(currentNode));
     }
 
@@ -82,7 +82,7 @@ public class DefaultNodeNodeInformationProvider implements NodeInformationProvid
 
     @NotNull
     @Override
-    public @UnmodifiableView Collection<NodeInformation> getNodes() {
+    public @UnmodifiableView Collection<DefaultNodeInformation> getNodes() {
         return Streams.map(this.nodeInformation, DefaultNodeProcessWrapper::getNodeInformation);
     }
 
@@ -96,7 +96,7 @@ public class DefaultNodeNodeInformationProvider implements NodeInformationProvid
         return this.getNodeInformation(nodeUniqueId).isPresent();
     }
 
-    public void updateNode(@NotNull NodeInformation nodeInformation) {
+    public void updateNode(@NotNull DefaultNodeInformation nodeInformation) {
         for (DefaultNodeProcessWrapper defaultNodeProcessWrapper : this.nodeInformation) {
             if (defaultNodeProcessWrapper.nodeInformation.getNodeUniqueID().equals(nodeInformation.getNodeUniqueID())) {
                 defaultNodeProcessWrapper.updateNodeInformation(nodeInformation);
@@ -109,7 +109,7 @@ public class DefaultNodeNodeInformationProvider implements NodeInformationProvid
         this.nodeInformation.removeIf(wrapper -> wrapper.nodeInformation.getName().equals(name));
     }
 
-    public void addNode(@NotNull NodeInformation nodeInformation) {
+    public void addNode(@NotNull DefaultNodeInformation nodeInformation) {
         this.nodeInformation.add(new DefaultNodeProcessWrapper(nodeInformation));
     }
 }

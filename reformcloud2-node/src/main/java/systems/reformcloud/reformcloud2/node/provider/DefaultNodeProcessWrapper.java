@@ -31,7 +31,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChan
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryManager;
-import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
+import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.NodeProcessWrapper;
 import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeProcessCommand;
 import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeProcessCommandResult;
@@ -47,23 +47,23 @@ import java.util.concurrent.TimeUnit;
 
 public class DefaultNodeProcessWrapper implements NodeProcessWrapper {
 
-    protected NodeInformation nodeInformation;
+    protected DefaultNodeInformation nodeInformation;
 
-    protected DefaultNodeProcessWrapper(@NotNull NodeInformation nodeInformation) {
+    protected DefaultNodeProcessWrapper(@NotNull DefaultNodeInformation nodeInformation) {
         this.nodeInformation = nodeInformation;
     }
 
     @NotNull
     @Override
-    public NodeInformation getNodeInformation() {
+    public DefaultNodeInformation getNodeInformation() {
         return this.nodeInformation;
     }
 
     @NotNull
     @Override
-    public Optional<NodeInformation> requestNodeInformationUpdate() {
+    public Optional<DefaultNodeInformation> requestNodeInformationUpdate() {
         Optional<NetworkChannel> channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getChannel(this.nodeInformation.getName());
-        if (!channel.isPresent()) {
+        if (channel.isEmpty()) {
             return Optional.empty();
         }
 
@@ -81,7 +81,7 @@ public class DefaultNodeProcessWrapper implements NodeProcessWrapper {
     @Override
     public @UnmodifiableView Collection<String> sendCommandLine(@NotNull String commandLine) {
         Optional<NetworkChannel> channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getChannel(this.nodeInformation.getName());
-        if (!channel.isPresent()) {
+        if (channel.isEmpty()) {
             return Collections.emptyList();
         }
 
@@ -99,7 +99,7 @@ public class DefaultNodeProcessWrapper implements NodeProcessWrapper {
     @Override
     public @UnmodifiableView Collection<String> tabCompleteCommandLine(@NotNull String commandLine) {
         Optional<NetworkChannel> channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getChannel(this.nodeInformation.getName());
-        if (!channel.isPresent()) {
+        if (channel.isEmpty()) {
             return Collections.emptyList();
         }
 
@@ -113,7 +113,7 @@ public class DefaultNodeProcessWrapper implements NodeProcessWrapper {
         return ((NodeToNodeTabCompleteCommandResult) packet).getResult();
     }
 
-    public void updateNodeInformation(@NotNull NodeInformation nodeInformation) {
+    public void updateNodeInformation(@NotNull DefaultNodeInformation nodeInformation) {
         this.nodeInformation = nodeInformation;
     }
 }

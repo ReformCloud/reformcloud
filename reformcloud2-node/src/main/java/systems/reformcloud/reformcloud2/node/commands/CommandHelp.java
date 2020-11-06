@@ -29,7 +29,7 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
+import systems.reformcloud.reformcloud2.shared.collect.Entry2;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
 import java.util.ArrayList;
@@ -49,24 +49,24 @@ public final class CommandHelp implements Command {
         sender.sendMessage("Discord: https://discord.gg/uskXdVZ");
         sender.sendMessage(" ");
 
-        Collection<Duo<String, String>> map = Streams.map(
+        Collection<Entry2<String, String>> map = Streams.map(
             ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class).getCommands(),
-            container -> new Duo<>(String.join(", ", container.getAliases()), container.getDescription())
+            container -> new Entry2<>(String.join(", ", container.getAliases()), container.getDescription())
         );
         sender.sendMessages(this.formatHelp(map));
     }
 
     @NotNull
-    private String[] formatHelp(@NotNull Collection<Duo<String, String>> messages) {
+    private String[] formatHelp(@NotNull Collection<Entry2<String, String>> messages) {
         int longest = 0;
-        for (Duo<String, String> message : messages) {
+        for (Entry2<String, String> message : messages) {
             if (message.getFirst().length() > longest) {
                 longest = message.getFirst().length();
             }
         }
 
         Collection<String> result = new ArrayList<>(messages.size());
-        for (Duo<String, String> message : messages) {
+        for (Entry2<String, String> message : messages) {
             String s = String.join("", Collections.nCopies(Math.max(longest - message.getFirst().length(), 0), " "));
             result.add(message.getFirst() + s + " | " + message.getSecond());
         }

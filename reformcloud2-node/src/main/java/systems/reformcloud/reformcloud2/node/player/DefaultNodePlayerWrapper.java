@@ -31,7 +31,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.Cha
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
+import systems.reformcloud.reformcloud2.shared.collect.Entry2;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.PlayerWrapper;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
@@ -62,7 +62,7 @@ public class DefaultNodePlayerWrapper implements PlayerWrapper {
     }
 
     @NotNull
-    private Optional<Duo<UUID, UUID>> getPlayerProcess() {
+    private Optional<Entry2<UUID, UUID>> getPlayerProcess() {
         UUID proxy = null;
         UUID server = null;
 
@@ -78,7 +78,7 @@ public class DefaultNodePlayerWrapper implements PlayerWrapper {
             }
         }
 
-        return proxy == null || server == null ? Optional.empty() : Optional.of(new Duo<>(proxy, server));
+        return proxy == null || server == null ? Optional.empty() : Optional.of(new Entry2<>(proxy, server));
     }
 
     @Override
@@ -97,12 +97,12 @@ public class DefaultNodePlayerWrapper implements PlayerWrapper {
 
     @Override
     public @NotNull Optional<UUID> getConnectedProxyUniqueId() {
-        return this.getPlayerProcess().map(Duo::getFirst);
+        return this.getPlayerProcess().map(Entry2::getFirst);
     }
 
     @Override
     public @NotNull Optional<UUID> getConnectedServerUniqueId() {
-        return this.getPlayerProcess().map(Duo::getSecond);
+        return this.getPlayerProcess().map(Entry2::getSecond);
     }
 
     @Override

@@ -24,7 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.node.logger;
 
-import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
+import systems.reformcloud.reformcloud2.shared.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
 import java.io.ByteArrayOutputStream;

@@ -22,29 +22,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.utility.list;
+package systems.reformcloud.reformcloud2.executor.api.parse;
 
-public final class Trio<F, S, T> {
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-    private final F first;
-    private final S second;
-    private final T third;
+public interface Parser<I, O> {
 
-    public Trio(F first, S second, T third) {
-        this.first = first;
-        this.second = second;
-        this.third = third;
-    }
-
-    public F getFirst() {
-        return this.first;
-    }
-
-    public S getSecond() {
-        return this.second;
-    }
-
-    public T getThird() {
-        return this.third;
-    }
+    @Nullable
+    O parse(@NotNull I i);
 }

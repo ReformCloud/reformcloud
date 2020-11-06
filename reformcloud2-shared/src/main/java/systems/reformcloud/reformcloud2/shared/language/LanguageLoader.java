@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.language.loading;
+package systems.reformcloud.reformcloud2.shared.language;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +30,7 @@ import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.language.Language;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageSource;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
+import systems.reformcloud.reformcloud2.shared.collect.Entry2;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -44,17 +44,17 @@ public final class LanguageLoader {
     }
 
     public static void doLoad() {
-        Duo<String, LinkedList<Language>> in = detectLanguages();
+        Entry2<String, LinkedList<Language>> in = detectLanguages();
         LanguageManager.load(in.getFirst(), in.getSecond().toArray(new Language[0]));
     }
 
     public static void doReload() {
-        Duo<String, LinkedList<Language>> in = detectLanguages();
+        Entry2<String, LinkedList<Language>> in = detectLanguages();
         LanguageManager.reload(in.getFirst(), in.getSecond().toArray(new Language[0]));
     }
 
-    private static Duo<String, LinkedList<Language>> detectLanguages() {
-        Duo<String, LinkedList<Language>> done = null;
+    private static Entry2<String, LinkedList<Language>> detectLanguages() {
+        Entry2<String, LinkedList<Language>> done = null;
 
         try {
             LinkedList<Language> out = new LinkedList<>();
@@ -96,11 +96,11 @@ public final class LanguageLoader {
             });
 
             if (atomicReference.get() == null) {
-                Conditions.isTrue(out.size() != 0, "No language found");
+                Conditions.isTrue(!out.isEmpty(), "No language found");
                 atomicReference.set(out.getFirst());
             }
 
-            done = new Duo<>(atomicReference.get().source().getSource(), out);
+            done = new Entry2<>(atomicReference.get().source().getSource(), out);
         } catch (final Throwable ex) {
             ex.printStackTrace();
         }

@@ -69,7 +69,7 @@ class DefaultEventManagerTest {
     @Test
     @Order(6)
     void testUnregisterListener() {
-        Assertions.assertTrue(this.eventManager.getListeners().size() > 0);
+        Assertions.assertTrue(!this.eventManager.getListeners().isEmpty());
         ListenerContainer container = this.eventManager.getListeners().get(0);
         Assertions.assertEquals(TestListenerOne.class, container.getListenerInstance().getClass());
         this.eventManager.unregisterListener(container.getListenerInstance());

@@ -26,14 +26,15 @@ package systems.reformcloud.reformcloud2.node.commands;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.process.Player;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Trio;
+import systems.reformcloud.reformcloud2.shared.Constants;
+import systems.reformcloud.reformcloud2.shared.parser.Parsers;
+import systems.reformcloud.reformcloud2.shared.collect.Entry3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,20 +85,20 @@ public final class CommandPlayers implements Command {
         }
 
         if (strings.length == 2 && strings[1].equalsIgnoreCase("info")) {
-            Trio<ProcessInformation, ProcessInformation, Player> trio;
+            Entry3<ProcessInformation, ProcessInformation, Player> entry;
             UUID uniqueID;
-            if ((uniqueID = CommonHelper.tryParse(strings[0])) != null) {
-                trio = this.findPlayer(uniqueID);
+            if ((uniqueID = Parsers.UNIQUE_ID.parse(strings[0])) != null) {
+                entry = this.findPlayer(uniqueID);
             } else {
-                trio = this.findPlayer(strings[0]);
+                entry = this.findPlayer(strings[0]);
             }
 
-            if (trio == null) {
+            if (entry == null) {
                 sender.sendMessage(LanguageManager.get("command-players-player-not-found", strings[0]));
                 return;
             }
 
-            Player subServerPlayer = trio.getFirst().getProcessPlayerManager().getOnlinePlayers().stream().filter(e -> uniqueID == null
+            Player subServerPlayer = entry.getFirst().getProcessPlayerManager().getOnlinePlayers().stream().filter(e -> uniqueID == null
                 ? e.getName().equals(strings[0]) : e.getUniqueID().equals(uniqueID)).findAny().orElse(null);
             if (subServerPlayer == null) {
                 sender.sendMessage(LanguageManager.get("command-players-player-not-found", strings[0]));
@@ -105,12 +106,12 @@ public final class CommandPlayers implements Command {
             }
 
             AtomicReference<StringBuilder> stringBuilder = new AtomicReference<>(new StringBuilder());
-            stringBuilder.get().append(" > Name               - ").append(trio.getThird().getName()).append("\n");
-            stringBuilder.get().append(" > UUID               - ").append(trio.getThird().getUniqueID()).append("\n");
-            stringBuilder.get().append(" > Proxy              - ").append(trio.getSecond().getProcessDetail().getName()).append("\n");
-            stringBuilder.get().append(" > Connected (Proxy)  - ").append(CommonHelper.DATE_FORMAT.format(trio.getThird().getJoined())).append("\n");
-            stringBuilder.get().append(" > Server             - ").append(trio.getFirst().getProcessDetail().getName()).append("\n");
-            stringBuilder.get().append(" > Connected (Server) - ").append(CommonHelper.DATE_FORMAT.format(subServerPlayer.getJoined())).append("\n");
+            stringBuilder.get().append(" > Name               - ").append(entry.getThird().getName()).append("\n");
+            stringBuilder.get().append(" > UUID               - ").append(entry.getThird().getUniqueID()).append("\n");
+            stringBuilder.get().append(" > Proxy              - ").append(entry.getSecond().getProcessDetail().getName()).append("\n");
+            stringBuilder.get().append(" > Connected (Proxy)  - ").append(Constants.FULL_DATE_FORMAT.format(entry.getThird().getJoined())).append("\n");
+            stringBuilder.get().append(" > Server             - ").append(entry.getFirst().getProcessDetail().getName()).append("\n");
+            stringBuilder.get().append(" > Connected (Server) - ").append(Constants.FULL_DATE_FORMAT.format(subServerPlayer.getJoined())).append("\n");
             sender.sendMessages(stringBuilder.get().toString().split("\n"));
             return;
         }
@@ -136,21 +137,21 @@ public final class CommandPlayers implements Command {
     }
 
     @Nullable
-    private Trio<ProcessInformation, ProcessInformation, Player> findPlayer(UUID uniqueID) {
+    private Entry3<ProcessInformation, ProcessInformation, Player> findPlayer(UUID uniqueID) {
         ProcessInformation server = this.getProcess(null, uniqueID, false);
         ProcessInformation proxy = this.getProcess(null, uniqueID, true);
         return server == null || proxy == null
             ? null
-            : new Trio<>(server, proxy, proxy.getProcessPlayerManager().getPlayerByUniqueID(uniqueID));
+            : new Entry3<>(server, proxy, proxy.getProcessPlayerManager().getPlayerByUniqueID(uniqueID));
     }
 
     @Nullable
-    private Trio<ProcessInformation, ProcessInformation, Player> findPlayer(@NotNull String name) {
+    private Entry3<ProcessInformation, ProcessInformation, Player> findPlayer(@NotNull String name) {
         ProcessInformation server = this.getProcess(name, null, false);
         ProcessInformation proxy = this.getProcess(name, null, true);
         return server == null || proxy == null
             ? null
-            : new Trio<>(server, proxy, proxy.getProcessPlayerManager().getPlayerByName(name));
+            : new Entry3<>(server, proxy, proxy.getProcessPlayerManager().getPlayerByName(name));
     }
 
     @Nullable

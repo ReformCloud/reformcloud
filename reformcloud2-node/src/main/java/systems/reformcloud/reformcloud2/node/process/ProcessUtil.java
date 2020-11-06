@@ -26,11 +26,11 @@ package systems.reformcloud.reformcloud2.node.process;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.io.DownloadHelper;
-import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
+import systems.reformcloud.reformcloud2.shared.parser.Parsers;
+import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -157,7 +157,7 @@ final class ProcessUtil {
                     }
                 }, throwable -> {
                     System.err.println("Unable to open connection to given download server " + inclusion.getUrl());
-                    System.err.println("The error was: " + CommonHelper.formatThrowable(throwable));
+                    System.err.println("The error was: " + Parsers.EXCEPTION_FORMAT.parse(throwable));
                 }
             );
         });

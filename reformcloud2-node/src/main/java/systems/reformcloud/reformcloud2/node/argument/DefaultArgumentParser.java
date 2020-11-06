@@ -27,7 +27,7 @@ package systems.reformcloud.reformcloud2.node.argument;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
+import systems.reformcloud.reformcloud2.shared.StringUtil;
 
 import java.util.Optional;
 import java.util.Properties;
@@ -38,7 +38,7 @@ public class DefaultArgumentParser implements ArgumentParser {
     private final Properties properties;
 
     public DefaultArgumentParser(@NonNls String[] args) {
-        this.properties = StringUtil.calcProperties(args, 0);
+        this.properties = StringUtil.parseProperties(args, 0);
     }
 
     @Override

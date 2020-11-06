@@ -25,7 +25,6 @@
 package systems.reformcloud.reformcloud2.node.commands;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.builder.ProcessBuilder;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
@@ -35,8 +34,9 @@ import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
-import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
+import systems.reformcloud.reformcloud2.shared.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.shared.parser.Parsers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,13 +86,13 @@ public final class CommandLaunch implements Command {
         }
 
         Optional<ProcessGroup> base = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(strings[0]);
-        if (!base.isPresent()) {
+        if (base.isEmpty()) {
             sender.sendMessage(LanguageManager.get("command-launch-start-not-possible-group-not-exists", strings[0]));
             return;
         }
 
         ProcessBuilder builder = ExecutorAPI.getInstance().getProcessProvider().createProcess().group(base.get());
-        Properties properties = StringUtil.calcProperties(strings, 1);
+        Properties properties = StringUtil.parseProperties(strings, 1);
 
         boolean prepareOnly = false;
         int amount = 1;
@@ -108,7 +108,7 @@ public final class CommandLaunch implements Command {
         }
 
         if (properties.containsKey("unique-id")) {
-            UUID uniqueID = CommonHelper.tryParse(properties.getProperty("unique-id"));
+            UUID uniqueID = Parsers.UNIQUE_ID.parse(properties.getProperty("unique-id"));
             if (uniqueID == null) {
                 sender.sendMessage(LanguageManager.get("command-unique-id-failed", properties.getProperty("unique-id")));
                 return;
@@ -122,7 +122,7 @@ public final class CommandLaunch implements Command {
         }
 
         if (properties.containsKey("max-memory")) {
-            Integer maxMemory = CommonHelper.fromString(properties.getProperty("max-memory"));
+            Integer maxMemory = Parsers.INT.parse(properties.getProperty("max-memory"));
             if (maxMemory == null || maxMemory <= 100) {
                 sender.sendMessage(LanguageManager.get("command-integer-failed", 100, properties.getProperty("max-memory")));
                 return;
@@ -132,7 +132,7 @@ public final class CommandLaunch implements Command {
         }
 
         if (properties.containsKey("id")) {
-            Integer id = CommonHelper.fromString(properties.getProperty("id"));
+            Integer id = Parsers.INT.parse(properties.getProperty("id"));
             if (id == null || id <= 0) {
                 sender.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("id")));
                 return;
@@ -142,7 +142,7 @@ public final class CommandLaunch implements Command {
         }
 
         if (properties.containsKey("max-players")) {
-            Integer maxPlayers = CommonHelper.fromString(properties.getProperty("max-players"));
+            Integer maxPlayers = Parsers.INT.parse(properties.getProperty("max-players"));
             if (maxPlayers == null || maxPlayers <= 0) {
                 sender.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("max-players")));
                 return;
@@ -156,7 +156,7 @@ public final class CommandLaunch implements Command {
         }
 
         if (properties.containsKey("prepare-only")) {
-            Boolean prepare = CommonHelper.booleanFromString(properties.getProperty("prepare-only"));
+            Boolean prepare = Parsers.BOOLEAN.parse(properties.getProperty("prepare-only"));
             if (prepare == null) {
                 sender.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("prepare-only")));
                 return;
@@ -166,7 +166,7 @@ public final class CommandLaunch implements Command {
         }
 
         if (properties.containsKey("amount")) {
-            Integer amountToStart = CommonHelper.fromString(properties.getProperty("amount"));
+            Integer amountToStart = Parsers.INT.parse(properties.getProperty("amount"));
             if (amountToStart == null || amountToStart <= 0) {
                 sender.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("amount")));
                 return;

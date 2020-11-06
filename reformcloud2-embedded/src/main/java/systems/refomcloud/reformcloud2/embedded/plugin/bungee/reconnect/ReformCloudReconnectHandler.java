@@ -44,7 +44,7 @@ public class ReformCloudReconnectHandler implements ReconnectHandler {
             proxiedPlayer::hasPermission,
             BungeeFallbackExtraFilter.INSTANCE,
             proxiedPlayer.getServer() == null ? null : proxiedPlayer.getServer().getInfo().getName()
-        ).map(info -> ProxyServer.getInstance().getServerInfo(info.getProcessDetail().getName())).orNothing();
+        ).map(info -> ProxyServer.getInstance().getServerInfo(info.getProcessDetail().getName())).orElse(null);
     }
 
     @Override

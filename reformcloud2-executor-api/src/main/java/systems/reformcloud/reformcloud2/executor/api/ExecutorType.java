@@ -25,9 +25,18 @@
 package systems.reformcloud.reformcloud2.executor.api;
 
 public enum ExecutorType {
-
+    /**
+     * The executor type is used by the node to define a embedded environment
+     * which can start processes.
+     */
     NODE(1),
+    /**
+     * The executor type is used by a process
+     */
     API(2),
+    /**
+     * This state should never be used in runtime it defines an unknown environment
+     */
     UNKNOWN(-1);
 
     private final int id;

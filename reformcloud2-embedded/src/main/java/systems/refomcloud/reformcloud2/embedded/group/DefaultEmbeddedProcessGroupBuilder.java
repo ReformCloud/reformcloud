@@ -44,7 +44,7 @@ class DefaultEmbeddedProcessGroupBuilder extends DefaultProcessGroupBuilder {
             Optional<Packet> packet = Embedded.getInstance().sendSyncQuery(new ApiToNodeCreateProcessGroup(
                 super.name, super.staticGroup, super.lobby, super.showId, super.templates, super.playerAccessConfiguration, super.startupConfiguration
             ));
-            if (!packet.isPresent() || !(packet.get() instanceof ApiToNodeCreateProcessGroupResult)) {
+            if (packet.isEmpty() || !(packet.get() instanceof ApiToNodeCreateProcessGroupResult)) {
                 return null;
             }
 

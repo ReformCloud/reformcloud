@@ -106,7 +106,7 @@ public class PacketUserAction extends Packet {
     private void publish(@NotNull Packet packet) {
         for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
             if (registeredChannel.isAuthenticated()
-                && !ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(registeredChannel.getName()).isPresent()) {
+                && ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(registeredChannel.getName()).isEmpty()) {
                 registeredChannel.sendPacket(packet);
             }
         }

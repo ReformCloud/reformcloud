@@ -27,7 +27,7 @@ package systems.refomcloud.reformcloud2.embedded.node;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
-import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
+import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.NodeProcessWrapper;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeCompleteCommandLine;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeDispatchCommandLine;
@@ -42,31 +42,31 @@ import java.util.Optional;
 
 public class DefaultEmbeddedNodeProcessWrapper implements NodeProcessWrapper {
 
-    private NodeInformation nodeInformation;
+    private DefaultNodeInformation nodeInformation;
 
-    DefaultEmbeddedNodeProcessWrapper(NodeInformation nodeInformation) {
+    DefaultEmbeddedNodeProcessWrapper(DefaultNodeInformation nodeInformation) {
         this.nodeInformation = nodeInformation;
     }
 
     @NotNull
     @Override
-    public NodeInformation getNodeInformation() {
+    public DefaultNodeInformation getNodeInformation() {
         return this.nodeInformation;
     }
 
     @NotNull
     @Override
-    public Optional<NodeInformation> requestNodeInformationUpdate() {
+    public Optional<DefaultNodeInformation> requestNodeInformationUpdate() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeRequestNodeInformationUpdate(this.nodeInformation.getNodeUniqueID()))
             .map(result -> {
                 if (result instanceof ApiToNodeGetNodeInformationResult) {
                     ApiToNodeGetNodeInformationResult packet = (ApiToNodeGetNodeInformationResult) result;
                     return packet.getNodeInformation() == null
-                        ? Optional.<NodeInformation>empty()
+                        ? Optional.<DefaultNodeInformation>empty()
                         : Optional.of(this.nodeInformation = packet.getNodeInformation());
                 }
 
-                return Optional.<NodeInformation>empty();
+                return Optional.<DefaultNodeInformation>empty();
             }).orElseGet(Optional::empty);
     }
 

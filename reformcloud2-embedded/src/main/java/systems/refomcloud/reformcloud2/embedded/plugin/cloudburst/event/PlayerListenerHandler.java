@@ -35,7 +35,7 @@ import systems.refomcloud.reformcloud2.embedded.plugin.cloudburst.CloudBurstExec
 import systems.refomcloud.reformcloud2.embedded.shared.SharedJoinAllowChecker;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
+import systems.reformcloud.reformcloud2.shared.collect.Entry2;
 
 public final class PlayerListenerHandler {
 
@@ -49,7 +49,7 @@ public final class PlayerListenerHandler {
             return;
         }
 
-        Duo<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
+        Entry2<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
             event.getPlayer()::hasPermission,
             CloudBurstExecutor.getInstance().getIngameMessages(),
             null,

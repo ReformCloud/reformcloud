@@ -216,7 +216,7 @@ public final class DependencyFileLoader {
                 stringBuilder.append(stringObjectEntry.getKey()).append("=").append(stringObjectEntry.getValue().toString()).append(", ");
             }
 
-            if (this.information.size() != 0) {
+            if (!this.information.isEmpty()) {
                 stringBuilder.substring(stringBuilder.length() - 2);
             }
 

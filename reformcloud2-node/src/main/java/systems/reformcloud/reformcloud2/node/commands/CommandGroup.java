@@ -25,7 +25,6 @@
 package systems.reformcloud.reformcloud2.node.commands;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
@@ -40,9 +39,10 @@ import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.Tem
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
+import systems.reformcloud.reformcloud2.shared.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
+import systems.reformcloud.reformcloud2.shared.parser.Parsers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -106,7 +106,7 @@ public final class CommandGroup implements Command {
             return;
         }
 
-        Properties properties = StringUtil.calcProperties(strings, 2);
+        Properties properties = StringUtil.parseProperties(strings, 2);
         if (strings[0].equalsIgnoreCase("sub")) {
             this.handleSubGroupRequest(sender, strings, properties);
             return;
@@ -149,7 +149,7 @@ public final class CommandGroup implements Command {
 
     private void handleSubGroupRequest(CommandSender source, String[] strings, Properties properties) {
         Optional<ProcessGroup> processGroup = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(strings[1]);
-        if (!processGroup.isPresent()) {
+        if (processGroup.isEmpty()) {
             source.sendMessage(LanguageManager.get("command-group-sub-group-not-exists", strings[1]));
             return;
         }
@@ -204,7 +204,7 @@ public final class CommandGroup implements Command {
 
         if (strings.length >= 4 && strings[2].equalsIgnoreCase("edit")) {
             if (properties.containsKey("maintenance")) {
-                Boolean maintenance = CommonHelper.booleanFromString(properties.getProperty("maintenance"));
+                Boolean maintenance = Parsers.BOOLEAN.parse(properties.getProperty("maintenance"));
                 if (maintenance == null) {
                     source.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("maintenance")));
                     return;
@@ -219,7 +219,7 @@ public final class CommandGroup implements Command {
             }
 
             if (properties.containsKey("static")) {
-                Boolean isStatic = CommonHelper.booleanFromString(properties.getProperty("static"));
+                Boolean isStatic = Parsers.BOOLEAN.parse(properties.getProperty("static"));
                 if (isStatic == null) {
                     source.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("static")));
                     return;
@@ -234,7 +234,7 @@ public final class CommandGroup implements Command {
             }
 
             if (properties.containsKey("lobby")) {
-                Boolean isLobby = CommonHelper.booleanFromString(properties.getProperty("lobby"));
+                Boolean isLobby = Parsers.BOOLEAN.parse(properties.getProperty("lobby"));
                 if (isLobby == null) {
                     source.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("lobby")));
                     return;
@@ -249,7 +249,7 @@ public final class CommandGroup implements Command {
             }
 
             if (properties.containsKey("max-players")) {
-                Integer maxPlayers = CommonHelper.fromString(properties.getProperty("max-players"));
+                Integer maxPlayers = Parsers.INT.parse(properties.getProperty("max-players"));
                 if (maxPlayers == null || maxPlayers <= 0) {
                     source.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("max-players")));
                     return;
@@ -266,7 +266,7 @@ public final class CommandGroup implements Command {
             if (properties.containsKey("max-memory")) {
                 String[] split = properties.getProperty("max-memory").split("/");
                 if (split.length == 2) {
-                    Integer maxMemory = CommonHelper.fromString(split[1]);
+                    Integer maxMemory = Parsers.INT.parse(split[1]);
                     if (maxMemory == null || maxMemory <= 50) {
                         source.sendMessage(LanguageManager.get("command-integer-failed", 50, split[1]));
                         return;
@@ -285,7 +285,7 @@ public final class CommandGroup implements Command {
             }
 
             if (properties.containsKey("min-process-count")) {
-                Integer minProcessCount = CommonHelper.fromString(properties.getProperty("min-process-count"));
+                Integer minProcessCount = Parsers.INT.parse(properties.getProperty("min-process-count"));
                 if (minProcessCount == null || minProcessCount < 0) {
                     source.sendMessage(LanguageManager.get("command-integer-failed", -1, properties.getProperty("min-process-count")));
                     return;
@@ -300,7 +300,7 @@ public final class CommandGroup implements Command {
             }
 
             if (properties.containsKey("max-process-count")) {
-                Integer maxProcessCount = CommonHelper.fromString(properties.getProperty("max-process-count"));
+                Integer maxProcessCount = Parsers.INT.parse(properties.getProperty("max-process-count"));
                 if (maxProcessCount == null || maxProcessCount <= -2) {
                     source.sendMessage(LanguageManager.get("command-integer-failed", -2, properties.getProperty("max-process-count")));
                     return;
@@ -315,7 +315,7 @@ public final class CommandGroup implements Command {
             }
 
             if (properties.containsKey("always-prepared-process-count")) {
-                Integer alwaysPreparedCount = CommonHelper.fromString(properties.getProperty("always-prepared-process-count"));
+                Integer alwaysPreparedCount = Parsers.INT.parse(properties.getProperty("always-prepared-process-count"));
                 if (alwaysPreparedCount == null || alwaysPreparedCount < 0) {
                     source.sendMessage(LanguageManager.get("command-integer-failed", -1, properties.getProperty("always-prepared-process-count")));
                     return;
@@ -330,7 +330,7 @@ public final class CommandGroup implements Command {
             }
 
             if (properties.containsKey("start-port")) {
-                Integer startPort = CommonHelper.fromString(properties.getProperty("start-port"));
+                Integer startPort = Parsers.INT.parse(properties.getProperty("start-port"));
                 if (startPort == null || startPort <= 0) {
                     source.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("start-port")));
                     return;
@@ -377,7 +377,7 @@ public final class CommandGroup implements Command {
             }
 
             if (properties.containsKey("clear-startup-pickers")) {
-                Boolean clear = CommonHelper.booleanFromString(properties.getProperty("clear-startup-pickers"));
+                Boolean clear = Parsers.BOOLEAN.parse(properties.getProperty("clear-startup-pickers"));
                 if (clear == null) {
                     source.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("clear-startup-pickers")));
                     return;
@@ -430,7 +430,7 @@ public final class CommandGroup implements Command {
             }
 
             if (properties.containsKey("clear-templates")) {
-                Boolean clear = CommonHelper.booleanFromString(properties.getProperty("clear-templates"));
+                Boolean clear = Parsers.BOOLEAN.parse(properties.getProperty("clear-templates"));
                 if (clear == null) {
                     source.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("clear-templates")));
                     return;
@@ -458,7 +458,7 @@ public final class CommandGroup implements Command {
 
     private void handleMainGroupRequest(CommandSender source, String[] strings, Properties properties) {
         Optional<MainGroup> mainGroup = ExecutorAPI.getInstance().getMainGroupProvider().getMainGroup(strings[1]);
-        if (!mainGroup.isPresent()) {
+        if (mainGroup.isEmpty()) {
             source.sendMessage(LanguageManager.get("command-group-main-group-not-exists", strings[1]));
             return;
         }
@@ -540,7 +540,7 @@ public final class CommandGroup implements Command {
             }
 
             if (properties.containsKey("clear-sub-groups")) {
-                Boolean clear = CommonHelper.booleanFromString(properties.getProperty("clear-sub-groups"));
+                Boolean clear = Parsers.BOOLEAN.parse(properties.getProperty("clear-sub-groups"));
                 if (clear == null) {
                     source.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("clear-sub-groups")));
                     return;
@@ -593,15 +593,8 @@ public final class CommandGroup implements Command {
 
     private void describeMainGroupToSender(CommandSender source, MainGroup mainGroup) {
         String prefix = " > Sub-Groups (" + mainGroup.getSubGroups().size() + ")";
-        StringBuilder append = new StringBuilder();
-        for (int i = 7; i <= prefix.length(); i++) {
-            append.append(" ");
-        }
-
-        append.append("- ");
-
-        String s = " > Name" + append.toString() + mainGroup.getName()
-            + "\n" + prefix + " - " + String.join(", ", mainGroup.getSubGroups()) + "\n";
+        String append = " ".repeat(prefix.length() - 6) + "- ";
+        String s = " > Name" + append + mainGroup.getName() + "\n" + prefix + " - " + String.join(", ", mainGroup.getSubGroups()) + "\n";
         source.sendMessages(s.split("\n"));
     }
 
@@ -670,7 +663,7 @@ public final class CommandGroup implements Command {
             }
 
             Optional<TemplateBackend> backend = TemplateBackendManager.get(templateConfig[1]);
-            if (!backend.isPresent()) {
+            if (backend.isEmpty()) {
                 source.sendMessage(LanguageManager.get("command-group-template-backend-invalid", templateConfig[1]));
                 continue;
             }

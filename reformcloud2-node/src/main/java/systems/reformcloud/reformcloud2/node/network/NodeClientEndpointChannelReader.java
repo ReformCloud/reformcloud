@@ -33,7 +33,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.shared.SharedEndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
+import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketAuthBegin;
@@ -91,7 +91,7 @@ public final class NodeClientEndpointChannelReader extends SharedEndpointChannel
             }
 
             PacketAuthSuccess packet = (PacketAuthSuccess) input;
-            NodeInformation node = packet.getData().get("node", NodeInformation.TYPE);
+            DefaultNodeInformation node = packet.getData().get("node", DefaultNodeInformation.TYPE);
             if (node == null) {
                 // invalid result sent by other node
                 super.networkChannel.close();

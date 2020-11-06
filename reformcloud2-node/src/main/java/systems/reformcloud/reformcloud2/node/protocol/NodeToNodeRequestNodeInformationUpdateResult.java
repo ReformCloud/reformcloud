@@ -28,20 +28,20 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
-import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
+import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 
 public class NodeToNodeRequestNodeInformationUpdateResult extends QueryResultPacket {
 
-    private NodeInformation nodeInformation;
+    private DefaultNodeInformation nodeInformation;
 
     public NodeToNodeRequestNodeInformationUpdateResult() {
     }
 
-    public NodeToNodeRequestNodeInformationUpdateResult(NodeInformation nodeInformation) {
+    public NodeToNodeRequestNodeInformationUpdateResult(DefaultNodeInformation nodeInformation) {
         this.nodeInformation = nodeInformation;
     }
 
-    public NodeInformation getNodeInformation() {
+    public DefaultNodeInformation getNodeInformation() {
         return this.nodeInformation;
     }
 
@@ -57,6 +57,6 @@ public class NodeToNodeRequestNodeInformationUpdateResult extends QueryResultPac
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.nodeInformation = buffer.readObject(NodeInformation.class);
+        this.nodeInformation = buffer.readObject(DefaultNodeInformation.class);
     }
 }

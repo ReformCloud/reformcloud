@@ -43,7 +43,7 @@ import systems.refomcloud.reformcloud2.embedded.shared.SharedPlayerFallbackFilte
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
+import systems.reformcloud.reformcloud2.shared.collect.Entry2;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -52,24 +52,23 @@ public final class PlayerListenerHandler {
 
     @Subscribe(order = PostOrder.FIRST)
     public void handle(final @NotNull ServerPreConnectEvent event) {
-        if (!event.getPlayer().getCurrentServer().isPresent()) {
+        if (event.getPlayer().getCurrentServer().isEmpty()) {
             SharedPlayerFallbackFilter.filterFallback(
                 event.getPlayer().getUniqueId(),
                 this.getServerController().getCachedLobbyServers(),
                 event.getPlayer()::hasPermission,
                 VelocityFallbackExtraFilter.INSTANCE,
                 null
-            ).ifPresent(processInformation -> {
+            ).ifPresentOrElse(processInformation -> {
                 Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(processInformation.getProcessDetail().getName());
-                if (!server.isPresent()) {
+                if (server.isEmpty()) {
                     event.getPlayer().disconnect(VelocityExecutor.SERIALIZER.deserialize(VelocityExecutor.getInstance().getIngameMessages().format(
                         VelocityExecutor.getInstance().getIngameMessages().getNoHubServerAvailable()
                     )));
-                    return;
+                } else {
+                    event.setResult(ServerPreConnectEvent.ServerResult.allowed(server.get()));
                 }
-
-                event.setResult(ServerPreConnectEvent.ServerResult.allowed(server.get()));
-            }).ifEmpty(v -> {
+            }, () -> {
                 event.getPlayer().disconnect(VelocityExecutor.SERIALIZER.deserialize(VelocityExecutor.getInstance().getIngameMessages().format(
                     VelocityExecutor.getInstance().getIngameMessages().getNoHubServerAvailable()
                 )));
@@ -86,7 +85,7 @@ public final class PlayerListenerHandler {
             return;
         }
 
-        Duo<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
+        Entry2<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
             event.getPlayer()::hasPermission,
             VelocityExecutor.getInstance().getIngameMessages(),
             this.getServerController().getCachedProxies(),
@@ -106,18 +105,17 @@ public final class PlayerListenerHandler {
             event.getPlayer()::hasPermission,
             VelocityFallbackExtraFilter.INSTANCE,
             event.getPlayer().getCurrentServer().map(e -> e.getServerInfo().getName()).orElse(null)
-        ).ifPresent(processInformation -> {
+        ).ifPresentOrElse(processInformation -> {
             Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(processInformation.getProcessDetail().getName());
-            if (!server.isPresent()) {
+            if (server.isEmpty()) {
                 event.setResult(KickedFromServerEvent.DisconnectPlayer.create(VelocityExecutor.SERIALIZER.deserialize(
                     VelocityExecutor.getInstance().getIngameMessages().format(VelocityExecutor.getInstance().getIngameMessages().getNoHubServerAvailable())
                 )));
-                return;
+            } else {
+                event.setResult(KickedFromServerEvent.RedirectPlayer.create(server.get()));
+                event.getServerKickReason().ifPresent(reason -> event.getPlayer().sendMessage(Identity.nil(), reason));
             }
-
-            event.setResult(KickedFromServerEvent.RedirectPlayer.create(server.get()));
-            event.getServerKickReason().ifPresent(reason -> event.getPlayer().sendMessage(Identity.nil(), reason));
-        }).ifEmpty(v -> event.setResult(KickedFromServerEvent.DisconnectPlayer.create(VelocityExecutor.SERIALIZER.deserialize(
+        }, () -> event.setResult(KickedFromServerEvent.DisconnectPlayer.create(VelocityExecutor.SERIALIZER.deserialize(
             VelocityExecutor.getInstance().getIngameMessages().format(VelocityExecutor.getInstance().getIngameMessages().getNoHubServerAvailable())
         ))));
     }

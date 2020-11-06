@@ -26,10 +26,10 @@ package systems.refomcloud.reformcloud2.embedded.shared;
 
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.process.Player;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
+import systems.reformcloud.reformcloud2.shared.Constants;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,7 +45,7 @@ public final class SharedInvalidPlayerFixer {
     }
 
     public static void start(@NotNull Function<UUID, Boolean> onlineChecker, @NotNull Supplier<Integer> onlineCountSupplier) {
-        CommonHelper.SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(() -> {
+        Constants.SINGLE_THREAD_SCHEDULED_EXECUTOR.scheduleAtFixedRate(() -> {
             ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
             Collection<UUID> forRemoval = new ArrayList<>();
 

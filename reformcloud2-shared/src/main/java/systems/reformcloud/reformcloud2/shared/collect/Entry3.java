@@ -22,28 +22,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.event;
+package systems.reformcloud.reformcloud2.shared.collect;
 
-import org.jetbrains.annotations.ApiStatus;
+public class Entry3<F, S, T> {
 
-/**
- * Indicates that a user is able to cancel a specific event
- *
- * @deprecated Use {@link Cancelable} instead
- */
-@Deprecated
-@ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
-public interface Cancellable {
+    private final F first;
+    private final S second;
+    private final T third;
 
-    /**
-     * @return If the current will get cancelled
-     */
-    boolean isCancelled();
+    public Entry3(F first, S second, T third) {
+        this.first = first;
+        this.second = second;
+        this.third = third;
+    }
 
-    /**
-     * Sets if the event will get cancelled or not
-     *
-     * @param cancelled If the event should get cancelled
-     */
-    void setCancelled(boolean cancelled);
+    public F getFirst() {
+        return this.first;
+    }
+
+    public S getSecond() {
+        return this.second;
+    }
+
+    public T getThird() {
+        return this.third;
+    }
 }

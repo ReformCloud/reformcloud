@@ -49,7 +49,7 @@ public interface LoadedApplication extends Nameable {
      */
     @NotNull
     @Deprecated
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.11.0")
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.11.0-SNAPSHOT")
     ExecutorAPI api();
 
     /**

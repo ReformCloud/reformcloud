@@ -27,7 +27,7 @@ package systems.refomcloud.reformcloud2.embedded.node;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
-import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
+import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.provider.NodeInformationProvider;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.NodeProcessWrapper;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetNodeInformationByName;
@@ -57,7 +57,7 @@ public class DefaultEmbeddedNodeInformationProvider implements NodeInformationPr
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetNodeInformationByName(name))
             .map(result -> {
                 if (result instanceof ApiToNodeGetNodeInformationResult) {
-                    NodeInformation information = ((ApiToNodeGetNodeInformationResult) result).getNodeInformation();
+                    DefaultNodeInformation information = ((ApiToNodeGetNodeInformationResult) result).getNodeInformation();
                     return information == null
                         ? Optional.<NodeProcessWrapper>empty()
                         : Optional.<NodeProcessWrapper>of(new DefaultEmbeddedNodeProcessWrapper(information));
@@ -73,7 +73,7 @@ public class DefaultEmbeddedNodeInformationProvider implements NodeInformationPr
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetNodeInformationByUniqueId(nodeUniqueId))
             .map(result -> {
                 if (result instanceof ApiToNodeGetNodeInformationResult) {
-                    NodeInformation information = ((ApiToNodeGetNodeInformationResult) result).getNodeInformation();
+                    DefaultNodeInformation information = ((ApiToNodeGetNodeInformationResult) result).getNodeInformation();
                     return information == null
                         ? Optional.<NodeProcessWrapper>empty()
                         : Optional.<NodeProcessWrapper>of(new DefaultEmbeddedNodeProcessWrapper(information));
@@ -111,14 +111,14 @@ public class DefaultEmbeddedNodeInformationProvider implements NodeInformationPr
 
     @NotNull
     @Override
-    public @UnmodifiableView Collection<NodeInformation> getNodes() {
+    public @UnmodifiableView Collection<DefaultNodeInformation> getNodes() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetNodeObjects())
             .map(result -> {
                 if (result instanceof ApiToNodeGetNodeObjectsResult) {
                     return ((ApiToNodeGetNodeObjectsResult) result).getNodeInformation();
                 }
 
-                return new ArrayList<NodeInformation>();
+                return new ArrayList<DefaultNodeInformation>();
             }).orElseGet(Collections::emptyList);
     }
 

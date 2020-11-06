@@ -30,18 +30,18 @@ import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
+import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class NodeToNodeUpdateNodeInformation extends ProtocolPacket {
 
-    private NodeInformation nodeInformation;
+    private DefaultNodeInformation nodeInformation;
 
     public NodeToNodeUpdateNodeInformation() {
     }
 
-    public NodeToNodeUpdateNodeInformation(NodeInformation nodeInformation) {
+    public NodeToNodeUpdateNodeInformation(DefaultNodeInformation nodeInformation) {
         this.nodeInformation = nodeInformation;
     }
 
@@ -62,6 +62,6 @@ public class NodeToNodeUpdateNodeInformation extends ProtocolPacket {
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.nodeInformation = buffer.readObject(NodeInformation.class);
+        this.nodeInformation = buffer.readObject(DefaultNodeInformation.class);
     }
 }

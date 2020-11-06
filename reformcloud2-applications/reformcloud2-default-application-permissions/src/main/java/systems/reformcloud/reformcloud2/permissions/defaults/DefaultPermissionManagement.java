@@ -27,7 +27,6 @@ package systems.reformcloud.reformcloud2.permissions.defaults;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
@@ -52,6 +51,7 @@ import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 import systems.reformcloud.reformcloud2.permissions.packets.PacketGroupAction;
 import systems.reformcloud.reformcloud2.permissions.packets.PacketUserAction;
 import systems.reformcloud.reformcloud2.permissions.packets.util.PermissionAction;
+import systems.reformcloud.reformcloud2.shared.Constants;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -236,7 +236,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
         }
 
         Optional<JsonConfiguration> configuration = this.permissionUserTable.get(uniqueId.toString(), "");
-        if (!configuration.isPresent()) {
+        if (configuration.isEmpty()) {
             return Optional.empty();
         }
 
@@ -305,7 +305,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
     @Override
     public void removeUserGroup(@NotNull UUID uuid, @NotNull String group) {
         PermissionUser user = this.loadUser(uuid);
-        Streams.filterToReference(user.getGroups(), e -> e.getGroupName().equals(group)).ifPresent(e -> {
+        Streams.findFirst(user.getGroups(), e -> e.getGroupName().equals(group)).ifPresent(e -> {
             user.getGroups().remove(e);
             this.updateUser(user);
         });
@@ -429,7 +429,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
     }
 
     private void pushToDB(@NotNull UUID uuid, @NotNull String name) {
-        CommonHelper.EXECUTOR.execute(() -> this.nameToUniqueIdDatabase.insert(name, uuid.toString(), new JsonConfiguration().add("id", uuid)));
+        Constants.CACHED_THREAD_POOL.execute(() -> this.nameToUniqueIdDatabase.insert(name, uuid.toString(), new JsonConfiguration().add("id", uuid)));
     }
 
     private void publish(@NotNull Packet packet) {

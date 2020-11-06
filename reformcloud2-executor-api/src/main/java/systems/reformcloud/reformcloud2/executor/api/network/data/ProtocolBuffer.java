@@ -79,6 +79,9 @@ public abstract class ProtocolBuffer extends ByteBuf {
     @NotNull
     public abstract <T extends SerializableObject> List<T> readObjects(@NotNull Class<T> tClass);
 
+    @NotNull
+    public abstract <T extends SerializableObject, V extends T> List<T> readObjects(@NotNull Class<V> reader, @NotNull Class<T> type);
+
     public abstract int readVarInt();
 
     public abstract void writeVarInt(int value);

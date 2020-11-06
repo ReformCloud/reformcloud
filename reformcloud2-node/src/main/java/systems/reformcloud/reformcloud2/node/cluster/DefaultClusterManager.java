@@ -45,7 +45,7 @@ import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
+import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
@@ -90,11 +90,11 @@ public class DefaultClusterManager implements ClusterManager {
     private final DefaultNodeProcessProvider processProvider;
     private final DefaultNodeProcessGroupProvider processGroupProvider;
     private final DefaultNodeMainGroupProvider mainGroupProvider;
-    private NodeInformation head;
+    private DefaultNodeInformation head;
 
     public DefaultClusterManager(DefaultNodeNodeInformationProvider nodeInformationProvider, DefaultNodeProcessProvider processProvider,
                                  DefaultNodeProcessGroupProvider processGroupProvider, DefaultNodeMainGroupProvider mainGroupProvider,
-                                 NodeInformation head) {
+                                 DefaultNodeInformation head) {
         this.nodeInformationProvider = nodeInformationProvider;
         this.processProvider = processProvider;
         this.processGroupProvider = processGroupProvider;
@@ -124,18 +124,18 @@ public class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public void handleNodeConnect(@NotNull NodeInformation nodeInformation) {
+    public void handleNodeConnect(@NotNull DefaultNodeInformation nodeInformation) {
         this.nodeInformationProvider.addNode(nodeInformation);
         this.updateHead();
     }
 
     @Override
-    public void handleNodeUpdate(@NotNull NodeInformation nodeInformation) {
+    public void handleNodeUpdate(@NotNull DefaultNodeInformation nodeInformation) {
         this.nodeInformationProvider.updateNode(nodeInformation);
     }
 
     @Override
-    public void publishNodeUpdate(@NotNull NodeInformation nodeInformation) {
+    public void publishNodeUpdate(@NotNull DefaultNodeInformation nodeInformation) {
         this.sendPacketToNodes(new NodeToNodeUpdateNodeInformation(nodeInformation));
     }
 
@@ -259,7 +259,7 @@ public class DefaultClusterManager implements ClusterManager {
     @Override
     public void handleProcessGroupSet(@NotNull Collection<ProcessGroup> processGroups) {
         for (ProcessGroup processGroup : processGroups) {
-            if (!this.processGroupProvider.getProcessGroup(processGroup.getName()).isPresent()) {
+            if (this.processGroupProvider.getProcessGroup(processGroup.getName()).isEmpty()) {
                 this.processGroupProvider.addProcessGroup0(processGroup);
             } else {
                 this.processGroupProvider.updateProcessGroup0(processGroup);
@@ -323,7 +323,7 @@ public class DefaultClusterManager implements ClusterManager {
     @Override
     public void handleMainGroupSet(@NotNull Collection<MainGroup> mainGroups) {
         for (MainGroup mainGroup : mainGroups) {
-            if (!this.mainGroupProvider.getMainGroup(mainGroup.getName()).isPresent()) {
+            if (this.mainGroupProvider.getMainGroup(mainGroup.getName()).isEmpty()) {
                 this.mainGroupProvider.addGroup0(mainGroup);
             } else {
                 this.mainGroupProvider.updateMainGroup0(mainGroup);
@@ -342,15 +342,15 @@ public class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public @NotNull NodeInformation getHeadNode() {
+    public @NotNull DefaultNodeInformation getHeadNode() {
         return this.head;
     }
 
     private void updateHead() {
-        Collection<NodeInformation> nodes = ExecutorAPI.getInstance().getNodeInformationProvider().getNodes();
-        Conditions.isTrue(nodes.size() > 0, "All node information were unregistered");
+        Collection<DefaultNodeInformation> nodes = ExecutorAPI.getInstance().getNodeInformationProvider().getNodes();
+        Conditions.isTrue(!nodes.isEmpty(), "All node information were unregistered");
 
-        for (NodeInformation node : nodes) {
+        for (DefaultNodeInformation node : nodes) {
             if (node.getStartupTime() < this.head.getStartupTime()) {
                 this.head = node;
             }
@@ -358,7 +358,7 @@ public class DefaultClusterManager implements ClusterManager {
     }
 
     private void sendPacketToNodes(@NotNull Packet packet) {
-        for (NodeInformation node : ExecutorAPI.getInstance().getNodeInformationProvider().getNodes()) {
+        for (DefaultNodeInformation node : ExecutorAPI.getInstance().getNodeInformationProvider().getNodes()) {
             ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
                 .getChannel(node.getName())
                 .ifPresent(channel -> channel.sendPacket(packet));

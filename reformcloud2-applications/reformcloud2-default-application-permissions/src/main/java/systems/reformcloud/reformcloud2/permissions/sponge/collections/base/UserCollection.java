@@ -28,10 +28,10 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.Subject;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.permissions.sponge.collections.DefaultSubjectCollection;
 import systems.reformcloud.reformcloud2.permissions.sponge.subject.base.user.SpongeSubject;
+import systems.reformcloud.reformcloud2.shared.parser.Parsers;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,7 +47,7 @@ public class UserCollection extends DefaultSubjectCollection {
     @NotNull
     @Override
     protected Subject load(String id) {
-        UUID uniqueID = CommonHelper.tryParse(id);
+        UUID uniqueID = Parsers.UNIQUE_ID.parse(id);
         Conditions.isTrue(uniqueID != null);
         return new SpongeSubject(uniqueID, this, this.service);
     }

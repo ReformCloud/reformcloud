@@ -27,7 +27,6 @@ package systems.refomcloud.reformcloud2.embedded.process;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
@@ -40,6 +39,7 @@ import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeSendProcessComman
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeSetProcessRuntimeState;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeUploadProcessLog;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeUploadProcessLogResult;
+import systems.reformcloud.reformcloud2.shared.Constants;
 
 import java.util.ArrayDeque;
 import java.util.Optional;
@@ -96,7 +96,7 @@ public class DefaultEmbeddedProcessWrapper implements ProcessWrapper {
                 }
 
                 return new ArrayDeque<String>();
-            }).orElseGet(() -> CommonHelper.EMPTY_STRING_QUEUE);
+            }).orElse(Constants.EMPTY_STRING_QUEUE);
     }
 
     @Override

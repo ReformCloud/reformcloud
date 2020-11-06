@@ -27,7 +27,7 @@ package systems.reformcloud.reformcloud2.node.database;
 import org.h2.Driver;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
+import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 import systems.reformcloud.reformcloud2.node.database.sql.AbstractSQLDatabaseProvider;
 import systems.reformcloud.reformcloud2.node.database.util.SQLFunction;
 

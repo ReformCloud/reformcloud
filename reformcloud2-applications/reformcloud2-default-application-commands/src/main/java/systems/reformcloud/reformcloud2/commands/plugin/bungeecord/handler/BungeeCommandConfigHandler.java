@@ -42,14 +42,14 @@ public class BungeeCommandConfigHandler extends CommandConfigHandler {
     public void handleCommandConfigRelease(@NotNull CommandsConfig commandsConfig) {
         this.unregisterAllCommands();
 
-        if (commandsConfig.isLeaveCommandEnabled() && commandsConfig.getLeaveCommands().size() > 0) {
+        if (commandsConfig.isLeaveCommandEnabled() && !commandsConfig.getLeaveCommands().isEmpty()) {
             String name = commandsConfig.getLeaveCommands().get(0);
             commandsConfig.getLeaveCommands().remove(name);
             this.leave = new CommandLeave(name, commandsConfig.getLeaveCommands());
             ProxyServer.getInstance().getPluginManager().registerCommand(BungeecordPlugin.getInstance(), this.leave);
         }
 
-        if (commandsConfig.isReformCloudCommandEnabled() && commandsConfig.getReformCloudCommands().size() > 0) {
+        if (commandsConfig.isReformCloudCommandEnabled() && !commandsConfig.getReformCloudCommands().isEmpty()) {
             String name = commandsConfig.getReformCloudCommands().get(0);
             commandsConfig.getReformCloudCommands().remove(name);
             this.reformCloud = new CommandReformCloud(name, commandsConfig.getReformCloudCommands());

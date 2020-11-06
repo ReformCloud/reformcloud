@@ -30,7 +30,7 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
+import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.NetworkInfo;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.detail.ProcessDetail;
@@ -62,7 +62,7 @@ public class DefaultProcessFactory implements ProcessFactory {
                 return null;
             }
 
-            NodeInformation nodeInformation = this.getNode(configuration.getNode()).orElseGet(() -> this.getBestNode(configuration.getProcessGroup()));
+            DefaultNodeInformation nodeInformation = this.getNode(configuration.getNode()).orElseGet(() -> this.getBestNode(configuration.getProcessGroup()));
             if (nodeInformation == null) {
                 System.err.println(LanguageManager.get("process-unable-to-find-node", configuration.getProcessGroup().getName()));
                 return null;
@@ -111,7 +111,7 @@ public class DefaultProcessFactory implements ProcessFactory {
         return DefaultProcessFactory.class.getName();
     }
 
-    private @NotNull Optional<NodeInformation> getNode(@Nullable String nodeName) {
+    private @NotNull Optional<DefaultNodeInformation> getNode(@Nullable String nodeName) {
         if (nodeName == null) {
             return Optional.empty();
         }
@@ -119,10 +119,10 @@ public class DefaultProcessFactory implements ProcessFactory {
         return ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(nodeName).map(NodeProcessWrapper::getNodeInformation);
     }
 
-    private @Nullable NodeInformation getBestNode(@NotNull ProcessGroup processGroup) {
-        NodeInformation best = null;
+    private @Nullable DefaultNodeInformation getBestNode(@NotNull ProcessGroup processGroup) {
+        DefaultNodeInformation best = null;
 
-        for (NodeInformation node : ExecutorAPI.getInstance().getNodeInformationProvider().getNodes()) {
+        for (DefaultNodeInformation node : ExecutorAPI.getInstance().getNodeInformationProvider().getNodes()) {
             if (!processGroup.getStartupConfiguration().isSearchBestClientAlone()
                 && !processGroup.getStartupConfiguration().getUseOnlyTheseClients().contains(node.getName())) {
                 continue;

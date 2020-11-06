@@ -25,19 +25,20 @@
 package systems.reformcloud.reformcloud2.node.config;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.messages.IngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.groups.setup.GroupSetupHelper;
 import systems.reformcloud.reformcloud2.executor.api.groups.setup.GroupSetupVersion;
-import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.utility.NetworkAddress;
-import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
+import systems.reformcloud.reformcloud2.shared.StringUtil;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.setup.DefaultSetup;
 import systems.reformcloud.reformcloud2.node.setup.DefaultSetupQuestion;
 import systems.reformcloud.reformcloud2.node.setup.Setup;
+import systems.reformcloud.reformcloud2.shared.io.IOUtils;
+import systems.reformcloud.reformcloud2.shared.network.NetworkUtils;
+import systems.reformcloud.reformcloud2.shared.platform.Platform;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -83,7 +84,7 @@ public final class NodeExecutorConfig {
             AtomicBoolean runClusterSetup = new AtomicBoolean(false);
             List<NetworkAddress> clusterNodes = new ArrayList<>();
 
-            String ips = String.join(", ", CommonHelper.getAllAvailableIpAddresses());
+            String ips = String.join(", ", NetworkUtils.getAllAvailableIpAddresses());
 
             this.setup.addQuestion(new DefaultSetupQuestion(
                 setupAnswer -> {
@@ -99,7 +100,7 @@ public final class NodeExecutorConfig {
                 LanguageManager.get("node-setup-question-node-name")
             )).addQuestion(new DefaultSetupQuestion(
                 setupAnswer -> {
-                    String address = CommonHelper.getIpAddress(setupAnswer.getOriginalAnswer());
+                    String address = NetworkUtils.validateAndGetIpAddress(setupAnswer.getOriginalAnswer());
                     if (address != null) {
                         networkAddress.set(address);
                     }
@@ -161,7 +162,7 @@ public final class NodeExecutorConfig {
                 clusterNodes.addAll(this.runClusterSetup());
             }
 
-            int maxMemory = CommonHelper.calculateMaxMemory();
+            int maxMemory = Platform.getTotalSystemMemory() - 1024;
             if (maxMemory < 512) {
                 System.err.println(LanguageManager.get("start-config-low-memory"));
                 maxMemory = 512;
@@ -238,7 +239,7 @@ public final class NodeExecutorConfig {
         this.setup.clear();
         this.setup.addQuestion(new DefaultSetupQuestion(
             setupAnswer -> {
-                String address = CommonHelper.getIpAddress(setupAnswer.getOriginalAnswer());
+                String address = NetworkUtils.validateAndGetIpAddress(setupAnswer.getOriginalAnswer());
                 if (address != null) {
                     nodeHost.set(address);
                 }

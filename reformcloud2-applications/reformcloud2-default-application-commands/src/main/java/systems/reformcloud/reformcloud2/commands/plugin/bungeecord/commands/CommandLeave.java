@@ -71,7 +71,7 @@ public class CommandLeave extends Command {
             proxiedPlayer::hasPermission,
             BungeeFallbackExtraFilter.INSTANCE,
             proxiedPlayer.getServer().getInfo().getName()
-        ).ifPresent(processInformation -> {
+        ).ifPresentOrElse(processInformation -> {
             ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(processInformation.getProcessDetail().getName());
             if (serverInfo == null) {
                 proxiedPlayer.sendMessage(TextComponent.fromLegacyText(Embedded.getInstance().getIngameMessages().format(
@@ -84,7 +84,7 @@ public class CommandLeave extends Command {
                 Embedded.getInstance().getIngameMessages().getConnectingToHub(), processInformation.getProcessDetail().getName()
             )));
             proxiedPlayer.connect(serverInfo);
-        }).ifEmpty(v -> proxiedPlayer.sendMessage(TextComponent.fromLegacyText(Embedded.getInstance().getIngameMessages().format(
+        }, () -> proxiedPlayer.sendMessage(TextComponent.fromLegacyText(Embedded.getInstance().getIngameMessages().format(
             Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
         ))));
     }
