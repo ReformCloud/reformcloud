@@ -28,8 +28,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.builder.ProcessBuilder;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
 
@@ -45,8 +45,8 @@ public abstract class AbstractProcessBuilder implements ProcessBuilder {
     protected String displayName;
     protected String messageOfTheDay;
     protected String targetProcessFactory;
-    protected ProcessGroup processGroup;
-    protected Template template;
+    protected DefaultProcessGroup processGroup;
+    protected DefaultTemplate template;
     protected Collection<ProcessInclusion> inclusions = new CopyOnWriteArrayList<>();
     protected JsonConfiguration extra = new JsonConfiguration();
     protected ProcessState initialState = ProcessState.READY;
@@ -74,7 +74,7 @@ public abstract class AbstractProcessBuilder implements ProcessBuilder {
 
     @NotNull
     @Override
-    public ProcessBuilder group(@NotNull ProcessGroup processGroup) {
+    public ProcessBuilder group(@NotNull DefaultProcessGroup processGroup) {
         this.processGroup = processGroup;
         return this;
     }
@@ -123,7 +123,7 @@ public abstract class AbstractProcessBuilder implements ProcessBuilder {
 
     @NotNull
     @Override
-    public ProcessBuilder template(@NotNull Template template) {
+    public ProcessBuilder template(@NotNull DefaultTemplate template) {
         this.template = template;
         return this;
     }

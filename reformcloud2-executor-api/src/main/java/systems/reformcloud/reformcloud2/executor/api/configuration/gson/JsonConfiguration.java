@@ -587,6 +587,13 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
         return new JsonConfiguration(this.jsonObject.deepCopy());
     }
 
+    @Override
+    public void clear() {
+        for (String key : this.jsonObject.keySet()) {
+            this.remove(key);
+        }
+    }
+
     public JsonObject getJsonObject() {
         return this.jsonObject;
     }

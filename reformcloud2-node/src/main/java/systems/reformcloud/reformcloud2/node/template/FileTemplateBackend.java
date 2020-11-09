@@ -22,15 +22,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.groups.template.backend.basic;
+package systems.reformcloud.reformcloud2.node.template;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackend;
-import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.TemplateBuilder;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,7 +40,7 @@ import java.util.Collection;
 
 public class FileTemplateBackend implements TemplateBackend {
 
-    public static final String NAME = "FILE";
+    public static final String NAME = TemplateBuilder.FILE_BACKEND;
 
     @Override
     public boolean existsTemplate(@NotNull String group, @NotNull String template) {

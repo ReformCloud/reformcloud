@@ -29,8 +29,8 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.builder.ProcessBuilder;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
@@ -85,7 +85,7 @@ public final class CommandLaunch implements Command {
             return;
         }
 
-        Optional<ProcessGroup> base = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(strings[0]);
+        Optional<DefaultProcessGroup> base = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(strings[0]);
         if (base.isEmpty()) {
             sender.sendMessage(LanguageManager.get("command-launch-start-not-possible-group-not-exists", strings[0]));
             return;
@@ -98,7 +98,7 @@ public final class CommandLaunch implements Command {
         int amount = 1;
 
         if (properties.containsKey("template")) {
-            Template baseTemplate = Streams.filter(base.get().getTemplates(), e -> e.getName().equals(properties.getProperty("template")));
+            DefaultTemplate baseTemplate = Streams.filter(base.get().getTemplates(), e -> e.getName().equals(properties.getProperty("template")));
             if (baseTemplate == null) {
                 sender.sendMessage(LanguageManager.get("command-launch-template-not-exists", properties.getProperty("template"), base.get().getName()));
                 return;

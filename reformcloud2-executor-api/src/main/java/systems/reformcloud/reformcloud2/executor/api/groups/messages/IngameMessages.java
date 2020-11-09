@@ -33,7 +33,7 @@ import java.text.MessageFormat;
 
 public final class IngameMessages implements SerializableObject {
 
-    public static final TypeToken<IngameMessages> TYPE = new TypeToken<IngameMessages>() {
+    public static final TypeToken<IngameMessages> TYPE = new TypeToken<>() {
     };
     private String prefix = "§6Cloud §7|";
     private String processRegistered = "%prefix% §7Registered process §e{0}";

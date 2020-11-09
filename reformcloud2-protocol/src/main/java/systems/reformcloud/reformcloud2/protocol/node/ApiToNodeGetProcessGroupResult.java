@@ -25,23 +25,23 @@
 package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
 
 public class ApiToNodeGetProcessGroupResult extends QueryResultPacket {
 
-    private ProcessGroup processGroup;
+    private DefaultProcessGroup processGroup;
 
     public ApiToNodeGetProcessGroupResult() {
     }
 
-    public ApiToNodeGetProcessGroupResult(ProcessGroup processGroup) {
+    public ApiToNodeGetProcessGroupResult(DefaultProcessGroup processGroup) {
         this.processGroup = processGroup;
     }
 
-    public ProcessGroup getProcessGroup() {
+    public DefaultProcessGroup getProcessGroup() {
         return this.processGroup;
     }
 
@@ -57,6 +57,6 @@ public class ApiToNodeGetProcessGroupResult extends QueryResultPacket {
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.processGroup = buffer.readObject(ProcessGroup.class);
+        this.processGroup = buffer.readObject(DefaultProcessGroup.class);
     }
 }

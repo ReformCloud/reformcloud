@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.node.runnables;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
@@ -40,7 +40,7 @@ import java.util.Optional;
 
 public class AutoStartRunnable implements Runnable {
 
-    private static void startPreparedOfGroup(@NotNull Collection<ProcessInformation> processes, @NotNull ProcessGroup processGroup) {
+    private static void startPreparedOfGroup(@NotNull Collection<ProcessInformation> processes, @NotNull DefaultProcessGroup processGroup) {
         ProcessInformation prepared = Streams.filter(processes, e -> e.getProcessDetail().getProcessState() == ProcessState.PREPARED);
         if (prepared != null) {
             Optional<ProcessWrapper> processWrapper = ExecutorAPI.getInstance().getProcessProvider()
@@ -77,7 +77,7 @@ public class AutoStartRunnable implements Runnable {
             return;
         }
 
-        for (ProcessGroup processGroup : ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()) {
+        for (DefaultProcessGroup processGroup : ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()) {
             if (processGroup.getTemplates().isEmpty()) {
                 continue;
             }

@@ -25,8 +25,8 @@
 package systems.reformcloud.reformcloud2.examples.process;
 
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.groups.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 
 import java.util.Optional;
@@ -43,10 +43,10 @@ public class ExampleProcessHandling {
 
     // Starts a new process of the group lobby with the template default
     public static void startProcessFromGroupWithTemplate() {
-        Optional<ProcessGroup> group = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup("Lobby");
+        Optional<DefaultProcessGroup> group = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup("Lobby");
         ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup("Lobby")
             .ifPresent(processGroup -> {
-                Template template = processGroup.getTemplate("default");
+                DefaultTemplate template = processGroup.getTemplate("default");
                 if (template == null) {
                     return;
                 }

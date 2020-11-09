@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.inclusion.Inclusion;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
@@ -92,7 +92,7 @@ public final class CommandProcess implements Command {
         Properties properties = StringUtil.parseProperties(strings, 1);
         if (strings[0].equalsIgnoreCase("list")) {
             if (properties.containsKey("group")) {
-                Optional<ProcessGroup> group = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(properties.getProperty("group"));
+                Optional<DefaultProcessGroup> group = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(properties.getProperty("group"));
                 if (group.isEmpty()) {
                     commandSource.sendMessage(LanguageManager.get("command-process-group-unavailable", properties.getProperty("group")));
                     return;
@@ -100,7 +100,7 @@ public final class CommandProcess implements Command {
 
                 this.showAllProcesses(commandSource, group.get());
             } else {
-                for (ProcessGroup processGroup : ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()) {
+                for (DefaultProcessGroup processGroup : ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()) {
                     this.showAllProcesses(commandSource, processGroup);
                 }
             }
@@ -342,7 +342,7 @@ public final class CommandProcess implements Command {
             .orElse(null);
     }
 
-    private void showAllProcesses(@NotNull CommandSender source, @NotNull ProcessGroup group) {
+    private void showAllProcesses(@NotNull CommandSender source, @NotNull DefaultProcessGroup group) {
         Set<ProcessInformation> all = this.sort(ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(group.getName()));
         all.forEach(
             e -> source.sendMessage(String.format(

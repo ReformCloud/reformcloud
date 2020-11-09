@@ -35,7 +35,7 @@ import java.util.List;
 
 public class ProxyConfiguration implements SerializableObject {
 
-    public static final TypeToken<ProxyConfiguration> TYPE = new TypeToken<ProxyConfiguration>() {
+    public static final TypeToken<ProxyConfiguration> TYPE = new TypeToken<>() {
     };
     private List<MotdConfiguration> motdDefaultConfig;
     private List<MotdConfiguration> motdMaintenanceConfig;

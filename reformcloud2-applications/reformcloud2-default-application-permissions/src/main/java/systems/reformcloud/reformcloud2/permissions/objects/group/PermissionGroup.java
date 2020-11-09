@@ -42,7 +42,7 @@ import java.util.Optional;
 
 public class PermissionGroup implements SerializableObject {
 
-    public static final TypeToken<PermissionGroup> TYPE = new TypeToken<PermissionGroup>() {
+    public static final TypeToken<PermissionGroup> TYPE = new TypeToken<>() {
     };
     private Collection<PermissionNode> permissionNodes;
     private Map<String, Collection<PermissionNode>> perGroupPermissions;

@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.builder.MainGroupBuilder;
-import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.provider.MainGroupProvider;
 import systems.reformcloud.reformcloud2.executor.api.registry.io.FileRegistry;

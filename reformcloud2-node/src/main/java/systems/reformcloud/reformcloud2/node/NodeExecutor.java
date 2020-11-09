@@ -32,8 +32,8 @@ import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.node.template.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.http.server.HttpServer;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
@@ -49,7 +49,7 @@ import systems.reformcloud.reformcloud2.executor.api.provider.NodeInformationPro
 import systems.reformcloud.reformcloud2.executor.api.provider.PlayerProvider;
 import systems.reformcloud.reformcloud2.executor.api.provider.ProcessGroupProvider;
 import systems.reformcloud.reformcloud2.executor.api.registry.service.ServiceRegistry;
-import systems.reformcloud.reformcloud2.executor.api.utility.NetworkAddress;
+import systems.reformcloud.reformcloud2.shared.network.SimpleNetworkAddress;
 import systems.reformcloud.reformcloud2.node.application.DefaultApplicationLoader;
 import systems.reformcloud.reformcloud2.node.argument.ArgumentParser;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
@@ -257,7 +257,7 @@ public final class NodeExecutor extends ExecutorAPI {
         this.mainGroupProvider.reload();
         this.processGroupProvider.reload();
 
-        for (ProcessGroup processGroup : this.processGroupProvider.getProcessGroups()) {
+        for (DefaultProcessGroup processGroup : this.processGroupProvider.getProcessGroups()) {
             for (ProcessInformation information : this.processProvider.getProcessesByProcessGroup(processGroup.getName())) {
                 information.setProcessGroup(processGroup);
                 this.processProvider.updateProcessInformation(information);
@@ -330,7 +330,7 @@ public final class NodeExecutor extends ExecutorAPI {
     private void startNetworkListeners() {
         System.out.println(LanguageManager.get("network-transport-type-choose", NetworkUtil.TRANSPORT_TYPE.getName()));
 
-        for (NetworkAddress networkListener : this.nodeConfig.getNetworkListeners()) {
+        for (SimpleNetworkAddress networkListener : this.nodeConfig.getNetworkListeners()) {
             if (networkListener.getHost() == null || networkListener.getPort() < 0) {
                 System.err.println(LanguageManager.get(
                     "startup-bind-net-listener-fail", networkListener.getHost(), networkListener.getPort()
@@ -341,7 +341,7 @@ public final class NodeExecutor extends ExecutorAPI {
             this.networkServer.bind(networkListener.getHost(), networkListener.getPort(), NodeServerEndpointChannelReader::new);
         }
 
-        for (NetworkAddress httpNetworkListener : this.nodeConfig.getHttpNetworkListeners()) {
+        for (SimpleNetworkAddress httpNetworkListener : this.nodeConfig.getHttpNetworkListeners()) {
             if (httpNetworkListener.getHost() == null || httpNetworkListener.getPort() < 0) {
                 System.err.println(LanguageManager.get(
                     "startup-bind-net-listener-fail", httpNetworkListener.getHost(), httpNetworkListener.getPort()
@@ -352,7 +352,7 @@ public final class NodeExecutor extends ExecutorAPI {
             this.httpServer.bind(httpNetworkListener.getHost(), httpNetworkListener.getPort());
         }
 
-        for (NetworkAddress clusterNode : this.nodeConfig.getClusterNodes()) {
+        for (SimpleNetworkAddress clusterNode : this.nodeConfig.getClusterNodes()) {
             if (clusterNode.getHost() == null || clusterNode.getPort() < 0) {
                 System.err.println(LanguageManager.get(
                     "startup-connect-node-fail", clusterNode.getHost(), clusterNode.getPort()
@@ -471,8 +471,8 @@ public final class NodeExecutor extends ExecutorAPI {
     }
 
     @NotNull
-    public NetworkAddress getAnyAddress() {
-        List<NetworkAddress> networkListeners = this.nodeConfig.getNetworkListeners();
+    public SimpleNetworkAddress getAnyAddress() {
+        List<SimpleNetworkAddress> networkListeners = this.nodeConfig.getNetworkListeners();
         Conditions.isTrue(!networkListeners.isEmpty(), "Try to run cloud system with no network listener configured");
         return networkListeners.size() == 1 ? networkListeners.get(0) : networkListeners.get(new Random().nextInt(networkListeners.size()));
     }

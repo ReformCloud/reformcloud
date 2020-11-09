@@ -30,12 +30,12 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
 import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.RuntimeConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Version;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.basic.FileTemplateBackend;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.runtime.DefaultRuntimeConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Version;
+import systems.reformcloud.reformcloud2.node.template.TemplateBackendManager;
+import systems.reformcloud.reformcloud2.node.template.FileTemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.inclusion.Inclusion;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.shared.StringUtil;
@@ -78,13 +78,13 @@ public final class CommandTemplate implements Command {
             return;
         }
 
-        Entry2<ProcessGroup, String> entry = this.parseTemplate(strings[0]);
+        Entry2<DefaultProcessGroup, String> entry = this.parseTemplate(strings[0]);
         if (entry == null) {
             sender.sendMessage(LanguageManager.get("command-template-unable-to-parse", strings[0]));
             return;
         }
 
-        Template template = entry.getFirst().getTemplate(entry.getSecond());
+        DefaultTemplate template = entry.getFirst().getTemplate(entry.getSecond());
 
         if (strings.length == 2) {
             if (strings[1].equalsIgnoreCase("create")) {
@@ -97,13 +97,13 @@ public final class CommandTemplate implements Command {
                     return;
                 }
 
-                entry.getFirst().getTemplates().add(new Template(
+                entry.getFirst().getTemplates().add(new DefaultTemplate(
                     0,
                     entry.getSecond(),
                     false,
                     FileTemplateBackend.NAME,
                     "-",
-                    new RuntimeConfiguration(512, new ArrayList<>(), new HashMap<>()),
+                    new DefaultRuntimeConfiguration(512, new ArrayList<>(), new HashMap<>()),
                     Version.PAPER_1_16_3
                 ));
                 ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(entry.getFirst());
@@ -403,8 +403,8 @@ public final class CommandTemplate implements Command {
         List<String> result = new ArrayList<>();
         if (bufferIndex == 0) {
             result.add("versions");
-            for (ProcessGroup processGroup : ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()) {
-                for (Template template : processGroup.getTemplates()) {
+            for (DefaultProcessGroup processGroup : ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()) {
+                for (DefaultTemplate template : processGroup.getTemplates()) {
                     result.add(processGroup.getName() + "/" + template.getName());
                 }
             }
@@ -426,7 +426,7 @@ public final class CommandTemplate implements Command {
         return result;
     }
 
-    private @Nullable Entry2<ProcessGroup, String> parseTemplate(@NotNull String in) {
+    private @Nullable Entry2<DefaultProcessGroup, String> parseTemplate(@NotNull String in) {
         String[] split = in.split("/");
         if (split.length != 2) {
             return null;
@@ -468,7 +468,7 @@ public final class CommandTemplate implements Command {
         ).split("\n"));
     }
 
-    private void describeTemplateToSender(@NotNull CommandSender sender, @NotNull Template template) {
+    private void describeTemplateToSender(@NotNull CommandSender sender, @NotNull DefaultTemplate template) {
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append(" Name                  - ").append(template.getName()).append("\n");
@@ -514,7 +514,7 @@ public final class CommandTemplate implements Command {
         sender.sendMessages(stringBuilder.toString().split("\n"));
     }
 
-    private void handleEditCall(@NotNull CommandSender sender, @NotNull Template template, @NotNull ProcessGroup group, @NotNull String[] strings) {
+    private void handleEditCall(@NotNull CommandSender sender, @NotNull DefaultTemplate template, @NotNull DefaultProcessGroup group, @NotNull String[] strings) {
         Properties properties = StringUtil.parseProperties(strings, 2);
         if (properties.containsKey("version")) {
             Version version = EnumUtil.findEnumFieldByName(Version.class, properties.getProperty("version")).orElse(null);

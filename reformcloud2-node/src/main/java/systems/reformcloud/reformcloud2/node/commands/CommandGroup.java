@@ -29,13 +29,13 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
 import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
-import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.RuntimeConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Version;
+import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.runtime.DefaultRuntimeConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Version;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackend;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
+import systems.reformcloud.reformcloud2.node.template.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
@@ -148,7 +148,7 @@ public final class CommandGroup implements Command {
     }
 
     private void handleSubGroupRequest(CommandSender source, String[] strings, Properties properties) {
-        Optional<ProcessGroup> processGroup = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(strings[1]);
+        Optional<DefaultProcessGroup> processGroup = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(strings[1]);
         if (processGroup.isEmpty()) {
             source.sendMessage(LanguageManager.get("command-group-sub-group-not-exists", strings[1]));
             return;
@@ -272,7 +272,7 @@ public final class CommandGroup implements Command {
                         return;
                     }
 
-                    Template template = processGroup.get().getTemplate(split[0]);
+                    DefaultTemplate template = processGroup.get().getTemplate(split[0]);
                     if (template != null) {
                         template.getRuntimeConfiguration().setMaxMemory(maxMemory);
                         source.sendMessage(LanguageManager.get(
@@ -394,38 +394,38 @@ public final class CommandGroup implements Command {
             }
 
             if (properties.containsKey("templates")) {
-                List<Template> newTemplates = this.parseTemplates(this.parseStrings(properties.getProperty("templates")), source, processGroup.get());
+                List<DefaultTemplate> newTemplates = this.parseTemplates(this.parseStrings(properties.getProperty("templates")), source, processGroup.get());
                 if (!newTemplates.isEmpty()) {
                     processGroup.get().setTemplates(newTemplates);
                     source.sendMessage(LanguageManager.get(
                         "command-group-edit",
                         "templates",
-                        newTemplates.stream().map(Template::getName).collect(Collectors.joining(", "))
+                        newTemplates.stream().map(DefaultTemplate::getName).collect(Collectors.joining(", "))
                     ));
                 }
             }
 
             if (properties.containsKey("add-templates")) {
-                List<Template> newTemplates = this.parseTemplates(this.parseStrings(properties.getProperty("add-templates")), source, processGroup.get());
+                List<DefaultTemplate> newTemplates = this.parseTemplates(this.parseStrings(properties.getProperty("add-templates")), source, processGroup.get());
                 if (!newTemplates.isEmpty()) {
                     newTemplates.addAll(processGroup.get().getTemplates());
                     processGroup.get().setTemplates(newTemplates);
                     source.sendMessage(LanguageManager.get(
                         "command-group-edit",
                         "add-templates",
-                        newTemplates.stream().map(Template::getName).collect(Collectors.joining(", "))
+                        newTemplates.stream().map(DefaultTemplate::getName).collect(Collectors.joining(", "))
                     ));
                 }
             }
 
             if (properties.containsKey("remove-templates")) {
                 Collection<String> templatesToRemove = this.parseStrings(properties.getProperty("remove-templates"));
-                Collection<Template> toRemove = Streams.allOf(processGroup.get().getTemplates(), e -> templatesToRemove.contains(e.getName()));
+                Collection<DefaultTemplate> toRemove = Streams.allOf(processGroup.get().getTemplates(), e -> templatesToRemove.contains(e.getName()));
                 processGroup.get().getTemplates().removeAll(toRemove);
                 source.sendMessage(LanguageManager.get(
                     "command-group-edit",
                     "remove-templates",
-                    toRemove.stream().map(Template::getName).collect(Collectors.joining(", "))
+                    toRemove.stream().map(DefaultTemplate::getName).collect(Collectors.joining(", "))
                 ));
             }
 
@@ -563,7 +563,7 @@ public final class CommandGroup implements Command {
         this.describeCommandToSender(source);
     }
 
-    private void describeProcessGroupToSender(CommandSender source, ProcessGroup group) {
+    private void describeProcessGroupToSender(CommandSender source, DefaultProcessGroup group) {
         StringBuilder builder = new StringBuilder();
 
         builder.append(" > Name        - ").append(group.getName()).append("\n");
@@ -577,7 +577,7 @@ public final class CommandGroup implements Command {
         builder.append(" ").append("\n");
         builder.append(" > Templates (").append(group.getTemplates().size()).append(")");
 
-        for (Template template : group.getTemplates()) {
+        for (DefaultTemplate template : group.getTemplates()) {
             builder.append("\n");
             builder.append("  > Name       - ").append(template.getName()).append("\n");
             builder.append("  > Version    - ").append(template.getVersion().getName()).append("\n");
@@ -602,7 +602,7 @@ public final class CommandGroup implements Command {
         StringBuilder builder = new StringBuilder();
 
         final Collection<MainGroup> mainGroups = ExecutorAPI.getInstance().getMainGroupProvider().getMainGroups();
-        final Collection<ProcessGroup> processGroups = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups();
+        final Collection<DefaultProcessGroup> processGroups = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups();
 
         builder.append(" Main-Groups (").append(mainGroups.size()).append(")");
         for (MainGroup mainGroup : mainGroups) {
@@ -615,7 +615,7 @@ public final class CommandGroup implements Command {
         builder.append(mainGroups.isEmpty() ? "\n" : "").append(" \n");
 
         builder.append(" Process-Groups (").append(processGroups.size()).append(")");
-        for (ProcessGroup processGroup : processGroups) {
+        for (DefaultProcessGroup processGroup : processGroups) {
             builder.append("\n");
             builder.append(" > Name            - ").append(processGroup.getName()).append("\n");
             builder.append(" > Min-Processes   - ").append(processGroup.getStartupConfiguration().getMinOnlineProcesses()).append("\n");
@@ -648,8 +648,8 @@ public final class CommandGroup implements Command {
         return out;
     }
 
-    private List<Template> parseTemplates(Collection<String> collection, CommandSender source, ProcessGroup processGroup) {
-        List<Template> newTemplates = new ArrayList<>();
+    private List<DefaultTemplate> parseTemplates(Collection<String> collection, CommandSender source, DefaultProcessGroup processGroup) {
+        List<DefaultTemplate> newTemplates = new ArrayList<>();
         for (String template : collection) {
             String[] templateConfig = template.split("/");
             if (templateConfig.length != 3) {
@@ -674,7 +674,7 @@ public final class CommandGroup implements Command {
                 continue;
             }
 
-            newTemplates.add(new Template(0, templateConfig[0], false, backend.get().getName(), "-", new RuntimeConfiguration(
+            newTemplates.add(new DefaultTemplate(0, templateConfig[0], false, backend.get().getName(), "-", new DefaultRuntimeConfiguration(
                 version.isServer() ? 512 : 256, new ArrayList<>(), new HashMap<>()
             ), version, new ArrayList<>(), new ArrayList<>(Collections.singletonList(version.isServer() ? SERVER_INCLUSION : PROXY_INCLUSION))));
         }

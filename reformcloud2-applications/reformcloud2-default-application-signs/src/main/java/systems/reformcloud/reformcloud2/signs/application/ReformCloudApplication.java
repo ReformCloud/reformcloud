@@ -93,7 +93,7 @@ public class ReformCloudApplication extends Application {
     }
 
     private static Collection<CloudSign> read() {
-        return databaseEntry.get("signs", new TypeToken<Collection<CloudSign>>() {
+        return databaseEntry.get("signs", new TypeToken<>() {
         });
     }
 

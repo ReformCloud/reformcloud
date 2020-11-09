@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.node.config;
 
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.utility.NetworkAddress;
+import systems.reformcloud.reformcloud2.shared.network.SimpleNetworkAddress;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -43,16 +43,16 @@ public class NodeConfig {
     private final long maxMemory;
     private final String startHost;
     private final double maxSystemCpuUsage;
-    private final List<NetworkAddress> networkListeners;
-    private final List<NetworkAddress> httpNetworkListeners;
-    private final List<NetworkAddress> clusterNodes;
+    private final List<SimpleNetworkAddress> networkListeners;
+    private final List<SimpleNetworkAddress> httpNetworkListeners;
+    private final List<SimpleNetworkAddress> clusterNodes;
 
     private boolean sendAnonymousErrorReports = true;
     private transient InetAddress inetStartHost;
 
     public NodeConfig(String name, UUID uniqueID, long maxMemory, String startHost,
-                      List<NetworkAddress> networkListeners, List<NetworkAddress> httpNetworkListeners,
-                      List<NetworkAddress> clusterNodes) {
+                      List<SimpleNetworkAddress> networkListeners, List<SimpleNetworkAddress> httpNetworkListeners,
+                      List<SimpleNetworkAddress> clusterNodes) {
         this.name = name;
         this.uniqueID = uniqueID;
         this.maxMemory = maxMemory;
@@ -92,15 +92,15 @@ public class NodeConfig {
         return this.maxSystemCpuUsage == 0 ? 90D : this.maxSystemCpuUsage;
     }
 
-    public List<NetworkAddress> getNetworkListeners() {
+    public List<SimpleNetworkAddress> getNetworkListeners() {
         return this.networkListeners;
     }
 
-    public List<NetworkAddress> getHttpNetworkListeners() {
+    public List<SimpleNetworkAddress> getHttpNetworkListeners() {
         return this.httpNetworkListeners;
     }
 
-    public List<NetworkAddress> getClusterNodes() {
+    public List<SimpleNetworkAddress> getClusterNodes() {
         return this.clusterNodes;
     }
 

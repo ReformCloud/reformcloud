@@ -25,8 +25,8 @@
 package systems.reformcloud.reformcloud2.executor.api.groups.setup;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
 
 import java.util.function.Consumer;

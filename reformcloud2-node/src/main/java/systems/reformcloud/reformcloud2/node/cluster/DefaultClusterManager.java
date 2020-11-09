@@ -40,9 +40,9 @@ import systems.reformcloud.reformcloud2.executor.api.event.events.group.ProcessG
 import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessRegisterEvent;
 import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUnregisterEvent;
 import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUpdateEvent;
-import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
@@ -103,8 +103,8 @@ public class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public @NotNull Task<ProcessWrapper> createProcess(@NotNull ProcessGroup processGroup, @Nullable String node, @Nullable String displayName,
-                                                       @Nullable String messageOfTheDay, @Nullable Template template, @NotNull Collection<ProcessInclusion> inclusions,
+    public @NotNull Task<ProcessWrapper> createProcess(@NotNull DefaultProcessGroup processGroup, @Nullable String node, @Nullable String displayName,
+                                                       @Nullable String messageOfTheDay, @Nullable DefaultTemplate template, @NotNull Collection<ProcessInclusion> inclusions,
                                                        @NotNull JsonConfiguration jsonConfiguration, @NotNull ProcessState initialState, @NotNull UUID uniqueId, int memory,
                                                        int id, int maxPlayers, @Nullable String targetProcessFactory) {
         return ClusterAccessController.createProcessPrivileged(
@@ -209,7 +209,7 @@ public class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public void handleProcessGroupCreate(@NotNull ProcessGroup processGroup) {
+    public void handleProcessGroupCreate(@NotNull DefaultProcessGroup processGroup) {
         this.processGroupProvider.addProcessGroup0(processGroup);
         this.sendPacketToProcesses(new NodeToApiProcessGroupCreate(processGroup));
 
@@ -217,7 +217,7 @@ public class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public void publishProcessGroupCreate(@NotNull ProcessGroup processGroup) {
+    public void publishProcessGroupCreate(@NotNull DefaultProcessGroup processGroup) {
         this.sendPacketToNodes(new NodeToNodeCreateProcessGroup(processGroup));
         this.sendPacketToProcesses(new NodeToApiProcessGroupCreate(processGroup));
 
@@ -225,7 +225,7 @@ public class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public void handleProcessGroupUpdate(@NotNull ProcessGroup processGroup) {
+    public void handleProcessGroupUpdate(@NotNull DefaultProcessGroup processGroup) {
         this.processGroupProvider.updateProcessGroup0(processGroup);
         this.sendPacketToProcesses(new NodeToApiProcessGroupUpdated(processGroup));
 
@@ -233,7 +233,7 @@ public class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public void publishProcessGroupUpdate(@NotNull ProcessGroup processGroup) {
+    public void publishProcessGroupUpdate(@NotNull DefaultProcessGroup processGroup) {
         this.sendPacketToNodes(new NodeToNodeUpdateProcessGroup(processGroup));
         this.sendPacketToProcesses(new NodeToApiProcessGroupUpdated(processGroup));
 
@@ -241,7 +241,7 @@ public class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public void handleProcessGroupDelete(@NotNull ProcessGroup processGroup) {
+    public void handleProcessGroupDelete(@NotNull DefaultProcessGroup processGroup) {
         this.processGroupProvider.deleteProcessGroup0(processGroup.getName());
         this.sendPacketToProcesses(new NodeToApiProcessGroupDelete(processGroup));
 
@@ -249,7 +249,7 @@ public class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public void publishProcessGroupDelete(@NotNull ProcessGroup processGroup) {
+    public void publishProcessGroupDelete(@NotNull DefaultProcessGroup processGroup) {
         this.sendPacketToNodes(new NodeToNodeDeleteProcessGroup(processGroup));
         this.sendPacketToProcesses(new NodeToApiProcessGroupDelete(processGroup));
 
@@ -257,8 +257,8 @@ public class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public void handleProcessGroupSet(@NotNull Collection<ProcessGroup> processGroups) {
-        for (ProcessGroup processGroup : processGroups) {
+    public void handleProcessGroupSet(@NotNull Collection<DefaultProcessGroup> processGroups) {
+        for (DefaultProcessGroup processGroup : processGroups) {
             if (this.processGroupProvider.getProcessGroup(processGroup.getName()).isEmpty()) {
                 this.processGroupProvider.addProcessGroup0(processGroup);
             } else {
@@ -268,7 +268,7 @@ public class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public void publishProcessGroupSet(@NotNull Collection<ProcessGroup> processGroups) {
+    public void publishProcessGroupSet(@NotNull Collection<DefaultProcessGroup> processGroups) {
         this.sendPacketToNodes(new NodeToNodeSetProcessGroups(processGroups));
     }
 

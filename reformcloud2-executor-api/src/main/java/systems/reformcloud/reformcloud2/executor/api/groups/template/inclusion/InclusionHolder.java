@@ -22,39 +22,52 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.utility;
+package systems.reformcloud.reformcloud2.executor.api.groups.template.inclusion;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
-import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 
-public class NetworkAddress implements SerializableObject {
+import java.util.Collection;
+import java.util.Optional;
 
-    private String host;
-    private int port;
+public interface InclusionHolder extends SerializableObject {
 
-    public NetworkAddress(String host, int port) {
-        this.host = host;
-        this.port = port;
-    }
+    @NotNull
+    @UnmodifiableView
+    Collection<Inclusion> getTemplateInclusions();
 
-    public String getHost() {
-        return this.host;
-    }
+    @NotNull
+    @UnmodifiableView
+    Collection<Inclusion> getTemplateInclusions(@NotNull Inclusion.InclusionLoadType loadType);
 
-    public int getPort() {
-        return this.port;
-    }
+    @NotNull
+    Optional<Inclusion> getTemplateInclusion(@NotNull String template);
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.host);
-        buffer.writeInt(this.port);
-    }
+    void addTemplateInclusions(@NotNull Inclusion inclusion);
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.host = buffer.readString();
-        this.port = buffer.readInt();
-    }
+    void removeTemplateInclusion(@NotNull Inclusion inclusion);
+
+    void removeTemplateInclusion(@NotNull String template);
+
+    void removeAllTemplateInclusions();
+
+    @NotNull
+    @UnmodifiableView
+    Collection<Inclusion> getPathInclusions();
+
+    @NotNull
+    @UnmodifiableView
+    Collection<Inclusion> getPathInclusions(@NotNull Inclusion.InclusionLoadType loadType);
+
+    @NotNull
+    Optional<Inclusion> getPathInclusion(@NotNull String path);
+
+    void addPathInclusions(@NotNull Inclusion inclusion);
+
+    void removePathInclusion(@NotNull Inclusion inclusion);
+
+    void removePathInclusion(@NotNull String path);
+
+    void removeAllPathInclusions();
 }

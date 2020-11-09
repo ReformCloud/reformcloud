@@ -26,11 +26,10 @@ package systems.reformcloud.reformcloud2.executor.api.builder;
 
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Version;
-import systems.reformcloud.reformcloud2.executor.api.groups.utils.PlayerAccessConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.utils.StartupConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.player.PlayerAccessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.startup.StartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 
 import java.util.List;
@@ -60,8 +59,7 @@ public interface ProcessGroupBuilder {
 
     /**
      * Sets weather the created process group should be a lobby group or not. This is used to find out
-     * if a server is a fallback. With {@link Version#isServer()} == {@code false} this setting has
-     * no effect.
+     * if a server is a fallback.
      *
      * @param lobby If the process group should be a lobby group
      * @return The same instance of this class as used to call the method

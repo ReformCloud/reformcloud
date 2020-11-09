@@ -26,7 +26,7 @@ package systems.refomcloud.reformcloud2.embedded.group;
 
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
-import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeCreateMainGroup;

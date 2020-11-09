@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.event.events.group.MainGroupDeleteEvent;
-import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;

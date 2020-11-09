@@ -22,70 +22,90 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.groups;
+package systems.reformcloud.reformcloud2.shared.groups.main;
 
-import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
+import org.jetbrains.annotations.UnmodifiableView;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.configuration.DefaultJsonDataHolder;
+import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
 
-public class MainGroup implements Nameable, SerializableObject {
+public class DefaultMainGroup extends DefaultJsonDataHolder<MainGroup> implements MainGroup {
 
-    public static final TypeToken<MainGroup> TYPE = new TypeToken<MainGroup>() {
-    };
-    private String name;
     private Collection<String> subGroups;
+    private String name;
 
-    public MainGroup() {
+    DefaultMainGroup() {
     }
 
-    public MainGroup(String name, Collection<String> subGroups) {
-        this.name = name;
+    public DefaultMainGroup(Collection<String> subGroups, String name) {
         this.subGroups = subGroups;
+        this.name = name;
     }
 
-    @NotNull
     @Override
-    public String getName() {
-        return this.name;
-    }
-
-    public Collection<String> getSubGroups() {
+    public @NotNull @UnmodifiableView Collection<String> getSubGroups() {
         return this.subGroups;
     }
 
-    public void setSubGroups(List<String> subGroups) {
+    @Override
+    public void addSubGroup(@NotNull String subGroup) {
+        this.subGroups.add(subGroup);
+    }
+
+    @Override
+    public void removeSubGroup(@NotNull String subGroup) {
+        this.subGroups.remove(subGroup);
+    }
+
+    @Override
+    public boolean hasSubGroup(@NotNull String name) {
+        return this.subGroups.contains(name);
+    }
+
+    @Override
+    public void removeAllSubGroups() {
+        this.subGroups.clear();
+    }
+
+    @Override
+    public void setSubGroups(@NotNull Collection<String> subGroups) {
         this.subGroups = subGroups;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
+    public void update() {
+        ExecutorAPI.getInstance().getMainGroupProvider().updateMainGroup(this);
+    }
 
-        if (!(o instanceof MainGroup)) {
-            return false;
-        }
-
-        MainGroup mainGroup = (MainGroup) o;
-        return Objects.equals(this.getName(), mainGroup.getName()) && Objects.equals(this.getSubGroups(), mainGroup.getSubGroups());
+    @Override
+    public @NotNull MainGroup clone() {
+        return new DefaultMainGroup(new ArrayList<>(this.subGroups), this.name);
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.name);
         buffer.writeStringArray(this.subGroups);
+        buffer.writeString(this.name);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.name = buffer.readString();
         this.subGroups = buffer.readStringArray();
+        this.name = buffer.readString();
+    }
+
+    @Override
+    public @NotNull MainGroup self() {
+        return this;
+    }
+
+    @Override
+    public @NotNull String getName() {
+        return this.name;
     }
 }

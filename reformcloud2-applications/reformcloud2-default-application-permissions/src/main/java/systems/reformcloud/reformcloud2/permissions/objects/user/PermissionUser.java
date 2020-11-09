@@ -47,7 +47,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PermissionUser implements SerializableObject {
 
-    public static final TypeToken<PermissionUser> TYPE = new TypeToken<PermissionUser>() {
+    public static final TypeToken<PermissionUser> TYPE = new TypeToken<>() {
     };
     private UUID uuid;
     private Collection<PermissionNode> permissionNodes;

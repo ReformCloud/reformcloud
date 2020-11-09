@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
@@ -65,7 +65,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
 
     private static final String[] EMPTY_SIGN = new String[]{"", "", "", ""};
     protected final UUID ownUniqueID = Embedded.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID();
-    protected final Collection<CloudSign> signs = Collections.synchronizedCollection(new ArrayList<CloudSign>() {
+    protected final Collection<CloudSign> signs = Collections.synchronizedCollection(new ArrayList<>() {
         @NotNull
         @Override
         public Iterator<CloudSign> iterator() {
@@ -421,7 +421,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
         return null;
     }
 
-    private @Nullable CloudSign getFreeSignForGroup(@NotNull ProcessGroup processGroup) {
+    private @Nullable CloudSign getFreeSignForGroup(@NotNull DefaultProcessGroup processGroup) {
         return Streams.filter(this.signs, e -> e.getCurrentTarget() == null && e.getGroup().equals(processGroup.getName()));
     }
 

@@ -26,12 +26,12 @@ package systems.reformcloud.reformcloud2.node.process;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Version;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Version;
+import systems.reformcloud.reformcloud2.node.template.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.inclusion.Inclusion;
 import systems.reformcloud.reformcloud2.executor.api.io.DownloadHelper;
 import systems.reformcloud.reformcloud2.executor.api.process.NetworkInfo;
-import systems.reformcloud.reformcloud2.executor.api.utility.NetworkAddress;
+import systems.reformcloud.reformcloud2.shared.network.SimpleNetworkAddress;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.shared.Constants;
 import systems.reformcloud.reformcloud2.shared.io.IOUtils;
@@ -90,7 +90,7 @@ final class EnvironmentBuilder {
         IOUtils.doCopy("reformcloud/files/runner.jar", runningProcess.getPath().resolve("runner.jar"));
         IOUtils.doOverrideInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/embedded.jar", runningProcess.getPath() + "/plugins/executor.jar");
 
-        NetworkAddress connectHost = NodeExecutor.getInstance().getAnyAddress();
+        SimpleNetworkAddress connectHost = NodeExecutor.getInstance().getAnyAddress();
         new JsonConfiguration()
             .add("host", connectHost.getHost())
             .add("port", connectHost.getPort())

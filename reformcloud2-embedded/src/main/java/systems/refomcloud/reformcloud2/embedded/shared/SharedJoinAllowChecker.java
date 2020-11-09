@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.groups.messages.IngameMessages;
-import systems.reformcloud.reformcloud2.executor.api.groups.utils.PlayerAccessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.player.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.shared.collect.Entry2;

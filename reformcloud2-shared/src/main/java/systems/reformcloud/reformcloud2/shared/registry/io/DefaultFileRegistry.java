@@ -70,7 +70,7 @@ public class DefaultFileRegistry implements FileRegistry {
             return Optional.empty();
         }
 
-        return Optional.ofNullable(JsonConfiguration.read(filePath).get("key", new TypeToken<T>() {
+        return Optional.ofNullable(JsonConfiguration.read(filePath).get("key", new TypeToken<>() {
         }));
     }
 

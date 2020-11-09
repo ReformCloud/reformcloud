@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.event.events.group.ProcessGroupCreateEvent;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
@@ -37,16 +37,16 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class NodeToApiProcessGroupCreate extends ProtocolPacket {
 
-    private ProcessGroup processGroup;
+    private DefaultProcessGroup processGroup;
 
     public NodeToApiProcessGroupCreate() {
     }
 
-    public NodeToApiProcessGroupCreate(ProcessGroup processGroup) {
+    public NodeToApiProcessGroupCreate(DefaultProcessGroup processGroup) {
         this.processGroup = processGroup;
     }
 
-    public ProcessGroup getProcessGroup() {
+    public DefaultProcessGroup getProcessGroup() {
         return this.processGroup;
     }
 
@@ -68,6 +68,6 @@ public class NodeToApiProcessGroupCreate extends ProtocolPacket {
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.processGroup = buffer.readObject(ProcessGroup.class);
+        this.processGroup = buffer.readObject(DefaultProcessGroup.class);
     }
 }

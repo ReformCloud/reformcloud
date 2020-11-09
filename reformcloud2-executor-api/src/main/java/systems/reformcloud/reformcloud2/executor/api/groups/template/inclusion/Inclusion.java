@@ -24,56 +24,37 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.groups.template.inclusion;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
-import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 
-public class Inclusion implements SerializableObject {
+public interface Inclusion extends SerializableObject, Cloneable {
 
-    private String key;
-    private String backend;
-    private InclusionLoadType inclusionLoadType;
-
-    @ApiStatus.Internal
-    public Inclusion() {
+    @NotNull
+    @Contract(value = "_, _, _ -> new", pure = true)
+    static Inclusion inclusion(@NotNull String key, @NotNull String backend, @NotNull InclusionLoadType inclusionLoadType) {
+        return new DefaultInclusion(key, backend, inclusionLoadType);
     }
 
-    public Inclusion(String key, String backend, InclusionLoadType inclusionLoadType) {
-        this.key = key;
-        this.backend = backend;
-        this.inclusionLoadType = inclusionLoadType;
-    }
+    @NotNull
+    String getKey();
 
-    public String getKey() {
-        return this.key;
-    }
+    void setKey(@NotNull String key);
 
-    public String getBackend() {
-        return this.backend;
-    }
+    @NotNull
+    String getBackend();
 
-    public InclusionLoadType getInclusionLoadType() {
-        return this.inclusionLoadType;
-    }
+    void setBackend(@NotNull String backend);
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.key);
-        buffer.writeString(this.backend);
-        buffer.writeVarInt(this.inclusionLoadType.ordinal());
-    }
+    @NotNull
+    InclusionLoadType getInclusionLoadType();
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.key = buffer.readString();
-        this.backend = buffer.readString();
-        this.inclusionLoadType = EnumUtil.findEnumFieldByIndex(InclusionLoadType.class, buffer.readVarInt()).orElse(null);
-    }
+    void setInclusionLoadType(@NotNull InclusionLoadType inclusionLoadType);
 
-    public enum InclusionLoadType {
+    @NotNull
+    Inclusion clone();
 
+    enum InclusionLoadType {
         PRE,
         PAST
     }

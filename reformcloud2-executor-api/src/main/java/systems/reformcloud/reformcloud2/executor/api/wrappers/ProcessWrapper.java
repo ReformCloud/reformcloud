@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.wrappers;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.basic.FileTemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
@@ -93,7 +93,7 @@ public interface ProcessWrapper {
      *
      * @param template The template to copy the process files to
      */
-    default void copy(@NotNull Template template) {
+    default void copy(@NotNull DefaultTemplate template) {
         this.copy(this.getProcessInformation().getProcessGroup().getName(), template.getName(), template.getBackend());
     }
 
@@ -189,13 +189,13 @@ public interface ProcessWrapper {
     }
 
     /**
-     * This method does the same as {@link #copy(Template)} but asynchronously.
+     * This method does the same as {@link #copy(DefaultTemplate)} but asynchronously.
      *
      * @param template The template to copy the process files to
      * @return A task completed after copying or directly if there is no need for a blocking operation
      */
     @NotNull
-    default Task<Void> copyAsync(@NotNull Template template) {
+    default Task<Void> copyAsync(@NotNull DefaultTemplate template) {
         return Task.supply(() -> {
             this.copy(template);
             return null;

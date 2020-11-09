@@ -27,8 +27,8 @@ package systems.reformcloud.reformcloud2.node.factory;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
@@ -44,8 +44,8 @@ public class ProcessFactoryConfiguration implements SerializableObject {
     protected String displayName;
     protected String messageOfTheDay;
 
-    protected ProcessGroup processGroup;
-    protected Template template;
+    protected DefaultProcessGroup processGroup;
+    protected DefaultTemplate template;
     protected Collection<ProcessInclusion> inclusions;
     protected JsonConfiguration extra;
     protected ProcessState initialState;
@@ -58,7 +58,7 @@ public class ProcessFactoryConfiguration implements SerializableObject {
     public ProcessFactoryConfiguration() {
     }
 
-    public ProcessFactoryConfiguration(String node, String displayName, String messageOfTheDay, ProcessGroup processGroup, Template template,
+    public ProcessFactoryConfiguration(String node, String displayName, String messageOfTheDay, DefaultProcessGroup processGroup, DefaultTemplate template,
                                        Collection<ProcessInclusion> inclusions, JsonConfiguration extra, ProcessState initialState,
                                        UUID processUniqueId, int memory, int id, int maxPlayers) {
         this.node = node;
@@ -88,11 +88,11 @@ public class ProcessFactoryConfiguration implements SerializableObject {
         return this.messageOfTheDay;
     }
 
-    public ProcessGroup getProcessGroup() {
+    public DefaultProcessGroup getProcessGroup() {
         return this.processGroup;
     }
 
-    public Template getTemplate() {
+    public DefaultTemplate getTemplate() {
         return this.template;
     }
 
@@ -148,8 +148,8 @@ public class ProcessFactoryConfiguration implements SerializableObject {
         this.displayName = buffer.readString();
         this.messageOfTheDay = buffer.readString();
 
-        this.processGroup = buffer.readObject(ProcessGroup.class);
-        this.template = buffer.readObject(Template.class);
+        this.processGroup = buffer.readObject(DefaultProcessGroup.class);
+        this.template = buffer.readObject(DefaultTemplate.class);
         this.inclusions = new CopyOnWriteArrayList<>(buffer.readObjects(ProcessInclusion.class));
         this.extra = new JsonConfiguration(buffer.readArray());
         this.initialState = EnumUtil.findEnumFieldByIndex(ProcessState.class, buffer.readInt()).orElse(null);

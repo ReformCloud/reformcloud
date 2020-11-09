@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.builder.ProcessGroupBuilder;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.provider.ProcessGroupProvider;
@@ -44,13 +44,13 @@ import java.util.Optional;
 
 public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
 
-    private final Collection<ProcessGroup> processGroups;
+    private final Collection<DefaultProcessGroup> processGroups;
     private final FileRegistry fileRegistry;
 
     public DefaultNodeProcessGroupProvider(@NotNull String registryFolder) {
         this.fileRegistry = new DefaultFileRegistry(registryFolder);
         this.processGroups = this.fileRegistry.readKeys(
-            e -> e.get("key", ProcessGroup.TYPE),
+            e -> e.get("key", DefaultProcessGroup.TYPE),
             path -> System.err.println(LanguageManager.get("startup-unable-to-read-file",
                 "Process-Group", path.toAbsolutePath().toString()))
         );
@@ -58,13 +58,13 @@ public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
 
     @NotNull
     @Override
-    public Optional<ProcessGroup> getProcessGroup(@NotNull String name) {
+    public Optional<DefaultProcessGroup> getProcessGroup(@NotNull String name) {
         return Optional.ofNullable(Streams.filter(this.processGroups, e -> e.getName().equals(name)));
     }
 
     @Override
     public void deleteProcessGroup(@NotNull String name) {
-        ProcessGroup group = this.deleteProcessGroup0(name);
+        DefaultProcessGroup group = this.deleteProcessGroup0(name);
         if (group == null) {
             return;
         }
@@ -73,7 +73,7 @@ public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
     }
 
     @Override
-    public void updateProcessGroup(@NotNull ProcessGroup processGroup) {
+    public void updateProcessGroup(@NotNull DefaultProcessGroup processGroup) {
         this.updateProcessGroup0(processGroup);
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessGroupUpdate(processGroup);
 
@@ -85,7 +85,7 @@ public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
 
     @NotNull
     @Override
-    public @UnmodifiableView Collection<ProcessGroup> getProcessGroups() {
+    public @UnmodifiableView Collection<DefaultProcessGroup> getProcessGroups() {
         return Collections.unmodifiableCollection(this.processGroups);
     }
 
@@ -97,7 +97,7 @@ public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
     @NotNull
     @Override
     public @UnmodifiableView Collection<String> getProcessGroupNames() {
-        return Streams.map(this.processGroups, ProcessGroup::getName);
+        return Streams.map(this.processGroups, DefaultProcessGroup::getName);
     }
 
     @NotNull
@@ -106,17 +106,17 @@ public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
         return new NodeProcessGroupBuilder(this).name(name);
     }
 
-    public void addProcessGroup(@NotNull ProcessGroup processGroup) {
+    public void addProcessGroup(@NotNull DefaultProcessGroup processGroup) {
         this.addProcessGroup0(processGroup);
         ExecutorAPI.getInstance().getServiceRegistry().getProvider(ClusterManager.class).ifPresent(e -> e.publishProcessGroupCreate(processGroup));
     }
 
-    public void addProcessGroup0(@NotNull ProcessGroup processGroup) {
+    public void addProcessGroup0(@NotNull DefaultProcessGroup processGroup) {
         this.processGroups.add(processGroup);
         this.fileRegistry.createKey(processGroup.getName(), processGroup);
     }
 
-    public void updateProcessGroup0(@NotNull ProcessGroup processGroup) {
+    public void updateProcessGroup0(@NotNull DefaultProcessGroup processGroup) {
         this.getProcessGroup(processGroup.getName()).ifPresent(group -> {
             this.processGroups.remove(group);
             this.processGroups.add(processGroup);
@@ -125,8 +125,8 @@ public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
         });
     }
 
-    public @Nullable ProcessGroup deleteProcessGroup0(@NotNull String name) {
-        Optional<ProcessGroup> processGroup = this.getProcessGroup(name);
+    public @Nullable DefaultProcessGroup deleteProcessGroup0(@NotNull String name) {
+        Optional<DefaultProcessGroup> processGroup = this.getProcessGroup(name);
         processGroup.ifPresent(group -> {
             this.processGroups.remove(group);
             this.fileRegistry.deleteKey(group.getName());
@@ -137,7 +137,7 @@ public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
     public void reload() {
         this.processGroups.clear();
         this.processGroups.addAll(this.fileRegistry.readKeys(
-            e -> e.get("key", ProcessGroup.TYPE),
+            e -> e.get("key", DefaultProcessGroup.TYPE),
             path -> System.err.println(LanguageManager.get("startup-unable-to-read-file",
                 "Process-Group", path.toAbsolutePath().toString()))
         ));

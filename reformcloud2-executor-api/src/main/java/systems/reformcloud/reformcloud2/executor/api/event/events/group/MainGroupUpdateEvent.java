@@ -24,7 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.event.events.group;
 
-import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
 
 public class MainGroupUpdateEvent extends MainGroupEvent {
 

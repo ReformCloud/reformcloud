@@ -28,8 +28,8 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
@@ -51,8 +51,8 @@ public class ApiToNodePrepareProcess extends ProtocolPacket {
     private String displayName;
     private String messageOfTheDay;
     private String targetProcessFactory;
-    private ProcessGroup processGroup;
-    private Template template;
+    private DefaultProcessGroup processGroup;
+    private DefaultTemplate template;
     private Collection<ProcessInclusion> inclusions = new ArrayList<>();
     private JsonConfiguration extra = new JsonConfiguration();
     private ProcessState initialState = ProcessState.READY;
@@ -64,7 +64,7 @@ public class ApiToNodePrepareProcess extends ProtocolPacket {
     public ApiToNodePrepareProcess() {
     }
 
-    public ApiToNodePrepareProcess(String processGroupName, String node, String displayName, String messageOfTheDay, String targetProcessFactory, ProcessGroup processGroup, Template template,
+    public ApiToNodePrepareProcess(String processGroupName, String node, String displayName, String messageOfTheDay, String targetProcessFactory, DefaultProcessGroup processGroup, DefaultTemplate template,
                                    Collection<ProcessInclusion> inclusions, JsonConfiguration extra, ProcessState initialState, UUID processUniqueId, int memory, int id, int maxPlayers) {
         this.processGroupName = processGroupName;
         this.node = node;
@@ -143,8 +143,8 @@ public class ApiToNodePrepareProcess extends ProtocolPacket {
         this.messageOfTheDay = buffer.readString();
         this.targetProcessFactory = buffer.readString();
 
-        this.processGroup = buffer.readObject(ProcessGroup.class);
-        this.template = buffer.readObject(Template.class);
+        this.processGroup = buffer.readObject(DefaultProcessGroup.class);
+        this.template = buffer.readObject(DefaultTemplate.class);
         this.inclusions = buffer.readObjects(ProcessInclusion.class);
         this.extra = new JsonConfiguration(buffer.readArray());
         this.initialState = EnumUtil.findEnumFieldByIndex(ProcessState.class, buffer.readInt()).orElse(null);

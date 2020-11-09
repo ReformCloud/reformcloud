@@ -28,8 +28,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryManager;
@@ -60,9 +60,9 @@ public final class ClusterAccessController {
     }
 
     @NotNull
-    public static Task<ProcessInformation> createProcessPrivileged(@NotNull ProcessGroup processGroup, @Nullable String node,
+    public static Task<ProcessInformation> createProcessPrivileged(@NotNull DefaultProcessGroup processGroup, @Nullable String node,
                                                                    @Nullable String displayName, @Nullable String messageOfTheDay,
-                                                                   @Nullable Template template, @NotNull Collection<ProcessInclusion> inclusions,
+                                                                   @Nullable DefaultTemplate template, @NotNull Collection<ProcessInclusion> inclusions,
                                                                    @NotNull JsonConfiguration jsonConfiguration, @NotNull ProcessState initial, @NotNull UUID uniqueId,
                                                                    int memory, int id, int maxPlayers, @Nullable String targetProcessFactory) {
         return createProcessPrivileged(

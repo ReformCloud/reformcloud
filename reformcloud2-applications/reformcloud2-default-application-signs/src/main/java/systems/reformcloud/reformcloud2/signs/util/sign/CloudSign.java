@@ -35,7 +35,7 @@ import java.util.UUID;
 
 public class CloudSign implements SerializableObject {
 
-    public static final TypeToken<Collection<CloudSign>> COLLECTION_SIGN_TYPE = new TypeToken<Collection<CloudSign>>() {
+    public static final TypeToken<Collection<CloudSign>> COLLECTION_SIGN_TYPE = new TypeToken<>() {
     };
 
     private String group;

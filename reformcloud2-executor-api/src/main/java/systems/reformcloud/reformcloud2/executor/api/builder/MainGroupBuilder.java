@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.builder;
 
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 
 import java.util.Collection;

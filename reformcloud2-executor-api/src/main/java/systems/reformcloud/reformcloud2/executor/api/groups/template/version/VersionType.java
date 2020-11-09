@@ -22,13 +22,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.shared.collect;
+package systems.reformcloud.reformcloud2.executor.api.groups.template.version;
 
-import org.jetbrains.annotations.NotNull;
-
-@FunctionalInterface
-public interface Function1E<I, O, T extends Throwable> {
-
-    @NotNull
-    O apply(@NotNull I i) throws T;
+public enum VersionType {
+    JAVA_SERVER,
+    JAVA_PROXY,
+    POCKET_SERVER,
+    POCKET_PROXY
 }

@@ -206,7 +206,7 @@ public final class IOUtils {
 
     public static void copyDirectory(Path path, Path target, Collection<String> excludedFiles) {
         try {
-            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+            Files.walkFileTree(path, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     if (excludedFiles.stream().anyMatch(e -> e.equals(file.toFile().getName()))) {

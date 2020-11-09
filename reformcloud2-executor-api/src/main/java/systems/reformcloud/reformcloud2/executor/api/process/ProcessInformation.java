@@ -29,8 +29,8 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.utils.PlayerAccessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.groups.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.player.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
@@ -46,14 +46,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class ProcessInformation implements SerializableObject {
 
-    public static final TypeToken<ProcessInformation> TYPE = new TypeToken<ProcessInformation>() {
+    public static final TypeToken<ProcessInformation> TYPE = new TypeToken<>() {
     };
     private ProcessPlayerManager processPlayerManager = new ProcessPlayerManager();
     private ProcessDetail processDetail;
     private NetworkInfo networkInfo;
     private JsonConfiguration extra;
     private Collection<ProcessInclusion> preInclusions;
-    private ProcessGroup processGroup;
+    private DefaultProcessGroup processGroup;
 
     @ApiStatus.Internal
     public ProcessInformation() {
@@ -61,7 +61,7 @@ public final class ProcessInformation implements SerializableObject {
 
     @ApiStatus.Internal
     public ProcessInformation(
-        @NotNull ProcessDetail processDetail, @NotNull NetworkInfo networkInfo, @NotNull ProcessGroup processGroup,
+        @NotNull ProcessDetail processDetail, @NotNull NetworkInfo networkInfo, @NotNull DefaultProcessGroup processGroup,
         @NotNull JsonConfiguration extra, @NotNull Collection<ProcessInclusion> preInclusions
     ) {
         this.processDetail = processDetail;
@@ -98,7 +98,7 @@ public final class ProcessInformation implements SerializableObject {
      * @return The process group on which the current process is based
      */
     @NotNull
-    public ProcessGroup getProcessGroup() {
+    public DefaultProcessGroup getProcessGroup() {
         return this.processGroup;
     }
 
@@ -108,7 +108,7 @@ public final class ProcessInformation implements SerializableObject {
      * @param processGroup The updated process group
      */
     @ApiStatus.Internal
-    public void setProcessGroup(@NotNull ProcessGroup processGroup) {
+    public void setProcessGroup(@NotNull DefaultProcessGroup processGroup) {
         this.processGroup = processGroup;
     }
 
@@ -201,7 +201,7 @@ public final class ProcessInformation implements SerializableObject {
         this.processDetail = buffer.readObject(ProcessDetail.class);
         this.networkInfo = buffer.readObject(NetworkInfo.class);
         this.preInclusions = new CopyOnWriteArrayList<>(buffer.readObjects(ProcessInclusion.class));
-        this.processGroup = buffer.readObject(ProcessGroup.class);
+        this.processGroup = buffer.readObject(DefaultProcessGroup.class);
 
         try (InputStream stream = new ByteArrayInputStream(buffer.readArray())) {
             this.extra = new JsonConfiguration(stream);

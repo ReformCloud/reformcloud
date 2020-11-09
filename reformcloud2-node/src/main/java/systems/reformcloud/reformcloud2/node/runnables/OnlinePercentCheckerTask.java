@@ -26,8 +26,8 @@ package systems.reformcloud.reformcloud2.node.runnables;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.utils.AutomaticStartupConfiguration;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.startup.AutomaticStartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
@@ -43,7 +43,7 @@ public class OnlinePercentCheckerTask implements Runnable {
 
     private final Map<String, Long> checkGroups = new ConcurrentHashMap<>();
 
-    private static void startPreparedOfGroup(@NotNull Collection<ProcessInformation> processes, @NotNull ProcessGroup processGroup) {
+    private static void startPreparedOfGroup(@NotNull Collection<ProcessInformation> processes, @NotNull DefaultProcessGroup processGroup) {
         ProcessInformation prepared = Streams.filter(processes, e -> e.getProcessDetail().getProcessState() == ProcessState.PREPARED);
         if (prepared != null) {
             Optional<ProcessWrapper> processWrapper = ExecutorAPI.getInstance().getProcessProvider()
@@ -77,7 +77,7 @@ public class OnlinePercentCheckerTask implements Runnable {
 
     @Override
     public void run() {
-        for (ProcessGroup processGroup : ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()) {
+        for (DefaultProcessGroup processGroup : ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()) {
             AutomaticStartupConfiguration configuration = processGroup.getStartupConfiguration().getAutomaticStartupConfiguration();
             if (!configuration.isEnabled() || configuration.getCheckIntervalInSeconds() <= 0 || configuration.getMaxPercentOfPlayers() <= 0) {
                 continue;

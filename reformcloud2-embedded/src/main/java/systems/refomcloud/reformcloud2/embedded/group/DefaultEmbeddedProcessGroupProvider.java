@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.builder.ProcessGroupBuilder;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.provider.ProcessGroupProvider;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeDeleteProcessGroup;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessGroup;
@@ -50,7 +50,7 @@ public class DefaultEmbeddedProcessGroupProvider implements ProcessGroupProvider
 
     @NotNull
     @Override
-    public Optional<ProcessGroup> getProcessGroup(@NotNull String name) {
+    public Optional<DefaultProcessGroup> getProcessGroup(@NotNull String name) {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessGroup(name))
             .map(result -> {
                 if (result instanceof ApiToNodeGetProcessGroupResult) {
@@ -67,20 +67,20 @@ public class DefaultEmbeddedProcessGroupProvider implements ProcessGroupProvider
     }
 
     @Override
-    public void updateProcessGroup(@NotNull ProcessGroup processGroup) {
+    public void updateProcessGroup(@NotNull DefaultProcessGroup processGroup) {
         Embedded.getInstance().sendPacket(new ApiToNodeUpdateProcessGroup(processGroup));
     }
 
     @NotNull
     @Override
-    public @UnmodifiableView Collection<ProcessGroup> getProcessGroups() {
+    public @UnmodifiableView Collection<DefaultProcessGroup> getProcessGroups() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessGroupObjects())
             .map(result -> {
                 if (result instanceof ApiToNodeGetProcessGroupObjectsResult) {
                     return ((ApiToNodeGetProcessGroupObjectsResult) result).getProcessGroups();
                 }
 
-                return new ArrayList<ProcessGroup>();
+                return new ArrayList<DefaultProcessGroup>();
             }).orElseGet(Collections::emptyList);
     }
 

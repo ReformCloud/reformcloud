@@ -77,7 +77,7 @@ public class ReformCloudApplication extends Application {
                 )).write(path);
         }
 
-        commandsConfig = JsonConfiguration.read(path).get("config", new TypeToken<CommandsConfig>() {
+        commandsConfig = JsonConfiguration.read(path).get("config", new TypeToken<>() {
         });
 
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketGetCommandsConfig.class);

@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.builder.ProcessBuilder;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Version;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Version;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.provider.ProcessProvider;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;

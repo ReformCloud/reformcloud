@@ -30,7 +30,7 @@ import systems.reformcloud.reformcloud2.executor.api.groups.messages.IngameMessa
 import systems.reformcloud.reformcloud2.executor.api.groups.setup.GroupSetupHelper;
 import systems.reformcloud.reformcloud2.executor.api.groups.setup.GroupSetupVersion;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.utility.NetworkAddress;
+import systems.reformcloud.reformcloud2.shared.network.SimpleNetworkAddress;
 import systems.reformcloud.reformcloud2.shared.StringUtil;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.setup.DefaultSetup;
@@ -82,7 +82,7 @@ public final class NodeExecutorConfig {
             AtomicInteger networkPort = new AtomicInteger();
             AtomicInteger httpPort = new AtomicInteger();
             AtomicBoolean runClusterSetup = new AtomicBoolean(false);
-            List<NetworkAddress> clusterNodes = new ArrayList<>();
+            List<SimpleNetworkAddress> clusterNodes = new ArrayList<>();
 
             String ips = String.join(", ", NetworkUtils.getAllAvailableIpAddresses());
 
@@ -173,8 +173,8 @@ public final class NodeExecutorConfig {
                 UUID.randomUUID(),
                 maxMemory,
                 networkAddress.get(),
-                new ArrayList<>(Collections.singletonList(new NetworkAddress(networkAddress.get(), networkPort.get()))),
-                new ArrayList<>(Collections.singletonList(new NetworkAddress(networkAddress.get(), httpPort.get()))),
+                new ArrayList<>(Collections.singletonList(new SimpleNetworkAddress(networkAddress.get(), networkPort.get()))),
+                new ArrayList<>(Collections.singletonList(new SimpleNetworkAddress(networkAddress.get(), httpPort.get()))),
                 clusterNodes
             )).write(NodeConfig.PATH);
 
@@ -215,7 +215,7 @@ public final class NodeExecutorConfig {
     }
 
     @NotNull
-    private Collection<NetworkAddress> runClusterSetup() {
+    private Collection<SimpleNetworkAddress> runClusterSetup() {
         this.setup.clear();
 
         AtomicInteger nodeCount = new AtomicInteger(1);
@@ -234,7 +234,7 @@ public final class NodeExecutorConfig {
         )).runSetup();
 
         AtomicReference<String> nodeHost = new AtomicReference<>();
-        Collection<NetworkAddress> out = new ArrayList<>();
+        Collection<SimpleNetworkAddress> out = new ArrayList<>();
 
         this.setup.clear();
         this.setup.addQuestion(new DefaultSetupQuestion(
@@ -252,7 +252,7 @@ public final class NodeExecutorConfig {
             setupAnswer -> {
                 Integer nodePort = setupAnswer.getAsInt();
                 if (nodePort != null && nodePort > 0 && nodePort < 65535) {
-                    out.add(new NetworkAddress(nodeHost.get(), nodePort));
+                    out.add(new SimpleNetworkAddress(nodeHost.get(), nodePort));
                     return true;
                 }
 

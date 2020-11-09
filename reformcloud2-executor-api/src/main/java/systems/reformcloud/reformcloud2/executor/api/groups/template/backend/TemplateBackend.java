@@ -25,8 +25,7 @@
 package systems.reformcloud.reformcloud2.executor.api.groups.template.backend;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
 
@@ -73,7 +72,7 @@ public interface TemplateBackend extends Nameable {
      * @param group  The group in which the template is located
      * @param target The path the global template(s) should get copied to
      * @return A task which will get completed when all templates are copied
-     * @see Template#isGlobal()
+     * @see systems.reformcloud.reformcloud2.executor.api.groups.template.Template#isGlobal()
      */
     @NotNull
     Task<Void> loadGlobalTemplates(@NotNull ProcessGroup group, @NotNull Path target);

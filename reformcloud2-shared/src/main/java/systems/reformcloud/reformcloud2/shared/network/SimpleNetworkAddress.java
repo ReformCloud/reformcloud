@@ -22,60 +22,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.groups.utils;
+package systems.reformcloud.reformcloud2.shared.network;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 
-public class AutomaticStartupConfiguration implements SerializableObject {
+public class SimpleNetworkAddress implements SerializableObject {
 
-    private boolean enabled;
-    private int maxPercentOfPlayers;
-    private long checkIntervalInSeconds;
+    private String host;
+    private int port;
 
-    @ApiStatus.Internal
-    public AutomaticStartupConfiguration() {
+    public SimpleNetworkAddress(String host, int port) {
+        this.host = host;
+        this.port = port;
     }
 
-    public AutomaticStartupConfiguration(boolean enabled, int maxPercentOfPlayers, long checkIntervalInSeconds) {
-        this.enabled = enabled;
-        this.maxPercentOfPlayers = maxPercentOfPlayers;
-        this.checkIntervalInSeconds = checkIntervalInSeconds;
+    public String getHost() {
+        return this.host;
     }
 
-    /**
-     * @return The default values of an automatic startup config
-     */
-    @NotNull
-    public static AutomaticStartupConfiguration defaults() {
-        return new AutomaticStartupConfiguration(false, 70, 30);
-    }
-
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    public int getMaxPercentOfPlayers() {
-        return this.maxPercentOfPlayers;
-    }
-
-    public long getCheckIntervalInSeconds() {
-        return this.checkIntervalInSeconds;
+    public int getPort() {
+        return this.port;
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeBoolean(this.enabled);
-        buffer.writeInt(this.maxPercentOfPlayers);
-        buffer.writeLong(this.checkIntervalInSeconds);
+        buffer.writeString(this.host);
+        buffer.writeInt(this.port);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.enabled = buffer.readBoolean();
-        this.maxPercentOfPlayers = buffer.readInt();
-        this.checkIntervalInSeconds = buffer.readLong();
+        this.host = buffer.readString();
+        this.port = buffer.readInt();
     }
 }

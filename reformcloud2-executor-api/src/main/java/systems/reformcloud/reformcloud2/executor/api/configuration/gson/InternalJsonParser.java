@@ -33,11 +33,13 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.MalformedJsonException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
+@VisibleForTesting
 public final class InternalJsonParser {
 
     private InternalJsonParser() {

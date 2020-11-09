@@ -74,6 +74,9 @@ public abstract class ProtocolBuffer extends ByteBuf {
     @Nullable
     public abstract <T extends SerializableObject> T readObject(@NotNull Class<T> tClass);
 
+    @Nullable
+    public abstract <T extends SerializableObject, V extends T> T readObject(@NotNull Class<V> reader, @NotNull Class<T> type);
+
     public abstract <T extends SerializableObject> void writeObjects(@NotNull Collection<T> objects);
 
     @NotNull

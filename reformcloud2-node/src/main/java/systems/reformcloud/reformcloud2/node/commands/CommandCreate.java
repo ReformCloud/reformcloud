@@ -29,15 +29,15 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
 import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
-import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.basic.DefaultProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.RuntimeConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Version;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.basic.FileTemplateBackend;
-import systems.reformcloud.reformcloud2.executor.api.groups.utils.AutomaticStartupConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.utils.PlayerAccessConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.utils.StartupConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.runtime.DefaultRuntimeConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Version;
+import systems.reformcloud.reformcloud2.node.template.FileTemplateBackend;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.startup.AutomaticStartupConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.player.PlayerAccessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.startup.StartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.shared.StringUtil;
 import systems.reformcloud.reformcloud2.shared.parser.Parsers;
@@ -317,13 +317,13 @@ public final class CommandCreate implements Command {
         }
 
         ExecutorAPI.getInstance().getProcessGroupProvider().createProcessGroup(name)
-            .templates(new Template(
+            .templates(new DefaultTemplate(
                 0,
                 "default",
                 false,
                 FileTemplateBackend.NAME,
                 "-",
-                new RuntimeConfiguration(
+                new DefaultRuntimeConfiguration(
                     memory,
                     new ArrayList<>(),
                     new HashMap<>()

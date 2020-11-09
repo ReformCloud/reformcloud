@@ -40,10 +40,10 @@ import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackend;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
+import systems.reformcloud.reformcloud2.node.template.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
@@ -115,9 +115,9 @@ public final class SFTPTemplateBackend implements TemplateBackend {
     }
 
     @Override
-    public @NotNull Task<Void> loadGlobalTemplates(@NotNull ProcessGroup group, @NotNull Path target) {
+    public @NotNull Task<Void> loadGlobalTemplates(@NotNull DefaultProcessGroup group, @NotNull Path target) {
         Collection<Task<Void>> tasks = new ArrayList<>();
-        for (Template template : group.getTemplates()) {
+        for (DefaultTemplate template : group.getTemplates()) {
             if (template.isGlobal()) {
                 tasks.add(this.loadTemplate(group.getName(), template.getName(), target));
             }

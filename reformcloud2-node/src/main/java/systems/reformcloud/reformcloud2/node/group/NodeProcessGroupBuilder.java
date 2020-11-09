@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.node.group;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroupBuilder;
 
@@ -39,13 +39,13 @@ public class NodeProcessGroupBuilder extends DefaultProcessGroupBuilder {
 
     @NotNull
     @Override
-    public Task<ProcessGroup> createPermanently() {
+    public Task<DefaultProcessGroup> createPermanently() {
         return Task.supply(() -> {
             if (this.processGroupProvider.getProcessGroup(super.name).isPresent()) {
                 return null;
             }
 
-            ProcessGroup processGroup = new ProcessGroup(
+            DefaultProcessGroup processGroup = new DefaultProcessGroup(
                 super.name,
                 super.showId,
                 super.startupConfiguration,

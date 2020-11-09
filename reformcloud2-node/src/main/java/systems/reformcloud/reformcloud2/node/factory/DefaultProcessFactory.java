@@ -27,8 +27,8 @@ package systems.reformcloud.reformcloud2.node.factory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.NetworkInfo;
@@ -56,7 +56,7 @@ public class DefaultProcessFactory implements ProcessFactory {
     @Override
     public @NotNull Task<ProcessInformation> buildProcessInformation(@NotNull ProcessFactoryConfiguration configuration) {
         return NodeExecutor.getInstance().getTaskScheduler().queue(() -> {
-            Template template = configuration.getTemplate() == null ? this.nextTemplate(configuration.getProcessGroup()) : configuration.getTemplate();
+            DefaultTemplate template = configuration.getTemplate() == null ? this.nextTemplate(configuration.getProcessGroup()) : configuration.getTemplate();
             if (template == null) {
                 System.err.println(LanguageManager.get("process-unable-to-find-template", configuration.getProcessGroup().getName()));
                 return null;
@@ -119,7 +119,7 @@ public class DefaultProcessFactory implements ProcessFactory {
         return ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(nodeName).map(NodeProcessWrapper::getNodeInformation);
     }
 
-    private @Nullable DefaultNodeInformation getBestNode(@NotNull ProcessGroup processGroup) {
+    private @Nullable DefaultNodeInformation getBestNode(@NotNull DefaultProcessGroup processGroup) {
         DefaultNodeInformation best = null;
 
         for (DefaultNodeInformation node : ExecutorAPI.getInstance().getNodeInformationProvider().getNodes()) {
@@ -175,13 +175,13 @@ public class DefaultProcessFactory implements ProcessFactory {
         return port;
     }
 
-    private @Nullable Template nextTemplate(@NotNull ProcessGroup processGroup) {
+    private @Nullable DefaultTemplate nextTemplate(@NotNull DefaultProcessGroup processGroup) {
         if (processGroup.getTemplates().isEmpty()) {
             return null;
         }
 
-        Template result = null;
-        for (Template template : processGroup.getTemplates()) {
+        DefaultTemplate result = null;
+        for (DefaultTemplate template : processGroup.getTemplates()) {
             if (template.isGlobal()) {
                 continue;
             }

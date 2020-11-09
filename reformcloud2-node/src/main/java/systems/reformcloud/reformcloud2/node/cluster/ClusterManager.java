@@ -27,9 +27,9 @@ package systems.reformcloud.reformcloud2.node.cluster;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
@@ -43,8 +43,8 @@ import java.util.UUID;
 public interface ClusterManager {
 
     @NotNull
-    Task<ProcessWrapper> createProcess(@NotNull ProcessGroup processGroup, @Nullable String node, @Nullable String displayName,
-                                       @Nullable String messageOfTheDay, @Nullable Template template, @NotNull Collection<ProcessInclusion> inclusions,
+    Task<ProcessWrapper> createProcess(@NotNull DefaultProcessGroup processGroup, @Nullable String node, @Nullable String displayName,
+                                       @Nullable String messageOfTheDay, @Nullable DefaultTemplate template, @NotNull Collection<ProcessInclusion> inclusions,
                                        @NotNull JsonConfiguration jsonConfiguration, @NotNull ProcessState initialState,
                                        @NotNull UUID uniqueId, int memory, int id, int maxPlayers, @Nullable String targetProcessFactory);
 
@@ -72,21 +72,21 @@ public interface ClusterManager {
 
     void publishProcessSet(@NotNull Collection<ProcessInformation> processInformation);
 
-    void handleProcessGroupCreate(@NotNull ProcessGroup processGroup);
+    void handleProcessGroupCreate(@NotNull DefaultProcessGroup processGroup);
 
-    void publishProcessGroupCreate(@NotNull ProcessGroup processGroup);
+    void publishProcessGroupCreate(@NotNull DefaultProcessGroup processGroup);
 
-    void handleProcessGroupUpdate(@NotNull ProcessGroup processGroup);
+    void handleProcessGroupUpdate(@NotNull DefaultProcessGroup processGroup);
 
-    void publishProcessGroupUpdate(@NotNull ProcessGroup processGroup);
+    void publishProcessGroupUpdate(@NotNull DefaultProcessGroup processGroup);
 
-    void handleProcessGroupDelete(@NotNull ProcessGroup processGroup);
+    void handleProcessGroupDelete(@NotNull DefaultProcessGroup processGroup);
 
-    void publishProcessGroupDelete(@NotNull ProcessGroup processGroup);
+    void publishProcessGroupDelete(@NotNull DefaultProcessGroup processGroup);
 
-    void handleProcessGroupSet(@NotNull Collection<ProcessGroup> processGroups);
+    void handleProcessGroupSet(@NotNull Collection<DefaultProcessGroup> processGroups);
 
-    void publishProcessGroupSet(@NotNull Collection<ProcessGroup> processGroups);
+    void publishProcessGroupSet(@NotNull Collection<DefaultProcessGroup> processGroups);
 
     void handleMainGroupCreate(@NotNull MainGroup mainGroup);
 

@@ -22,38 +22,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.groups.setup.basic;
+package systems.reformcloud.reformcloud2.executor.api.groups.template;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.setup.GroupSetupVersion;
+import org.jetbrains.annotations.UnmodifiableView;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.function.Consumer;
+import java.util.List;
+import java.util.Optional;
 
-public class BasicGroupSetupVersion implements GroupSetupVersion {
-
-    private final Collection<ProcessGroup> groups;
-    private final Collection<MainGroup> mainGroups;
-    private final String name;
-
-    public BasicGroupSetupVersion(@NotNull String name, @NotNull ProcessGroup[] groups, @NotNull MainGroup[] mainGroups) {
-        this.name = name;
-        this.groups = Arrays.asList(groups);
-        this.mainGroups = Arrays.asList(mainGroups);
-    }
-
-    @Override
-    public void install(@NotNull Consumer<ProcessGroup> processGroupInstaller, @NotNull Consumer<MainGroup> mainGroupInstaller) {
-        this.mainGroups.forEach(mainGroupInstaller);
-        this.groups.forEach(processGroupInstaller);
-    }
+public interface TemplateHolder {
 
     @NotNull
-    @Override
-    public String getName() {
-        return this.name;
-    }
+    @UnmodifiableView
+    Collection<Template> getTemplates();
+
+    @NotNull
+    Optional<Template> getTemplate(@NotNull String name);
+
+    void addTemplate(@NotNull Template template);
+
+    void removeTemplate(@NotNull Template template);
+
+    void removeTemplate(@NotNull String name);
+
+    void setTemplates(@NotNull List<Template> templates);
+
+    boolean isTemplatePresent(@NotNull String name);
+
+    void removeAllTemplates();
 }

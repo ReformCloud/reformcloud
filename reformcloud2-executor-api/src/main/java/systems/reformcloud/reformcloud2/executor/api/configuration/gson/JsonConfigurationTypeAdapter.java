@@ -33,7 +33,7 @@ import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 
-public class JsonConfigurationTypeAdapter extends TypeAdapter<JsonConfiguration> {
+final class JsonConfigurationTypeAdapter extends TypeAdapter<JsonConfiguration> {
 
     @Override
     public void write(JsonWriter jsonWriter, JsonConfiguration jsonConfiguration) throws IOException {

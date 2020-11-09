@@ -33,7 +33,7 @@ import java.util.Collection;
 
 public class SignConfig implements SerializableObject, Cloneable {
 
-    public static final TypeToken<SignConfig> TYPE = new TypeToken<SignConfig>() {
+    public static final TypeToken<SignConfig> TYPE = new TypeToken<>() {
     };
     private double updateIntervalInSeconds;
     private Collection<SignLayout> layouts;

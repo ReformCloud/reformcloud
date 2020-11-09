@@ -22,10 +22,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.groups.template.backend;
+package systems.reformcloud.reformcloud2.node.template;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.basic.FileTemplateBackend;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
 import java.util.Collection;
@@ -79,7 +79,10 @@ public final class TemplateBackendManager {
      * @param templateBackend The template backend which should get registered
      */
     public static void registerBackend(@NotNull TemplateBackend templateBackend) {
-        Streams.findFirst(LOADED, e -> e.getName().equalsIgnoreCase(templateBackend.getName())).ifEmpty(e -> LOADED.add(templateBackend));
+        Optional<TemplateBackend> backend = Streams.findFirst(LOADED, e -> e.getName().equalsIgnoreCase(templateBackend.getName()));
+        if (backend.isEmpty()) {
+            LOADED.add(templateBackend);
+        }
     }
 
     /**

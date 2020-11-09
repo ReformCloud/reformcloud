@@ -25,8 +25,10 @@
 package systems.reformcloud.reformcloud2.executor.api.configuration;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -38,6 +40,12 @@ import java.util.function.Predicate;
  * Represents any configuration used in the cloud system
  */
 public interface Configurable<X, V extends Configurable<X, V>> {
+
+    @NotNull
+    @Contract(pure = true)
+    static JsonConfiguration json() {
+        return new JsonConfiguration();
+    }
 
     @NotNull
     V add(@NotNull String key, @Nullable V value);
@@ -168,4 +176,6 @@ public interface Configurable<X, V extends Configurable<X, V>> {
 
     @NotNull
     V copy();
+
+    void clear();
 }

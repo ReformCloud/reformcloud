@@ -28,7 +28,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessRuntimeInformation;
@@ -48,7 +48,7 @@ public final class ProcessDetail implements Nameable, SerializableObject {
     private String name;
     private String displayName;
     private int id;
-    private Template template;
+    private DefaultTemplate template;
     private int maxMemory;
     private long creationTime;
     private ProcessState initialState;
@@ -76,7 +76,7 @@ public final class ProcessDetail implements Nameable, SerializableObject {
      */
     @ApiStatus.Internal
     public ProcessDetail(@NotNull UUID processUniqueID, @NotNull UUID parentUniqueID, @NotNull String parentName,
-                         @NotNull String name, @NotNull String displayName, int id, @NotNull Template template,
+                         @NotNull String name, @NotNull String displayName, int id, @NotNull DefaultTemplate template,
                          int maxMemory, @NotNull ProcessState initialState) {
         this.processUniqueID = processUniqueID;
         this.parentUniqueID = parentUniqueID;
@@ -145,7 +145,7 @@ public final class ProcessDetail implements Nameable, SerializableObject {
      * @return The template on which the process is currently running
      */
     @NotNull
-    public Template getTemplate() {
+    public DefaultTemplate getTemplate() {
         return this.template;
     }
 
@@ -274,7 +274,7 @@ public final class ProcessDetail implements Nameable, SerializableObject {
         this.parentUniqueID = buffer.readUniqueId();
         this.parentName = buffer.readString();
 
-        this.template = buffer.readObject(Template.class);
+        this.template = buffer.readObject(DefaultTemplate.class);
         this.processRuntimeInformation = buffer.readObject(ProcessRuntimeInformation.class);
 
         this.maxMemory = buffer.readInt();

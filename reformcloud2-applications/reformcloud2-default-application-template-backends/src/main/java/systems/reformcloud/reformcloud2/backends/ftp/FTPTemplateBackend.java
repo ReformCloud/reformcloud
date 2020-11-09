@@ -31,9 +31,9 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPSClient;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackend;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
+import systems.reformcloud.reformcloud2.node.template.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
@@ -100,7 +100,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
             )).write(configPath);
         }
 
-        FTPConfig config = JsonConfiguration.read(configPath).get("config", new TypeToken<FTPConfig>() {
+        FTPConfig config = JsonConfiguration.read(configPath).get("config", new TypeToken<>() {
         });
         if (config == null || !config.isEnabled()) {
             return;
@@ -200,7 +200,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
 
     @NotNull
     @Override
-    public Task<Void> loadGlobalTemplates(@NotNull ProcessGroup group, @NotNull Path target) {
+    public Task<Void> loadGlobalTemplates(@NotNull DefaultProcessGroup group, @NotNull Path target) {
         if (this.ftpClient == null) {
             return Task.completedTask(null);
         }

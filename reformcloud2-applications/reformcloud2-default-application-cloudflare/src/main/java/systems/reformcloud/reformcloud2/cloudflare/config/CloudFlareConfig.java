@@ -28,7 +28,7 @@ import com.google.gson.reflect.TypeToken;
 
 public class CloudFlareConfig {
 
-    public static final TypeToken<CloudFlareConfig> TYPE_TOKEN = new TypeToken<CloudFlareConfig>() {
+    public static final TypeToken<CloudFlareConfig> TYPE_TOKEN = new TypeToken<>() {
     };
     private final String email;
     private final String apiToken;

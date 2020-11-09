@@ -30,7 +30,7 @@ import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
-import systems.reformcloud.reformcloud2.executor.api.utility.NetworkAddress;
+import systems.reformcloud.reformcloud2.shared.network.SimpleNetworkAddress;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.NodeProcessWrapper;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
@@ -111,7 +111,7 @@ public final class CommandCluster implements Command {
                 return;
             }
 
-            NodeExecutor.getInstance().getNodeConfig().getClusterNodes().add(new NetworkAddress(ip, port));
+            NodeExecutor.getInstance().getNodeConfig().getClusterNodes().add(new SimpleNetworkAddress(ip, port));
             NodeExecutor.getInstance().getNodeConfig().save();
             sender.sendMessage(LanguageManager.get("command-cluster-created-node", ip, strings[2]));
             return;
@@ -124,7 +124,7 @@ public final class CommandCluster implements Command {
                 return;
             }
 
-            NetworkAddress address = Streams.filter(
+            SimpleNetworkAddress address = Streams.filter(
                 NodeExecutor.getInstance().getNodeConfig().getClusterNodes(),
                 e -> e.getHost().equals(ip.trim())
             );
@@ -155,7 +155,7 @@ public final class CommandCluster implements Command {
                 } else if (strings[0].equalsIgnoreCase("create")) {
                     result.add("127.0.0.1");
                 } else if (strings[0].equalsIgnoreCase("delete")) {
-                    result.addAll(Streams.map(NodeExecutor.getInstance().getNodeConfig().getClusterNodes(), NetworkAddress::getHost));
+                    result.addAll(Streams.map(NodeExecutor.getInstance().getNodeConfig().getClusterNodes(), SimpleNetworkAddress::getHost));
                 }
 
                 break;
@@ -210,7 +210,7 @@ public final class CommandCluster implements Command {
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append("Known nodes (").append(NodeExecutor.getInstance().getNodeConfig().getClusterNodes().size()).append(")").append("\n");
-        for (NetworkAddress clusterNode : NodeExecutor.getInstance().getNodeConfig().getClusterNodes()) {
+        for (SimpleNetworkAddress clusterNode : NodeExecutor.getInstance().getNodeConfig().getClusterNodes()) {
             stringBuilder.append(" > ").append(clusterNode.getHost()).append(":").append(clusterNode.getPort()).append("\n");
         }
 

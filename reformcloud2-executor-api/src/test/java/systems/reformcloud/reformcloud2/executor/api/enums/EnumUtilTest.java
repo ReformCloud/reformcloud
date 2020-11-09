@@ -2,7 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.enums;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Version;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Version;
 
 import java.util.EnumSet;
 
