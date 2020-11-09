@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
-import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.utility.name.ReNameable;
 
 public interface Version extends ReNameable, SerializableObject, Cloneable {

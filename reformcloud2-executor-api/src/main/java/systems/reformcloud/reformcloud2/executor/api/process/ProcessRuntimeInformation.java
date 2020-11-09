@@ -26,14 +26,14 @@ package systems.reformcloud.reformcloud2.executor.api.process;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ProcessRuntimeInformation implements SerializableObject {
+public interface ProcessRuntimeInformation extends SerializableObject {
 
     public static final long MEGABYTE = 1024L * 1024L;
     private double cpuUsageSystem;
@@ -56,6 +56,7 @@ public class ProcessRuntimeInformation implements SerializableObject {
     private Map<String, String> systemProperties;
     private String classPath;
     private String bootClassPath;
+    private int processId;
 
     @ApiStatus.Internal
     public ProcessRuntimeInformation() {

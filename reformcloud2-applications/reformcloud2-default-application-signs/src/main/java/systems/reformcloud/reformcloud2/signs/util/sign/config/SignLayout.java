@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.signs.util.sign.config;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 
 import java.util.List;

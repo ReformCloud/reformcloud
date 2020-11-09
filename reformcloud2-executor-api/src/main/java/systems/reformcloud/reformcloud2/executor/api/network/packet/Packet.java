@@ -26,9 +26,9 @@ package systems.reformcloud.reformcloud2.executor.api.network.packet;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
+import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 
 import java.util.UUID;
 
@@ -47,5 +47,5 @@ public abstract class Packet implements SerializableObject {
         this.queryUniqueID = queryUniqueID;
     }
 
-    public abstract void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel);
+    public abstract void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel);
 }

@@ -27,8 +27,8 @@ package systems.reformcloud.reformcloud2.node.protocol;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
@@ -51,11 +51,11 @@ public class NodeToNodeSetProcessRuntimeState extends ProtocolPacket {
 
     @Override
     public int getId() {
-        return NetworkUtil.NODE_BUS + 25;
+        return PacketIds.NODE_BUS + 25;
     }
 
     @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
         ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(this.uniqueId).ifPresent(process -> process.setRuntimeState(this.processState));
     }
 

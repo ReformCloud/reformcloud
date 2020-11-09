@@ -24,78 +24,115 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.network.data;
 
-import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public abstract class ProtocolBuffer extends ByteBuf {
+public interface ProtocolBuffer {
 
-    public abstract void writeString(@Nullable String stringToWrite);
+    void writeString(@Nullable String stringToWrite);
 
-    @Nullable
-    public abstract String readString();
+    @Nullable String readString();
 
-    public abstract void writeArray(@NotNull byte[] bytes);
+    void writeArray(@NotNull byte[] bytes);
 
-    @NotNull
-    public abstract byte[] readArray();
+    @NotNull byte[] readArray();
 
-    @NotNull
-    public abstract byte[] toByteArray();
+    @NotNull byte[] toByteArray();
 
-    public abstract void writeStringArray(@NotNull Collection<String> list);
+    void writeStringArray(@NotNull Collection<String> list);
 
-    @NotNull
-    public abstract List<String> readStringArray();
+    @NotNull List<String> readStringArray();
 
-    public abstract void writeStringMap(@NotNull Map<String, String> list);
+    void writeStringMap(@NotNull Map<String, String> list);
 
-    @NotNull
-    public abstract Map<String, String> readStringMap();
+    @NotNull Map<String, String> readStringMap();
 
-    public abstract void writeStringArrays(@NotNull String[] strings);
+    void writeStringArrays(@NotNull String[] strings);
 
-    @NotNull
-    public abstract String[] readStringArrays();
+    @NotNull String[] readStringArrays();
 
-    public abstract void writeLongArray(@NotNull long[] longs);
+    void writeLongArray(@NotNull long[] longs);
 
-    @NotNull
-    public abstract long[] readLongArray();
+    @NotNull long[] readLongArray();
 
-    public abstract <T extends SerializableObject> void writeObject(@Nullable T object);
+    <T extends SerializableObject> void writeObject(@Nullable T object);
 
-    @Nullable
-    public abstract <T extends SerializableObject> T readObject(@NotNull Class<T> tClass);
+    @Nullable <T extends SerializableObject> T readObject(@NotNull Class<T> tClass);
 
-    @Nullable
-    public abstract <T extends SerializableObject, V extends T> T readObject(@NotNull Class<V> reader, @NotNull Class<T> type);
+    @Nullable <T extends SerializableObject, V extends T> T readObject(@NotNull Class<V> reader, @NotNull Class<T> type);
 
-    public abstract <T extends SerializableObject> void writeObjects(@NotNull Collection<T> objects);
+    <T extends SerializableObject> void writeObjects(@NotNull Collection<T> objects);
 
-    @NotNull
-    public abstract <T extends SerializableObject> List<T> readObjects(@NotNull Class<T> tClass);
+    @NotNull <T extends SerializableObject> List<T> readObjects(@NotNull Class<T> tClass);
 
-    @NotNull
-    public abstract <T extends SerializableObject, V extends T> List<T> readObjects(@NotNull Class<V> reader, @NotNull Class<T> type);
+    @NotNull <T extends SerializableObject, V extends T> List<T> readObjects(@NotNull Class<V> reader, @NotNull Class<T> type);
 
-    public abstract int readVarInt();
+    int readVarInt();
 
-    public abstract void writeVarInt(int value);
+    void writeVarInt(int value);
 
-    @Nullable
-    public abstract UUID readUniqueId();
+    @Nullable UUID readUniqueId();
 
-    public abstract void writeUniqueId(@Nullable UUID uniqueId);
+    void writeUniqueId(@Nullable UUID uniqueId);
 
-    public abstract void writeInteger(@Nullable Integer integer);
+    void writeInteger(@Nullable Integer integer);
 
-    @Nullable
-    public abstract Integer readInteger();
+    @Nullable Integer readInteger();
+
+    int readableBytes();
+
+    boolean readBoolean();
+
+    byte readByte();
+
+    short readUnsignedByte();
+
+    short readShort();
+
+    int readUnsignedShort();
+
+    int readMedium();
+
+    int readUnsignedMedium();
+
+    int readInt();
+
+    long readUnsignedInt();
+
+    long readLong();
+
+    char readChar();
+
+    float readFloat();
+
+    double readDouble();
+
+    void readBytes(byte[] target);
+
+    void skipBytes(int amount);
+
+    void writeBoolean(boolean b);
+
+    void writeByte(int b);
+
+    void writeShort(int s);
+
+    void writeMedium(int medium);
+
+    void writeInt(int i);
+
+    void writeLong(long l);
+
+    void writeChar(int c);
+
+    void writeFloat(float f);
+
+    void writeDouble(double d);
+
+    void writeBytes(byte[] bytes);
 }

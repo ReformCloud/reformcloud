@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.Mockito;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
@@ -67,7 +67,7 @@ class DefaultPacketProviderTest {
         }
 
         @Override
-        public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+        public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
         }
     }
 

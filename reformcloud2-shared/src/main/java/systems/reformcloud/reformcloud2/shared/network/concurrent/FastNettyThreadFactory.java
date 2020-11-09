@@ -22,39 +22,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.netty.frame;
+package systems.reformcloud.reformcloud2.shared.network.concurrent;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToByteEncoder;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import io.netty.util.concurrent.FastThreadLocalThread;
+import org.jetbrains.annotations.NotNull;
 
-public class VarInt21FrameEncoder extends MessageToByteEncoder<ByteBuf> {
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
-    @Override
-    protected void encode(ChannelHandlerContext ctx, ByteBuf msg, ByteBuf out) {
-        try {
-            int readable = msg.readableBytes();
+public class FastNettyThreadFactory implements ThreadFactory {
 
-            out.ensureWritable(readable + this.getVarIntSize(readable));
-            NetworkUtil.writeVarInt(out, readable);
-            out.writeBytes(msg, msg.readerIndex(), readable);
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
+    private final String nameFormat;
+    private final AtomicInteger threadNumber = new AtomicInteger();
+
+    public FastNettyThreadFactory(String nameFormat) {
+        this.nameFormat = nameFormat;
     }
 
-    private int getVarIntSize(int value) {
-        if ((value & 0xffffff80) == 0) {
-            return 1;
-        } else if ((value & 0xffffc000) == 0) {
-            return 2;
-        } else if ((value & 0xffe00000) == 0) {
-            return 3;
-        } else if ((value & 0xf0000000) == 0) {
-            return 4;
-        } else {
-            return 5;
-        }
+    @Override
+    public Thread newThread(@NotNull Runnable r) {
+        String name = String.format(this.nameFormat, this.threadNumber.getAndIncrement());
+        return new FastThreadLocalThread(r, name);
     }
 }

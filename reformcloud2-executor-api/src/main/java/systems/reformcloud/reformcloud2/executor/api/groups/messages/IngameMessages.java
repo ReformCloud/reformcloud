@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.groups.messages;
 
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 
 import java.text.MessageFormat;

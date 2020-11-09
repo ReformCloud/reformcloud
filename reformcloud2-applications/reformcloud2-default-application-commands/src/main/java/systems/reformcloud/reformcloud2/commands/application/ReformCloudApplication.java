@@ -37,7 +37,7 @@ import systems.reformcloud.reformcloud2.executor.api.application.updater.Applica
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.shared.io.IOUtils;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
@@ -92,7 +92,7 @@ public class ReformCloudApplication extends Application {
 
     @Override
     public void onDisable() {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(NetworkUtil.RESERVED_EXTRA_BUS + 1);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketIds.RESERVED_EXTRA_BUS + 1);
     }
 
     @Nullable

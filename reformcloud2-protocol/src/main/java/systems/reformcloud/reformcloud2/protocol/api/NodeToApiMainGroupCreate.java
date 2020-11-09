@@ -29,8 +29,8 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.event.events.group.MainGroupCreateEvent;
 import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
@@ -52,11 +52,11 @@ public class NodeToApiMainGroupCreate extends ProtocolPacket {
 
     @Override
     public int getId() {
-        return NetworkUtil.API_BUS + 7;
+        return PacketIds.API_BUS + 7;
     }
 
     @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class)
             .callEvent(new MainGroupCreateEvent(this.mainGroup));
     }

@@ -29,9 +29,9 @@ import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.shared.SharedEndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.shared.SharedChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
@@ -39,13 +39,13 @@ import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketAuthBegin;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketAuthSuccess;
 
-public final class NodeClientEndpointChannelReader extends SharedEndpointChannelReader {
+public final class NodeClientChannelListener extends SharedChannelListener {
 
     private boolean wasActive = false;
 
     @Override
     public boolean shouldHandle(@NotNull Packet packet) {
-        return super.networkChannel.isAuthenticated() || packet.getId() == NetworkUtil.AUTH_BUS_END;
+        return super.networkChannel.isAuthenticated() || packet.getId() == PacketIds.AUTH_BUS_END;
     }
 
     @Override
@@ -82,8 +82,8 @@ public final class NodeClientEndpointChannelReader extends SharedEndpointChannel
     }
 
     @Override
-    public void read(@NotNull Packet input) {
-        if (input.getId() == NetworkUtil.AUTH_BUS_END) {
+    public void handle(@NotNull Packet input) {
+        if (input.getId() == PacketIds.AUTH_BUS + 1) {
             if (!(input instanceof PacketAuthSuccess)) {
                 // should never happen
                 super.networkChannel.close();
@@ -114,6 +114,6 @@ public final class NodeClientEndpointChannelReader extends SharedEndpointChannel
             return;
         }
 
-        super.read(input);
+        super.handle(input);
     }
 }

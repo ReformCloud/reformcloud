@@ -25,31 +25,32 @@
 package systems.reformcloud.reformcloud2.shared.network.client;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.address.NetworkAddress;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.client.NetworkClient;
-import systems.reformcloud.reformcloud2.executor.api.network.transport.EventLoopGroupType;
+import systems.reformcloud.reformcloud2.shared.network.channel.DefaultNetworkChannel;
+import systems.reformcloud.reformcloud2.shared.network.handler.NettyChannelInitializer;
+import systems.reformcloud.reformcloud2.shared.network.transport.EventLoopGroupType;
+import systems.reformcloud.reformcloud2.shared.network.transport.TransportType;
 
 import java.util.function.Supplier;
 
 @SuppressWarnings("deprecation") // 1.8 is too old to use the new channel factory
-public class DefaultNetworkClient implements NetworkClient {
+public class DefaultNetworkClient extends DefaultNetworkChannel implements NetworkClient {
 
-    private final EventLoopGroup eventLoopGroup = NetworkUtil.TRANSPORT_TYPE.getEventLoopGroup(EventLoopGroupType.WORKER);
-    private Channel channel;
+    private final EventLoopGroup workerGroup = TransportType.BEST_TYPE.getEventLoopGroup(EventLoopGroupType.WORKER);
 
     @Override
-    public boolean connect(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> supplier) {
+    public boolean connect(@NotNull String host, int port, @NotNull Supplier<ChannelListener> channelListenerFactory) {
         try {
-            ChannelFuture future = this.connect0(host, port, supplier).sync();
+            ChannelFuture future = this.connect0(host, port, channelListenerFactory).awaitUninterruptibly();
             if (future.isSuccess()) {
-                this.channel = future.channel();
+                this.setChannel(future.channel());
             }
 
             return future.isSuccess();
@@ -59,27 +60,29 @@ public class DefaultNetworkClient implements NetworkClient {
         }
     }
 
-    private @NotNull ChannelFuture connect0(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> supplier) {
+    @Override
+    public boolean connect(@NotNull NetworkAddress address, @NotNull Supplier<ChannelListener> channelListenerFactory) {
+        return this.connect(address.getHost(), address.getPort(), channelListenerFactory);
+    }
+
+    private @NotNull ChannelFuture connect0(@NotNull String host, int port, @NotNull Supplier<ChannelListener> channelListenerFactory) {
         return new Bootstrap()
-            .group(this.eventLoopGroup)
-            .channelFactory(NetworkUtil.TRANSPORT_TYPE.getSocketChannelFactory())
+            .group(this.workerGroup)
+            .channelFactory(TransportType.BEST_TYPE.getSocketChannelFactory())
             .option(ChannelOption.SO_REUSEADDR, true)
             .option(ChannelOption.SO_KEEPALIVE, true)
             .option(ChannelOption.AUTO_READ, true)
             .option(ChannelOption.IP_TOS, 24)
             .option(ChannelOption.TCP_NODELAY, true)
-            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
-            .handler(new ClientChannelInitializer(supplier))
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
+            .handler(new NettyChannelInitializer(channelListenerFactory))
             .connect(host, port)
             .addListeners(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE_ON_FAILURE);
     }
 
     @Override
-    public void disconnect() {
-        if (this.channel != null && this.channel.isOpen()) {
-            this.channel.close();
-        }
-
-        this.eventLoopGroup.shutdownGracefully();
+    public void closeSync() {
+        super.closeSync();
+        this.workerGroup.shutdownGracefully().syncUninterruptibly();
     }
 }

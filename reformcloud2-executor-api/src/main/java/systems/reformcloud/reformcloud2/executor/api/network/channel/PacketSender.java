@@ -22,20 +22,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.transport;
+package systems.reformcloud.reformcloud2.executor.api.network.channel;
 
-public enum EventLoopGroupType {
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
 
-    BOSS("Boss"),
-    WORKER("Worker");
+import java.util.UUID;
+import java.util.concurrent.Future;
 
-    private final String name;
+public interface PacketSender extends Nameable {
 
-    EventLoopGroupType(String name) {
-        this.name = name;
-    }
+    @NotNull
+    Future<Void> sendPacket(@NotNull Packet packet);
 
-    public String getName() {
-        return this.name;
-    }
+    void sendPacketSync(@NotNull Packet packet);
+
+    void sendPackets(@NotNull Packet... packets);
+
+    void sendQueryResult(@NotNull UUID queryUniqueId, @NotNull Packet result);
+
+    @NotNull
+    Future<Void> close();
+
+    void closeSync();
 }

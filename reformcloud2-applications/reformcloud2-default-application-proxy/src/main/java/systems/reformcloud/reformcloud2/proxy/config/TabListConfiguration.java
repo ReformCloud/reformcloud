@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.proxy.config;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 
 public class TabListConfiguration implements SerializableObject {

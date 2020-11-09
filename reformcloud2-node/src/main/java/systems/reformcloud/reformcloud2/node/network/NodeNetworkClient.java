@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.node.network;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.shared.network.client.DefaultNetworkClient;
 
 import java.util.Collection;
@@ -37,7 +37,7 @@ public final class NodeNetworkClient extends DefaultNetworkClient {
     public static final Collection<String> CONNECTIONS = new CopyOnWriteArrayList<>();
 
     @Override
-    public boolean connect(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> supplier) {
+    public boolean connect(@NotNull String host, int port, @NotNull Supplier<ChannelListener> supplier) {
         if (CONNECTIONS.stream().anyMatch(host::equals)) {
             return false;
         }

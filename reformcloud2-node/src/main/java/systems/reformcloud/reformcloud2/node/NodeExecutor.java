@@ -36,7 +36,7 @@ import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGrou
 import systems.reformcloud.reformcloud2.node.template.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.http.server.HttpServer;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryManager;
@@ -77,9 +77,9 @@ import systems.reformcloud.reformcloud2.node.group.DefaultNodeProcessGroupProvid
 import systems.reformcloud.reformcloud2.node.http.server.DefaultHttpServer;
 import systems.reformcloud.reformcloud2.node.logger.CloudLogger;
 import systems.reformcloud.reformcloud2.node.messaging.DefaultNodeChannelMessageProvider;
-import systems.reformcloud.reformcloud2.node.network.NodeClientEndpointChannelReader;
+import systems.reformcloud.reformcloud2.node.network.NodeClientChannelListener;
 import systems.reformcloud.reformcloud2.node.network.NodeNetworkClient;
-import systems.reformcloud.reformcloud2.node.network.NodeServerEndpointChannelReader;
+import systems.reformcloud.reformcloud2.node.network.NodeServerChannelListener;
 import systems.reformcloud.reformcloud2.node.player.DefaultNodePlayerProvider;
 import systems.reformcloud.reformcloud2.node.process.DefaultNodeLocalProcessWrapper;
 import systems.reformcloud.reformcloud2.node.process.DefaultNodeProcessProvider;
@@ -328,7 +328,7 @@ public final class NodeExecutor extends ExecutorAPI {
     }
 
     private void startNetworkListeners() {
-        System.out.println(LanguageManager.get("network-transport-type-choose", NetworkUtil.TRANSPORT_TYPE.getName()));
+        System.out.println(LanguageManager.get("network-transport-type-choose", PacketIds.TRANSPORT_TYPE.getName()));
 
         for (SimpleNetworkAddress networkListener : this.nodeConfig.getNetworkListeners()) {
             if (networkListener.getHost() == null || networkListener.getPort() < 0) {
@@ -338,7 +338,7 @@ public final class NodeExecutor extends ExecutorAPI {
                 continue;
             }
 
-            this.networkServer.bind(networkListener.getHost(), networkListener.getPort(), NodeServerEndpointChannelReader::new);
+            this.networkServer.bind(networkListener.getHost(), networkListener.getPort(), NodeServerChannelListener::new);
         }
 
         for (SimpleNetworkAddress httpNetworkListener : this.nodeConfig.getHttpNetworkListeners()) {
@@ -363,7 +363,7 @@ public final class NodeExecutor extends ExecutorAPI {
             if (this.networkClient.connect(
                 clusterNode.getHost(),
                 clusterNode.getPort(),
-                NodeClientEndpointChannelReader::new
+                NodeClientChannelListener::new
             )) {
                 System.out.println(LanguageManager.get(
                     "network-node-connection-to-other-node-success", clusterNode.getHost(), clusterNode.getPort()

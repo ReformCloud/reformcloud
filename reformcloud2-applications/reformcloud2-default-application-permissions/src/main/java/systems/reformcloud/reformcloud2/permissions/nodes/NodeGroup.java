@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.permissions.nodes;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 
 public class NodeGroup implements SerializableObject {

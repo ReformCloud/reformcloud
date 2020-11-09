@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.proxy.application.network;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
 import systems.reformcloud.reformcloud2.proxy.ProxyConfiguration;
@@ -47,7 +47,7 @@ public class PacketRequestConfigResult extends QueryResultPacket {
 
     @Override
     public int getId() {
-        return NetworkUtil.RESERVED_EXTRA_BUS + 4;
+        return PacketIds.RESERVED_EXTRA_BUS + 4;
     }
 
     @Override

@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.groups.template.inclusion;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
-import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 
 import java.util.Collection;
 import java.util.Optional;

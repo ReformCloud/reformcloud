@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.functional.Sorted;
 import systems.reformcloud.reformcloud2.executor.api.functional.Sorted3;
-import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 
 public interface VersionInfo extends SerializableObject, Sorted3<Integer, Integer, Integer>, Sorted<VersionInfo>, Cloneable {
 

@@ -27,7 +27,7 @@ package systems.reformcloud.reformcloud2.signs.application.packets;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
@@ -54,7 +54,7 @@ public class PacketCreateSign extends Packet {
     }
 
     @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
         if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
             ReformCloudApplication.insert(this.cloudSign);
             for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {

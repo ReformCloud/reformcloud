@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
@@ -49,7 +49,7 @@ public class ApiToNodeGetProcessInformationObjectsResult extends QueryResultPack
 
     @Override
     public int getId() {
-        return NetworkUtil.EMBEDDED_BUS + 75;
+        return PacketIds.EMBEDDED_BUS + 75;
     }
 
     @Override

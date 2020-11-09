@@ -28,8 +28,8 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUpdateEvent;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
@@ -48,11 +48,11 @@ public class NodeToApiProcessUpdated extends ProtocolPacket {
 
     @Override
     public int getId() {
-        return NetworkUtil.API_BUS + 1;
+        return PacketIds.API_BUS + 1;
     }
 
     @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class)
             .callEvent(new ProcessUpdateEvent(this.processInformation));
     }

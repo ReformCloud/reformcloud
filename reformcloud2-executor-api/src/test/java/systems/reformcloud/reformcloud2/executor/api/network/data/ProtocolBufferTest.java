@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
-import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
 
 import java.util.Arrays;
 import java.util.UUID;

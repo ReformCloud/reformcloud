@@ -27,8 +27,8 @@ package systems.reformcloud.reformcloud2.node.protocol;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
@@ -49,11 +49,11 @@ public class NodeToNodeSetProcessGroups extends ProtocolPacket {
 
     @Override
     public int getId() {
-        return NetworkUtil.NODE_BUS + 17;
+        return PacketIds.NODE_BUS + 17;
     }
 
     @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleProcessGroupSet(this.processGroups);
     }
 

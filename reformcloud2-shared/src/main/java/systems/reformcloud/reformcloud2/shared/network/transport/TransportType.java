@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.transport;
+package systems.reformcloud.reformcloud2.shared.network.transport;
 
 import io.netty.bootstrap.ChannelFactory;
 import io.netty.channel.EventLoopGroup;
@@ -35,9 +35,8 @@ import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.netty.concurrent.FastNettyThreadFactory;
+import systems.reformcloud.reformcloud2.shared.network.concurrent.FastNettyThreadFactory;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.function.BiFunction;
@@ -49,6 +48,8 @@ public enum TransportType {
         EpollSocketChannel::new, (type, typeName) -> new EpollEventLoopGroup(Math.min(4, Runtime.getRuntime().availableProcessors() * 2), newThreadFactory(typeName, type))),
     NIO("Nio", true, NioServerSocketChannel::new,
         NioSocketChannel::new, (type, typeName) -> new NioEventLoopGroup(Math.min(4, Runtime.getRuntime().availableProcessors() * 2), newThreadFactory(typeName, type)));
+
+    public static final TransportType BEST_TYPE = TransportType.getBestType();
 
     private final String name;
     private final boolean available;
@@ -65,14 +66,7 @@ public enum TransportType {
         this.eventLoopGroupFactory = eventLoopGroupFactory;
     }
 
-    /**
-     * Get the best transport type for the current machine.
-     * For internal use only. Use {@link systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil#TRANSPORT_TYPE}
-     *
-     * @return the best transport type for the current machine
-     */
-    @ApiStatus.Internal
-    public static @NotNull TransportType getBestType() {
+    private static @NotNull TransportType getBestType() {
         if (Boolean.getBoolean("reformcloud.disable.native")) {
             return NIO;
         }

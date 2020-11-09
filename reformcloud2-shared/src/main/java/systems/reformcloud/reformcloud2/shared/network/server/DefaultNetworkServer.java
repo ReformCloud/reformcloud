@@ -30,38 +30,36 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.address.NetworkAddress;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.server.NetworkServer;
-import systems.reformcloud.reformcloud2.executor.api.network.transport.EventLoopGroupType;
+import systems.reformcloud.reformcloud2.shared.network.handler.NettyChannelInitializer;
+import systems.reformcloud.reformcloud2.shared.network.transport.EventLoopGroupType;
+import systems.reformcloud.reformcloud2.shared.network.transport.TransportType;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 @SuppressWarnings("deprecation") // 1.8 is too old to use the new channel factory
-public final class DefaultNetworkServer implements NetworkServer {
+public class DefaultNetworkServer implements NetworkServer {
 
     private final Map<Integer, ChannelFuture> channelFutures = new ConcurrentHashMap<>();
-    private final EventLoopGroup boss = NetworkUtil.TRANSPORT_TYPE.getEventLoopGroup(EventLoopGroupType.BOSS);
-    private final EventLoopGroup worker = NetworkUtil.TRANSPORT_TYPE.getEventLoopGroup(EventLoopGroupType.WORKER);
+    private final EventLoopGroup boss = TransportType.BEST_TYPE.getEventLoopGroup(EventLoopGroupType.BOSS);
+    private final EventLoopGroup worker = TransportType.BEST_TYPE.getEventLoopGroup(EventLoopGroupType.WORKER);
 
     @Override
-    public void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper) {
+    public boolean bind(@NotNull String host, int port, @NotNull Supplier<ChannelListener> channelListenerFactory) {
         if (!this.channelFutures.containsKey(port)) {
-            new ServerBootstrap()
-                .channelFactory(NetworkUtil.TRANSPORT_TYPE.getServerSocketChannelFactory())
+            return new ServerBootstrap()
+                .channelFactory(TransportType.BEST_TYPE.getServerSocketChannelFactory())
                 .group(this.boss, this.worker)
-
                 .childOption(ChannelOption.SO_REUSEADDR, true)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 .childOption(ChannelOption.AUTO_READ, true)
-                .childOption(ChannelOption.IP_TOS, 0x18)
+                .childOption(ChannelOption.IP_TOS, 24)
                 .childOption(ChannelOption.TCP_NODELAY, true)
-                .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, NetworkUtil.WATER_MARK)
-
-                .childHandler(new ServerChannelInitializer(readerHelper))
-
+                .childHandler(new NettyChannelInitializer(channelListenerFactory))
                 .bind(host, port)
                 .addListener((ChannelFutureListener) channelFuture -> {
                     if (channelFuture.isSuccess()) {
@@ -69,8 +67,17 @@ public final class DefaultNetworkServer implements NetworkServer {
                     } else {
                         channelFuture.cause().printStackTrace();
                     }
-                });
+                })
+                .awaitUninterruptibly()
+                .isSuccess();
+        } else {
+            return true;
         }
+    }
+
+    @Override
+    public boolean bind(@NotNull NetworkAddress address, @NotNull Supplier<ChannelListener> channelListenerFactory) {
+        return this.bind(address.getHost(), address.getPort(), channelListenerFactory);
     }
 
     @Override

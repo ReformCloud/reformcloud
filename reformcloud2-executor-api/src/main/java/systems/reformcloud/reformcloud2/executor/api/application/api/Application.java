@@ -33,7 +33,7 @@ import systems.reformcloud.reformcloud2.executor.api.application.loader.AppClass
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader;
 import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
-import systems.reformcloud.reformcloud2.executor.api.network.netty.concurrent.FastNettyThreadFactory;
+import systems.reformcloud.reformcloud2.shared.network.concurrent.FastNettyThreadFactory;
 
 import java.io.File;
 import java.io.InputStream;

@@ -25,92 +25,100 @@
 package systems.reformcloud.reformcloud2.shared.network.channel;
 
 import io.netty.channel.Channel;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.network.address.NetworkAddress;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
+import systems.reformcloud.reformcloud2.shared.Constants;
 
 import java.net.InetSocketAddress;
-import java.util.UUID;
+import java.util.concurrent.ScheduledExecutorService;
 
-public final class DefaultNetworkChannel implements NetworkChannel {
+public class DefaultNetworkChannel extends DefaultPacketSender implements NetworkChannel {
 
-    private final Channel channel;
-    private final long connectionTime = System.currentTimeMillis();
-    private InetSocketAddress address;
-    private boolean authenticated;
-    private String name;
+    private NetworkAddress localAddress;
+    private NetworkAddress remoteAddress;
+    private Channel channel;
+    private String name = Constants.EMPTY_STRING;
+    private ChannelListener channelListener;
 
-    DefaultNetworkChannel(Channel channel) {
-        this.channel = channel;
-        this.address = (InetSocketAddress) channel.remoteAddress();
+    public DefaultNetworkChannel() {
+    }
+
+    public DefaultNetworkChannel(Channel channel) {
+        super(channel);
+        this.setChannel(channel);
+    }
+
+    protected void setChannel(@NotNull Channel channel) {
+        this.channel = super.channel = channel;
+        this.localAddress = NetworkAddress.fromInetSocketAddress((InetSocketAddress) channel.localAddress());
+        this.remoteAddress = NetworkAddress.fromInetSocketAddress((InetSocketAddress) channel.remoteAddress());
     }
 
     @Override
-    public void sendPacket(@NotNull Object packet) {
-        this.channel.writeAndFlush(packet, this.channel.voidPromise());
+    public @NotNull ScheduledExecutorService getEventLoop() {
+        return this.channel.eventLoop();
     }
 
     @Override
-    public void sendPackets(@NonNls Object... packets) {
-        for (Object packet : packets) {
-            this.sendPacket(packet);
-        }
+    public @NotNull String getChannelId() {
+        return this.channel.id().asLongText();
     }
 
     @Override
-    public void sendQueryResult(@Nullable UUID queryUniqueID, @NotNull Packet result) {
-        result.setQueryUniqueID(queryUniqueID);
-        this.sendPacket(result);
+    public boolean isOpen() {
+        return this.channel.isOpen();
     }
 
     @Override
-    public long getConnectionTime() {
-        return this.connectionTime;
-    }
-
-    @NotNull
-    @Override
-    public String getAddress() {
-        return this.address.getAddress().getHostAddress();
-    }
-
-    @NotNull
-    @Override
-    public InetSocketAddress getEthernetAddress() {
-        return this.address;
+    public boolean isRegistered() {
+        return this.channel.isRegistered();
     }
 
     @Override
-    public void setRemoteAddress(@NotNull InetSocketAddress address) {
-        this.address = address;
+    public boolean isActive() {
+        return this.channel.isActive();
     }
 
     @Override
-    public boolean isConnected() {
-        return this.channel.isOpen() && this.channel.isWritable();
+    public boolean isWritable() {
+        return this.channel.isWritable();
     }
 
     @Override
-    public boolean isAuthenticated() {
-        return this.authenticated;
+    public @NotNull NetworkAddress getLocalAddress() {
+        return this.localAddress;
     }
 
     @Override
-    public void setAuthenticated(boolean authenticated) {
-        this.authenticated = authenticated;
+    public @NotNull NetworkAddress getRemoteAddress() {
+        return this.remoteAddress;
     }
 
     @Override
-    public void close() {
-        this.channel.close(this.channel.voidPromise());
+    public void flush() {
+        this.channel.flush();
     }
 
-    @NotNull
     @Override
-    public String getName() {
-        return this.name == null ? "" : this.name;
+    public int compareTo(@NotNull NetworkChannel channel) {
+        return this.getChannelId().compareTo(channel.getChannelId());
+    }
+
+    @Override
+    public @NotNull ChannelListener getListener() {
+        return this.channelListener;
+    }
+
+    @Override
+    public void setListener(@NotNull ChannelListener listener) {
+        this.channelListener = listener;
+    }
+
+    @Override
+    public @NotNull String getName() {
+        return this.name;
     }
 
     @Override

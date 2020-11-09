@@ -26,7 +26,7 @@ package systems.refomcloud.reformcloud2.embedded.network;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 import systems.reformcloud.reformcloud2.protocol.api.NodeToApiMainGroupCreate;
 import systems.reformcloud.reformcloud2.protocol.api.NodeToApiMainGroupDelete;
@@ -91,7 +91,7 @@ final class PacketRegister {
         PacketProvider packetProvider = getPacketProvider();
 
         // unregister auth packet
-        packetProvider.unregisterPacket(NetworkUtil.AUTH_BUS_END);
+        packetProvider.unregisterPacket(PacketIds.AUTH_BUS_END);
 
         // api -> node query result packets
         packetProvider.registerPacket(ApiToNodeCreateMainGroupResult.class);

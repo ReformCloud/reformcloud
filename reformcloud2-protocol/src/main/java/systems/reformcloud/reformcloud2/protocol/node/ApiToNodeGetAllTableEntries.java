@@ -27,8 +27,8 @@ package systems.reformcloud.reformcloud2.protocol.node;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
@@ -48,11 +48,11 @@ public class ApiToNodeGetAllTableEntries extends ProtocolPacket {
 
     @Override
     public int getId() {
-        return NetworkUtil.EMBEDDED_BUS + 14;
+        return PacketIds.EMBEDDED_BUS + 14;
     }
 
     @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
         Collection<JsonConfiguration> all = ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(this.tableName).getAll();
         channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetAllTableEntriesResult(all));
     }

@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.node.protocol;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
 
@@ -46,7 +46,7 @@ public class NodeToNodeUploadProcessLogResult extends QueryResultPacket {
 
     @Override
     public int getId() {
-        return NetworkUtil.NODE_BUS + 28;
+        return PacketIds.NODE_BUS + 28;
     }
 
     @Override

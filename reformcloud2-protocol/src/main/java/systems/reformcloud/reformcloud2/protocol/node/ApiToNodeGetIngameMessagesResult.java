@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.groups.messages.IngameMessages;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
 
@@ -47,7 +47,7 @@ public class ApiToNodeGetIngameMessagesResult extends QueryResultPacket {
 
     @Override
     public int getId() {
-        return NetworkUtil.EMBEDDED_BUS + 21;
+        return PacketIds.EMBEDDED_BUS + 21;
     }
 
     @Override

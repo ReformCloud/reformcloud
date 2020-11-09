@@ -30,9 +30,9 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.shared.SharedEndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.shared.SharedChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
@@ -46,13 +46,13 @@ import systems.reformcloud.reformcloud2.protocol.shared.PacketAuthSuccess;
 import java.util.Optional;
 import java.util.UUID;
 
-public class NodeServerEndpointChannelReader extends SharedEndpointChannelReader {
+public class NodeServerChannelListener extends SharedChannelListener {
 
     private int type = 0;
 
     @Override
     public boolean shouldHandle(@NotNull Packet packet) {
-        return super.networkChannel.isAuthenticated() || packet.getId() == NetworkUtil.AUTH_BUS;
+        return super.networkChannel.isAuthenticated() || packet.getId() == PacketIds.AUTH_BUS;
     }
 
     @Override
@@ -79,8 +79,8 @@ public class NodeServerEndpointChannelReader extends SharedEndpointChannelReader
     }
 
     @Override
-    public void read(@NotNull Packet input) {
-        if (input.getId() == NetworkUtil.AUTH_BUS) {
+    public void handle(@NotNull Packet input) {
+        if (input.getId() == PacketIds.AUTH_BUS) {
             if (!(input instanceof PacketAuthBegin)) {
                 // should never happen
                 super.networkChannel.close();
@@ -180,6 +180,6 @@ public class NodeServerEndpointChannelReader extends SharedEndpointChannelReader
             return;
         }
 
-        super.read(input);
+        super.handle(input);
     }
 }

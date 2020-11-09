@@ -25,13 +25,13 @@
 package systems.reformcloud.reformcloud2.executor.api.network.packet.query;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 
 public abstract class QueryResultPacket extends Packet {
 
     @Override
-    public final void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+    public final void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
     }
 }

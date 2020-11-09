@@ -25,18 +25,14 @@
 package systems.reformcloud.reformcloud2.executor.api.network.server;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.address.NetworkAddress;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 
 import java.util.function.Supplier;
 
 public interface NetworkServer extends Server {
 
-    /**
-     * Binds to the given ip:port
-     *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
-     */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    boolean bind(@NotNull String host, int port, @NotNull Supplier<ChannelListener> channelListenerFactory);
+
+    boolean bind(@NotNull NetworkAddress address, @NotNull Supplier<ChannelListener> channelListenerFactory);
 }

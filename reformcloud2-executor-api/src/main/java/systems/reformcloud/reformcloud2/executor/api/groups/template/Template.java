@@ -33,7 +33,7 @@ import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.Tem
 import systems.reformcloud.reformcloud2.executor.api.groups.template.inclusion.InclusionHolder;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.runtime.RuntimeConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Version;
-import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.utility.name.ReNameable;
 
 public interface Template extends ReNameable, JsonDataHolder<Template>, InclusionHolder, SerializableObject, Sorted<Template>, Cloneable {

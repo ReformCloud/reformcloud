@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.signs.application.packets;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
@@ -43,7 +43,7 @@ public class PacketRequestSignLayouts extends Packet {
     }
 
     @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
         channel.sendQueryResult(this.getQueryUniqueID(), new PacketRequestSignLayoutsResult(ReformCloudApplication.getSignConfig()));
     }
 

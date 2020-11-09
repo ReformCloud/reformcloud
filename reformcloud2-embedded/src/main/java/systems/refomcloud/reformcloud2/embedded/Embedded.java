@@ -30,7 +30,7 @@ import systems.refomcloud.reformcloud2.embedded.database.DefaultEmbeddedDatabase
 import systems.refomcloud.reformcloud2.embedded.group.DefaultEmbeddedMainGroupProvider;
 import systems.refomcloud.reformcloud2.embedded.group.DefaultEmbeddedProcessGroupProvider;
 import systems.refomcloud.reformcloud2.embedded.messaging.DefaultEmbeddedChannelMessageProvider;
-import systems.refomcloud.reformcloud2.embedded.network.EmbeddedEndpointChannelReader;
+import systems.refomcloud.reformcloud2.embedded.network.EmbeddedChannelListener;
 import systems.refomcloud.reformcloud2.embedded.node.DefaultEmbeddedNodeInformationProvider;
 import systems.refomcloud.reformcloud2.embedded.player.DefaultEmbeddedPlayerProvider;
 import systems.refomcloud.reformcloud2.embedded.process.DefaultEmbeddedProcessProvider;
@@ -131,7 +131,7 @@ public abstract class Embedded extends ExecutorAPI {
             this.networkClient.connect(
                 this.config.getConnectionHost(),
                 this.config.getConnectionPort(),
-                () -> new EmbeddedEndpointChannelReader(lock, condition)
+                () -> new EmbeddedChannelListener(lock, condition)
             );
 
             try {

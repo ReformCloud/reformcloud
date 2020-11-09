@@ -33,12 +33,12 @@ import io.netty.channel.EventLoopGroup;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.http.listener.HttpListenerRegistry;
 import systems.reformcloud.reformcloud2.executor.api.http.server.HttpServer;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.transport.EventLoopGroupType;
 import systems.reformcloud.reformcloud2.node.http.listener.DefaultHttpListenerRegistry;
 import systems.reformcloud.reformcloud2.node.http.response.DefaultHttpServerResponseFactory;
 import systems.reformcloud.reformcloud2.node.http.websocket.DefaultSocketFrameFactory;
 import systems.reformcloud.reformcloud2.node.http.websocket.response.DefaultResponseSocketFrameFactory;
+import systems.reformcloud.reformcloud2.shared.network.transport.EventLoopGroupType;
+import systems.reformcloud.reformcloud2.shared.network.transport.TransportType;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,8 +49,8 @@ public class DefaultHttpServer implements HttpServer {
     private final Map<Integer, ChannelFuture> boundServers = new ConcurrentHashMap<>();
     private final HttpListenerRegistry listenerRegistry = new DefaultHttpListenerRegistry();
 
-    private final EventLoopGroup bossGroup = NetworkUtil.TRANSPORT_TYPE.getEventLoopGroup(EventLoopGroupType.BOSS);
-    private final EventLoopGroup workerGroup = NetworkUtil.TRANSPORT_TYPE.getEventLoopGroup(EventLoopGroupType.WORKER);
+    private final EventLoopGroup bossGroup = TransportType.BEST_TYPE.getEventLoopGroup(EventLoopGroupType.BOSS);
+    private final EventLoopGroup workerGroup = TransportType.BEST_TYPE.getEventLoopGroup(EventLoopGroupType.WORKER);
 
     public DefaultHttpServer() {
         DefaultSocketFrameFactory.init();
@@ -67,7 +67,7 @@ public class DefaultHttpServer implements HttpServer {
         try {
             this.boundServers.put(port, new ServerBootstrap()
                 .group(this.bossGroup, this.workerGroup)
-                .channelFactory(NetworkUtil.TRANSPORT_TYPE.getServerSocketChannelFactory())
+                .channelFactory(TransportType.BEST_TYPE.getServerSocketChannelFactory())
 
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childOption(ChannelOption.IP_TOS, 24)

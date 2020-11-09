@@ -33,7 +33,7 @@ import systems.reformcloud.reformcloud2.executor.api.configuration.JsonDataHolde
 import systems.reformcloud.reformcloud2.executor.api.groups.template.TemplateHolder;
 import systems.reformcloud.reformcloud2.executor.api.groups.process.player.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.process.startup.StartupConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
 
 import java.util.Optional;

@@ -26,15 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.network.server;
 
 public interface Server {
 
-    /**
-     * Closes a network server
-     *
-     * @param port The port of the network server which should get closed
-     */
     void close(int port);
 
-    /**
-     * Closes all open network servers
-     */
     void closeAll();
 }

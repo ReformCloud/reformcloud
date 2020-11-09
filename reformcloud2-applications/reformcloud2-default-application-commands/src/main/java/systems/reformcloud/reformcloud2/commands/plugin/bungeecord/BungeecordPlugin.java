@@ -32,7 +32,7 @@ import systems.reformcloud.reformcloud2.commands.plugin.CommandConfigHandler;
 import systems.reformcloud.reformcloud2.commands.plugin.bungeecord.handler.BungeeCommandConfigHandler;
 import systems.reformcloud.reformcloud2.commands.plugin.packet.PacketReleaseCommandsConfig;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 
 public class BungeecordPlugin extends Plugin {
@@ -61,7 +61,7 @@ public class BungeecordPlugin extends Plugin {
     @Override
     public void onDisable() {
         CommandConfigHandler.getInstance().unregisterAllCommands();
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(NetworkUtil.RESERVED_EXTRA_BUS + 3);
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(NetworkUtil.RESERVED_EXTRA_BUS + 2);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketIds.RESERVED_EXTRA_BUS + 3);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketIds.RESERVED_EXTRA_BUS + 2);
     }
 }

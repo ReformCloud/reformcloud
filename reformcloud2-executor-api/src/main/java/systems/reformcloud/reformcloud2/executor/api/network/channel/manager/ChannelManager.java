@@ -24,7 +24,6 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.network.channel.manager;
 
-import io.netty.channel.Channel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
@@ -45,9 +44,6 @@ public interface ChannelManager {
 
     @NotNull
     @UnmodifiableView Collection<NetworkChannel> getRegisteredChannels();
-
-    @NotNull
-    NetworkChannel createChannel(@NotNull Channel channel);
 
     void registerChannel(@NotNull NetworkChannel channel);
 

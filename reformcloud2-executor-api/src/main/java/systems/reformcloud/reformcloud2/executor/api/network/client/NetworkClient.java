@@ -25,16 +25,15 @@
 package systems.reformcloud.reformcloud2.executor.api.network.client;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.address.NetworkAddress;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 
 import java.util.function.Supplier;
 
-public interface NetworkClient {
+public interface NetworkClient extends NetworkChannel {
 
-    boolean connect(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> supplier);
+    boolean connect(@NotNull String host, int port, @NotNull Supplier<ChannelListener> channelListenerFactory);
 
-    /**
-     * Disconnects all open connections
-     */
-    void disconnect();
+    boolean connect(@NotNull NetworkAddress address, @NotNull Supplier<ChannelListener> channelListenerFactory);
 }

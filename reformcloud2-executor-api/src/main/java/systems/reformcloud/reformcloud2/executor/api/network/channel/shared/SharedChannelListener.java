@@ -22,40 +22,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.netty.serialisation;
+package systems.reformcloud.reformcloud2.executor.api.network.channel.shared;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToMessageDecoder;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.network.data.DefaultProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryManager;
+import systems.reformcloud.reformcloud2.executor.api.task.Task;
 
-import java.util.List;
 import java.util.Optional;
 
-public class SerializedPacketDecoder extends MessageToMessageDecoder<ByteBuf> {
+public abstract class SharedChannelListener implements ChannelListener {
+
+    protected NetworkChannel networkChannel;
 
     @Override
-    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
-        if (!channelHandlerContext.channel().isActive() || !byteBuf.isReadable()) {
-            return;
+    public void handle(@NotNull Packet input) {
+        if (input.getQueryUniqueID() != null) {
+            Optional<Task<Packet>> waitingQuery = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class).getWaitingQuery(input.getQueryUniqueID());
+            if (waitingQuery.isPresent()) {
+                waitingQuery.get().complete(input);
+                return;
+            }
         }
 
         try {
-            ProtocolBuffer buffer = new DefaultProtocolBuffer(byteBuf);
-            Optional<Packet> packet = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).getPacketById(buffer.readVarInt());
-            if (packet.isPresent()) {
-                Packet object = packet.get();
-
-                object.setQueryUniqueID(buffer.readUniqueId());
-                object.read(buffer);
-
-                list.add(object);
-            }
-        } catch (Throwable throwable) {
+            input.handlePacketReceive(this, this.networkChannel);
+        } catch (final Throwable throwable) {
+            System.err.println("Error while handling packet " + input.getId() + "@" + input.getClass().getName());
             throwable.printStackTrace();
         }
     }

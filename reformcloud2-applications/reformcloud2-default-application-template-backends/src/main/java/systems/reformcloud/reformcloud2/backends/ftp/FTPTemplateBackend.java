@@ -31,14 +31,13 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPSClient;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackend;
-import systems.reformcloud.reformcloud2.node.template.TemplateBackendManager;
-import systems.reformcloud.reformcloud2.shared.io.IOUtils;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.node.template.TemplateBackendManager;
+import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,11 +48,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
 public final class FTPTemplateBackend implements TemplateBackend {
 
+    private static final Executor EXECUTOR = Executors.newCachedThreadPool();
     private static final BlockingDeque<Runnable> TASKS = new LinkedBlockingDeque<>();
     private final FTPClient ftpClient;
     private final FTPConfig config;
@@ -63,7 +65,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
         this.ftpClient = ftpConfig.isSslEnabled() ? new FTPSClient() : new FTPClient();
         this.open(ftpConfig);
 
-        NetworkUtil.EXECUTOR.execute(() -> {
+        EXECUTOR.execute(() -> {
             while (!Thread.interrupted()) {
                 try {
                     Runnable runnable = TASKS.poll(20, TimeUnit.SECONDS);
@@ -200,7 +202,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
 
     @NotNull
     @Override
-    public Task<Void> loadGlobalTemplates(@NotNull DefaultProcessGroup group, @NotNull Path target) {
+    public Task<Void> loadGlobalTemplates(@NotNull ProcessGroup group, @NotNull Path target) {
         if (this.ftpClient == null) {
             return Task.completedTask(null);
         }

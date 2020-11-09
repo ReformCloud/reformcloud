@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.groups.process.startup;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
-import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 
 import java.util.Collection;
 

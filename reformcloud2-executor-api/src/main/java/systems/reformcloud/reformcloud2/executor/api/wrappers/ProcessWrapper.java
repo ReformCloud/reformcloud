@@ -27,7 +27,7 @@ package systems.reformcloud.reformcloud2.executor.api.wrappers;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.basic.FileTemplateBackend;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.TemplateBuilder;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
@@ -106,7 +106,7 @@ public interface ProcessWrapper {
      * @param templateName  The name of the template
      */
     default void copy(@NotNull String templateGroup, @NotNull String templateName) {
-        this.copy(templateGroup, templateName, FileTemplateBackend.NAME);
+        this.copy(templateGroup, templateName, TemplateBuilder.FILE_BACKEND);
     }
 
     /**

@@ -22,26 +22,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.netty.concurrent;
+package systems.reformcloud.reformcloud2.shared.network.transport;
 
-import io.netty.util.concurrent.FastThreadLocalThread;
-import org.jetbrains.annotations.NotNull;
+public enum EventLoopGroupType {
 
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
+    BOSS("Boss"),
+    WORKER("Worker");
 
-public class FastNettyThreadFactory implements ThreadFactory {
+    private final String name;
 
-    private final String nameFormat;
-    private final AtomicInteger threadNumber = new AtomicInteger();
-
-    public FastNettyThreadFactory(String nameFormat) {
-        this.nameFormat = nameFormat;
+    EventLoopGroupType(String name) {
+        this.name = name;
     }
 
-    @Override
-    public Thread newThread(@NotNull Runnable r) {
-        String name = String.format(this.nameFormat, this.threadNumber.getAndIncrement());
-        return new FastThreadLocalThread(r, name);
+    public String getName() {
+        return this.name;
     }
 }

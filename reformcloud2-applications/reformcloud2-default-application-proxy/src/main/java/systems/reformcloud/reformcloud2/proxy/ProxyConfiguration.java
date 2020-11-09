@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.proxy;
 
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.proxy.config.MotdConfiguration;
 import systems.reformcloud.reformcloud2.proxy.config.TabListConfiguration;

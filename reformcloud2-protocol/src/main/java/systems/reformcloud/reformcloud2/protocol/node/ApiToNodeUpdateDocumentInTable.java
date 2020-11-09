@@ -27,8 +27,8 @@ package systems.reformcloud.reformcloud2.protocol.node;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 
 public class ApiToNodeUpdateDocumentInTable extends ApiToNodeInsertDocumentIntoTable {
@@ -42,11 +42,11 @@ public class ApiToNodeUpdateDocumentInTable extends ApiToNodeInsertDocumentIntoT
 
     @Override
     public int getId() {
-        return NetworkUtil.EMBEDDED_BUS + 5;
+        return PacketIds.EMBEDDED_BUS + 5;
     }
 
     @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
         ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(this.tableName).update(this.key, this.id, this.data);
     }
 }

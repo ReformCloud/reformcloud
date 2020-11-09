@@ -24,7 +24,6 @@
  */
 package systems.reformcloud.reformcloud2.shared.network;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 
-@ApiStatus.Internal
 public final class NetworkUtils {
 
     private NetworkUtils() {

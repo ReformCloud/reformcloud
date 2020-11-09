@@ -24,65 +24,35 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.network.channel;
 
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.functional.Sorted;
+import systems.reformcloud.reformcloud2.executor.api.network.address.NetworkAddress;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListenerHolder;
 import systems.reformcloud.reformcloud2.executor.api.utility.name.ReNameable;
 
-import java.net.InetSocketAddress;
-import java.util.UUID;
+import java.util.concurrent.ScheduledExecutorService;
 
-public interface NetworkChannel extends ReNameable {
+public interface NetworkChannel extends ChannelListenerHolder, Sorted<NetworkChannel>, PacketSender, ReNameable {
 
-    /**
-     * Sends a packet into the channel
-     *
-     * @param packet The packet which should get sent
-     */
-    void sendPacket(@NotNull Object packet);
-
-    /**
-     * Sends many packets into the channel
-     *
-     * @param packets The packets which should be sent
-     */
-    void sendPackets(@NonNls Object... packets);
-
-    void sendQueryResult(@Nullable UUID queryUniqueID, @NotNull Packet result);
-
-    /**
-     * @return The connection time of the network channel
-     */
-    long getConnectionTime();
-
-    /**
-     * @return The ip-address if the channel
-     */
     @NotNull
-    String getAddress();
+    ScheduledExecutorService getEventLoop();
 
-    /**
-     * @return The socket address of the channel
-     */
     @NotNull
-    InetSocketAddress getEthernetAddress();
+    String getChannelId();
 
-    void setRemoteAddress(@NotNull InetSocketAddress address);
+    boolean isOpen();
 
-    /**
-     * @return If the current network channel is connected
-     */
-    boolean isConnected();
+    boolean isRegistered();
 
-    boolean isAuthenticated();
+    boolean isActive();
 
-    void setAuthenticated(boolean authenticated);
+    boolean isWritable();
 
-    /**
-     * Closes the current network channel
-     *
-     * @see #isConnected()
-     */
-    void close();
+    @NotNull
+    NetworkAddress getLocalAddress();
+
+    @NotNull
+    NetworkAddress getRemoteAddress();
+
+    void flush();
 }

@@ -25,8 +25,8 @@
 package systems.reformcloud.reformcloud2.protocol.shared;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
@@ -56,11 +56,11 @@ public class PacketPlayEffectToPlayer extends ProtocolPacket {
 
     @Override
     public int getId() {
-        return NetworkUtil.API_BUS + 15;
+        return PacketIds.API_BUS + 15;
     }
 
     @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
         super.post(channel, PacketPlayEffectToPlayer.class, this);
     }
 

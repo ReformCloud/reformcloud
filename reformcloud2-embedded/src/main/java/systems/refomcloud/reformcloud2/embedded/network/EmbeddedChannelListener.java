@@ -30,9 +30,9 @@ import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.shared.SharedEndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.shared.SharedChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketAuthBegin;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketAuthSuccess;
@@ -40,13 +40,13 @@ import systems.reformcloud.reformcloud2.protocol.shared.PacketAuthSuccess;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-public class EmbeddedEndpointChannelReader extends SharedEndpointChannelReader {
+public class EmbeddedChannelListener extends SharedChannelListener {
 
     private final Lock lock;
     private final Condition condition;
     private boolean wasActive = false;
 
-    public EmbeddedEndpointChannelReader(Lock lock, Condition condition) {
+    public EmbeddedChannelListener(Lock lock, Condition condition) {
         PacketRegister.preAuth();
 
         this.lock = lock;
@@ -55,7 +55,7 @@ public class EmbeddedEndpointChannelReader extends SharedEndpointChannelReader {
 
     @Override
     public boolean shouldHandle(@NotNull Packet packet) {
-        return super.networkChannel.isAuthenticated() || packet.getId() == NetworkUtil.AUTH_BUS_END;
+        return super.networkChannel.isAuthenticated() || packet.getId() == PacketIds.AUTH_BUS_END;
     }
 
     @Override
@@ -88,8 +88,8 @@ public class EmbeddedEndpointChannelReader extends SharedEndpointChannelReader {
     }
 
     @Override
-    public void read(@NotNull Packet input) {
-        if (input.getId() == NetworkUtil.AUTH_BUS_END) {
+    public void handle(@NotNull Packet input) {
+        if (input.getId() == PacketIds.AUTH_BUS_END) {
             if (!(input instanceof PacketAuthSuccess)) {
                 return;
             }
@@ -109,6 +109,6 @@ public class EmbeddedEndpointChannelReader extends SharedEndpointChannelReader {
             return;
         }
 
-        super.read(input);
+        super.handle(input);
     }
 }

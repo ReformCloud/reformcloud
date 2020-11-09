@@ -22,31 +22,57 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.netty.serialisation;
+package systems.reformcloud.reformcloud2.shared.network.channel;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToByteEncoder;
-import systems.reformcloud.reformcloud2.executor.api.network.data.DefaultProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import io.netty.channel.Channel;
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 
-public class PacketSerializerEncoder extends MessageToByteEncoder<Packet> {
+import java.util.UUID;
+import java.util.concurrent.Future;
+
+public abstract class DefaultPacketSender implements PacketSender {
+
+    protected Channel channel;
+
+    public DefaultPacketSender() {
+    }
+
+    protected DefaultPacketSender(Channel channel) {
+        this.channel = channel;
+    }
 
     @Override
-    protected void encode(ChannelHandlerContext channelHandlerContext, Packet packet, ByteBuf byteBuf) {
-        if (!byteBuf.isWritable()) {
-            return;
-        }
+    public @NotNull Future<Void> sendPacket(@NotNull Packet packet) {
+        return this.channel.writeAndFlush(packet);
+    }
 
-        ProtocolBuffer buffer = new DefaultProtocolBuffer(byteBuf);
-        try {
-            buffer.writeVarInt(packet.getId());
-            buffer.writeUniqueId(packet.getQueryUniqueID());
+    @Override
+    public void sendPacketSync(@NotNull Packet packet) {
+        this.channel.writeAndFlush(packet).syncUninterruptibly();
+    }
 
-            packet.write(buffer);
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
+    @Override
+    public void sendPackets(@NotNull Packet... packets) {
+        for (Packet packet : packets) {
+            this.channel.writeAndFlush(packet).syncUninterruptibly();
         }
+    }
+
+    @Override
+    public void sendQueryResult(@NotNull UUID queryUniqueId, @NotNull Packet result) {
+        result.setQueryUniqueID(queryUniqueId);
+        this.sendPacket(result);
+    }
+
+    @Override
+    public @NotNull Future<Void> close() {
+        return this.channel.close();
+    }
+
+    @Override
+    public void closeSync() {
+        this.channel.close().syncUninterruptibly();
     }
 }

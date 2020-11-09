@@ -22,16 +22,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network;
+package systems.reformcloud.reformcloud2.executor.api.network.channel.listener;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 
-import java.io.Serializable;
+import java.io.IOException;
 
-public interface SerializableObject extends Serializable {
+public interface ChannelListener {
 
-    void write(@NotNull ProtocolBuffer buffer);
+    boolean shouldHandle(@NotNull Packet packet);
 
-    void read(@NotNull ProtocolBuffer buffer);
+    void channelActive(@NotNull NetworkChannel channel);
+
+    void channelInactive(@NotNull NetworkChannel channel);
+
+    void channelWriteAbilityChanged(@NotNull NetworkChannel channel);
+
+    void handle(@NotNull Packet input);
+
+    default void exceptionCaught(@NotNull NetworkChannel channel, @NotNull Throwable cause) {
+        boolean debug = Boolean.getBoolean("systems.reformcloud.debug-net");
+        if (!(cause instanceof IOException) && debug) {
+            System.err.println("Exception in channel " + channel.getRemoteAddress());
+            cause.printStackTrace();
+        }
+    }
+
+    default void readOperationCompleted(@NotNull NetworkChannel channel) {
+        channel.flush();
+    }
 }

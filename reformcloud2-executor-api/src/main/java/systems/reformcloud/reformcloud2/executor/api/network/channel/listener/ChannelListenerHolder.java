@@ -22,39 +22,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.shared.network;
+package systems.reformcloud.reformcloud2.executor.api.network.channel.listener;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
-import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 
-public class SimpleNetworkAddress implements SerializableObject {
+public interface ChannelListenerHolder {
 
-    private String host;
-    private int port;
+    @NotNull
+    ChannelListener getListener();
 
-    public SimpleNetworkAddress(String host, int port) {
-        this.host = host;
-        this.port = port;
-    }
-
-    public String getHost() {
-        return this.host;
-    }
-
-    public int getPort() {
-        return this.port;
-    }
-
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.host);
-        buffer.writeInt(this.port);
-    }
-
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.host = buffer.readString();
-        this.port = buffer.readInt();
-    }
+    void setListener(@NotNull ChannelListener listener);
 }

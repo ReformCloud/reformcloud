@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.groups.process.player;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 
 public interface PlayerAccessConfiguration extends SerializableObject, Cloneable {
 
