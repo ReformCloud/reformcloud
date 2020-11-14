@@ -24,7 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.node.config;
 
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.shared.network.SimpleNetworkAddress;
 
 import java.net.InetAddress;

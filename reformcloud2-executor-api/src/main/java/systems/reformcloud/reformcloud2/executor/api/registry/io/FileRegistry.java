@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.executor.api.registry.io;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 
 import java.nio.file.Path;
 import java.util.Collection;

@@ -24,7 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.event.events.messaging;
 
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.event.Event;
 
 public class ChannelMessageReceiveEvent extends Event {

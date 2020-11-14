@@ -36,9 +36,9 @@ import systems.reformcloud.reformcloud2.executor.api.application.api.Application
 import systems.reformcloud.reformcloud2.executor.api.application.builder.ApplicationConfigBuilder;
 import systems.reformcloud.reformcloud2.executor.api.application.loader.AppClassLoader;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
-import systems.reformcloud.reformcloud2.executor.api.io.DownloadHelper;
+import systems.reformcloud.reformcloud2.shared.io.DownloadHelper;
 import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;

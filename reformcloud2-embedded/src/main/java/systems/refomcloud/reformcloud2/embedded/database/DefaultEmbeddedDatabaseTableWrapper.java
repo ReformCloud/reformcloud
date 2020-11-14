@@ -27,7 +27,7 @@ package systems.refomcloud.reformcloud2.embedded.database;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.DatabaseTableWrapper;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeClearDatabaseTable;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetAllTableEntries;

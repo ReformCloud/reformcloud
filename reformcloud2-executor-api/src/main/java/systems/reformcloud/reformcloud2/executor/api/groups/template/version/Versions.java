@@ -62,9 +62,9 @@ public final class Versions {
     public static final Version SPONGEVANILLA_1_11_2 = javaServer("SPONGEVANILLA_1_11_2", "https://dl.reformcloud.systems/mcversions/spongevanilla/spongevanilla-1.11.2.jar");
     public static final Version SPONGEVANILLA_1_12_2 = javaServer("SPONGEVANILLA_1_12_2", "https://dl.reformcloud.systems/mcversions/spongevanilla/spongevanilla-1.12.2.jar");
     // sponge forge
-    public static final Version SPONGEFORGE_1_10_2 = javaServer("SPONGEFORGE_1_10_2", "https://dl.reformcloud.systems/mcversions/forge/sponge-1.10.2.zip");
-    public static final Version SPONGEFORGE_1_11_2 = javaServer("SPONGEFORGE_1_11_2", "https://dl.reformcloud.systems/mcversions/forge/sponge-1.11.2.zip");
-    public static final Version SPONGEFORGE_1_12_2 = javaServer("SPONGEFORGE_1_12_2", "https://dl.reformcloud.systems/mcversions/forge/sponge-1.12.2.zip");
+    public static final Version SPONGEFORGE_1_10_2 = spongeForgeServer("SPONGEFORGE_1_10_2", "https://dl.reformcloud.systems/mcversions/forge/sponge-1.10.2.zip");
+    public static final Version SPONGEFORGE_1_11_2 = spongeForgeServer("SPONGEFORGE_1_11_2", "https://dl.reformcloud.systems/mcversions/forge/sponge-1.11.2.zip");
+    public static final Version SPONGEFORGE_1_12_2 = spongeForgeServer("SPONGEFORGE_1_12_2", "https://dl.reformcloud.systems/mcversions/forge/sponge-1.12.2.zip");
     // tacospigot versions
     public static final Version TACO_1_8_8 = javaServer("TACO_1_8_8", "https://dl.reformcloud.systems/mcversions/taco/tacospigot-1.8.8.jar", false);
     public static final Version TACO_1_11_2 = javaServer("TACO_1_11_2", "https://dl.reformcloud.systems/mcversions/taco/tacospigot-1.11.2.jar");
@@ -138,7 +138,13 @@ public final class Versions {
     }
 
     private static Version version(String versionName, String downloadUrl, VersionType versionType, int defaultStartPort, boolean nativeTransportSupported) {
-        Version version = Version.version(versionName, downloadUrl, versionType, defaultStartPort, nativeTransportSupported);
+        Version version = Version.version(versionName, downloadUrl, VersionInstaller.DOWNLOADING, versionType, defaultStartPort, nativeTransportSupported);
+        VERSIONS.put(versionName.toUpperCase(), version);
+        return version;
+    }
+
+    private static Version spongeForgeServer(String versionName, String downloadUrl) {
+        Version version = Version.version(versionName, downloadUrl, VersionInstaller.SPONGE, VersionType.JAVA_SERVER, 41000, true);
         VERSIONS.put(versionName.toUpperCase(), version);
         return version;
     }

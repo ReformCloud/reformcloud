@@ -32,10 +32,9 @@ import systems.reformcloud.reformcloud2.executor.api.application.LoadedApplicati
 import systems.reformcloud.reformcloud2.executor.api.application.loader.AppClassLoader;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader;
-import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
-import systems.reformcloud.reformcloud2.shared.network.concurrent.FastNettyThreadFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,12 +50,16 @@ public class Application {
 
     public final void init(@NotNull LoadedApplication application, AppClassLoader loader) {
         this.application = application;
-        this.executorService = Executors.newCachedThreadPool(new FastNettyThreadFactory("Application-Thread-%d"));
+        this.executorService = Executors.newCachedThreadPool();
         this.appClassLoader = loader;
 
         this.dataDirectory = application.getApplicationLoader().getApplicationFolder().resolve(application.getName());
         if (Files.notExists(this.dataDirectory)) {
-            IOUtils.createDirectory(this.dataDirectory);
+            try {
+                Files.createDirectories(this.dataDirectory);
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
         }
     }
 

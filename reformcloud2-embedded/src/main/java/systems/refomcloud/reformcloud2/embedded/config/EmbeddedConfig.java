@@ -25,7 +25,7 @@
 package systems.refomcloud.reformcloud2.embedded.config;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
 public final class EmbeddedConfig {

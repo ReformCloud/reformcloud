@@ -24,7 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.proxy.application;
 
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.proxy.ProxyConfiguration;
 import systems.reformcloud.reformcloud2.proxy.config.MotdConfiguration;
 import systems.reformcloud.reformcloud2.proxy.config.TabListConfiguration;

@@ -26,7 +26,7 @@ package systems.refomcloud.reformcloud2.embedded.messaging;
 
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.provider.ChannelMessageProvider;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodePublishNodeChannelMessage;

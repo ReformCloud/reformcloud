@@ -29,7 +29,7 @@ import systems.reformcloud.reformcloud2.cloudflare.ReformCloudApplication;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationRemoteUpdate;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.basic.BasicApplicationRemoteUpdate;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.basic.DefaultApplicationUpdateRepository;
-import systems.reformcloud.reformcloud2.executor.api.io.DownloadHelper;
+import systems.reformcloud.reformcloud2.shared.io.DownloadHelper;
 
 import java.io.IOException;
 import java.util.Properties;

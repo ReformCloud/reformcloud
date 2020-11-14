@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
@@ -35,7 +35,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.Ch
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
+import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessInclusion;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 

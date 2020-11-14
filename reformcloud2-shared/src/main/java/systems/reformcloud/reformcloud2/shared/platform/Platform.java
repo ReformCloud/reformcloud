@@ -25,11 +25,14 @@
 package systems.reformcloud.reformcloud2.shared.platform;
 
 import com.sun.management.OperatingSystemMXBean;
+import io.netty.util.ResourceLeakDetector;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.shared.Constants;
+import systems.reformcloud.reformcloud2.shared.process.DefaultProcessRuntimeInformation;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -42,6 +45,22 @@ import java.util.concurrent.TimeUnit;
 public final class Platform {
 
     private static final OperatingSystemMXBean OPERATING_SYSTEM_MX_BEAN = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+
+    static {
+        if (System.getProperty("io.netty.leakDetectionLevel") == null) {
+            ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
+        }
+
+        System.getProperties().putIfAbsent("io.netty.allocator.maxOrder", "9");
+        System.getProperties().putIfAbsent("io.netty.noPreferDirect", "true");
+        System.getProperties().putIfAbsent("io.netty.maxDirectMemory", "0");
+        System.getProperties().putIfAbsent("io.netty.recycler.maxCapacity", "0");
+        System.getProperties().putIfAbsent("io.netty.recycler.maxCapacity.default", "0");
+        System.getProperties().putIfAbsent("io.netty.selectorAutoRebuildThreshold", "0");
+        System.getProperties().putIfAbsent("io.netty.allocator.type", "pooled");
+
+        Thread.setDefaultUncaughtExceptionHandler((t, ex) -> ex.printStackTrace());
+    }
 
     private Platform() {
         throw new UnsupportedOperationException();
@@ -96,7 +115,34 @@ public final class Platform {
         }
     }
 
-    public static long getMemoryPoolMXBeanCollectionUsage() {
+    @NotNull
+    public static ProcessRuntimeInformation createProcessRuntimeInformation() {
+        return new DefaultProcessRuntimeInformation(
+            OPERATING_SYSTEM_MX_BEAN.getSystemCpuLoad() * 100,
+            OPERATING_SYSTEM_MX_BEAN.getProcessCpuLoad() * 100,
+            OPERATING_SYSTEM_MX_BEAN.getSystemLoadAverage() * 100,
+            Runtime.getRuntime().availableProcessors(),
+            Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory(),
+            ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / Constants.MEGABYTE,
+            ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getUsed() / Constants.MEGABYTE,
+            getMemoryPoolMXBeanCollectionUsage(),
+            ManagementFactory.getClassLoadingMXBean().getLoadedClassCount(),
+            ManagementFactory.getClassLoadingMXBean().getUnloadedClassCount(),
+            ManagementFactory.getClassLoadingMXBean().getTotalLoadedClassCount(),
+            System.getProperty("os.name"),
+            System.getProperty("java.version"),
+            System.getProperty("os.arch"),
+            ManagementFactory.getRuntimeMXBean().getInputArguments().toArray(new String[0]),
+            Thread.getAllStackTraces().size(),
+            getDeadlockedThreads(),
+            ManagementFactory.getRuntimeMXBean().getSystemProperties(),
+            ManagementFactory.getRuntimeMXBean().getClassPath(),
+            ManagementFactory.getRuntimeMXBean().isBootClassPathSupported() ? ManagementFactory.getRuntimeMXBean().getBootClassPath() : "unsupported",
+            ProcessHandle.current().pid()
+        );
+    }
+
+    private static long getMemoryPoolMXBeanCollectionUsage() {
         long result = 0;
         for (MemoryPoolMXBean memoryPoolMXBean : ManagementFactory.getMemoryPoolMXBeans()) {
             result += (memoryPoolMXBean.getCollectionUsage().getUsed() / Constants.MEGABYTE);

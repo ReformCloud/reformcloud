@@ -26,8 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.groups.template.builder;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.configuration.Configurable;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.inclusion.Inclusion;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.runtime.RuntimeConfiguration;
@@ -48,7 +47,7 @@ public class DefaultTemplateBuilder implements TemplateBuilder {
     private RuntimeConfiguration runtimeConfiguration = DEFAULT_RUNTIME_CONFIGURATION;
     private Collection<Inclusion> templateInclusions = new ArrayList<>();
     private Collection<Inclusion> pathInclusions = new ArrayList<>();
-    private JsonConfiguration jsonData = Configurable.json();
+    private JsonConfiguration jsonData = JsonConfiguration.newJsonConfiguration();
 
     protected DefaultTemplateBuilder(String name, Version version) {
         this.name = name;

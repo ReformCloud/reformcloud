@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.provider;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
-import systems.reformcloud.reformcloud2.executor.api.builder.ProcessBuilder;
+import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessBuilder;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Version;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;

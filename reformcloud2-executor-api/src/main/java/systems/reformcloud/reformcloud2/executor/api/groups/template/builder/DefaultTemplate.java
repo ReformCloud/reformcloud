@@ -27,8 +27,8 @@ package systems.reformcloud.reformcloud2.executor.api.groups.template.builder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
-import systems.reformcloud.reformcloud2.executor.api.configuration.DefaultJsonDataHolder;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.data.DefaultJsonDataHolder;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.inclusion.Inclusion;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.runtime.DefaultRuntimeConfiguration;
@@ -56,7 +56,7 @@ public class DefaultTemplate extends DefaultJsonDataHolder<Template> implements 
     private Collection<Inclusion> pathInclusions;
     private String name;
 
-    DefaultTemplate() {
+    protected DefaultTemplate() {
         super();
     }
 
@@ -159,7 +159,7 @@ public class DefaultTemplate extends DefaultJsonDataHolder<Template> implements 
             new ArrayList<>(this.templateInclusions),
             new ArrayList<>(this.pathInclusions),
             this.name,
-            new JsonConfiguration(this.getData().getJsonObject())
+            JsonConfiguration.newJsonConfiguration(this.dataHolder.getBackingObject())
         );
     }
 

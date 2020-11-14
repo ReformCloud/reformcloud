@@ -24,11 +24,8 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.configuration;
 
-import com.google.gson.reflect.TypeToken;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -39,51 +36,30 @@ import java.util.function.Predicate;
 /**
  * Represents any configuration used in the cloud system
  */
-public interface Configurable<X, V extends Configurable<X, V>> {
-
-    @NotNull
-    @Contract(pure = true)
-    static JsonConfiguration json() {
-        return new JsonConfiguration();
-    }
+public interface Configurable<X, V extends Configurable<X, V>> extends Cloneable {
 
     @NotNull
     V add(@NotNull String key, @Nullable V value);
 
-    @NotNull
-    V add(@NotNull String key, @Nullable Object value);
+    @NotNull <T> V add(@NotNull String key, @Nullable T value);
 
     @NotNull
     V add(@NotNull String key, @Nullable String value);
 
     @NotNull
-    V add(@NotNull String key, @Nullable Integer value);
-
-    @NotNull
-    V add(@NotNull String key, @Nullable Long value);
-
-    @NotNull
-    V add(@NotNull String key, @Nullable Short value);
-
-    @NotNull
-    V add(@NotNull String key, @Nullable Byte value);
+    V add(@NotNull String key, @Nullable Number value);
 
     @NotNull
     V add(@NotNull String key, @Nullable Boolean value);
 
     @NotNull
-    V add(@NotNull String key, @Nullable Double value);
-
-    @NotNull
-    V add(@NotNull String key, @Nullable Float value);
+    V add(@NotNull String key, @Nullable Character value);
 
     @NotNull
     V remove(@NotNull String key);
 
     @NotNull
     V get(@NotNull String key);
-
-    @Nullable <T> T get(@NotNull String key, @NotNull TypeToken<T> type);
 
     @Nullable <T> T get(@NotNull String key, @NotNull Class<T> type);
 
@@ -93,77 +69,84 @@ public interface Configurable<X, V extends Configurable<X, V>> {
     String getString(@NotNull String key);
 
     @NotNull
-    Integer getInteger(String key);
+    Integer getInteger(@NotNull String key);
 
     @NotNull
-    Long getLong(String key);
+    Long getLong(@NotNull String key);
 
     @NotNull
-    Short getShort(String key);
+    Short getShort(@NotNull String key);
 
     @NotNull
-    Byte getByte(String key);
+    Byte getByte(@NotNull String key);
 
     @NotNull
-    Boolean getBoolean(String key);
+    Double getDouble(@NotNull String key);
 
     @NotNull
-    Double getDouble(String key);
+    Float getFloat(@NotNull String key);
 
     @NotNull
-    Float getFloat(String key);
+    Boolean getBoolean(@NotNull String key);
 
-    V getOrDefault(String key, V def);
+    @NotNull
+    Character getCharacter(@NotNull String key);
 
-    <T> T getOrDefault(String key, Type type, T def);
+    V getOrDefault(@NotNull String key, V def);
 
-    <T> T getOrDefault(String key, Class<T> type, T def);
+    <T> T getOrDefault(@NotNull String key, Type type, T def);
 
-    String getOrDefault(String key, String def);
+    <T> T getOrDefault(@NotNull String key, Class<T> type, T def);
 
-    Integer getOrDefault(String key, Integer def);
+    String getOrDefault(@NotNull String key, String def);
 
-    Long getOrDefault(String key, Long def);
+    Integer getOrDefault(@NotNull String key, Integer def);
 
-    Short getOrDefault(String key, Short def);
+    Long getOrDefault(@NotNull String key, Long def);
 
-    Byte getOrDefault(String key, Byte def);
+    Short getOrDefault(@NotNull String key, Short def);
 
-    Boolean getOrDefault(String key, Boolean def);
+    Byte getOrDefault(@NotNull String key, Byte def);
 
-    Double getOrDefault(String key, Double def);
+    Boolean getOrDefault(@NotNull String key, Boolean def);
 
-    Float getOrDefault(String key, Float def);
+    Double getOrDefault(@NotNull String key, Double def);
 
-    V getOrDefaultIf(String key, V def, Predicate<V> predicate);
+    Float getOrDefault(@NotNull String key, Float def);
 
-    <T> T getOrDefaultIf(String key, Type type, T def, Predicate<T> predicate);
+    Character getOrDefault(@NotNull String key, Character def);
 
-    <T> T getOrDefaultIf(String key, Class<T> type, T def, Predicate<T> predicate);
+    V getOrDefaultIf(@NotNull String key, V def, @NotNull Predicate<V> predicate);
 
-    String getOrDefaultIf(String key, String def, Predicate<String> predicate);
+    <T> T getOrDefaultIf(@NotNull String key, Type type, T def, @NotNull Predicate<T> predicate);
 
-    Integer getOrDefaultIf(String key, Integer def, Predicate<Integer> predicate);
+    <T> T getOrDefaultIf(@NotNull String key, Class<T> type, T def, @NotNull Predicate<T> predicate);
 
-    Long getOrDefaultIf(String key, Long def, Predicate<Long> predicate);
+    String getOrDefaultIf(@NotNull String key, String def, @NotNull Predicate<String> predicate);
 
-    Short getOrDefaultIf(String key, Short def, Predicate<Short> predicate);
+    Integer getOrDefaultIf(@NotNull String key, Integer def, @NotNull Predicate<Integer> predicate);
 
-    Byte getOrDefaultIf(String key, Byte def, Predicate<Byte> predicate);
+    Long getOrDefaultIf(@NotNull String key, Long def, @NotNull Predicate<Long> predicate);
 
-    Boolean getOrDefaultIf(String key, Boolean def, Predicate<Boolean> predicate);
+    Short getOrDefaultIf(@NotNull String key, Short def, @NotNull Predicate<Short> predicate);
 
-    Double getOrDefaultIf(String key, Double def, Predicate<Double> predicate);
+    Byte getOrDefaultIf(@NotNull String key, Byte def, @NotNull Predicate<Byte> predicate);
 
-    Float getOrDefaultIf(String key, Float def, Predicate<Float> predicate);
+    Boolean getOrDefaultIf(@NotNull String key, Boolean def, @NotNull Predicate<Boolean> predicate);
 
-    boolean has(String key);
+    Double getOrDefaultIf(@NotNull String key, Double def, @NotNull Predicate<Double> predicate);
 
-    void write(Path path);
+    Float getOrDefaultIf(@NotNull String key, Float def, @NotNull Predicate<Float> predicate);
 
-    void write(String path);
+    Character getOrDefaultIf(@NotNull String key, Character def, @NotNull Predicate<Character> predicate);
 
-    void write(File path);
+    boolean has(@NotNull String key);
+
+    void write(@NotNull Path path);
+
+    void write(@NotNull String path);
+
+    void write(@NotNull File file);
 
     @NotNull
     String toPrettyString();
@@ -174,8 +157,8 @@ public interface Configurable<X, V extends Configurable<X, V>> {
     @NotNull
     Map<String, X> asMap();
 
-    @NotNull
-    V copy();
-
     void clear();
+
+    @NotNull
+    Configurable<X, V> clone();
 }

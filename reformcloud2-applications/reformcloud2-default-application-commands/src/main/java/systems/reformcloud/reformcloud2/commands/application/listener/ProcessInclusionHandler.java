@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.commands.application.ReformCloudApplication;
 import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
+import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessInclusion;
 import systems.reformcloud.reformcloud2.node.event.process.LocalProcessPrePrepareEvent;
 
 public final class ProcessInclusionHandler {

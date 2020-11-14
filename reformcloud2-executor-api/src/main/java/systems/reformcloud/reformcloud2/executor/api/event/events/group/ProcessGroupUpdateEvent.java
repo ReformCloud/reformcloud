@@ -24,11 +24,11 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.event.events.group;
 
-import systems.reformcloud.reformcloud2.executor.api.groups.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
 
 public class ProcessGroupUpdateEvent extends ProcessGroupEvent {
 
-    public ProcessGroupUpdateEvent(DefaultProcessGroup processGroup) {
+    public ProcessGroupUpdateEvent(ProcessGroup processGroup) {
         super(processGroup);
     }
 }

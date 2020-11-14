@@ -29,7 +29,7 @@ import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConf
 import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackend;
 import systems.reformcloud.reformcloud2.node.template.TemplateBackendManager;
-import systems.reformcloud.reformcloud2.executor.api.io.DownloadHelper;
+import systems.reformcloud.reformcloud2.shared.io.DownloadHelper;
 import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;

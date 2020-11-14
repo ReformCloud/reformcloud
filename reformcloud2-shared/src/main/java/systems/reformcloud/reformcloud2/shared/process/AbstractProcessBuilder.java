@@ -26,12 +26,12 @@ package systems.reformcloud.reformcloud2.shared.process;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.builder.ProcessBuilder;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessBuilder;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
+import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessInclusion;
 
 import java.util.Arrays;
 import java.util.Collection;

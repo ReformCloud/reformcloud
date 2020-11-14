@@ -27,7 +27,7 @@ package systems.reformcloud.reformcloud2.node.access;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
@@ -35,7 +35,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.Cha
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
+import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessInclusion;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;

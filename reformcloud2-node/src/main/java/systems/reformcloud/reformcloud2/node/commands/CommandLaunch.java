@@ -26,14 +26,14 @@ package systems.reformcloud.reformcloud2.node.commands;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.builder.ProcessBuilder;
+import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessBuilder;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
 import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
+import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessInclusion;
 import systems.reformcloud.reformcloud2.shared.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.shared.parser.Parsers;

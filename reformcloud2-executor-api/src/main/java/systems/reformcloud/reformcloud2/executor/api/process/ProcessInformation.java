@@ -25,18 +25,47 @@
 package systems.reformcloud.reformcloud2.executor.api.process;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.UnmodifiableView;
-import systems.reformcloud.reformcloud2.executor.api.configuration.JsonDataHolder;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessBuilder;
+import systems.reformcloud.reformcloud2.executor.api.configuration.data.JsonDataHolder;
 import systems.reformcloud.reformcloud2.executor.api.functional.Sorted;
 import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.inclusion.Inclusion;
+import systems.reformcloud.reformcloud2.executor.api.network.address.NetworkAddress;
 import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
+import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 
-import java.util.Collection;
+import java.util.Optional;
+import java.util.UUID;
 
-public interface ProcessInformation extends JsonDataHolder<ProcessInformation>, Nameable, Sorted<ProcessInformation>, SerializableObject, Cloneable {
+public interface ProcessInformation extends JsonDataHolder<ProcessInformation>, ProcessStateHolder, PlayerHolder, Nameable, Sorted<ProcessInformation>, SerializableObject, Cloneable {
+
+    @NotNull
+    static Optional<ProcessWrapper> getByName(@NotNull String name) {
+        return ExecutorAPI.getInstance().getProcessProvider().getProcessByName(name);
+    }
+
+    @NotNull
+    static Optional<ProcessWrapper> getByUniqueId(@NotNull UUID uniqueId) {
+        return ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(uniqueId);
+    }
+
+    @NotNull
+    static ProcessBuilder builder(@NotNull String group) {
+        return ExecutorAPI.getInstance().getProcessProvider().createProcess().group(group);
+    }
+
+    @NotNull
+    static ProcessBuilder builder(@NotNull ProcessGroup group) {
+        return ExecutorAPI.getInstance().getProcessProvider().createProcess().group(group);
+    }
+
+    @NotNull
+    Identity getId();
+
+    @NotNull
+    NetworkAddress getHost();
 
     @NotNull
     Template getPrimaryTemplate();
@@ -44,16 +73,10 @@ public interface ProcessInformation extends JsonDataHolder<ProcessInformation>, 
     @NotNull
     ProcessGroup getProcessGroup();
 
+    void setProcessGroup(@NotNull ProcessGroup processGroup);
+
     @NotNull
     ProcessRuntimeInformation getRuntimeInformation();
-
-    @NotNull
-    @UnmodifiableView
-    Collection<Inclusion> getLoadedTemplateInclusions();
-
-    @NotNull
-    @UnmodifiableView
-    Collection<Inclusion> getLoadedPathInclusions();
 
     @NotNull
     ProcessInformation clone();

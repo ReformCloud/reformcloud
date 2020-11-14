@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.node.database.sql;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.DatabaseTableWrapper;
 
 import java.io.ByteArrayInputStream;

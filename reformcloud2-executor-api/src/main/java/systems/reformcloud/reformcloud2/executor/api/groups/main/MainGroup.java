@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.builder.MainGroupBuilder;
-import systems.reformcloud.reformcloud2.executor.api.configuration.JsonDataHolder;
+import systems.reformcloud.reformcloud2.executor.api.configuration.data.JsonDataHolder;
 import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
 

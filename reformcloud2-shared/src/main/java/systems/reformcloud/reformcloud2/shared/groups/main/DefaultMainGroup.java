@@ -27,7 +27,7 @@ package systems.reformcloud.reformcloud2.shared.groups.main;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.configuration.DefaultJsonDataHolder;
+import systems.reformcloud.reformcloud2.executor.api.configuration.data.DefaultJsonDataHolder;
 import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 

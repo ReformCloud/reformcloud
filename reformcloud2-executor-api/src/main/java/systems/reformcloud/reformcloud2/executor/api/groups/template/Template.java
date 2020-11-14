@@ -27,7 +27,7 @@ package systems.reformcloud.reformcloud2.executor.api.groups.template;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.configuration.JsonDataHolder;
+import systems.reformcloud.reformcloud2.executor.api.configuration.data.JsonDataHolder;
 import systems.reformcloud.reformcloud2.executor.api.functional.Sorted;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.TemplateBuilder;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.inclusion.InclusionHolder;

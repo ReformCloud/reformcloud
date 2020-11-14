@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.examples.network;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.event.events.messaging.ChannelMessageReceiveEvent;
 import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 

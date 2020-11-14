@@ -31,6 +31,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer
 
 public final class DefaultVersion implements Version {
 
+    private String installer;
     private String versionName;
     private String downloadUrl;
     private VersionType versionType;
@@ -41,11 +42,12 @@ public final class DefaultVersion implements Version {
     DefaultVersion() {
     }
 
-    DefaultVersion(String versionName, String downloadUrl, VersionType versionType, int defaultStartPort, boolean nativeTransportSupported) {
-        this(versionName, downloadUrl, versionType, defaultStartPort, nativeTransportSupported, null);
+    DefaultVersion(String installer, String versionName, String downloadUrl, VersionType versionType, int defaultStartPort, boolean nativeTransportSupported) {
+        this(installer, versionName, downloadUrl, versionType, defaultStartPort, nativeTransportSupported, null);
     }
 
-    DefaultVersion(String versionName, String downloadUrl, VersionType versionType, int defaultStartPort, boolean nativeTransportSupported, VersionInfo info) {
+    DefaultVersion(String installer, String versionName, String downloadUrl, VersionType versionType, int defaultStartPort, boolean nativeTransportSupported, VersionInfo info) {
+        this.installer = installer;
         this.versionName = versionName;
         this.downloadUrl = downloadUrl;
         this.versionType = versionType;
@@ -105,8 +107,18 @@ public final class DefaultVersion implements Version {
     }
 
     @Override
+    public @NotNull String getInstaller() {
+        return this.installer;
+    }
+
+    @Override
+    public void setInstaller(@NotNull String installer) {
+        this.installer = installer;
+    }
+
+    @Override
     public @NotNull Version clone() {
-        return Version.version(this.versionName, this.downloadUrl, this.versionType, this.defaultStartPort, this.nativeTransportSupported, this.versionInfo);
+        return Version.version(this.versionName, this.downloadUrl, this.installer, this.versionType, this.defaultStartPort, this.nativeTransportSupported, this.versionInfo);
     }
 
     @Override
@@ -121,6 +133,7 @@ public final class DefaultVersion implements Version {
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeString(this.installer);
         buffer.writeString(this.versionName);
         buffer.writeString(this.downloadUrl);
         buffer.writeByte(this.versionType.ordinal());
@@ -130,6 +143,7 @@ public final class DefaultVersion implements Version {
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
+        this.installer = buffer.readString();
         this.versionName = buffer.readString();
         this.downloadUrl = buffer.readString();
         this.versionType = EnumUtil.findEnumFieldByIndex(VersionType.class, buffer.readByte()).orElseThrow();

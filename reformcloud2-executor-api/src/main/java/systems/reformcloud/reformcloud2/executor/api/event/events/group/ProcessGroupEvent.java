@@ -25,17 +25,17 @@
 package systems.reformcloud.reformcloud2.executor.api.event.events.group;
 
 import systems.reformcloud.reformcloud2.executor.api.event.Event;
-import systems.reformcloud.reformcloud2.executor.api.groups.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
 
 public abstract class ProcessGroupEvent extends Event {
 
-    protected final DefaultProcessGroup processGroup;
+    protected final ProcessGroup processGroup;
 
-    public ProcessGroupEvent(DefaultProcessGroup processGroup) {
+    public ProcessGroupEvent(ProcessGroup processGroup) {
         this.processGroup = processGroup;
     }
 
-    public DefaultProcessGroup getProcessGroup() {
+    public ProcessGroup getProcessGroup() {
         return this.processGroup;
     }
 }

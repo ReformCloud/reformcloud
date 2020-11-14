@@ -24,78 +24,22 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.process;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.functional.Sorted;
 import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
-import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 
-import java.util.Objects;
 import java.util.UUID;
 
-public final class Player implements Comparable<Player>, SerializableObject {
-
-    private UUID uniqueID;
-    private String name;
-    private long joined = System.currentTimeMillis();
-
-    @ApiStatus.Internal
-    public Player() {
-    }
-
-    public Player(@NotNull UUID uniqueID, @NotNull String name) {
-        this.uniqueID = uniqueID;
-        this.name = name;
-    }
+public interface Player extends SerializableObject, Sorted<Player>, Cloneable {
 
     @NotNull
-    public UUID getUniqueID() {
-        return this.uniqueID;
-    }
+    UUID getUniqueID();
 
     @NotNull
-    public String getName() {
-        return this.name;
-    }
+    String getName();
 
-    public long getJoined() {
-        return this.joined;
-    }
+    long getJoined();
 
-    @Override
-    public int compareTo(@NotNull Player o) {
-        return Long.compare(this.getJoined(), o.getJoined());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (!(o instanceof Player)) {
-            return false;
-        }
-
-        Player player = (Player) o;
-        return this.getUniqueID().equals(player.getUniqueID());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.getUniqueID());
-    }
-
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.uniqueID);
-        buffer.writeString(this.name);
-        buffer.writeLong(this.joined);
-    }
-
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.uniqueID = buffer.readUniqueId();
-        this.name = buffer.readString();
-        this.joined = buffer.readLong();
-    }
+    @NotNull
+    Player clone();
 }

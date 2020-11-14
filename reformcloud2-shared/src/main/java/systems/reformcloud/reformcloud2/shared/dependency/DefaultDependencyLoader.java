@@ -31,7 +31,7 @@ import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.dependency.Dependencies;
 import systems.reformcloud.reformcloud2.executor.api.dependency.Dependency;
 import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader;
-import systems.reformcloud.reformcloud2.executor.api.io.DownloadHelper;
+import systems.reformcloud.reformcloud2.shared.io.DownloadHelper;
 import systems.reformcloud.reformcloud2.runner.RunnerClassLoader;
 
 import java.io.IOException;

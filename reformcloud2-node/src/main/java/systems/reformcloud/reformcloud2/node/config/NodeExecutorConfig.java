@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.node.config;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.messages.IngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.groups.setup.GroupSetupHelper;
 import systems.reformcloud.reformcloud2.executor.api.groups.setup.GroupSetupVersion;

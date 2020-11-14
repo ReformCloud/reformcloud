@@ -24,17 +24,14 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.groups.messages;
 
-import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 
 import java.text.MessageFormat;
 
 public final class IngameMessages implements SerializableObject {
 
-    public static final TypeToken<IngameMessages> TYPE = new TypeToken<>() {
-    };
     private String prefix = "§6Cloud §7|";
     private String processRegistered = "%prefix% §7Registered process §e{0}";
     private String processStarted = "%prefix% §7The process §e{0} §7is §astarting §7now...";
