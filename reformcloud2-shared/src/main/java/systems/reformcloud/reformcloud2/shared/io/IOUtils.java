@@ -36,7 +36,6 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -54,7 +53,7 @@ public final class IOUtils {
     }
 
     public static void deleteFile(String path) {
-        deleteFile(Paths.get(path));
+        deleteFile(Path.of(path));
     }
 
     public static void deleteFile(Path file) {
@@ -100,7 +99,7 @@ public final class IOUtils {
     }
 
     public static void doCopy(String from, Path target) {
-        try (InputStream inputStream = Files.newInputStream(Paths.get(from))) {
+        try (InputStream inputStream = Files.newInputStream(Path.of(from))) {
             doCopy(inputStream, target, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException exception) {
             exception.printStackTrace();
@@ -180,21 +179,21 @@ public final class IOUtils {
     }
 
     public static void doInternalCopy(ClassLoader classLoader, String file, String target) {
-        if (Files.exists(Paths.get(target))) {
+        if (Files.exists(Path.of(target))) {
             return;
         }
 
         try (InputStream inputStream = classLoader.getResourceAsStream(file)) {
-            doCopy(inputStream, Paths.get(target));
+            doCopy(inputStream, Path.of(target));
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
     }
 
     public static void doOverrideInternalCopy(ClassLoader classLoader, String file, String target) {
-        deleteFile(Paths.get(target));
+        deleteFile(Path.of(target));
         try (InputStream inputStream = classLoader.getResourceAsStream(file)) {
-            doCopy(inputStream, Paths.get(target));
+            doCopy(inputStream, Path.of(target));
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
@@ -213,7 +212,7 @@ public final class IOUtils {
                         return FileVisitResult.CONTINUE;
                     }
 
-                    Path targetFile = Paths.get(target.toString(), path.relativize(file).toString());
+                    Path targetFile = Path.of(target.toString(), path.relativize(file).toString());
                     Path parent = targetFile.getParent();
 
                     if (parent != null && Files.notExists(parent)) {

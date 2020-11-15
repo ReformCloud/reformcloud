@@ -28,8 +28,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
@@ -396,6 +397,11 @@ public class DefaultProtocolBuffer implements ProtocolBuffer {
     }
 
     @Override
+    public <E extends Enum<E>> E readEnum(@NotNull Class<E> enumClass) {
+        return EnumUtil.findEnumFieldByIndex(enumClass, this.readVarInt()).orElseThrow();
+    }
+
+    @Override
     public void readBytes(byte[] target) {
         this.wrapped.readBytes(target);
     }
@@ -453,5 +459,10 @@ public class DefaultProtocolBuffer implements ProtocolBuffer {
     @Override
     public void writeBytes(byte[] bytes) {
         this.wrapped.writeBytes(bytes);
+    }
+
+    @Override
+    public void writeEnum(@NotNull Enum<?> constant) {
+        this.writeVarInt(constant.ordinal());
     }
 }

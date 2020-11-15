@@ -35,8 +35,6 @@ import org.cloudburstmc.server.utils.TextFormat;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-
 @Plugin(
     id = "reformcloud_2_chat",
     name = "CloudBurstChatPlugin",
@@ -52,7 +50,7 @@ public class CloudBurstChatPlugin {
 
     @Inject
     public CloudBurstChatPlugin() {
-        Path path = Paths.get("plugins/ReformCloud2Chat/config.yml").toAbsolutePath();
+        Path path = Path.of("plugins/ReformCloud2Chat/config.yml").toAbsolutePath();
         if (Files.notExists(path)) {
             new Config(path.toString(), Config.YAML, new ConfigSection("format", "%display%%name% &7➤ &f%message%"));
         }

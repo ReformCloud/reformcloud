@@ -29,7 +29,7 @@ import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfigura
 import systems.reformcloud.reformcloud2.executor.api.groups.messages.IngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.groups.setup.GroupSetupHelper;
 import systems.reformcloud.reformcloud2.executor.api.groups.setup.GroupSetupVersion;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.shared.network.SimpleNetworkAddress;
 import systems.reformcloud.reformcloud2.shared.StringUtil;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
@@ -42,7 +42,6 @@ import systems.reformcloud.reformcloud2.shared.platform.Platform;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -97,7 +96,7 @@ public final class NodeExecutorConfig {
                     return true;
                 },
                 "",
-                LanguageManager.get("node-setup-question-node-name")
+                TranslationHolder.translate("node-setup-question-node-name")
             )).addQuestion(new DefaultSetupQuestion(
                 setupAnswer -> {
                     String address = NetworkUtils.validateAndGetIpAddress(setupAnswer.getOriginalAnswer());
@@ -107,8 +106,8 @@ public final class NodeExecutorConfig {
 
                     return address != null;
                 },
-                LanguageManager.get("node-setup-question-node-address-wrong"),
-                LanguageManager.get("node-setup-question-node-address", ips)
+                TranslationHolder.translate("node-setup-question-node-address-wrong"),
+                TranslationHolder.translate("node-setup-question-node-address", ips)
             )).addQuestion(new DefaultSetupQuestion(
                 setupAnswer -> {
                     Integer port = setupAnswer.getAsInt();
@@ -119,8 +118,8 @@ public final class NodeExecutorConfig {
 
                     return false;
                 },
-                LanguageManager.get("node-setup-question-integer", 0, 65535),
-                LanguageManager.get("node-setup-question-node-network-port")
+                TranslationHolder.translate("node-setup-question-integer", 0, 65535),
+                TranslationHolder.translate("node-setup-question-node-network-port")
             )).addQuestion(new DefaultSetupQuestion(
                 setupAnswer -> {
                     Integer webPort = setupAnswer.getAsInt();
@@ -131,8 +130,8 @@ public final class NodeExecutorConfig {
 
                     return false;
                 },
-                LanguageManager.get("node-setup-question-integer", 0, 65535),
-                LanguageManager.get("node-setup-question-node-web-port")
+                TranslationHolder.translate("node-setup-question-integer", 0, 65535),
+                TranslationHolder.translate("node-setup-question-node-web-port")
             )).addQuestion(new DefaultSetupQuestion(
                 setupAnswer -> {
                     String key = setupAnswer.getOriginalAnswer();
@@ -144,7 +143,7 @@ public final class NodeExecutorConfig {
                     return true;
                 },
                 "",
-                LanguageManager.get("node-setup-question-connection-key")
+                TranslationHolder.translate("node-setup-question-connection-key")
             )).addQuestion(new DefaultSetupQuestion(
                 setupAnswer -> {
                     Boolean clusterSetup = setupAnswer.getAsBoolean();
@@ -154,8 +153,8 @@ public final class NodeExecutorConfig {
 
                     return clusterSetup != null;
                 },
-                LanguageManager.get("node-setup-question-boolean"),
-                LanguageManager.get("node-setup-in-cluster")
+                TranslationHolder.translate("node-setup-question-boolean"),
+                TranslationHolder.translate("node-setup-in-cluster")
             )).runSetup();
 
             if (runClusterSetup.get()) {
@@ -164,7 +163,7 @@ public final class NodeExecutorConfig {
 
             int maxMemory = Platform.getTotalSystemMemory() - 1024;
             if (maxMemory < 512) {
-                System.err.println(LanguageManager.get("start-config-low-memory"));
+                System.err.println(TranslationHolder.translate("start-config-low-memory"));
                 maxMemory = 512;
             }
 
@@ -178,14 +177,14 @@ public final class NodeExecutorConfig {
                 clusterNodes
             )).write(NodeConfig.PATH);
 
-            System.out.println(LanguageManager.get("general-setup-choose-default-installation"));
+            System.out.println(TranslationHolder.translate("general-setup-choose-default-installation"));
             GroupSetupHelper.printAvailable();
 
             String result = NodeExecutor.getInstance().getConsole().readString().getUninterruptedly();
             while (result != null && !result.trim().isEmpty()) {
                 GroupSetupVersion version = GroupSetupHelper.findByName(result);
                 if (version == null) {
-                    System.out.println(LanguageManager.get("general-setup-choose-default-installation-wrong"));
+                    System.out.println(TranslationHolder.translate("general-setup-choose-default-installation-wrong"));
                     result = NodeExecutor.getInstance().getConsole().readString().getUninterruptedly();
                     continue;
                 }
@@ -194,11 +193,11 @@ public final class NodeExecutorConfig {
                     NodeExecutor.getInstance().getDefaultProcessGroupProvider()::addProcessGroup,
                     NodeExecutor.getInstance().getDefaultMainGroupProvider()::addGroup
                 );
-                System.out.println(LanguageManager.get("general-setup-default-installation-done", version.getName()));
+                System.out.println(TranslationHolder.translate("general-setup-default-installation-done", version.getName()));
                 break;
             }
 
-            new JsonConfiguration().add("messages", new IngameMessages()).write(Paths.get("reformcloud/configs/messages.json"));
+            new JsonConfiguration().add("messages", new IngameMessages()).write(Path.of("reformcloud/configs/messages.json"));
         }
 
         this.nodeConfig = JsonConfiguration.read(NodeConfig.PATH).get("config", NodeConfig.class);
@@ -229,8 +228,8 @@ public final class NodeExecutorConfig {
 
                 return false;
             },
-            LanguageManager.get("node-setup-question-integer", 0, 100),
-            LanguageManager.get("node-cluster-setup-node-count")
+            TranslationHolder.translate("node-setup-question-integer", 0, 100),
+            TranslationHolder.translate("node-cluster-setup-node-count")
         )).runSetup();
 
         AtomicReference<String> nodeHost = new AtomicReference<>();
@@ -246,8 +245,8 @@ public final class NodeExecutorConfig {
 
                 return address != null;
             },
-            LanguageManager.get("node-setup-question-node-address-wrong"),
-            LanguageManager.get("node-cluster-setup-new-node-host")
+            TranslationHolder.translate("node-setup-question-node-address-wrong"),
+            TranslationHolder.translate("node-cluster-setup-new-node-host")
         )).addQuestion(new DefaultSetupQuestion(
             setupAnswer -> {
                 Integer nodePort = setupAnswer.getAsInt();
@@ -258,12 +257,12 @@ public final class NodeExecutorConfig {
 
                 return false;
             },
-            LanguageManager.get("node-setup-question-integer", 0, 65535),
-            LanguageManager.get("node-cluster-setup-new-node-port")
+            TranslationHolder.translate("node-setup-question-integer", 0, 65535),
+            TranslationHolder.translate("node-cluster-setup-new-node-port")
         ));
 
         for (int i = 1; i <= nodeCount.get(); i++) {
-            System.out.println(LanguageManager.get("node-cluster-setup-new-node", i));
+            System.out.println(TranslationHolder.translate("node-cluster-setup-new-node", i));
             this.setup.runSetup();
         }
 

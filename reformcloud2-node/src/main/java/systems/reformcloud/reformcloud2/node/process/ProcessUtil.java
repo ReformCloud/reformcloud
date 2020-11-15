@@ -41,7 +41,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.HashMap;
@@ -139,7 +138,7 @@ final class ProcessUtil {
 
     static void loadInclusions(@NotNull Path processPath, @NotNull Collection<ProcessInclusion> inclusions) {
         inclusions.forEach(inclusion -> {
-            Path target = Paths.get("reformcloud/files/inclusions", inclusion.getName());
+            Path target = Path.of("reformcloud/files/inclusions", inclusion.getName());
             if (Files.exists(target)) {
                 return;
             }
@@ -163,12 +162,12 @@ final class ProcessUtil {
         });
 
         inclusions.forEach(inclusion -> {
-            Path path = Paths.get("reformcloud/files/inclusions", inclusion.getName());
+            Path path = Path.of("reformcloud/files/inclusions", inclusion.getName());
             if (Files.notExists(path)) {
                 return;
             }
 
-            Path target = Paths.get(processPath.toString(), inclusion.getName());
+            Path target = Path.of(processPath.toString(), inclusion.getName());
             try {
                 IOUtils.createDirectory(target.getParent());
                 Files.copy(path, target, StandardCopyOption.REPLACE_EXISTING);

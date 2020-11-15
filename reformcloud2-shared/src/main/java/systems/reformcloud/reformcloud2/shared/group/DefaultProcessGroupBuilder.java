@@ -27,10 +27,10 @@ package systems.reformcloud.reformcloud2.shared.group;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.builder.ProcessGroupBuilder;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.groups.process.player.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.process.startup.StartupConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,9 +44,9 @@ public abstract class DefaultProcessGroupBuilder implements ProcessGroupBuilder 
     protected boolean lobby = false;
     protected boolean showId = true;
 
-    protected List<DefaultTemplate> templates = new ArrayList<>();
-    protected PlayerAccessConfiguration playerAccessConfiguration = PlayerAccessConfiguration.createDefault();
-    protected StartupConfiguration startupConfiguration = StartupConfiguration.createDefault();
+    protected List<Template> templates = new ArrayList<>();
+    protected PlayerAccessConfiguration playerAccessConfiguration = PlayerAccessConfiguration.disabled();
+    protected StartupConfiguration startupConfiguration = StartupConfiguration.newDefaultConfiguration();
 
     @NotNull
     @Override
@@ -71,14 +71,14 @@ public abstract class DefaultProcessGroupBuilder implements ProcessGroupBuilder 
 
     @NotNull
     @Override
-    public ProcessGroupBuilder templates(DefaultTemplate... templates) {
+    public ProcessGroupBuilder templates(Template... templates) {
         this.templates = Arrays.asList(templates);
         return this;
     }
 
     @NotNull
     @Override
-    public ProcessGroupBuilder templates(@NotNull List<DefaultTemplate> templates) {
+    public ProcessGroupBuilder templates(@NotNull List<Template> templates) {
         this.templates = templates;
         return this;
     }
@@ -109,13 +109,13 @@ public abstract class DefaultProcessGroupBuilder implements ProcessGroupBuilder 
     public DefaultProcessGroup createTemporary() {
         Conditions.nonNull(this.name, "Unable to create process group without a name");
         return new DefaultProcessGroup(
-            this.name,
-            this.showId,
             this.startupConfiguration,
-            this.templates,
             this.playerAccessConfiguration,
+            this.showId,
             this.staticGroup,
-            this.lobby
+            this.lobby,
+            this.templates,
+            this.name
         );
     }
 }

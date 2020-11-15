@@ -27,7 +27,7 @@ package systems.reformcloud.reformcloud2.node.process.screen;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
@@ -149,7 +149,7 @@ public class DefaultProcessScreen implements ProcessScreen {
         for (String listeningNode : this.listeningNodes) {
             if (NodeExecutor.getInstance().isOwnIdentity(listeningNode)) {
                 for (String line : lines) {
-                    System.out.println(LanguageManager.get(
+                    System.out.println(TranslationHolder.translate(
                         "screen-line-added",
                         this.processWrapper.getProcessInformation().getProcessDetail().getName(),
                         NodeExecutor.getInstance().getCurrentNodeInformation().getName(),

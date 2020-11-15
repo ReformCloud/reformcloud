@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
 import systems.reformcloud.reformcloud2.shared.network.SimpleNetworkAddress;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
@@ -85,7 +85,7 @@ public final class CommandCluster implements Command {
         if (strings.length == 2 && strings[0].equalsIgnoreCase("info")) {
             Optional<NodeProcessWrapper> information = NodeExecutor.getInstance().getNodeInformationProvider().getNodeInformation(strings[1]);
             if (information.isEmpty()) {
-                sender.sendMessage(LanguageManager.get("command-cluster-node-not-connected", strings[1]));
+                sender.sendMessage(TranslationHolder.translate("command-cluster-node-not-connected", strings[1]));
                 return;
             }
 
@@ -96,31 +96,31 @@ public final class CommandCluster implements Command {
         if (strings.length == 3 && strings[0].equalsIgnoreCase("create")) {
             String ip = NetworkUtils.validateAndGetIpAddress(strings[1]);
             if (ip == null) {
-                sender.sendMessage(LanguageManager.get("node-setup-question-address-wrong"));
+                sender.sendMessage(TranslationHolder.translate("node-setup-question-address-wrong"));
                 return;
             }
 
             if (this.existsNode(ip)) {
-                sender.sendMessage(LanguageManager.get("command-cluster-node-already-exists", ip));
+                sender.sendMessage(TranslationHolder.translate("command-cluster-node-already-exists", ip));
                 return;
             }
 
             Integer port = Parsers.INT.parse(strings[2]);
             if (port == null || port < 0) {
-                sender.sendMessage(LanguageManager.get("command-integer-failed", 0, strings[2]));
+                sender.sendMessage(TranslationHolder.translate("command-integer-failed", 0, strings[2]));
                 return;
             }
 
             NodeExecutor.getInstance().getNodeConfig().getClusterNodes().add(new SimpleNetworkAddress(ip, port));
             NodeExecutor.getInstance().getNodeConfig().save();
-            sender.sendMessage(LanguageManager.get("command-cluster-created-node", ip, strings[2]));
+            sender.sendMessage(TranslationHolder.translate("command-cluster-created-node", ip, strings[2]));
             return;
         }
 
         if (strings.length == 2 && strings[0].equalsIgnoreCase("delete")) {
             String ip = NetworkUtils.validateAndGetIpAddress(strings[1]);
             if (ip == null) {
-                sender.sendMessage(LanguageManager.get("node-setup-question-address-wrong"));
+                sender.sendMessage(TranslationHolder.translate("node-setup-question-address-wrong"));
                 return;
             }
 
@@ -129,13 +129,13 @@ public final class CommandCluster implements Command {
                 e -> e.getHost().equals(ip.trim())
             );
             if (address == null) {
-                sender.sendMessage(LanguageManager.get("command-cluster-node-not-exists", ip));
+                sender.sendMessage(TranslationHolder.translate("command-cluster-node-not-exists", ip));
                 return;
             }
 
             NodeExecutor.getInstance().getNodeConfig().getClusterNodes().remove(address);
             NodeExecutor.getInstance().getNodeConfig().save();
-            sender.sendMessage(LanguageManager.get("command-cluster-node-deleted", ip));
+            sender.sendMessage(TranslationHolder.translate("command-cluster-node-deleted", ip));
             return;
         }
 

@@ -25,6 +25,7 @@
 package systems.reformcloud.reformcloud2.executor.api.process;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 
 import java.util.Collection;
@@ -36,6 +37,7 @@ public interface PlayerHolder extends SerializableObject, Cloneable {
     int getOnlineCount();
 
     @NotNull
+    @Unmodifiable
     Collection<Player> getPlayers();
 
     @NotNull

@@ -36,7 +36,7 @@ import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.Def
 import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Version;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackend;
 import systems.reformcloud.reformcloud2.node.template.TemplateBackendManager;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.shared.StringUtil;
@@ -150,7 +150,7 @@ public final class CommandGroup implements Command {
     private void handleSubGroupRequest(CommandSender source, String[] strings, Properties properties) {
         Optional<DefaultProcessGroup> processGroup = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(strings[1]);
         if (processGroup.isEmpty()) {
-            source.sendMessage(LanguageManager.get("command-group-sub-group-not-exists", strings[1]));
+            source.sendMessage(TranslationHolder.translate("command-group-sub-group-not-exists", strings[1]));
             return;
         }
 
@@ -161,7 +161,7 @@ public final class CommandGroup implements Command {
                 .stream()
                 .filter(e -> !e.getProcessDetail().getProcessState().equals(ProcessState.PREPARED))
                 .collect(Collectors.toList());
-            source.sendMessage(LanguageManager.get("command-group-stopping-all-not-prepared", processGroup.get().getName()));
+            source.sendMessage(TranslationHolder.translate("command-group-stopping-all-not-prepared", processGroup.get().getName()));
 
             for (ProcessInformation process : processes) {
                 Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(process.getProcessDetail().getProcessUniqueID());
@@ -174,7 +174,7 @@ public final class CommandGroup implements Command {
             Collection<ProcessInformation> processes = ExecutorAPI.getInstance()
                 .getProcessProvider()
                 .getProcessesByProcessGroup(processGroup.get().getName());
-            source.sendMessage(LanguageManager.get("command-group-stopping-all", processGroup.get().getName()));
+            source.sendMessage(TranslationHolder.translate("command-group-stopping-all", processGroup.get().getName()));
             for (ProcessInformation process : processes) {
                 Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(process.getProcessDetail().getProcessUniqueID());
                 wrapper.ifPresent(processWrapper -> processWrapper.setRuntimeStateAsync(ProcessState.STOPPED));
@@ -198,7 +198,7 @@ public final class CommandGroup implements Command {
                 wrapper.ifPresent(processWrapper -> processWrapper.setRuntimeStateAsync(ProcessState.STOPPED));
             }
 
-            source.sendMessage(LanguageManager.get("command-group-sub-delete", processGroup.get().getName()));
+            source.sendMessage(TranslationHolder.translate("command-group-sub-delete", processGroup.get().getName()));
             return;
         }
 
@@ -206,12 +206,12 @@ public final class CommandGroup implements Command {
             if (properties.containsKey("maintenance")) {
                 Boolean maintenance = Parsers.BOOLEAN.parse(properties.getProperty("maintenance"));
                 if (maintenance == null) {
-                    source.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("maintenance")));
+                    source.sendMessage(TranslationHolder.translate("command-required-boolean", properties.getProperty("maintenance")));
                     return;
                 }
 
                 processGroup.get().getPlayerAccessConfiguration().setMaintenance(maintenance);
-                source.sendMessage(LanguageManager.get(
+                source.sendMessage(TranslationHolder.translate(
                     "command-group-edit",
                     "maintenance",
                     processGroup.get().getPlayerAccessConfiguration().isMaintenance()
@@ -221,12 +221,12 @@ public final class CommandGroup implements Command {
             if (properties.containsKey("static")) {
                 Boolean isStatic = Parsers.BOOLEAN.parse(properties.getProperty("static"));
                 if (isStatic == null) {
-                    source.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("static")));
+                    source.sendMessage(TranslationHolder.translate("command-required-boolean", properties.getProperty("static")));
                     return;
                 }
 
                 processGroup.get().setStaticProcess(isStatic);
-                source.sendMessage(LanguageManager.get(
+                source.sendMessage(TranslationHolder.translate(
                     "command-group-edit",
                     "static",
                     processGroup.get().isStaticProcess()
@@ -236,12 +236,12 @@ public final class CommandGroup implements Command {
             if (properties.containsKey("lobby")) {
                 Boolean isLobby = Parsers.BOOLEAN.parse(properties.getProperty("lobby"));
                 if (isLobby == null) {
-                    source.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("lobby")));
+                    source.sendMessage(TranslationHolder.translate("command-required-boolean", properties.getProperty("lobby")));
                     return;
                 }
 
                 processGroup.get().setCanBeUsedAsLobby(isLobby);
-                source.sendMessage(LanguageManager.get(
+                source.sendMessage(TranslationHolder.translate(
                     "command-group-edit",
                     "lobby",
                     isLobby
@@ -251,12 +251,12 @@ public final class CommandGroup implements Command {
             if (properties.containsKey("max-players")) {
                 Integer maxPlayers = Parsers.INT.parse(properties.getProperty("max-players"));
                 if (maxPlayers == null || maxPlayers <= 0) {
-                    source.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("max-players")));
+                    source.sendMessage(TranslationHolder.translate("command-integer-failed", 0, properties.getProperty("max-players")));
                     return;
                 }
 
                 processGroup.get().getPlayerAccessConfiguration().setMaxPlayers(maxPlayers);
-                source.sendMessage(LanguageManager.get(
+                source.sendMessage(TranslationHolder.translate(
                     "command-group-edit",
                     "max-players",
                     processGroup.get().getPlayerAccessConfiguration().getMaxPlayers()
@@ -268,14 +268,14 @@ public final class CommandGroup implements Command {
                 if (split.length == 2) {
                     Integer maxMemory = Parsers.INT.parse(split[1]);
                     if (maxMemory == null || maxMemory <= 50) {
-                        source.sendMessage(LanguageManager.get("command-integer-failed", 50, split[1]));
+                        source.sendMessage(TranslationHolder.translate("command-integer-failed", 50, split[1]));
                         return;
                     }
 
                     DefaultTemplate template = processGroup.get().getTemplate(split[0]);
                     if (template != null) {
                         template.getRuntimeConfiguration().setMaxMemory(maxMemory);
-                        source.sendMessage(LanguageManager.get(
+                        source.sendMessage(TranslationHolder.translate(
                             "command-group-edit",
                             "max-memory",
                             split[0] + "/" + maxMemory
@@ -287,12 +287,12 @@ public final class CommandGroup implements Command {
             if (properties.containsKey("min-process-count")) {
                 Integer minProcessCount = Parsers.INT.parse(properties.getProperty("min-process-count"));
                 if (minProcessCount == null || minProcessCount < 0) {
-                    source.sendMessage(LanguageManager.get("command-integer-failed", -1, properties.getProperty("min-process-count")));
+                    source.sendMessage(TranslationHolder.translate("command-integer-failed", -1, properties.getProperty("min-process-count")));
                     return;
                 }
 
                 processGroup.get().getStartupConfiguration().setMinOnlineProcesses(minProcessCount);
-                source.sendMessage(LanguageManager.get(
+                source.sendMessage(TranslationHolder.translate(
                     "command-group-edit",
                     "min-process-count",
                     processGroup.get().getStartupConfiguration().getMinOnlineProcesses()
@@ -302,12 +302,12 @@ public final class CommandGroup implements Command {
             if (properties.containsKey("max-process-count")) {
                 Integer maxProcessCount = Parsers.INT.parse(properties.getProperty("max-process-count"));
                 if (maxProcessCount == null || maxProcessCount <= -2) {
-                    source.sendMessage(LanguageManager.get("command-integer-failed", -2, properties.getProperty("max-process-count")));
+                    source.sendMessage(TranslationHolder.translate("command-integer-failed", -2, properties.getProperty("max-process-count")));
                     return;
                 }
 
                 processGroup.get().getStartupConfiguration().setMaxOnlineProcesses(maxProcessCount);
-                source.sendMessage(LanguageManager.get(
+                source.sendMessage(TranslationHolder.translate(
                     "command-group-edit",
                     "max-process-count",
                     processGroup.get().getStartupConfiguration().getMaxOnlineProcesses()
@@ -317,12 +317,12 @@ public final class CommandGroup implements Command {
             if (properties.containsKey("always-prepared-process-count")) {
                 Integer alwaysPreparedCount = Parsers.INT.parse(properties.getProperty("always-prepared-process-count"));
                 if (alwaysPreparedCount == null || alwaysPreparedCount < 0) {
-                    source.sendMessage(LanguageManager.get("command-integer-failed", -1, properties.getProperty("always-prepared-process-count")));
+                    source.sendMessage(TranslationHolder.translate("command-integer-failed", -1, properties.getProperty("always-prepared-process-count")));
                     return;
                 }
 
                 processGroup.get().getStartupConfiguration().setAlwaysPreparedProcesses(alwaysPreparedCount);
-                source.sendMessage(LanguageManager.get(
+                source.sendMessage(TranslationHolder.translate(
                     "command-group-edit",
                     "always-prepared-process-count",
                     processGroup.get().getStartupConfiguration().getAlwaysPreparedProcesses()
@@ -332,12 +332,12 @@ public final class CommandGroup implements Command {
             if (properties.containsKey("start-port")) {
                 Integer startPort = Parsers.INT.parse(properties.getProperty("start-port"));
                 if (startPort == null || startPort <= 0) {
-                    source.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("start-port")));
+                    source.sendMessage(TranslationHolder.translate("command-integer-failed", 0, properties.getProperty("start-port")));
                     return;
                 }
 
                 processGroup.get().getStartupConfiguration().setStartPort(startPort);
-                source.sendMessage(LanguageManager.get(
+                source.sendMessage(TranslationHolder.translate(
                     "command-group-edit",
                     "start-port",
                     processGroup.get().getStartupConfiguration().getStartPort()
@@ -347,7 +347,7 @@ public final class CommandGroup implements Command {
             if (properties.containsKey("startup-pickers")) {
                 List<String> startPickers = this.parseStrings(properties.getProperty("startup-pickers"));
                 processGroup.get().getStartupConfiguration().setUseOnlyTheseClients(startPickers);
-                source.sendMessage(LanguageManager.get(
+                source.sendMessage(TranslationHolder.translate(
                     "command-group-edit",
                     "startup-pickers",
                     String.join(", ", startPickers)
@@ -358,7 +358,7 @@ public final class CommandGroup implements Command {
                 List<String> startPickers = this.parseStrings(properties.getProperty("add-startup-pickers"));
                 startPickers.addAll(processGroup.get().getStartupConfiguration().getUseOnlyTheseClients());
                 processGroup.get().getStartupConfiguration().setUseOnlyTheseClients(startPickers);
-                source.sendMessage(LanguageManager.get(
+                source.sendMessage(TranslationHolder.translate(
                     "command-group-edit",
                     "startup-pickers",
                     String.join(", ", startPickers)
@@ -369,7 +369,7 @@ public final class CommandGroup implements Command {
                 List<String> startPickers = processGroup.get().getStartupConfiguration().getUseOnlyTheseClients();
                 startPickers.removeAll(this.parseStrings(properties.getProperty("remove-startup-pickers")));
                 processGroup.get().getStartupConfiguration().setUseOnlyTheseClients(startPickers);
-                source.sendMessage(LanguageManager.get(
+                source.sendMessage(TranslationHolder.translate(
                     "command-group-edit",
                     "startup-pickers",
                     String.join(", ", startPickers)
@@ -379,13 +379,13 @@ public final class CommandGroup implements Command {
             if (properties.containsKey("clear-startup-pickers")) {
                 Boolean clear = Parsers.BOOLEAN.parse(properties.getProperty("clear-startup-pickers"));
                 if (clear == null) {
-                    source.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("clear-startup-pickers")));
+                    source.sendMessage(TranslationHolder.translate("command-required-boolean", properties.getProperty("clear-startup-pickers")));
                     return;
                 }
 
                 if (clear) {
                     processGroup.get().getStartupConfiguration().setUseOnlyTheseClients(new ArrayList<>());
-                    source.sendMessage(LanguageManager.get(
+                    source.sendMessage(TranslationHolder.translate(
                         "command-group-edit",
                         "use-specific-start-picker",
                         "false"
@@ -397,7 +397,7 @@ public final class CommandGroup implements Command {
                 List<DefaultTemplate> newTemplates = this.parseTemplates(this.parseStrings(properties.getProperty("templates")), source, processGroup.get());
                 if (!newTemplates.isEmpty()) {
                     processGroup.get().setTemplates(newTemplates);
-                    source.sendMessage(LanguageManager.get(
+                    source.sendMessage(TranslationHolder.translate(
                         "command-group-edit",
                         "templates",
                         newTemplates.stream().map(DefaultTemplate::getName).collect(Collectors.joining(", "))
@@ -410,7 +410,7 @@ public final class CommandGroup implements Command {
                 if (!newTemplates.isEmpty()) {
                     newTemplates.addAll(processGroup.get().getTemplates());
                     processGroup.get().setTemplates(newTemplates);
-                    source.sendMessage(LanguageManager.get(
+                    source.sendMessage(TranslationHolder.translate(
                         "command-group-edit",
                         "add-templates",
                         newTemplates.stream().map(DefaultTemplate::getName).collect(Collectors.joining(", "))
@@ -422,7 +422,7 @@ public final class CommandGroup implements Command {
                 Collection<String> templatesToRemove = this.parseStrings(properties.getProperty("remove-templates"));
                 Collection<DefaultTemplate> toRemove = Streams.allOf(processGroup.get().getTemplates(), e -> templatesToRemove.contains(e.getName()));
                 processGroup.get().getTemplates().removeAll(toRemove);
-                source.sendMessage(LanguageManager.get(
+                source.sendMessage(TranslationHolder.translate(
                     "command-group-edit",
                     "remove-templates",
                     toRemove.stream().map(DefaultTemplate::getName).collect(Collectors.joining(", "))
@@ -432,13 +432,13 @@ public final class CommandGroup implements Command {
             if (properties.containsKey("clear-templates")) {
                 Boolean clear = Parsers.BOOLEAN.parse(properties.getProperty("clear-templates"));
                 if (clear == null) {
-                    source.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("clear-templates")));
+                    source.sendMessage(TranslationHolder.translate("command-required-boolean", properties.getProperty("clear-templates")));
                     return;
                 }
 
                 if (clear) {
                     processGroup.get().getTemplates().clear();
-                    source.sendMessage(LanguageManager.get(
+                    source.sendMessage(TranslationHolder.translate(
                         "command-group-edit",
                         "templates",
                         "clear"
@@ -448,7 +448,7 @@ public final class CommandGroup implements Command {
 
             ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(processGroup.get());
             for (ProcessInformation process : ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(processGroup.get().getName())) {
-                System.out.println(LanguageManager.get("command-group-edited-running-process", process.getProcessDetail().getName()));
+                System.out.println(TranslationHolder.get("command-group-edited-running-process", process.getProcessDetail().getName()));
             }
             return;
         }
@@ -459,7 +459,7 @@ public final class CommandGroup implements Command {
     private void handleMainGroupRequest(CommandSender source, String[] strings, Properties properties) {
         Optional<MainGroup> mainGroup = ExecutorAPI.getInstance().getMainGroupProvider().getMainGroup(strings[1]);
         if (mainGroup.isEmpty()) {
-            source.sendMessage(LanguageManager.get("command-group-main-group-not-exists", strings[1]));
+            source.sendMessage(TranslationHolder.translate("command-group-main-group-not-exists", strings[1]));
             return;
         }
 
@@ -470,7 +470,7 @@ public final class CommandGroup implements Command {
 
         if (strings.length == 3 && strings[2].equalsIgnoreCase("delete")) {
             ExecutorAPI.getInstance().getMainGroupProvider().deleteMainGroup(mainGroup.get().getName());
-            source.sendMessage(LanguageManager.get("command-group-main-delete", mainGroup.get().getName()));
+            source.sendMessage(TranslationHolder.translate("command-group-main-delete", mainGroup.get().getName()));
             return;
         }
 
@@ -482,7 +482,7 @@ public final class CommandGroup implements Command {
                     .stream()
                     .filter(e -> !e.getProcessDetail().getProcessState().equals(ProcessState.PREPARED))
                     .collect(Collectors.toList());
-                source.sendMessage(LanguageManager.get("command-group-stopping-all-not-prepared", subGroup));
+                source.sendMessage(TranslationHolder.translate("command-group-stopping-all-not-prepared", subGroup));
 
                 for (ProcessInformation information : running) {
                     Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(information.getProcessDetail().getProcessUniqueID());
@@ -511,7 +511,7 @@ public final class CommandGroup implements Command {
             if (properties.containsKey("sub-groups")) {
                 List<String> groups = this.parseStrings(properties.getProperty("sub-groups"));
                 mainGroup.get().setSubGroups(groups);
-                source.sendMessage(LanguageManager.get(
+                source.sendMessage(TranslationHolder.translate(
                     "command-group-edit",
                     "sub-groups",
                     String.join(", ", groups)
@@ -522,7 +522,7 @@ public final class CommandGroup implements Command {
                 List<String> groups = this.parseStrings(properties.getProperty("add-sub-groups"));
                 Streams.allOf(mainGroup.get().getSubGroups(), groups::contains).forEach(groups::remove);
                 mainGroup.get().getSubGroups().addAll(groups);
-                source.sendMessage(LanguageManager.get(
+                source.sendMessage(TranslationHolder.translate(
                     "command-group-edit",
                     "sub-groups",
                     String.join(", ", mainGroup.get().getSubGroups())
@@ -532,7 +532,7 @@ public final class CommandGroup implements Command {
             if (properties.containsKey("remove-sub-groups")) {
                 List<String> groups = this.parseStrings(properties.getProperty("remove-sub-groups"));
                 mainGroup.get().getSubGroups().removeAll(groups);
-                source.sendMessage(LanguageManager.get(
+                source.sendMessage(TranslationHolder.translate(
                     "command-group-edit",
                     "sub-groups-remove",
                     String.join(", ", groups)
@@ -542,13 +542,13 @@ public final class CommandGroup implements Command {
             if (properties.containsKey("clear-sub-groups")) {
                 Boolean clear = Parsers.BOOLEAN.parse(properties.getProperty("clear-sub-groups"));
                 if (clear == null) {
-                    source.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("clear-sub-groups")));
+                    source.sendMessage(TranslationHolder.translate("command-required-boolean", properties.getProperty("clear-sub-groups")));
                     return;
                 }
 
                 if (clear) {
                     mainGroup.get().getSubGroups().clear();
-                    source.sendMessage(LanguageManager.get(
+                    source.sendMessage(TranslationHolder.translate(
                         "command-group-edit",
                         "sub-groups",
                         "clear"
@@ -653,24 +653,24 @@ public final class CommandGroup implements Command {
         for (String template : collection) {
             String[] templateConfig = template.split("/");
             if (templateConfig.length != 3) {
-                source.sendMessage(LanguageManager.get("command-group-template-format-error", template));
+                source.sendMessage(TranslationHolder.translate("command-group-template-format-error", template));
                 continue;
             }
 
             if (processGroup.getTemplate(templateConfig[0]) != null) {
-                source.sendMessage(LanguageManager.get("command-group-template-already-exists", templateConfig[0]));
+                source.sendMessage(TranslationHolder.translate("command-group-template-already-exists", templateConfig[0]));
                 continue;
             }
 
             Optional<TemplateBackend> backend = TemplateBackendManager.get(templateConfig[1]);
             if (backend.isEmpty()) {
-                source.sendMessage(LanguageManager.get("command-group-template-backend-invalid", templateConfig[1]));
+                source.sendMessage(TranslationHolder.translate("command-group-template-backend-invalid", templateConfig[1]));
                 continue;
             }
 
             Version version = EnumUtil.findEnumFieldByName(Version.class, templateConfig[2].toUpperCase()).orElse(null);
             if (version == null) {
-                source.sendMessage(LanguageManager.get("command-group-template-version-not-found", templateConfig[2]));
+                source.sendMessage(TranslationHolder.translate("command-group-template-version-not-found", templateConfig[2]));
                 continue;
             }
 

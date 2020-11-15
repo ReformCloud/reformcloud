@@ -160,5 +160,5 @@ public interface Configurable<X, V extends Configurable<X, V>> extends Cloneable
     void clear();
 
     @NotNull
-    Configurable<X, V> clone();
+    V clone();
 }

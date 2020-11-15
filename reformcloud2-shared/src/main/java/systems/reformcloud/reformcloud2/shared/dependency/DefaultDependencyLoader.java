@@ -31,17 +31,17 @@ import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.dependency.Dependencies;
 import systems.reformcloud.reformcloud2.executor.api.dependency.Dependency;
 import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader;
-import systems.reformcloud.reformcloud2.shared.io.DownloadHelper;
 import systems.reformcloud.reformcloud2.runner.RunnerClassLoader;
+import systems.reformcloud.reformcloud2.shared.io.DownloadHelper;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.DecimalFormat;
 import java.util.Arrays;
@@ -55,7 +55,7 @@ public class DefaultDependencyLoader implements DependencyLoader {
     private static final String DEPENDENCY_LOAD_FORMAT = "Loaded dependency %s:%s version %s %n";
     private static final String DEPENDENCY_DOWNLOAD_FORMAT = "Trying to download non-existing dependency \"%s\" version %s from %s (%s)... %n";
 
-    private static final Path REPOSITORY_PATH = Paths.get(System.getProperty("reformcloud.lib.path", "reformcloud/.bin/libs"));
+    private static final Path REPOSITORY_PATH = Path.of(System.getProperty("reformcloud.lib.path", "reformcloud/.bin/libs"));
 
     private static Method addUrl;
     private final URLClassLoader contextLoader;
@@ -112,20 +112,22 @@ public class DefaultDependencyLoader implements DependencyLoader {
             if (Files.notExists(systemPath)) {
                 System.out.printf(DEPENDENCY_DOWNLOAD_FORMAT, dependency.artifactId(), dependency.version(), dependency.repository().id(), dependency.repository().url());
                 long start = System.currentTimeMillis();
-                DownloadHelper.openConnection(
-                    getDownloadUrl(dependency), Collections.emptyMap(), inputStream -> {
-                        try {
+                DownloadHelper.connect(getDownloadUrl(dependency), Collections.emptyMap(), (connection, exception) -> {
+                    if (connection != null && connection.getResponseCode() == 200) {
+                        try (InputStream inputStream = connection.getInputStream()) {
                             Path parent = systemPath.getParent();
                             if (parent != null && Files.notExists(parent)) {
                                 Files.createDirectories(parent);
                             }
 
                             Files.copy(inputStream, systemPath, StandardCopyOption.REPLACE_EXISTING);
-                        } catch (IOException exception) {
-                            handleException("Unable to correctly download %s", dependency, exception);
+                        } catch (IOException ioException) {
+                            handleException("Unable to correctly download %s", dependency, ioException);
                         }
-                    }, throwable -> handleException("Unable to correctly download %s", dependency, throwable)
-                );
+                    } else {
+                        handleException("Unable to correctly download %s", dependency, exception);
+                    }
+                });
                 System.out.printf(DEPENDENCY_DOWNLOAD_DONE_FORMAT, dependency.artifactId(), DECIMAL_FORMAT.format((System.currentTimeMillis() - start) / 1000D));
             }
         }

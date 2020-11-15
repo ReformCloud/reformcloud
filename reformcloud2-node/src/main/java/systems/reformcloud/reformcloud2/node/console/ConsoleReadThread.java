@@ -30,7 +30,7 @@ import org.jline.reader.EndOfFileException;
 import org.jline.reader.UserInterruptException;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandManager;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.shared.command.sources.ConsoleCommandSender;
@@ -78,7 +78,7 @@ public class ConsoleReadThread extends Thread {
     private void dispatchLine(@NotNull String line) {
         CommandManager commandManager = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class);
         if (!commandManager.process(line.trim(), ConsoleCommandSender.INSTANCE)) {
-            System.out.println(LanguageManager.get("command-help-use"));
+            System.out.println(TranslationHolder.translate("command-help-use"));
         }
     }
 

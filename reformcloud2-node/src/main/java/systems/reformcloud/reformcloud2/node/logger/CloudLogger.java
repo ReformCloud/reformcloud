@@ -35,7 +35,6 @@ import systems.reformcloud.reformcloud2.node.event.logger.LogRecordProcessEvent;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -51,7 +50,7 @@ public class CloudLogger extends Logger {
 
         try {
             String logFile = System.getProperty("systems.reformcloud.console-log-file", "logs/cloud.log");
-            IOUtils.createDirectory(Paths.get(logFile).getParent());
+            IOUtils.createDirectory(Path.of(logFile).getParent());
 
             FileHandler fileHandler = new FileHandler(logFile, 1 << 24, 8, true);
             fileHandler.setFormatter(new DefaultFormatter(false));

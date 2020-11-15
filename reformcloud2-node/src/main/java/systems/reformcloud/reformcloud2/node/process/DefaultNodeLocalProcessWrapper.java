@@ -55,7 +55,6 @@ import systems.reformcloud.reformcloud2.shared.platform.Platform;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -68,7 +67,7 @@ import java.util.stream.Collectors;
 
 public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrapper {
 
-    private static final String LIB_PATH = Paths.get("").toAbsolutePath().toString();
+    private static final String LIB_PATH = Path.of("").toAbsolutePath().toString();
     private static final String[] DEFAULT_SHUTDOWN_COMMANDS = new String[]{"end", "stop"};
 
     private final Path path;
@@ -84,8 +83,8 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
         super(processInformation);
 
         this.path = processInformation.getProcessGroup().isStaticProcess()
-            ? Paths.get("reformcloud/static", processInformation.getProcessDetail().getName())
-            : Paths.get("reformcloud/temp", processInformation.getProcessDetail().getName() + "-" + processInformation.getProcessDetail().getProcessUniqueID());
+            ? Path.of("reformcloud/static", processInformation.getProcessDetail().getName())
+            : Path.of("reformcloud/temp", processInformation.getProcessDetail().getName() + "-" + processInformation.getProcessDetail().getProcessUniqueID());
         this.firstStart = Files.notExists(this.path);
         this.processScreen = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProcessScreenController.class).createScreen(this);
 
@@ -213,7 +212,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
             "-Dreformcloud.runner.version=" + System.getProperty("reformcloud.runner.version"),
             "-Dreformcloud.executor.type=3",
             "-Dreformcloud.lib.path=" + LIB_PATH,
-            "-Dreformcloud.process.path=" + Paths.get("reformcloud/files", Version.format(
+            "-Dreformcloud.process.path=" + Path.of("reformcloud/files", Version.format(
                 this.processInformation.getProcessDetail().getTemplate().getVersion()
             )).toAbsolutePath().toString()
         ));

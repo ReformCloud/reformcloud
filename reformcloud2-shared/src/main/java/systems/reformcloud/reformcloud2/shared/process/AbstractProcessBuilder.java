@@ -26,11 +26,11 @@ package systems.reformcloud.reformcloud2.shared.process;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessBuilder;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessBuilder;
 import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessInclusion;
 
 import java.util.Arrays;
@@ -45,10 +45,10 @@ public abstract class AbstractProcessBuilder implements ProcessBuilder {
     protected String displayName;
     protected String messageOfTheDay;
     protected String targetProcessFactory;
-    protected DefaultProcessGroup processGroup;
-    protected DefaultTemplate template;
+    protected ProcessGroup processGroup;
+    protected Template template;
     protected Collection<ProcessInclusion> inclusions = new CopyOnWriteArrayList<>();
-    protected JsonConfiguration extra = new JsonConfiguration();
+    protected JsonConfiguration extra = JsonConfiguration.newJsonConfiguration();
     protected ProcessState initialState = ProcessState.READY;
     protected UUID processUniqueId = UUID.randomUUID();
     protected int memory = -1;
@@ -74,7 +74,7 @@ public abstract class AbstractProcessBuilder implements ProcessBuilder {
 
     @NotNull
     @Override
-    public ProcessBuilder group(@NotNull DefaultProcessGroup processGroup) {
+    public ProcessBuilder group(@NotNull ProcessGroup processGroup) {
         this.processGroup = processGroup;
         return this;
     }
@@ -123,7 +123,7 @@ public abstract class AbstractProcessBuilder implements ProcessBuilder {
 
     @NotNull
     @Override
-    public ProcessBuilder template(@NotNull DefaultTemplate template) {
+    public ProcessBuilder template(@NotNull Template template) {
         this.template = template;
         return this;
     }

@@ -26,13 +26,13 @@ package systems.reformcloud.reformcloud2.executor.api.process;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessBuilder;
 import systems.reformcloud.reformcloud2.executor.api.configuration.data.JsonDataHolder;
 import systems.reformcloud.reformcloud2.executor.api.functional.Sorted;
 import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.network.address.NetworkAddress;
 import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessBuilder;
 import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 
@@ -80,4 +80,6 @@ public interface ProcessInformation extends JsonDataHolder<ProcessInformation>, 
 
     @NotNull
     ProcessInformation clone();
+
+    void update();
 }

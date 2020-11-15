@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessRuntimeInformation;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class DefaultProcessRuntimeInformation implements ProcessRuntimeInformation {
@@ -63,6 +64,34 @@ public class DefaultProcessRuntimeInformation implements ProcessRuntimeInformati
                                             long totalLoadedClasses, String osVersion, String javaVersion, String systemArchitecture, String[] startParameters,
                                             int stacktrace, long[] deadLockedThreads, Map<String, String> systemProperties, String classPath, String bootClassPath, long processId) {
         this.creationMillis = System.currentTimeMillis();
+        this.cpuUsageSystem = cpuUsageSystem;
+        this.cpuUsageInternal = cpuUsageInternal;
+        this.loadAverageSystem = loadAverageSystem;
+        this.processorCount = processorCount;
+        this.memoryUsageSystem = memoryUsageSystem;
+        this.memoryUsageInternal = memoryUsageInternal;
+        this.nonHeapMemoryUsage = nonHeapMemoryUsage;
+        this.collectionMemoryUsage = collectionMemoryUsage;
+        this.loadedClasses = loadedClasses;
+        this.unloadedClasses = unloadedClasses;
+        this.totalLoadedClasses = totalLoadedClasses;
+        this.osVersion = osVersion;
+        this.javaVersion = javaVersion;
+        this.systemArchitecture = systemArchitecture;
+        this.startParameters = startParameters;
+        this.stacktrace = stacktrace;
+        this.deadLockedThreads = deadLockedThreads;
+        this.systemProperties = systemProperties;
+        this.classPath = classPath;
+        this.bootClassPath = bootClassPath;
+        this.processId = processId;
+    }
+
+    public DefaultProcessRuntimeInformation(long creationMillis, double cpuUsageSystem, double cpuUsageInternal, double loadAverageSystem, int processorCount, long memoryUsageSystem,
+                                            long memoryUsageInternal, long nonHeapMemoryUsage, long collectionMemoryUsage, int loadedClasses, long unloadedClasses,
+                                            long totalLoadedClasses, String osVersion, String javaVersion, String systemArchitecture, String[] startParameters,
+                                            int stacktrace, long[] deadLockedThreads, Map<String, String> systemProperties, String classPath, String bootClassPath, long processId) {
+        this.creationMillis = creationMillis;
         this.cpuUsageSystem = cpuUsageSystem;
         this.cpuUsageInternal = cpuUsageInternal;
         this.loadAverageSystem = loadAverageSystem;
@@ -194,6 +223,34 @@ public class DefaultProcessRuntimeInformation implements ProcessRuntimeInformati
     @Override
     public long getProcessId() {
         return this.processId;
+    }
+
+    @Override
+    public @NotNull ProcessRuntimeInformation clone() {
+        return new DefaultProcessRuntimeInformation(
+            this.creationMillis,
+            this.cpuUsageSystem,
+            this.cpuUsageInternal,
+            this.loadAverageSystem,
+            this.processorCount,
+            this.memoryUsageSystem,
+            this.memoryUsageInternal,
+            this.nonHeapMemoryUsage,
+            this.collectionMemoryUsage,
+            this.loadedClasses,
+            this.unloadedClasses,
+            this.totalLoadedClasses,
+            this.osVersion,
+            this.javaVersion,
+            this.systemArchitecture,
+            this.startParameters,
+            this.stacktrace,
+            this.deadLockedThreads,
+            new HashMap<>(this.systemProperties),
+            this.classPath,
+            this.bootClassPath,
+            this.processId
+        );
     }
 
     @Override

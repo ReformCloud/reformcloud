@@ -38,7 +38,7 @@ import systems.reformcloud.reformcloud2.node.template.FileTemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.groups.process.startup.AutomaticStartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.process.player.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.process.startup.StartupConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.shared.StringUtil;
 import systems.reformcloud.reformcloud2.shared.parser.Parsers;
 
@@ -127,7 +127,7 @@ public final class CommandCreate implements Command {
         String name = strings[2];
         List<String> subGroups = new ArrayList<>();
         if (ExecutorAPI.getInstance().getMainGroupProvider().getMainGroup(name).isPresent()) {
-            source.sendMessage(LanguageManager.get("command-create-main-group-already-exists", name));
+            source.sendMessage(TranslationHolder.translate("command-create-main-group-already-exists", name));
             return;
         }
 
@@ -139,7 +139,7 @@ public final class CommandCreate implements Command {
 
             for (String subGroup : subGroupsStrings) {
                 if (ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(subGroup).isEmpty()) {
-                    source.sendMessage(LanguageManager.get("command-create-sub-group-does-not-exists", subGroup));
+                    source.sendMessage(TranslationHolder.translate("command-create-sub-group-does-not-exists", subGroup));
                     return;
                 }
 
@@ -152,7 +152,7 @@ public final class CommandCreate implements Command {
         }
 
         ExecutorAPI.getInstance().getMainGroupProvider().createMainGroup(name).subGroups(subGroups).create();
-        source.sendMessage(LanguageManager.get("command-create-mg", name));
+        source.sendMessage(TranslationHolder.translate("command-create-mg", name));
     }
 
     private void handleProcessGroupRequest(CommandSender source, String[] strings) {
@@ -164,12 +164,12 @@ public final class CommandCreate implements Command {
         String name = strings[2];
         Version version = EnumUtil.findEnumFieldByName(Version.class, strings[3].toUpperCase()).orElse(null);
         if (version == null) {
-            source.sendMessage(LanguageManager.get("command-create-version-not-found", strings[3]));
+            source.sendMessage(TranslationHolder.translate("command-create-version-not-found", strings[3]));
             return;
         }
 
         if (ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(name).isPresent()) {
-            source.sendMessage(LanguageManager.get("command-create-sub-group-already-exists", name));
+            source.sendMessage(TranslationHolder.translate("command-create-sub-group-already-exists", name));
             return;
         }
 
@@ -189,7 +189,7 @@ public final class CommandCreate implements Command {
         if (properties.containsKey("start-port")) {
             Integer startPort = Parsers.INT.parse(properties.getProperty("start-port"));
             if (startPort == null || startPort <= 0) {
-                source.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("start-port")));
+                source.sendMessage(TranslationHolder.translate("command-integer-failed", 0, properties.getProperty("start-port")));
                 return;
             }
 
@@ -199,7 +199,7 @@ public final class CommandCreate implements Command {
         if (properties.containsKey("max-players")) {
             Integer maxPlayerCount = Parsers.INT.parse(properties.getProperty("max-players"));
             if (maxPlayerCount == null || maxPlayerCount <= 0) {
-                source.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("max-players")));
+                source.sendMessage(TranslationHolder.translate("command-integer-failed", 0, properties.getProperty("max-players")));
                 return;
             }
 
@@ -209,7 +209,7 @@ public final class CommandCreate implements Command {
         if (properties.containsKey("max-memory")) {
             Integer maxMemory = Parsers.INT.parse(properties.getProperty("max-memory"));
             if (maxMemory == null || maxMemory <= 50) {
-                source.sendMessage(LanguageManager.get("command-integer-failed", 50, properties.getProperty("max-memory")));
+                source.sendMessage(TranslationHolder.translate("command-integer-failed", 50, properties.getProperty("max-memory")));
                 return;
             }
 
@@ -219,7 +219,7 @@ public final class CommandCreate implements Command {
         if (properties.containsKey("min-process-count")) {
             Integer minProcessCount = Parsers.INT.parse(properties.getProperty("min-process-count"));
             if (minProcessCount == null || minProcessCount <= -1) {
-                source.sendMessage(LanguageManager.get("command-integer-failed", -1, properties.getProperty("min-process-count")));
+                source.sendMessage(TranslationHolder.translate("command-integer-failed", -1, properties.getProperty("min-process-count")));
                 return;
             }
 
@@ -229,7 +229,7 @@ public final class CommandCreate implements Command {
         if (properties.containsKey("max-process-count")) {
             Integer maxProcessCount = Parsers.INT.parse(properties.getProperty("max-process-count"));
             if (maxProcessCount == null || maxProcessCount <= -2) {
-                source.sendMessage(LanguageManager.get("command-integer-failed", -2, properties.getProperty("max-process-count")));
+                source.sendMessage(TranslationHolder.translate("command-integer-failed", -2, properties.getProperty("max-process-count")));
                 return;
             }
 
@@ -239,7 +239,7 @@ public final class CommandCreate implements Command {
         if (properties.containsKey("always-prepared")) {
             Integer alwaysPrepared = Parsers.INT.parse(properties.getProperty("always-prepared"));
             if (alwaysPrepared == null || alwaysPrepared <= -1) {
-                source.sendMessage(LanguageManager.get("command-integer-failed", -1, properties.getProperty("always-prepared")));
+                source.sendMessage(TranslationHolder.translate("command-integer-failed", -1, properties.getProperty("always-prepared")));
                 return;
             }
 
@@ -249,7 +249,7 @@ public final class CommandCreate implements Command {
         if (properties.containsKey("static")) {
             Boolean isStatic = Parsers.BOOLEAN.parse(properties.getProperty("static"));
             if (isStatic == null) {
-                source.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("static")));
+                source.sendMessage(TranslationHolder.translate("command-required-boolean", properties.getProperty("static")));
                 return;
             }
 
@@ -259,7 +259,7 @@ public final class CommandCreate implements Command {
         if (properties.containsKey("lobby")) {
             Boolean isLobby = Parsers.BOOLEAN.parse(properties.getProperty("lobby"));
             if (isLobby == null) {
-                source.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("lobby")));
+                source.sendMessage(TranslationHolder.translate("command-required-boolean", properties.getProperty("lobby")));
                 return;
             }
 
@@ -269,7 +269,7 @@ public final class CommandCreate implements Command {
         if (properties.containsKey("maintenance")) {
             Boolean isMaintenance = Parsers.BOOLEAN.parse(properties.getProperty("maintenance"));
             if (isMaintenance == null) {
-                source.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("maintenance")));
+                source.sendMessage(TranslationHolder.translate("command-required-boolean", properties.getProperty("maintenance")));
                 return;
             }
 
@@ -285,7 +285,7 @@ public final class CommandCreate implements Command {
             for (String mainGroup : mainGroups) {
                 Optional<MainGroup> group = ExecutorAPI.getInstance().getMainGroupProvider().getMainGroup(mainGroup);
                 if (group.isEmpty()) {
-                    source.sendMessage(LanguageManager.get("command-create-main-group-does-not-exists", mainGroup));
+                    source.sendMessage(TranslationHolder.translate("command-create-main-group-does-not-exists", mainGroup));
                     return;
                 }
 
@@ -353,6 +353,6 @@ public final class CommandCreate implements Command {
             .staticGroup(staticProcess)
             .lobby(lobby)
             .createPermanently();
-        source.sendMessage(LanguageManager.get("command-create-pg", name, version.getName()));
+        source.sendMessage(TranslationHolder.translate("command-create-pg", name, version.getName()));
     }
 }

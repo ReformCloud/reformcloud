@@ -22,26 +22,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.shared.network.concurrent;
+package systems.reformcloud.reformcloud2.shared.reflect;
 
-import io.netty.util.concurrent.FastThreadLocalThread;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.lang.reflect.Type;
 
-public class FastNettyThreadFactory implements ThreadFactory {
+@SuppressWarnings("unused")
+public class TypeToken<T> {
 
-    private final String nameFormat;
-    private final AtomicInteger threadNumber = new AtomicInteger();
+    private final Type type;
+    private final int hashCode;
 
-    public FastNettyThreadFactory(String nameFormat) {
-        this.nameFormat = nameFormat;
+    protected TypeToken() {
+        this.type = Types.fromClass(this.getClass());
+        this.hashCode = this.type.hashCode();
+    }
+
+    public TypeToken(Type type) {
+        this.type = type;
+        this.hashCode = type.hashCode();
+    }
+
+    @NotNull
+    public Type getType() {
+        return this.type;
     }
 
     @Override
-    public Thread newThread(@NotNull Runnable r) {
-        String name = String.format(this.nameFormat, this.threadNumber.getAndIncrement());
-        return new FastThreadLocalThread(r, name);
+    public int hashCode() {
+        return this.hashCode;
     }
 }

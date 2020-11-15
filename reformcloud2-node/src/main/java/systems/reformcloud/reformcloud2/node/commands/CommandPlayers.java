@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.executor.api.process.Player;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.shared.Constants;
@@ -94,14 +94,14 @@ public final class CommandPlayers implements Command {
             }
 
             if (entry == null) {
-                sender.sendMessage(LanguageManager.get("command-players-player-not-found", strings[0]));
+                sender.sendMessage(TranslationHolder.translate("command-players-player-not-found", strings[0]));
                 return;
             }
 
             Player subServerPlayer = entry.getFirst().getProcessPlayerManager().getOnlinePlayers().stream().filter(e -> uniqueID == null
                 ? e.getName().equals(strings[0]) : e.getUniqueID().equals(uniqueID)).findAny().orElse(null);
             if (subServerPlayer == null) {
-                sender.sendMessage(LanguageManager.get("command-players-player-not-found", strings[0]));
+                sender.sendMessage(TranslationHolder.translate("command-players-player-not-found", strings[0]));
                 return;
             }
 

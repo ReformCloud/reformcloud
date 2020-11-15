@@ -29,7 +29,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableOb
 
 import java.util.Map;
 
-public interface ProcessRuntimeInformation extends SerializableObject {
+public interface ProcessRuntimeInformation extends SerializableObject, Cloneable {
 
     long getCreationMillis();
 
@@ -81,4 +81,7 @@ public interface ProcessRuntimeInformation extends SerializableObject {
     String getBootClassPath();
 
     long getProcessId();
+
+    @NotNull
+    ProcessRuntimeInformation clone();
 }

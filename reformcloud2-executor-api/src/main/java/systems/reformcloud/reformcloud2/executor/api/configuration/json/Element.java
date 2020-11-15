@@ -36,6 +36,8 @@ public interface Element extends SerializableObject, Cloneable {
 
     boolean isPrimitive();
 
+    boolean isArray();
+
     boolean isNull();
 
     boolean getAsBoolean();

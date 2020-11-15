@@ -31,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.cloudflare.config.CloudFlareConfig;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
@@ -149,7 +149,7 @@ public final class CloudFlareHelper {
                         }
 
                         if (jsonObject.has("message") && jsonObject.has("code")) {
-                            System.err.println(LanguageManager.get(
+                            System.err.println(TranslationHolder.translate(
                                 "cloudflare-create-error",
                                 configuration.getOrDefault("type", "unknown"),
                                 target.getProcessDetail().getName(),
@@ -162,7 +162,7 @@ public final class CloudFlareHelper {
                     } catch (final Throwable ignored) {
                     }
 
-                    System.err.println(LanguageManager.get(
+                    System.err.println(TranslationHolder.translate(
                         "cloudflare-create-error",
                         configuration.getOrDefault("type", "unknown"),
                         target.getProcessDetail().getName(),

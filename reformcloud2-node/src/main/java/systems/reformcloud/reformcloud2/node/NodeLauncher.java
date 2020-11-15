@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.node;
 
 import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.node.argument.ArgumentParser;
 import systems.reformcloud.reformcloud2.node.argument.DefaultArgumentParser;
 import systems.reformcloud.reformcloud2.shared.Constants;
@@ -33,8 +33,6 @@ import systems.reformcloud.reformcloud2.shared.dependency.DefaultDependencyLoade
 import systems.reformcloud.reformcloud2.shared.dependency.DependencyFileLoader;
 import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 import systems.reformcloud.reformcloud2.shared.language.LanguageLoader;
-
-import java.nio.file.Paths;
 
 public final class NodeLauncher {
 
@@ -52,18 +50,18 @@ public final class NodeLauncher {
 
         final long startTime = System.currentTimeMillis();
 
-        IOUtils.recreateDirectory(Paths.get("reformcloud/temp"));
+        IOUtils.recreateDirectory(Path.of("reformcloud/temp"));
         NodeExecutor nodeExecutor = new NodeExecutor(dependencyLoader);
 
         ArgumentParser argumentParser = new DefaultArgumentParser(args);
         if (argumentParser.getBoolean("refresh-versions")) {
-            IOUtils.deleteAllFilesInDirectory(Paths.get("reformcloud/files"));
+            IOUtils.deleteAllFilesInDirectory(Path.of("reformcloud/files"));
         }
 
         nodeExecutor.bootstrap(argumentParser);
 
         double bootTime = (System.currentTimeMillis() - startTime) / 1000d;
-        System.out.println(LanguageManager.get("startup-done", Constants.TWO_POINT_THREE_DECIMAL_FORMAT.format(bootTime)));
+        System.out.println(TranslationHolder.translate("startup-done", Constants.TWO_POINT_THREE_DECIMAL_FORMAT.format(bootTime)));
 
         nodeExecutor.getCloudTickWorker().startTick();
     }

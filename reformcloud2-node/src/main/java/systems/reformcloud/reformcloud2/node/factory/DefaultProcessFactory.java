@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.NetworkInfo;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
@@ -58,13 +58,13 @@ public class DefaultProcessFactory implements ProcessFactory {
         return NodeExecutor.getInstance().getTaskScheduler().queue(() -> {
             DefaultTemplate template = configuration.getTemplate() == null ? this.nextTemplate(configuration.getProcessGroup()) : configuration.getTemplate();
             if (template == null) {
-                System.err.println(LanguageManager.get("process-unable-to-find-template", configuration.getProcessGroup().getName()));
+                System.err.println(TranslationHolder.translate("process-unable-to-find-template", configuration.getProcessGroup().getName()));
                 return null;
             }
 
             DefaultNodeInformation nodeInformation = this.getNode(configuration.getNode()).orElseGet(() -> this.getBestNode(configuration.getProcessGroup()));
             if (nodeInformation == null) {
-                System.err.println(LanguageManager.get("process-unable-to-find-node", configuration.getProcessGroup().getName()));
+                System.err.println(TranslationHolder.translate("process-unable-to-find-node", configuration.getProcessGroup().getName()));
                 return null;
             }
 

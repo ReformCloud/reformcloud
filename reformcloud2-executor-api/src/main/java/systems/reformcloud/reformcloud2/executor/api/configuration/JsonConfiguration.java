@@ -34,7 +34,9 @@ import systems.reformcloud.reformcloud2.executor.api.configuration.json.types.Ob
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
@@ -49,12 +51,12 @@ import java.util.stream.Collectors;
 
 public class JsonConfiguration implements Configurable<Element, JsonConfiguration> {
 
-    protected static final Predicate<?> ALWAYS_TRUE = ignored -> true;
-    protected static final JsonAdapter DEFAULT_ADAPTER = JsonAdapter.builder()
+    public static final JsonAdapter DEFAULT_ADAPTER = JsonAdapter.builder()
         .disableHtmlEscaping()
         .enablePrettyPrinting()
         .enableNullSerialisation()
         .build();
+    protected static final Predicate<?> ALWAYS_TRUE = ignored -> true;
     protected static final Collector<Map.Entry<String, Element>, ?, Map<String, Element>> TO_MAP_COLLECTOR = Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue);
 
     protected final Object json;
@@ -105,6 +107,41 @@ public class JsonConfiguration implements Configurable<Element, JsonConfiguratio
     @NotNull
     public static JsonConfiguration newJsonConfiguration(@NotNull Object backingObject, @NotNull JsonAdapter jsonAdapter) {
         return new JsonConfiguration(backingObject, jsonAdapter);
+    }
+
+    @NotNull
+    public static JsonConfiguration newJsonConfiguration(@NotNull File file) {
+        return newJsonConfiguration(file, DEFAULT_ADAPTER);
+    }
+
+    @NotNull
+    public static JsonConfiguration newJsonConfiguration(@NotNull Path path) {
+        return newJsonConfiguration(path, DEFAULT_ADAPTER);
+    }
+
+    @NotNull
+    public static JsonConfiguration newJsonConfiguration(@NotNull String path, @NotNull JsonAdapter jsonAdapter) {
+        return newJsonConfiguration(Path.of(path), jsonAdapter);
+    }
+
+    @NotNull
+    public static JsonConfiguration newJsonConfiguration(@NotNull File file, @NotNull JsonAdapter jsonAdapter) {
+        return newJsonConfiguration(file.toPath(), jsonAdapter);
+    }
+
+    @NotNull
+    public static JsonConfiguration newJsonConfiguration(@NotNull Path path, @NotNull JsonAdapter jsonAdapter) {
+        if (Files.exists(path)) {
+            try (Reader reader = new InputStreamReader(Files.newInputStream(path), StandardCharsets.UTF_8)) {
+                final Element backingElement = JsonParser.defaultParser().parse(reader);
+                if (backingElement.isObject()) {
+                    return newJsonConfiguration((Object) backingElement, jsonAdapter);
+                }
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
+        }
+        return newJsonConfiguration(jsonAdapter);
     }
 
     @SuppressWarnings("unchecked")
@@ -453,7 +490,7 @@ public class JsonConfiguration implements Configurable<Element, JsonConfiguratio
     }
 
     @Override
-    public @NotNull Configurable<Element, JsonConfiguration> clone() {
+    public @NotNull JsonConfiguration clone() {
         return JsonConfiguration.newJsonConfiguration(this.json.clone(), this.adapter);
     }
 

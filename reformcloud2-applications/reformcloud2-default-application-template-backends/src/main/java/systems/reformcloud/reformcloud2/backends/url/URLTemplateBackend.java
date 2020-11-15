@@ -39,7 +39,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 
 public final class URLTemplateBackend implements TemplateBackend {
@@ -86,8 +85,8 @@ public final class URLTemplateBackend implements TemplateBackend {
     @NotNull
     @Override
     public Task<Void> loadTemplate(@NotNull String group, @NotNull String template, @NotNull Path target) {
-        DownloadHelper.downloadAndDisconnect(this.getBasePath() + group + "-" + template + ".zip", "reformcloud/files/temp/template.zip");
-        IOUtils.unZip(Paths.get("reformcloud/files/temp/template.zip"), target);
+        DownloadHelper.download(this.getBasePath() + group + "-" + template + ".zip", "reformcloud/files/temp/template.zip");
+        IOUtils.unZip(Path.of("reformcloud/files/temp/template.zip"), target);
         IOUtils.deleteFile("reformcloud/files/temp/template.zip");
         return Task.completedTask(null);
     }
@@ -103,8 +102,8 @@ public final class URLTemplateBackend implements TemplateBackend {
     @NotNull
     @Override
     public Task<Void> loadPath(@NotNull String path, @NotNull Path target) {
-        DownloadHelper.downloadAndDisconnect(this.getBasePath() + path, "reformcloud/files/temp/template.zip");
-        IOUtils.unZip(Paths.get("reformcloud/files/temp/template.zip"), target);
+        DownloadHelper.download(this.getBasePath() + path, "reformcloud/files/temp/template.zip");
+        IOUtils.unZip(Path.of("reformcloud/files/temp/template.zip"), target);
         IOUtils.deleteFile("reformcloud/files/temp/template.zip");
         return Task.completedTask(null);
     }

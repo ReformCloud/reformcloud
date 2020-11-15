@@ -29,32 +29,22 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 import systems.reformcloud.reformcloud2.shared.network.data.DefaultProtocolBuffer;
 
 import java.util.List;
-import java.util.Optional;
 
 public class NettyPacketDecoder extends MessageToMessageDecoder<ByteBuf> {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) {
         if (ctx.channel().isActive() && msg.isReadable()) {
-            try {
-                ProtocolBuffer buffer = new DefaultProtocolBuffer(msg);
-                Optional<Packet> packet = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).getPacketById(buffer.readVarInt());
-                if (packet.isPresent()) {
-                    Packet object = packet.get();
-
-                    object.setQueryUniqueID(buffer.readUniqueId());
-                    object.read(buffer);
-
-                    out.add(object);
-                }
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
+            ProtocolBuffer buffer = new DefaultProtocolBuffer(msg);
+            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).getPacketById(buffer.readVarInt()).ifPresent(packet -> {
+                packet.setQueryUniqueID(buffer.readUniqueId());
+                packet.read(buffer);
+                out.add(packet);
+            });
         }
     }
 }

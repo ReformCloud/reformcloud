@@ -30,7 +30,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.builder.MainGroupBuilder;
 import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.executor.api.provider.MainGroupProvider;
 import systems.reformcloud.reformcloud2.executor.api.registry.io.FileRegistry;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
@@ -50,7 +50,7 @@ public class DefaultNodeMainGroupProvider implements MainGroupProvider {
         this.fileRegistry = new DefaultFileRegistry(registryFolder);
         this.mainGroups = this.fileRegistry.readKeys(
             e -> e.get("key", MainGroup.TYPE),
-            path -> System.err.println(LanguageManager.get("startup-unable-to-read-file",
+            path -> System.err.println(TranslationHolder.translate("startup-unable-to-read-file",
                 "Main-Group", path.toAbsolutePath().toString()))
         );
     }
@@ -132,7 +132,7 @@ public class DefaultNodeMainGroupProvider implements MainGroupProvider {
         this.mainGroups.clear();
         this.mainGroups.addAll(this.fileRegistry.readKeys(
             e -> e.get("key", MainGroup.TYPE),
-            path -> System.err.println(LanguageManager.get("startup-unable-to-read-file",
+            path -> System.err.println(TranslationHolder.translate("startup-unable-to-read-file",
                 "Main-Group", path.toAbsolutePath().toString()))
         ));
     }

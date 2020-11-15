@@ -45,7 +45,6 @@ import java.io.OutputStream;
 import java.net.Inet6Address;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Objects;
@@ -82,11 +81,11 @@ final class EnvironmentBuilder {
             loadPathInclusions(runningProcess, Inclusion.InclusionLoadType.PAST);
         }
 
-        if (Files.notExists(Paths.get("reformcloud/files/runner.jar"))) {
-            DownloadHelper.downloadAndDisconnect(Constants.RUNNER_DOWNLOAD_URL, "reformcloud/files/runner.jar");
+        if (Files.notExists(Path.of("reformcloud/files/runner.jar"))) {
+            DownloadHelper.download(Constants.RUNNER_DOWNLOAD_URL, "reformcloud/files/runner.jar");
         }
 
-        IOUtils.createDirectory(Paths.get(runningProcess.getPath() + "/plugins"));
+        IOUtils.createDirectory(Path.of(runningProcess.getPath() + "/plugins"));
         IOUtils.doCopy("reformcloud/files/runner.jar", runningProcess.getPath().resolve("runner.jar"));
         IOUtils.doOverrideInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/embedded.jar", runningProcess.getPath() + "/plugins/executor.jar");
 
@@ -113,11 +112,11 @@ final class EnvironmentBuilder {
             String fileName = "reformcloud/files/" + version.getName().toLowerCase().replace(" ", "-") + ".zip";
             String destPath = "reformcloud/files/" + version.getName().toLowerCase().replace(" ", "-");
 
-            Path targetDestination = Paths.get(destPath);
+            Path targetDestination = Path.of(destPath);
             if (Files.notExists(targetDestination)) {
-                DownloadHelper.downloadAndDisconnect(version.getUrl(), fileName);
+                DownloadHelper.download(version.getUrl(), fileName);
 
-                IOUtils.unZip(Paths.get(fileName), targetDestination);
+                IOUtils.unZip(Path.of(fileName), targetDestination);
                 IOUtils.rename(targetDestination.resolve("sponge.jar"), destPath + "/process.jar");
                 IOUtils.deleteFile(fileName);
             }
@@ -134,21 +133,21 @@ final class EnvironmentBuilder {
         }
 
         if (isLogicallyGlowstone(runningProcess)) {
-            IOUtils.createDirectory(Paths.get(runningProcess.getPath() + "/config"));
+            IOUtils.createDirectory(Path.of(runningProcess.getPath() + "/config"));
             IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/java/glowstone/glowstone.yml", runningProcess.getPath() + "/config/glowstone.yml");
             rewriteGlowstoneConfig(runningProcess);
         } else if (isLogicallySpongeVanilla(runningProcess)) {
-            IOUtils.createDirectory(Paths.get(runningProcess.getPath() + "/config/sponge"));
+            IOUtils.createDirectory(Path.of(runningProcess.getPath() + "/config/sponge"));
             IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/java/sponge/vanilla/global.conf", runningProcess.getPath() + "/config/sponge/global.conf");
             rewriteSpongeConfig(runningProcess);
         } else if (isLogicallySpongeForge(runningProcess)) {
-            IOUtils.createDirectory(Paths.get(runningProcess.getPath() + "/config/sponge"));
+            IOUtils.createDirectory(Path.of(runningProcess.getPath() + "/config/sponge"));
             IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/java/sponge/forge/global.conf", runningProcess.getPath() + "/config/sponge/global.conf");
             rewriteSpongeConfig(runningProcess);
         } else if (runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion().equals(Version.NUKKIT_X)
             || runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion().equals(Version.CLOUDBURST)) {
             Properties properties = new Properties();
-            try (InputStream inputStream = Files.newInputStream(Paths.get(runningProcess.getPath() + "/server.properties"))) {
+            try (InputStream inputStream = Files.newInputStream(Path.of(runningProcess.getPath() + "/server.properties"))) {
                 properties.load(inputStream);
                 properties.setProperty("server-ip", runningProcess.getProcessInformation().getNetworkInfo().getHostPlain());
                 properties.setProperty("server-port", Integer.toString(runningProcess.getProcessInformation().getNetworkInfo().getPort()));
@@ -158,7 +157,7 @@ final class EnvironmentBuilder {
                     properties.setProperty("max-players", Integer.toString(runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers()));
                 }
 
-                try (OutputStream outputStream = Files.newOutputStream(Paths.get(runningProcess.getPath() + "/server.properties"))) {
+                try (OutputStream outputStream = Files.newOutputStream(Path.of(runningProcess.getPath() + "/server.properties"))) {
                     properties.store(outputStream, "ReformCloud2 node edit");
                 }
             } catch (final IOException ex) {
@@ -172,7 +171,7 @@ final class EnvironmentBuilder {
         if (!runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion().equals(Version.NUKKIT_X)) {
             Properties properties = new Properties();
             IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/java/bukkit/server.properties", runningProcess.getPath() + "/server.properties");
-            try (InputStream inputStream = Files.newInputStream(Paths.get(runningProcess.getPath() + "/server.properties"))) {
+            try (InputStream inputStream = Files.newInputStream(Path.of(runningProcess.getPath() + "/server.properties"))) {
                 properties.load(inputStream);
                 properties.setProperty("server-ip", runningProcess.getProcessInformation().getNetworkInfo().getHostPlain());
                 properties.setProperty("server-port", Integer.toString(runningProcess.getProcessInformation().getNetworkInfo().getPort()));
@@ -182,7 +181,7 @@ final class EnvironmentBuilder {
                     properties.setProperty("max-players", Integer.toString(runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers()));
                 }
 
-                try (OutputStream outputStream = Files.newOutputStream(Paths.get(runningProcess.getPath() + "/server.properties"))) {
+                try (OutputStream outputStream = Files.newOutputStream(Path.of(runningProcess.getPath() + "/server.properties"))) {
                     properties.store(outputStream, "ReformCloud2 node edit");
                 }
             } catch (final IOException ex) {
@@ -190,24 +189,24 @@ final class EnvironmentBuilder {
             }
         }
 
-        if (!isLogicallySpongeForge(runningProcess) && Files.notExists(Paths.get(runningProcess.getPath() + "/process.jar"))) {
+        if (!isLogicallySpongeForge(runningProcess) && Files.notExists(Path.of(runningProcess.getPath() + "/process.jar"))) {
             Version version = runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion();
-            if (Files.notExists(Paths.get("reformcloud/files/" + Version.format(version)))) {
+            if (Files.notExists(Path.of("reformcloud/files/" + Version.format(version)))) {
                 Version.downloadVersion(version);
             }
         }
     }
 
     private static void proxyStartup(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
-        if (Files.notExists(Paths.get(runningProcess.getPath() + "/server-icon.png"))) {
+        if (Files.notExists(Path.of(runningProcess.getPath() + "/server-icon.png"))) {
             IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/server-icon.png", runningProcess.getPath() + "/server-icon.png");
         }
 
         try {
-            BufferedImage bufferedImage = ImageIO.read(Paths.get(runningProcess.getPath() + "/server-icon.png").toFile());
+            BufferedImage bufferedImage = ImageIO.read(Path.of(runningProcess.getPath() + "/server-icon.png").toFile());
             if (bufferedImage.getHeight() != 64 || bufferedImage.getWidth() != 64) {
                 System.err.println("The server icon of the process " + runningProcess.getProcessInformation().getProcessDetail().getName() + " is not correctly sized");
-                IOUtils.rename(Paths.get(runningProcess.getPath() + "/server-icon.png"), runningProcess.getPath() + "/server-icon-old.png");
+                IOUtils.rename(Path.of(runningProcess.getPath() + "/server-icon.png"), runningProcess.getPath() + "/server-icon-old.png");
                 IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/server-icon.png", runningProcess.getPath() + "/server-icon.png");
             }
         } catch (final IOException ex) {
@@ -225,9 +224,9 @@ final class EnvironmentBuilder {
             rewriteVelocityConfig(runningProcess);
         }
 
-        if (Files.notExists(Paths.get(runningProcess.getPath() + "/process.jar"))) {
+        if (Files.notExists(Path.of(runningProcess.getPath() + "/process.jar"))) {
             Version version = runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion();
-            if (Files.notExists(Paths.get("reformcloud/files/" + Version.format(version)))) {
+            if (Files.notExists(Path.of("reformcloud/files/" + Version.format(version)))) {
                 Version.downloadVersion(version);
             }
         }
@@ -235,7 +234,7 @@ final class EnvironmentBuilder {
 
     private static void createEula(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         try (InputStream inputStream = EnvironmentBuilder.class.getClassLoader().getResourceAsStream("files/java/bukkit/eula.txt")) {
-            Files.copy(Objects.requireNonNull(inputStream), Paths.get(runningProcess.getPath() + "/eula.txt"), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(Objects.requireNonNull(inputStream), Path.of(runningProcess.getPath() + "/eula.txt"), StandardCopyOption.REPLACE_EXISTING);
         } catch (final IOException ex) {
             ex.printStackTrace();
         }

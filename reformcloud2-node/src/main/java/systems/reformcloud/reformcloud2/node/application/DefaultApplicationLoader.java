@@ -40,7 +40,7 @@ import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfigura
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.shared.io.DownloadHelper;
 import systems.reformcloud.reformcloud2.shared.io.IOUtils;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.node.event.application.ApplicationDisableEvent;
 import systems.reformcloud.reformcloud2.node.event.application.ApplicationLoadEvent;
@@ -53,7 +53,6 @@ import java.net.URL;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -66,7 +65,7 @@ import java.util.stream.Collectors;
 
 public final class DefaultApplicationLoader implements ApplicationLoader {
 
-    private static final Path APPLICATION_DIRECTORY = Paths.get(System.getProperty("systems.reformcloud.application-directory", "reformcloud/applications"));
+    private static final Path APPLICATION_DIRECTORY = Path.of(System.getProperty("systems.reformcloud.application-directory", "reformcloud/applications"));
 
     private final Map<String, Application> loadedApplications = new ConcurrentHashMap<>();
     private final Collection<ApplicationConfig> toLoad = new CopyOnWriteArrayList<>();
@@ -85,7 +84,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
             exception.printStackTrace();
         }
 
-        System.out.println(LanguageManager.get("application-loaded-amount", this.toLoad.size()));
+        System.out.println(TranslationHolder.translate("application-loaded-amount", this.toLoad.size()));
     }
 
     @Override
@@ -102,7 +101,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
 
             value.onLoad();
             value.getApplication().setApplicationStatus(ApplicationStatus.LOADED);
-            System.out.println(LanguageManager.get("successfully-loaded-app", value.getApplication().getName()));
+            System.out.println(TranslationHolder.translate("successfully-loaded-app", value.getApplication().getName()));
         }
     }
 
@@ -111,7 +110,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
         for (Application value : this.loadedApplications.values()) {
             value.onEnable();
             value.getApplication().setApplicationStatus(ApplicationStatus.ENABLED);
-            System.out.println(LanguageManager.get("successfully-enabled-app", value.getApplication().getName()));
+            System.out.println(TranslationHolder.translate("successfully-enabled-app", value.getApplication().getName()));
         }
     }
 
@@ -217,7 +216,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                 }
 
                 this.toLoad.add(applicationConfig);
-                System.out.println(LanguageManager.get("application-detected", applicationConfig.getName(), path.toString()));
+                System.out.println(TranslationHolder.translate("application-detected", applicationConfig.getName(), path.toString()));
                 return applicationConfig;
             }
         } catch (final IOException exception) {
@@ -237,7 +236,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
             ExecutorAPI.getInstance().getDependencyLoader().detectAndLoad(mainClass);
 
             Application instance = (Application) mainClass.getDeclaredConstructor().newInstance();
-            System.out.println(LanguageManager.get("successfully-pre-installed-app", applicationConfig.getName(), applicationConfig.getAuthor()));
+            System.out.println(TranslationHolder.translate("successfully-pre-installed-app", applicationConfig.getName(), applicationConfig.getAuthor()));
 
             instance.init(new DefaultLoadedApplication(this, applicationConfig, mainClass), loader);
             if (instance.getUpdateRepository() != null) {
@@ -245,7 +244,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
             }
 
             this.loadedApplications.put(applicationConfig.getName(), instance);
-            System.out.println(LanguageManager.get("successfully-installed-app", applicationConfig.getName()));
+            System.out.println(TranslationHolder.translate("successfully-installed-app", applicationConfig.getName()));
             return instance;
         } catch (final ClassNotFoundException exception) {
             System.err.println("Unable to find main class " + applicationConfig.getMainClassName() + " for application " + applicationConfig.getName());
@@ -267,7 +266,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
 
         application.getApplication().setApplicationStatus(ApplicationStatus.PRE_DISABLE);
         application.onPreDisable();
-        System.out.println(LanguageManager.get("successfully-pre-disabled-app", application.getApplication().getName()));
+        System.out.println(TranslationHolder.translate("successfully-pre-disabled-app", application.getApplication().getName()));
 
         application.getApplication().setApplicationStatus(ApplicationStatus.DISABLED);
         application.onDisable();
@@ -289,12 +288,12 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
             return;
         }
 
-        IOUtils.createDirectory(Paths.get("reformcloud/.update/apps"));
+        IOUtils.createDirectory(Path.of("reformcloud/.update/apps"));
         String fileName = application.getApplication().getApplicationConfig().getApplicationFile().getName();
         String[] split = fileName.split("-");
         String name = fileName.replace("-" + split[split.length - 1], "").replace(".jar", "");
 
-        System.out.println(LanguageManager.get(
+        System.out.println(TranslationHolder.translate(
             "application-download-update",
             application.getApplication().getApplicationConfig().getName(),
             application.getApplication().getApplicationConfig().getVersion(),
@@ -303,7 +302,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
             repository.getUpdate().getDownloadUrl()
         ));
 
-        DownloadHelper.downloadAndDisconnect(
+        DownloadHelper.download(
             repository.getUpdate().getDownloadUrl(),
             "reformcloud/.update/apps/" + name + "-" + repository.getUpdate().getNewVersion() + ".jar"
         );

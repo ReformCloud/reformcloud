@@ -24,17 +24,18 @@
  */
 package systems.reformcloud.reformcloud2.shared.registry.io;
 
-import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.shared.io.IOUtils;
+import systems.reformcloud.reformcloud2.executor.api.configuration.json.adapter.JsonAdapter;
 import systems.reformcloud.reformcloud2.executor.api.registry.io.FileRegistry;
+import systems.reformcloud.reformcloud2.shared.io.IOUtils;
+import systems.reformcloud.reformcloud2.shared.reflect.TypeToken;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -44,10 +45,12 @@ import java.util.function.Function;
 public class DefaultFileRegistry implements FileRegistry {
 
     private final Path operatingFolder;
+    private final JsonAdapter backingAdapter;
 
-    public DefaultFileRegistry(String operatingFolder) {
-        this.operatingFolder = Paths.get(operatingFolder);
+    public DefaultFileRegistry(String operatingFolder, @Nullable JsonAdapter backingAdapter) {
+        this.operatingFolder = Path.of(operatingFolder);
         IOUtils.createDirectory(this.operatingFolder);
+        this.backingAdapter = backingAdapter == null ? JsonConfiguration.DEFAULT_ADAPTER : backingAdapter;
     }
 
     @NotNull
@@ -58,7 +61,7 @@ public class DefaultFileRegistry implements FileRegistry {
             return t;
         }
 
-        new JsonConfiguration().add("key", t).write(filePath);
+        JsonConfiguration.newJsonConfiguration().add("key", t).write(filePath);
         return t;
     }
 
@@ -70,8 +73,8 @@ public class DefaultFileRegistry implements FileRegistry {
             return Optional.empty();
         }
 
-        return Optional.ofNullable(JsonConfiguration.read(filePath).get("key", new TypeToken<>() {
-        }));
+        return Optional.ofNullable(JsonConfiguration.newJsonConfiguration(filePath, this.backingAdapter).get("key", new TypeToken<T>() {
+        }.getType()));
     }
 
     @Override
@@ -86,22 +89,20 @@ public class DefaultFileRegistry implements FileRegistry {
             return;
         }
 
-        new JsonConfiguration().add("key", newValue).write(filePath);
+        JsonConfiguration.newJsonConfiguration(this.backingAdapter).add("key", newValue).write(filePath);
     }
 
     @NotNull
     @Override
-    public <T> Collection<T> readKeys(@NotNull Function<JsonConfiguration, T> function,
-                                      @NotNull Consumer<Path> failureHandler) {
+    public <T> Collection<T> readKeys(@NotNull Function<JsonConfiguration, T> function, @NotNull Consumer<Path> failureHandler) {
         Collection<T> result = new CopyOnWriteArrayList<>();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.operatingFolder, path -> path.toString().endsWith(".json"))) {
             for (Path path : stream) {
-                T t = function.apply(JsonConfiguration.read(path));
+                T t = function.apply(JsonConfiguration.newJsonConfiguration(path, this.backingAdapter));
                 if (t == null) {
                     failureHandler.accept(path);
                     continue;
                 }
-
                 result.add(t);
             }
         } catch (IOException exception) {

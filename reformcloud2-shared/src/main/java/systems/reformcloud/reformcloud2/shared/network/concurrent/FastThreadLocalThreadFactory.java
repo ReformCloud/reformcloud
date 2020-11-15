@@ -22,14 +22,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.language;
+package systems.reformcloud.reformcloud2.shared.network.concurrent;
 
-import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
+import io.netty.util.concurrent.FastThreadLocalThread;
+import org.jetbrains.annotations.NotNull;
 
-public interface LanguageSource extends Nameable {
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
-    /**
-     * @return The prefix of the language source
-     */
-    String getSource();
+public class FastThreadLocalThreadFactory implements ThreadFactory {
+
+    private final String nameFormat;
+    private final AtomicInteger threadNumber = new AtomicInteger();
+
+    public FastThreadLocalThreadFactory(String nameFormat) {
+        this.nameFormat = nameFormat;
+    }
+
+    @Override
+    public Thread newThread(@NotNull Runnable r) {
+        String name = String.format(this.nameFormat, this.threadNumber.getAndIncrement());
+        return new FastThreadLocalThread(r, name);
+    }
 }

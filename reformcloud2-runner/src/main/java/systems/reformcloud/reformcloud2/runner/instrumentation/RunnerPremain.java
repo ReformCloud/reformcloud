@@ -31,7 +31,6 @@ import java.lang.instrument.Instrumentation;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.jar.JarFile;
 
 public final class RunnerPremain {
@@ -41,7 +40,7 @@ public final class RunnerPremain {
             return;
         }
 
-        Path path = Paths.get(System.getProperty("reformcloud.lib.path") + "/reformcloud/.bin/libs/");
+        Path path = Path.of(System.getProperty("reformcloud.lib.path") + "/reformcloud/.bin/libs/");
         if (Files.notExists(path) || !Files.isDirectory(path)) {
             throw new RuntimeException("Unable to parse runtime libs path");
         }

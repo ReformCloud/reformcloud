@@ -22,31 +22,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.shared.network.handler;
+package systems.reformcloud.reformcloud2.shared.io;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.handler.codec.LengthFieldPrepender;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
+import java.net.HttpURLConnection;
 
-import java.util.function.Supplier;
-
-public class NettyChannelInitializer extends ChannelInitializer<Channel> {
-
-    private final Supplier<ChannelListener> channelListenerFactory;
-
-    public NettyChannelInitializer(Supplier<ChannelListener> channelListenerFactory) {
-        this.channelListenerFactory = channelListenerFactory;
-    }
-
-    @Override
-    protected void initChannel(Channel channel) {
-        channel.pipeline()
-            .addLast("frame-decoder", new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4))
-            .addLast("frame-encoder", new LengthFieldPrepender(4, 0, false))
-            .addLast("packet-decoder", new NettyPacketDecoder())
-            .addLast("packet-encoder", new NettyPacketEncoder())
-            .addLast("listener", new NettyChannelListenerWrapper(this.channelListenerFactory));
-    }
+@FunctionalInterface
+public interface DownloadCallback {
+    void handleConnection(HttpURLConnection connection, Throwable exception) throws Throwable;
 }

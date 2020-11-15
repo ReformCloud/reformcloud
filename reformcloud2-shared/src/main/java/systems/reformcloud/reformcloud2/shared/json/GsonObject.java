@@ -30,8 +30,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.configuration.json.Element;
 import systems.reformcloud.reformcloud2.executor.api.configuration.json.types.Object;
+import systems.reformcloud.reformcloud2.shared.collect.Entry2;
 
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class GsonObject extends GsonElement implements Object {
 
@@ -87,6 +91,14 @@ public class GsonObject extends GsonElement implements Object {
     @Override
     public boolean has(@NotNull String property) {
         return this.gsonObject.has(property);
+    }
+
+    @Override
+    public @NotNull Set<Map.Entry<String, Element>> entrySet() {
+        return this.gsonObject.entrySet().stream().map(entry -> {
+            final Element mapped = ElementMapper.map(entry.getValue());
+            return new Entry2<>(entry.getKey(), mapped);
+        }).collect(Collectors.toSet());
     }
 
     @Override

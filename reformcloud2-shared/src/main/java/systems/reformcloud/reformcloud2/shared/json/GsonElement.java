@@ -51,6 +51,11 @@ public class GsonElement implements Element {
     }
 
     @Override
+    public boolean isArray() {
+        return this.gsonElement.isJsonArray();
+    }
+
+    @Override
     public boolean isNull() {
         return this.gsonElement.isJsonNull();
     }
@@ -108,11 +113,6 @@ public class GsonElement implements Element {
     @Override
     public short getAsShort() {
         return this.gsonElement.getAsShort();
-    }
-
-    @Override
-    public @NotNull Element clone() {
-        return new GsonElement(this.gsonElement.deepCopy());
     }
 
     @NotNull

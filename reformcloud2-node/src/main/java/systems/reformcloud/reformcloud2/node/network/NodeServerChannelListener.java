@@ -29,7 +29,7 @@ import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.shared.SharedChannelListener;
@@ -117,7 +117,7 @@ public class NodeServerChannelListener extends SharedChannelListener {
                 super.networkChannel.setName(nodeInformation.getName());
                 ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleNodeConnect(nodeInformation);
 
-                System.out.println(LanguageManager.get("network-node-other-node-connected", nodeInformation.getName()));
+                System.out.println(TranslationHolder.translate("network-node-other-node-connected", nodeInformation.getName()));
             } else if (packet.getType() == 2) {
                 UUID processUniqueId = packet.getData().get("pid", UUID.class);
                 if (processUniqueId == null) {
@@ -147,7 +147,7 @@ public class NodeServerChannelListener extends SharedChannelListener {
                 information.getProcessDetail().setProcessState(information.getProcessDetail().getInitialState());
 
                 ExecutorAPI.getInstance().getProcessProvider().updateProcessInformation(information);
-                System.out.println(LanguageManager.get("process-connected-to-node", information.getProcessDetail().getName()));
+                System.out.println(TranslationHolder.get("process-connected-to-node", information.getProcessDetail().getName()));
             } else {
                 // invalid data
                 super.networkChannel.close();

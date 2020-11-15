@@ -35,7 +35,7 @@ import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.node.template.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.http.server.HttpServer;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
@@ -135,7 +135,6 @@ import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 import systems.reformcloud.reformcloud2.shared.platform.Platform;
 import systems.reformcloud.reformcloud2.shared.registry.service.DefaultServiceRegistry;
 
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Random;
 
@@ -168,7 +167,7 @@ public final class NodeExecutor extends ExecutorAPI {
     private DefaultNodeInformation currentNodeInformation;
 
     protected NodeExecutor(DependencyLoader dependencyLoader) {
-        Conditions.isTrue(Paths.get("").toAbsolutePath().toString().indexOf('!') == -1, "Cannot run ReformCloud in directory with ! in path.");
+        Conditions.isTrue(Path.of("").toAbsolutePath().toString().indexOf('!') == -1, "Cannot run ReformCloud in directory with ! in path.");
 
         ExecutorAPI.setInstance(this);
         super.type = ExecutorType.NODE;
@@ -217,11 +216,11 @@ public final class NodeExecutor extends ExecutorAPI {
         ));
 
         for (String mainGroupName : this.mainGroupProvider.getMainGroupNames()) {
-            System.out.println(LanguageManager.get("loading-main-group", mainGroupName));
+            System.out.println(TranslationHolder.translate("loading-main-group", mainGroupName));
         }
 
         for (String processGroupName : this.processGroupProvider.getProcessGroupNames()) {
-            System.out.println(LanguageManager.get("loading-process-group", processGroupName));
+            System.out.println(TranslationHolder.translate("loading-process-group", processGroupName));
         }
 
         this.serviceRegistry.setProvider(ClusterManager.class, new DefaultClusterManager(
@@ -249,7 +248,7 @@ public final class NodeExecutor extends ExecutorAPI {
     }
 
     public synchronized void reload() {
-        System.out.println(LanguageManager.get("runtime-try-reload"));
+        System.out.println(TranslationHolder.translate("runtime-try-reload"));
 
         final long startTime = System.currentTimeMillis();
         this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).disableApplications();
@@ -286,7 +285,7 @@ public final class NodeExecutor extends ExecutorAPI {
         this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).loadApplications();
         this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).enableApplications();
 
-        System.out.println(LanguageManager.get("runtime-reload-done", Constants.TWO_POINT_THREE_DECIMAL_FORMAT.format((System.currentTimeMillis() - startTime) / 1000d)));
+        System.out.println(TranslationHolder.translate("runtime-reload-done", Constants.TWO_POINT_THREE_DECIMAL_FORMAT.format((System.currentTimeMillis() - startTime) / 1000d)));
     }
 
     public void shutdown() throws Exception {
@@ -299,24 +298,24 @@ public final class NodeExecutor extends ExecutorAPI {
             }
         }
 
-        System.out.println(LanguageManager.get("application-stop"));
+        System.out.println(TranslationHolder.translate("application-stop"));
 
-        System.out.println(LanguageManager.get("application-net-server-close"));
+        System.out.println(TranslationHolder.translate("application-net-server-close"));
         this.networkServer.closeAll();
         this.httpServer.closeAll();
-        System.out.println(LanguageManager.get("application-net-client-close"));
+        System.out.println(TranslationHolder.translate("application-net-client-close"));
         this.networkClient.disconnect();
 
-        System.out.println(LanguageManager.get("application-stop-task-scheduler"));
+        System.out.println(TranslationHolder.translate("application-stop-task-scheduler"));
         this.taskScheduler.close();
         this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).disableApplications();
 
-        System.out.println(LanguageManager.get("application-stop-processes"));
+        System.out.println(TranslationHolder.translate("application-stop-processes"));
         this.processProvider.closeNow(); // important to close the scheduler BEFORE the processes to prevent new processes to start
-        System.out.println(LanguageManager.get("application-stop-remove-temp-dir"));
-        IOUtils.deleteDirectorySilently(Paths.get("reformcloud/temp"));
+        System.out.println(TranslationHolder.translate("application-stop-remove-temp-dir"));
+        IOUtils.deleteDirectorySilently(Path.of("reformcloud/temp"));
 
-        System.out.println(LanguageManager.get("application-stop-finished"));
+        System.out.println(TranslationHolder.translate("application-stop-finished"));
 
         this.logger.close();
         this.console.close();
@@ -328,11 +327,11 @@ public final class NodeExecutor extends ExecutorAPI {
     }
 
     private void startNetworkListeners() {
-        System.out.println(LanguageManager.get("network-transport-type-choose", PacketIds.TRANSPORT_TYPE.getName()));
+        System.out.println(TranslationHolder.get("network-transport-type-choose", PacketIds.TRANSPORT_TYPE.getName()));
 
         for (SimpleNetworkAddress networkListener : this.nodeConfig.getNetworkListeners()) {
             if (networkListener.getHost() == null || networkListener.getPort() < 0) {
-                System.err.println(LanguageManager.get(
+                System.err.println(TranslationHolder.translate(
                     "startup-bind-net-listener-fail", networkListener.getHost(), networkListener.getPort()
                 ));
                 continue;
@@ -343,7 +342,7 @@ public final class NodeExecutor extends ExecutorAPI {
 
         for (SimpleNetworkAddress httpNetworkListener : this.nodeConfig.getHttpNetworkListeners()) {
             if (httpNetworkListener.getHost() == null || httpNetworkListener.getPort() < 0) {
-                System.err.println(LanguageManager.get(
+                System.err.println(TranslationHolder.translate(
                     "startup-bind-net-listener-fail", httpNetworkListener.getHost(), httpNetworkListener.getPort()
                 ));
                 continue;
@@ -354,7 +353,7 @@ public final class NodeExecutor extends ExecutorAPI {
 
         for (SimpleNetworkAddress clusterNode : this.nodeConfig.getClusterNodes()) {
             if (clusterNode.getHost() == null || clusterNode.getPort() < 0) {
-                System.err.println(LanguageManager.get(
+                System.err.println(TranslationHolder.translate(
                     "startup-connect-node-fail", clusterNode.getHost(), clusterNode.getPort()
                 ));
                 continue;
@@ -365,11 +364,11 @@ public final class NodeExecutor extends ExecutorAPI {
                 clusterNode.getPort(),
                 NodeClientChannelListener::new
             )) {
-                System.out.println(LanguageManager.get(
+                System.out.println(TranslationHolder.translate(
                     "network-node-connection-to-other-node-success", clusterNode.getHost(), clusterNode.getPort()
                 ));
             } else {
-                System.out.println(LanguageManager.get(
+                System.out.println(TranslationHolder.translate(
                     "network-node-connection-to-other-node-not-successful", clusterNode.getHost(), clusterNode.getPort()
                 ));
             }

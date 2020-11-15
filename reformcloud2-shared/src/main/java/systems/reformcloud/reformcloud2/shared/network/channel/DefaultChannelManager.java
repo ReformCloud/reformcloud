@@ -24,7 +24,6 @@
  */
 package systems.reformcloud.reformcloud2.shared.network.channel;
 
-import io.netty.channel.Channel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
@@ -65,12 +64,6 @@ public class DefaultChannelManager implements ChannelManager {
     @Override
     public @UnmodifiableView Collection<NetworkChannel> getRegisteredChannels() {
         return Collections.unmodifiableCollection(this.channels.values());
-    }
-
-    @NotNull
-    @Override
-    public NetworkChannel createChannel(@NotNull Channel channel) {
-        return new DefaultNetworkChannel(channel);
     }
 
     @Override

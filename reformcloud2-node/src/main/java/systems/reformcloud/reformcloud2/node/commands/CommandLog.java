@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 
@@ -47,12 +47,12 @@ public final class CommandLog implements Command {
 
         Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByName(strings[0]);
         if (wrapper.isEmpty()) {
-            sender.sendMessage(LanguageManager.get("command-process-process-unknown", strings[0]));
+            sender.sendMessage(TranslationHolder.translate("command-process-process-unknown", strings[0]));
             return;
         }
 
         if (!wrapper.get().getProcessInformation().getProcessDetail().getProcessState().isStartedOrOnline()) {
-            sender.sendMessage(LanguageManager.get("command-log-process-not-started", wrapper.get().getProcessInformation().getProcessDetail().getName()));
+            sender.sendMessage(TranslationHolder.get("command-log-process-not-started", wrapper.get().getProcessInformation().getProcessDetail().getName()));
             return;
         }
 
@@ -60,7 +60,7 @@ public final class CommandLog implements Command {
         if (logUrl.isPresent()) {
             sender.sendMessage(logUrl.get());
         } else {
-            sender.sendMessage(LanguageManager.get("command-log-upload-log-failed"));
+            sender.sendMessage(TranslationHolder.translate("command-log-upload-log-failed"));
         }
     }
 

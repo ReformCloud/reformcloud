@@ -33,7 +33,6 @@ import systems.reformcloud.reformcloud2.node.database.util.SQLFunction;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -42,7 +41,7 @@ import java.sql.SQLException;
 
 public class H2DatabaseProvider extends AbstractSQLDatabaseProvider {
 
-    private static final Path DB_PATH = Paths.get(System.getProperty("systems.reformcloud.h2-db-path", "reformcloud/.database/h2/h2_db"));
+    private static final Path DB_PATH = Path.of(System.getProperty("systems.reformcloud.h2-db-path", "reformcloud/.database/h2/h2_db"));
     private final Connection connection;
 
     public H2DatabaseProvider() {

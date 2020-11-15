@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Implementation of George Marsaglia's XORShift random generator
- * 30% faster and better quality than the built-in java.util.Random furthe
+ * 30% faster and better quality than the built-in java.util.Random further
  * information: http://www.javamex.com/tutorials/random_numbers/xorshift.shtml
  */
 public class ThreadLocalFastRandom extends Random {

@@ -26,17 +26,15 @@ package systems.reformcloud.reformcloud2.shared.io;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
 @ApiStatus.Internal
 public final class DownloadHelper {
@@ -45,74 +43,61 @@ public final class DownloadHelper {
         throw new UnsupportedOperationException();
     }
 
-    public static void downloadAndDisconnect(@NotNull String url, @NotNull String target) {
-        openURLConnection(url, new HashMap<>(), connection -> {
-            System.out.println(LanguageManager.get("runtime-download-file", url, getSize(connection.getContentLengthLong())));
-            long start = System.currentTimeMillis();
+    public static void download(@NotNull String url, @NotNull String target) {
+        connect(url, (connection, exception) -> {
+            if (connection != null && connection.getResponseCode() == 200) {
+                System.out.println(TranslationHolder.translate("runtime-download-file", url, getSize(connection.getContentLengthLong())));
+                final long startMillis = System.currentTimeMillis();
 
-            try (InputStream stream = connection.getInputStream()) {
-                IOUtils.createDirectory(Paths.get(target).getParent());
-                IOUtils.doCopy(stream, Paths.get(target), StandardCopyOption.REPLACE_EXISTING);
-            } catch (final IOException ex) {
-                ex.printStackTrace();
+                try (InputStream stream = connection.getInputStream()) {
+                    IOUtils.createDirectory(Path.of(target).getParent());
+                    IOUtils.doCopy(stream, Path.of(target), StandardCopyOption.REPLACE_EXISTING);
+                } catch (final IOException ex) {
+                    ex.printStackTrace();
+                }
+
+                System.out.println(TranslationHolder.translate("runtime-download-file-completed", url, System.currentTimeMillis() - startMillis));
+            } else {
+                new RuntimeException("Unable to download from " + url, exception).printStackTrace();
             }
-
-            System.out.println(LanguageManager.get("runtime-download-file-completed",
-                url, System.currentTimeMillis() - start));
-        }, Throwable::printStackTrace);
+        });
     }
 
-    public static void openConnection(@NotNull String url, @NotNull Consumer<InputStream> consumer) {
-        openConnection(url, new HashMap<>(), consumer);
+    public static void connect(@NotNull String url, @NotNull DownloadCallback callback) {
+        connect(url, Map.of(), callback);
     }
 
-    public static void openConnection(@NotNull String url, @NotNull Map<String, String> headers,
-                                      @NotNull Consumer<InputStream> inputStreamConsumer) {
-        openConnection(url, headers, inputStreamConsumer, Throwable::printStackTrace);
-    }
-
-    public static void openConnection(@NotNull String url, @NotNull Map<String, String> headers,
-                                      @NotNull Consumer<InputStream> inputStreamConsumer,
-                                      @NotNull Consumer<Throwable> exceptionConsumer) {
-        openURLConnection(url, headers, httpURLConnection -> {
-            try (InputStream stream = httpURLConnection.getInputStream()) {
-                inputStreamConsumer.accept(stream);
-            } catch (final IOException ex) {
-                exceptionConsumer.accept(ex);
-            }
-        }, exceptionConsumer);
-    }
-
-    public static void openURLConnection(@NotNull String url, @NotNull Map<String, String> headers,
-                                         @NotNull Consumer<HttpURLConnection> connectionConsumer,
-                                         @NotNull Consumer<Throwable> exceptionConsumer) {
+    public static void connect(@NotNull String url, @NotNull Map<String, String> headers, @NotNull DownloadCallback callback) {
         try {
             HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
-            httpURLConnection.setRequestProperty(
-                "User-Agent",
-                "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11"
-            );
-            headers.forEach(httpURLConnection::setRequestProperty);
+            httpURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
             httpURLConnection.setDoOutput(false);
             httpURLConnection.setUseCaches(false);
+            httpURLConnection.setConnectTimeout(5000);
+            httpURLConnection.setReadTimeout(5000);
+            headers.forEach(httpURLConnection::setRequestProperty);
             httpURLConnection.connect();
-            connectionConsumer.accept(httpURLConnection);
-            httpURLConnection.disconnect();
+
+            try {
+                callback.handleConnection(httpURLConnection, null);
+            } finally {
+                httpURLConnection.disconnect();
+            }
         } catch (final Throwable throwable) {
-            exceptionConsumer.accept(throwable);
+            try {
+                callback.handleConnection(null, throwable);
+            } catch (Throwable t) {
+                throw new RuntimeException("Unable to post exception to listener", t);
+            }
         }
     }
 
     @NotNull
     private static String getSize(long size) {
-        if (size >= 1048576L) {
-            return Math.round((float) size / 1048576.0F) + "MB";
-        }
-
         if (size >= 1024) {
-            return Math.round((float) size / 1024.0F) + "KB";
+            int z = (63 - Long.numberOfLeadingZeros(size)) / 10;
+            return String.format("%.1f %sB", (double) size / (1L << (z * 10)), " KMGTPE".charAt(z));
         }
-
-        return Math.round(size) + "B";
+        return size + " B";
     }
 }

@@ -53,7 +53,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -190,7 +189,7 @@ public final class SFTPTemplateBackend implements TemplateBackend {
             localDir += "/";
         }
 
-        Path local = Paths.get(localDir);
+        Path local = Path.of(localDir);
         Files.createDirectories(local);
 
         for (RemoteResourceInfo resourceInfo : this.sftpClient.ls(remoteDir)) {
@@ -236,7 +235,7 @@ public final class SFTPTemplateBackend implements TemplateBackend {
             // discard silently
         }
 
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(localDir))) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Path.of(localDir))) {
             for (Path path : stream) {
                 Path fileName = path.getFileName();
                 if (fileName == null || excluded.contains(fileName.toString())) {

@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -56,14 +55,14 @@ public class FileDatabaseProvider implements DatabaseProvider {
 
     @Override
     public void deleteTable(@NotNull String tableName) {
-        IOUtils.deleteDirectory(Paths.get("reformcloud/.database", tableName));
+        IOUtils.deleteDirectory(Path.of("reformcloud/.database", tableName));
     }
 
     @Override
     public @NotNull
     @UnmodifiableView Collection<String> getTableNames() {
         Collection<String> collection = new ArrayList<>();
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get("reformcloud/.database"))) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Path.of("reformcloud/.database"))) {
             for (Path path : stream) {
                 collection.add(path.getFileName().toString());
             }

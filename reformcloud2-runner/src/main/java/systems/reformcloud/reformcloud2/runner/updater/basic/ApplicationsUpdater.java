@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -49,7 +48,7 @@ public final class ApplicationsUpdater implements Updater {
     /**
      * The folder in which the installed applications of the cloud versions are located
      */
-    private static final Path APP_FOLDER = Paths.get("reformcloud/applications");
+    private static final Path APP_FOLDER = Path.of("reformcloud/applications");
 
     /**
      * The pattern to find a file update
@@ -109,7 +108,7 @@ public final class ApplicationsUpdater implements Updater {
         for (Map.Entry<Path, Path> oldToNewUpdate : this.oldToNewUpdates) {
             RunnerUtils.deleteFileIfExists(oldToNewUpdate.getKey());
 
-            RunnerUtils.copy(oldToNewUpdate.getValue(), Paths.get(
+            RunnerUtils.copy(oldToNewUpdate.getValue(), Path.of(
                 APP_FOLDER + "/" + oldToNewUpdate.getValue().getFileName()
             ));
             RunnerUtils.deleteFileIfExists(oldToNewUpdate.getValue());

@@ -45,7 +45,6 @@ import java.io.OutputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.Executor;
@@ -168,7 +167,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
                 }
 
                 for (FTPFile file : files) {
-                    this.loadFiles(file, group + "/" + template + "/" + file.getName(), Paths.get(target.toString(), file.getName()));
+                    this.loadFiles(file, group + "/" + template + "/" + file.getName(), Path.of(target.toString(), file.getName()));
                 }
             } catch (final IOException ex) {
                 ex.printStackTrace();
@@ -184,7 +183,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
             }
 
             for (FTPFile ftpFile : files) {
-                this.loadFiles(ftpFile, path + "/" + ftpFile.getName(), Paths.get(target.toString(), ftpFile.getName()));
+                this.loadFiles(ftpFile, path + "/" + ftpFile.getName(), Path.of(target.toString(), ftpFile.getName()));
             }
         } else if (file.isFile()) {
             IOUtils.createDirectory(target.getParent());
@@ -229,7 +228,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
                 }
 
                 for (FTPFile file : files) {
-                    this.loadFiles(file, path + "/" + file.getName(), Paths.get(target.toString(), file.getName()));
+                    this.loadFiles(file, path + "/" + file.getName(), Path.of(target.toString(), file.getName()));
                 }
             } catch (final IOException ex) {
                 ex.printStackTrace();

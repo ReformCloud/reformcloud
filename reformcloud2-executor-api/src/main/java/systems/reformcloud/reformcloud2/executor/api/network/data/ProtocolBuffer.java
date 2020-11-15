@@ -112,6 +112,8 @@ public interface ProtocolBuffer {
 
     double readDouble();
 
+    <E extends Enum<E>> E readEnum(@NotNull Class<E> enumClass);
+
     void readBytes(byte[] target);
 
     void skipBytes(int amount);
@@ -135,4 +137,6 @@ public interface ProtocolBuffer {
     void writeDouble(double d);
 
     void writeBytes(byte[] bytes);
+
+    void writeEnum(@NotNull Enum<?> constant);
 }

@@ -111,6 +111,11 @@ public class GsonArray extends GsonElement implements Array {
         return Optional.of(ElementMapper.map(this.array.get(i)));
     }
 
+    @Override
+    public @NotNull Array clone() {
+        return new GsonArray(this.array.deepCopy());
+    }
+
     @NotNull
     @Override
     public Iterator<Element> iterator() {

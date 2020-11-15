@@ -29,6 +29,8 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessRuntimeInformation;
+import systems.reformcloud.reformcloud2.shared.platform.Platform;
+import systems.reformcloud.reformcloud2.shared.process.DefaultProcessRuntimeInformation;
 
 import java.util.UUID;
 
@@ -56,7 +58,7 @@ public class DefaultNodeInformation implements NodeInformation {
         this.startupTime = this.lastUpdate = startupTime;
         this.usedMemory = usedMemory;
         this.maxMemory = maxMemory;
-        this.processRuntimeInformation = ProcessRuntimeInformation.create();
+        this.processRuntimeInformation = Platform.createProcessRuntimeInformation();
     }
 
     @NotNull
@@ -109,7 +111,7 @@ public class DefaultNodeInformation implements NodeInformation {
     }
 
     public void update() {
-        this.processRuntimeInformation = ProcessRuntimeInformation.create();
+        this.processRuntimeInformation = Platform.createProcessRuntimeInformation();
         this.lastUpdate = System.currentTimeMillis();
     }
 
@@ -131,12 +133,10 @@ public class DefaultNodeInformation implements NodeInformation {
     public void write(@NotNull ProtocolBuffer buffer) {
         buffer.writeString(this.name);
         buffer.writeUniqueId(this.nodeUniqueID);
-
         buffer.writeLong(this.startupTime);
         buffer.writeLong(this.lastUpdate);
         buffer.writeLong(this.usedMemory);
         buffer.writeLong(this.maxMemory);
-
         buffer.writeObject(this.processRuntimeInformation);
     }
 
@@ -144,12 +144,10 @@ public class DefaultNodeInformation implements NodeInformation {
     public void read(@NotNull ProtocolBuffer buffer) {
         this.name = buffer.readString();
         this.nodeUniqueID = buffer.readUniqueId();
-
         this.startupTime = buffer.readLong();
         this.lastUpdate = buffer.readLong();
         this.usedMemory = buffer.readLong();
         this.maxMemory = buffer.readLong();
-
-        this.processRuntimeInformation = buffer.readObject(ProcessRuntimeInformation.class);
+        this.processRuntimeInformation = buffer.readObject(DefaultProcessRuntimeInformation.class, ProcessRuntimeInformation.class);
     }
 }

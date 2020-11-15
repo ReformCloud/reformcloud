@@ -35,18 +35,9 @@ public class NettyPacketEncoder extends MessageToByteEncoder<Packet> {
 
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, Packet packet, ByteBuf byteBuf) {
-        if (!byteBuf.isWritable()) {
-            return;
-        }
-
         ProtocolBuffer buffer = new DefaultProtocolBuffer(byteBuf);
-        try {
-            buffer.writeVarInt(packet.getId());
-            buffer.writeUniqueId(packet.getQueryUniqueID());
-
-            packet.write(buffer);
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
+        buffer.writeVarInt(packet.getId());
+        buffer.writeUniqueId(packet.getQueryUniqueID());
+        packet.write(buffer);
     }
 }

@@ -29,7 +29,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessBuilder;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Version;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.provider.ProcessProvider;
@@ -169,7 +169,7 @@ public final class DefaultNodeProcessProvider implements ProcessProvider {
         ExecutorService executorService = Executors.newFixedThreadPool((this.processes.size() / 2) + 1);
         for (DefaultNodeLocalProcessWrapper processWrapper : this.getProcessWrappers()) {
             executorService.submit(() -> {
-                System.out.println(LanguageManager.get("application-stop-process", processWrapper.getProcessInformation().getProcessDetail().getName()));
+                System.out.println(TranslationHolder.get("application-stop-process", processWrapper.getProcessInformation().getProcessDetail().getName()));
                 processWrapper.setRuntimeState(ProcessState.STOPPED);
             });
         }

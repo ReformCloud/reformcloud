@@ -25,11 +25,20 @@
 package systems.reformcloud.reformcloud2.shared.json;
 
 import com.google.gson.JsonPrimitive;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.configuration.json.types.Primitive;
 
 public class GsonPrimitive extends GsonElement implements Primitive {
 
+    private final JsonPrimitive gsonPrimitive;
+
     public GsonPrimitive(JsonPrimitive primitive) {
         super(primitive);
+        this.gsonPrimitive = primitive;
+    }
+
+    @Override
+    public @NotNull Primitive clone() {
+        return new GsonPrimitive(this.gsonPrimitive.deepCopy());
     }
 }

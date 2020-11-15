@@ -40,7 +40,7 @@ public class SignsUpdater extends DefaultApplicationUpdateRepository {
 
     @Override
     public void fetchOrigin() {
-        DownloadHelper.openConnection("https://internal.reformcloud.systems/version.properties", inputStream -> {
+        DownloadHelper.connect("https://internal.reformcloud.systems/version.properties", inputStream -> {
             try {
                 Properties properties = new Properties();
                 properties.load(inputStream);

@@ -24,17 +24,33 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.language;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
+import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
+
+import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
-public interface Language {
+public interface LanguageFileHolder extends Nameable {
 
-    /**
-     * @return The source of the current language
-     */
-    LanguageSource source();
+    @NotNull
+    @Contract("_, _ -> new")
+    static LanguageFileHolder properties(@NotNull String languageCode, @NotNull Properties properties) {
+        return new PropertiesLanguageFileHolder(languageCode, properties);
+    }
 
-    /**
-     * @return The messages of the current language in a {@link Properties}-file
-     */
-    Properties messages();
+    @NotNull
+    Optional<String> getTranslation(@NotNull String key);
+
+    @NotNull
+    LanguageFileHolder registerTranslation(@NotNull String key, @NotNull String translation);
+
+    @NotNull
+    LanguageFileHolder unregisterTranslation(@NotNull String key, @NotNull String translation);
+
+    @NotNull
+    @Unmodifiable
+    Map<String, String> getTranslations();
 }

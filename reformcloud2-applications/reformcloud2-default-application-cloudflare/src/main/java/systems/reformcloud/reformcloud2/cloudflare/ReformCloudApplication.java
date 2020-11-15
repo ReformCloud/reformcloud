@@ -32,7 +32,7 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.shared.language.LanguageLoader;
 
 import java.io.IOException;
@@ -50,13 +50,13 @@ public class ReformCloudApplication extends Application {
         try (InputStream stream = this.getClass().getClassLoader().getResourceAsStream("language-cloudflare.properties")) {
             Properties properties = new Properties();
             properties.load(stream);
-            LanguageManager.loadAddonMessageFile(this.getApplication().getName(), new LanguageLoader.InternalLanguage(properties));
+            TranslationHolder.loadAddonMessageFile(this.getApplication().getName(), new LanguageLoader.InternalLanguage(properties));
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
 
         if (CloudFlareHelper.init(this.getDataDirectory().resolve("config.json"))) {
-            System.err.println(LanguageManager.get("cloudflare-first-init"));
+            System.err.println(TranslationHolder.translate("cloudflare-first-init"));
             return;
         }
 

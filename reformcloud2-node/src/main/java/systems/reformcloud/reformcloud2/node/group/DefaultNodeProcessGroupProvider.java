@@ -30,7 +30,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.builder.ProcessGroupBuilder;
 import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.provider.ProcessGroupProvider;
 import systems.reformcloud.reformcloud2.executor.api.registry.io.FileRegistry;
@@ -51,7 +51,7 @@ public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
         this.fileRegistry = new DefaultFileRegistry(registryFolder);
         this.processGroups = this.fileRegistry.readKeys(
             e -> e.get("key", DefaultProcessGroup.TYPE),
-            path -> System.err.println(LanguageManager.get("startup-unable-to-read-file",
+            path -> System.err.println(TranslationHolder.translate("startup-unable-to-read-file",
                 "Process-Group", path.toAbsolutePath().toString()))
         );
     }
@@ -138,7 +138,7 @@ public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
         this.processGroups.clear();
         this.processGroups.addAll(this.fileRegistry.readKeys(
             e -> e.get("key", DefaultProcessGroup.TYPE),
-            path -> System.err.println(LanguageManager.get("startup-unable-to-read-file",
+            path -> System.err.println(TranslationHolder.translate("startup-unable-to-read-file",
                 "Process-Group", path.toAbsolutePath().toString()))
         ));
     }

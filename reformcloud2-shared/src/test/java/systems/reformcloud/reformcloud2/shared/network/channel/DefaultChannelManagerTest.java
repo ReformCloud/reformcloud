@@ -23,9 +23,10 @@ class DefaultChannelManagerTest {
     @Order(1)
     void testCreateAndRegisterChannel() {
         Channel channel = Mockito.mock(Channel.class);
+        Mockito.when(channel.localAddress()).thenReturn(new InetSocketAddress("127.0.0.1", 25565));
         Mockito.when(channel.remoteAddress()).thenReturn(new InetSocketAddress("127.0.0.1", 25565));
 
-        NetworkChannel networkChannel = this.channelManager.createChannel(channel);
+        NetworkChannel networkChannel = new DefaultNetworkChannel(channel);
         networkChannel.setName("TestChannel");
         this.channelManager.registerChannel(networkChannel);
     }

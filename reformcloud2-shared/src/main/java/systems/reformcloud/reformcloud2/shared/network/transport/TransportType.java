@@ -36,7 +36,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.shared.network.concurrent.FastNettyThreadFactory;
+import systems.reformcloud.reformcloud2.shared.network.concurrent.FastThreadLocalThreadFactory;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.function.BiFunction;
@@ -81,7 +81,7 @@ public enum TransportType {
     }
 
     public static @NotNull ThreadFactory newThreadFactory(@NotNull String name, @NotNull EventLoopGroupType type) {
-        return new FastNettyThreadFactory("Netty " + type.getName() + ' ' + name + " Thread#%d");
+        return new FastThreadLocalThreadFactory("Netty " + type.getName() + ' ' + name + " Thread#%d");
     }
 
     public @NotNull String getName() {

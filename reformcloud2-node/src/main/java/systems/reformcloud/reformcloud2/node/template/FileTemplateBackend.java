@@ -35,7 +35,6 @@ import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 
 public class FileTemplateBackend implements TemplateBackend {
@@ -50,7 +49,7 @@ public class FileTemplateBackend implements TemplateBackend {
     @Override
     public void createTemplate(@NotNull String group, @NotNull String template) {
         if (!this.existsTemplate(group, template)) {
-            IOUtils.createDirectory(Paths.get("reformcloud/templates", group, template, "plugins"));
+            IOUtils.createDirectory(Path.of("reformcloud/templates", group, template, "plugins"));
         }
     }
 
@@ -76,7 +75,7 @@ public class FileTemplateBackend implements TemplateBackend {
     @NotNull
     @Override
     public Task<Void> loadPath(@NotNull String path, @NotNull Path target) {
-        Path localPath = Paths.get(path);
+        Path localPath = Path.of(path);
         if (Files.notExists(localPath)) {
             IOUtils.createDirectory(localPath);
             return Task.completedTask(null);
@@ -112,6 +111,6 @@ public class FileTemplateBackend implements TemplateBackend {
     }
 
     private Path format(String group, String template) {
-        return Paths.get("reformcloud/templates/" + group + "/" + template);
+        return Path.of("reformcloud/templates/" + group + "/" + template);
     }
 }
