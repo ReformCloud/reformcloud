@@ -32,6 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("unused")
 public final class Versions {
+    private static final Map<String, Version> VERSIONS = new ConcurrentHashMap<>();
     // ----
     // JAVA SERVERS
     // ----
@@ -104,8 +105,6 @@ public final class Versions {
     // POCKET PROXIES
     // ----
     public static final Version WATERDOG_PE = pocketProxy("WATERDOG_PE", "https://ci.codemc.org/job/yesdog/job/Waterdog/lastSuccessfulBuild/artifact/Waterfall-Proxy/bootstrap/target/Waterdog.jar");
-
-    private static final Map<String, Version> VERSIONS = new ConcurrentHashMap<>();
 
     private Versions() {
         throw new UnsupportedOperationException();

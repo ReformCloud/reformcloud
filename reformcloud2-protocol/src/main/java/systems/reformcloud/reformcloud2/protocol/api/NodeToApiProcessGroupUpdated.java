@@ -28,25 +28,26 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.event.events.group.ProcessGroupUpdateEvent;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 
 public class NodeToApiProcessGroupUpdated extends ProtocolPacket {
 
-    private DefaultProcessGroup processGroup;
+    private ProcessGroup processGroup;
 
     public NodeToApiProcessGroupUpdated() {
     }
 
-    public NodeToApiProcessGroupUpdated(DefaultProcessGroup processGroup) {
+    public NodeToApiProcessGroupUpdated(ProcessGroup processGroup) {
         this.processGroup = processGroup;
     }
 
-    public DefaultProcessGroup getProcessGroup() {
+    public ProcessGroup getProcessGroup() {
         return this.processGroup;
     }
 

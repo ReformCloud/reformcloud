@@ -58,14 +58,6 @@ public final class TranslationHolder {
         return translate(key, "<message '" + key + "' missing>", replacements);
     }
 
-    public static void setEnabledLanguage(@NotNull String languageCode) {
-        if (LOADED_LANGUAGES.containsKey(languageCode)) {
-            IN_USE_LANGUAGE_CODE.set(languageCode);
-        } else {
-            throw new IllegalStateException("For language code \"" + languageCode + "\" are no messages present");
-        }
-    }
-
     @NotNull
     public static String getEnabledLanguage() {
         String result = IN_USE_LANGUAGE_CODE.get();
@@ -74,6 +66,14 @@ public final class TranslationHolder {
             result = IN_USE_LANGUAGE_CODE.get();
         }
         return result;
+    }
+
+    public static void setEnabledLanguage(@NotNull String languageCode) {
+        if (LOADED_LANGUAGES.containsKey(languageCode)) {
+            IN_USE_LANGUAGE_CODE.set(languageCode);
+        } else {
+            throw new IllegalStateException("For language code \"" + languageCode + "\" are no messages present");
+        }
     }
 
     @NotNull

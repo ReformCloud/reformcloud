@@ -56,14 +56,14 @@ public class ApiToNodeGetDatabaseDocumentResult extends QueryResultPacket {
     public void write(@NotNull ProtocolBuffer buffer) {
         buffer.writeBoolean(this.result != null);
         if (this.result != null) {
-            buffer.writeArray(this.result.toPrettyBytes());
+            buffer.writeString(this.result.toPrettyString());
         }
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
         if (buffer.readBoolean()) {
-            this.result = new JsonConfiguration(buffer.readArray());
+            this.result = JsonConfiguration.newJsonConfiguration(buffer.readString());
         }
     }
 }

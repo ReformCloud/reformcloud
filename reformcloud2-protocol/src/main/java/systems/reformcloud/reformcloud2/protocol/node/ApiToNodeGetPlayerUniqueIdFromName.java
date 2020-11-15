@@ -27,8 +27,8 @@ package systems.reformcloud.reformcloud2.protocol.node;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.process.Player;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
@@ -53,7 +53,7 @@ public class ApiToNodeGetPlayerUniqueIdFromName extends ProtocolPacket {
     @Override
     public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
         for (ProcessInformation process : ExecutorAPI.getInstance().getProcessProvider().getProcesses()) {
-            for (Player onlinePlayer : process.getProcessPlayerManager().getOnlinePlayers()) {
+            for (Player onlinePlayer : process.getPlayers()) {
                 if (onlinePlayer.getName().equals(this.playerName)) {
                     channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetPlayerUniqueIdFromNameResult(onlinePlayer.getUniqueID()));
                     return;

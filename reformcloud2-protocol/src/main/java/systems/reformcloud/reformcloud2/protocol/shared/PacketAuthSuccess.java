@@ -58,11 +58,11 @@ public class PacketAuthSuccess extends ProtocolPacket {
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeArray(this.data.toPrettyBytes());
+        buffer.writeString(this.data.toPrettyString());
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.data = new JsonConfiguration(buffer.readArray());
+        this.data = JsonConfiguration.newJsonConfiguration(buffer.readString());
     }
 }

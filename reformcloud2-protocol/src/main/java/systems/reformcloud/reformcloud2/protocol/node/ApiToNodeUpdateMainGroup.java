@@ -28,10 +28,11 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
+import systems.reformcloud.reformcloud2.shared.groups.main.DefaultMainGroup;
 
 public class ApiToNodeUpdateMainGroup extends ProtocolPacket {
 
@@ -61,6 +62,6 @@ public class ApiToNodeUpdateMainGroup extends ProtocolPacket {
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.mainGroup = buffer.readObject(MainGroup.class);
+        this.mainGroup = buffer.readObject(DefaultMainGroup.class);
     }
 }

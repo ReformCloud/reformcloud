@@ -30,6 +30,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.shared.process.DefaultProcessInformation;
 
 public class ApiToNodeGetProcessInformationResult extends QueryResultPacket {
 
@@ -59,6 +60,6 @@ public class ApiToNodeGetProcessInformationResult extends QueryResultPacket {
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.processInformation = buffer.readObject(ProcessInformation.class);
+        this.processInformation = buffer.readObject(DefaultProcessInformation.class);
     }
 }

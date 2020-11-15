@@ -28,5 +28,13 @@ public enum VersionType {
     JAVA_SERVER,
     JAVA_PROXY,
     POCKET_SERVER,
-    POCKET_PROXY
+    POCKET_PROXY;
+
+    public boolean isServer() {
+        return this == JAVA_SERVER || this == POCKET_SERVER;
+    }
+
+    public boolean isProxy() {
+        return this == JAVA_PROXY || this == POCKET_PROXY;
+    }
 }

@@ -26,8 +26,8 @@ package systems.reformcloud.reformcloud2.shared.parser;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.parse.Parser;
 import systems.reformcloud.reformcloud2.executor.api.functional.Function1E;
+import systems.reformcloud.reformcloud2.executor.api.parse.Parser;
 
 import java.util.UUID;
 

@@ -25,14 +25,16 @@
 package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.player.DefaultPlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.process.player.PlayerAccessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.startup.DefaultStartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.process.startup.StartupConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
@@ -44,7 +46,7 @@ public class ApiToNodeCreateProcessGroup extends ProtocolPacket {
     private boolean staticGroup;
     private boolean lobby;
     private boolean showId;
-    private List<DefaultTemplate> templates;
+    private List<Template> templates;
     private PlayerAccessConfiguration playerAccessConfiguration;
     private StartupConfiguration startupConfiguration;
 
@@ -52,7 +54,7 @@ public class ApiToNodeCreateProcessGroup extends ProtocolPacket {
     }
 
     public ApiToNodeCreateProcessGroup(String name, boolean staticGroup, boolean lobby, boolean showId,
-                                       List<DefaultTemplate> templates, PlayerAccessConfiguration playerAccessConfiguration,
+                                       List<Template> templates, PlayerAccessConfiguration playerAccessConfiguration,
                                        StartupConfiguration startupConfiguration) {
         this.name = name;
         this.staticGroup = staticGroup;
@@ -70,8 +72,7 @@ public class ApiToNodeCreateProcessGroup extends ProtocolPacket {
 
     @Override
     public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        DefaultProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroupProvider()
-            .createProcessGroup(this.name)
+        ProcessGroup processGroup = ProcessGroup.builder(this.name)
             .staticGroup(this.staticGroup)
             .lobby(this.lobby)
             .showId(this.showId)
@@ -100,8 +101,8 @@ public class ApiToNodeCreateProcessGroup extends ProtocolPacket {
         this.staticGroup = buffer.readBoolean();
         this.lobby = buffer.readBoolean();
         this.showId = buffer.readBoolean();
-        this.templates = buffer.readObjects(DefaultTemplate.class);
-        this.playerAccessConfiguration = buffer.readObject(PlayerAccessConfiguration.class);
-        this.startupConfiguration = buffer.readObject(StartupConfiguration.class);
+        this.templates = buffer.readObjects(DefaultTemplate.class, Template.class);
+        this.playerAccessConfiguration = buffer.readObject(DefaultPlayerAccessConfiguration.class);
+        this.startupConfiguration = buffer.readObject(DefaultStartupConfiguration.class);
     }
 }

@@ -37,6 +37,8 @@ public interface TemplateHolder {
     @UnmodifiableView
     Collection<Template> getTemplates();
 
+    void setTemplates(@NotNull List<Template> templates);
+
     @NotNull
     Optional<Template> getTemplate(@NotNull String name);
 
@@ -45,8 +47,6 @@ public interface TemplateHolder {
     void removeTemplate(@NotNull Template template);
 
     void removeTemplate(@NotNull String name);
-
-    void setTemplates(@NotNull List<Template> templates);
 
     boolean isTemplatePresent(@NotNull String name);
 

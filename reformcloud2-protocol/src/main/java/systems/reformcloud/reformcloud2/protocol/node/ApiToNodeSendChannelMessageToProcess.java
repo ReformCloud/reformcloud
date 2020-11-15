@@ -28,8 +28,8 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
@@ -48,7 +48,7 @@ public class ApiToNodeSendChannelMessageToProcess extends ProtocolPacket {
     }
 
     public ApiToNodeSendChannelMessageToProcess(ProcessInformation targetProcess, String channel, JsonConfiguration data) {
-        this.targetProcess = targetProcess.getProcessDetail().getProcessUniqueID();
+        this.targetProcess = targetProcess.getId().getUniqueId();
         this.channel = channel;
         this.data = data;
     }
@@ -72,13 +72,13 @@ public class ApiToNodeSendChannelMessageToProcess extends ProtocolPacket {
     public void write(@NotNull ProtocolBuffer buffer) {
         buffer.writeUniqueId(this.targetProcess);
         buffer.writeString(this.channel);
-        buffer.writeArray(this.data.toPrettyBytes());
+        buffer.writeString(this.data.toPrettyString());
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
         this.targetProcess = buffer.readUniqueId();
         this.channel = buffer.readString();
-        this.data = new JsonConfiguration(buffer.readArray());
+        this.data = JsonConfiguration.newJsonConfiguration(buffer.readString());
     }
 }

@@ -53,6 +53,11 @@ public class DefaultMainGroup extends DefaultJsonDataHolder<MainGroup> implement
     }
 
     @Override
+    public void setSubGroups(@NotNull Collection<String> subGroups) {
+        this.subGroups = subGroups;
+    }
+
+    @Override
     public void addSubGroup(@NotNull String subGroup) {
         this.subGroups.add(subGroup);
     }
@@ -70,11 +75,6 @@ public class DefaultMainGroup extends DefaultJsonDataHolder<MainGroup> implement
     @Override
     public void removeAllSubGroups() {
         this.subGroups.clear();
-    }
-
-    @Override
-    public void setSubGroups(@NotNull Collection<String> subGroups) {
-        this.subGroups = subGroups;
     }
 
     @Override

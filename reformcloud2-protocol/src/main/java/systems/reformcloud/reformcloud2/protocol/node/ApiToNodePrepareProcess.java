@@ -25,19 +25,21 @@
 package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessInclusion;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
+import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,10 +53,10 @@ public class ApiToNodePrepareProcess extends ProtocolPacket {
     private String displayName;
     private String messageOfTheDay;
     private String targetProcessFactory;
-    private DefaultProcessGroup processGroup;
-    private DefaultTemplate template;
+    private ProcessGroup processGroup;
+    private Template template;
     private Collection<ProcessInclusion> inclusions = new ArrayList<>();
-    private JsonConfiguration extra = new JsonConfiguration();
+    private JsonConfiguration extra = JsonConfiguration.newJsonConfiguration();
     private ProcessState initialState = ProcessState.READY;
     private UUID processUniqueId = UUID.randomUUID();
     private int memory = -1;
@@ -64,7 +66,7 @@ public class ApiToNodePrepareProcess extends ProtocolPacket {
     public ApiToNodePrepareProcess() {
     }
 
-    public ApiToNodePrepareProcess(String processGroupName, String node, String displayName, String messageOfTheDay, String targetProcessFactory, DefaultProcessGroup processGroup, DefaultTemplate template,
+    public ApiToNodePrepareProcess(String processGroupName, String node, String displayName, String messageOfTheDay, String targetProcessFactory, ProcessGroup processGroup, Template template,
                                    Collection<ProcessInclusion> inclusions, JsonConfiguration extra, ProcessState initialState, UUID processUniqueId, int memory, int id, int maxPlayers) {
         this.processGroupName = processGroupName;
         this.node = node;
@@ -89,8 +91,7 @@ public class ApiToNodePrepareProcess extends ProtocolPacket {
 
     @Override
     public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ProcessWrapper result = ExecutorAPI.getInstance().getProcessProvider().createProcess()
-            .group(this.processGroupName)
+        ProcessWrapper result = ProcessInformation.builder(this.processGroupName)
             .node(this.node)
             .displayName(this.displayName)
             .messageOfTheDay(this.messageOfTheDay)
@@ -126,7 +127,7 @@ public class ApiToNodePrepareProcess extends ProtocolPacket {
         buffer.writeObject(this.processGroup);
         buffer.writeObject(this.template);
         buffer.writeObjects(this.inclusions);
-        buffer.writeArray(this.extra.toPrettyBytes());
+        buffer.writeString(this.extra.toString());
         buffer.writeInt(this.initialState.ordinal());
         buffer.writeUniqueId(this.processUniqueId);
 
@@ -146,7 +147,7 @@ public class ApiToNodePrepareProcess extends ProtocolPacket {
         this.processGroup = buffer.readObject(DefaultProcessGroup.class);
         this.template = buffer.readObject(DefaultTemplate.class);
         this.inclusions = buffer.readObjects(ProcessInclusion.class);
-        this.extra = new JsonConfiguration(buffer.readArray());
+        this.extra = JsonConfiguration.newJsonConfiguration(buffer.readString());
         this.initialState = EnumUtil.findEnumFieldByIndex(ProcessState.class, buffer.readInt()).orElse(null);
         this.processUniqueId = buffer.readUniqueId();
 

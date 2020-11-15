@@ -26,10 +26,10 @@ package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
@@ -47,7 +47,7 @@ public class ApiToNodeGetProcessGroupObjects extends ProtocolPacket {
 
     @Override
     public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        Collection<DefaultProcessGroup> processGroups = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups();
+        Collection<ProcessGroup> processGroups = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups();
         channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetProcessGroupObjectsResult(processGroups));
     }
 

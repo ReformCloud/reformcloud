@@ -57,7 +57,7 @@ public class ApiToNodeGetAllTableEntriesResult extends QueryResultPacket {
     public void write(@NotNull ProtocolBuffer buffer) {
         buffer.writeInt(this.all.size());
         for (JsonConfiguration configuration : this.all) {
-            buffer.writeArray(configuration.toPrettyBytes());
+            buffer.writeString(configuration.toPrettyString());
         }
     }
 
@@ -66,7 +66,7 @@ public class ApiToNodeGetAllTableEntriesResult extends QueryResultPacket {
         int size = buffer.readInt();
         this.all = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
-            this.all.add(new JsonConfiguration(buffer.readArray()));
+            this.all.add(JsonConfiguration.newJsonConfiguration(buffer.readString()));
         }
     }
 }

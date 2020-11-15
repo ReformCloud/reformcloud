@@ -30,6 +30,7 @@ import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
+import systems.reformcloud.reformcloud2.shared.groups.main.DefaultMainGroup;
 
 public class ApiToNodeGetMainGroupResult extends QueryResultPacket {
 
@@ -59,6 +60,6 @@ public class ApiToNodeGetMainGroupResult extends QueryResultPacket {
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.mainGroup = buffer.readObject(MainGroup.class);
+        this.mainGroup = buffer.readObject(DefaultMainGroup.class);
     }
 }

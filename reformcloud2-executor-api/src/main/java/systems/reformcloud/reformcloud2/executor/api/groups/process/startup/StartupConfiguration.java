@@ -76,11 +76,11 @@ public interface StartupConfiguration extends SerializableObject, Cloneable {
     @NotNull
     Collection<String> getStartingNodes();
 
+    void setStartingNodes(@NotNull Collection<String> startingNodes);
+
     void addStartingNode(@NotNull String node);
 
     void removeStartingNode(@NotNull String node);
-
-    void setStartingNodes(@NotNull Collection<String> startingNodes);
 
     @NotNull
     StartupConfiguration clone();

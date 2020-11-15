@@ -29,24 +29,25 @@ import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
+import systems.reformcloud.reformcloud2.shared.collect.Entry2;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
 public class ApiToNodeGetCurrentPlayerProcessUniqueIdsResult extends QueryResultPacket {
 
-    private Duo<UUID, UUID> result;
+    private Map.Entry<UUID, UUID> result;
 
     public ApiToNodeGetCurrentPlayerProcessUniqueIdsResult() {
     }
 
-    public ApiToNodeGetCurrentPlayerProcessUniqueIdsResult(Duo<UUID, UUID> result) {
+    public ApiToNodeGetCurrentPlayerProcessUniqueIdsResult(Map.Entry<UUID, UUID> result) {
         this.result = result;
     }
 
     @Nullable
-    public Duo<UUID, UUID> getResult() {
+    public Map.Entry<UUID, UUID> getResult() {
         return this.result;
     }
 
@@ -62,8 +63,8 @@ public class ApiToNodeGetCurrentPlayerProcessUniqueIdsResult extends QueryResult
             return;
         }
 
-        buffer.writeUniqueId(this.result.getFirst());
-        buffer.writeUniqueId(this.result.getSecond());
+        buffer.writeUniqueId(this.result.getKey());
+        buffer.writeUniqueId(this.result.getKey());
     }
 
     @Override
@@ -72,6 +73,6 @@ public class ApiToNodeGetCurrentPlayerProcessUniqueIdsResult extends QueryResult
             return;
         }
 
-        this.result = new Duo<>(Objects.requireNonNull(buffer.readUniqueId()), buffer.readUniqueId());
+        this.result = new Entry2<>(Objects.requireNonNull(buffer.readUniqueId()), buffer.readUniqueId());
     }
 }

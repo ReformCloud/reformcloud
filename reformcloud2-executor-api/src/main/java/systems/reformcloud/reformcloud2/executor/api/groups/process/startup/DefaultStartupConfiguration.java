@@ -113,6 +113,11 @@ public class DefaultStartupConfiguration implements StartupConfiguration {
     }
 
     @Override
+    public void setStartingNodes(@NotNull Collection<String> startingNodes) {
+        this.startingNodes = startingNodes;
+    }
+
+    @Override
     public void addStartingNode(@NotNull String node) {
         this.startingNodes.add(node);
     }
@@ -120,11 +125,6 @@ public class DefaultStartupConfiguration implements StartupConfiguration {
     @Override
     public void removeStartingNode(@NotNull String node) {
         this.startingNodes.remove(node);
-    }
-
-    @Override
-    public void setStartingNodes(@NotNull Collection<String> startingNodes) {
-        this.startingNodes = startingNodes;
     }
 
     @Override

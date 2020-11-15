@@ -38,7 +38,6 @@ public abstract class Packet implements SerializableObject {
 
     public abstract int getId();
 
-    @Nullable
     public UUID getQueryUniqueID() {
         return this.queryUniqueID;
     }

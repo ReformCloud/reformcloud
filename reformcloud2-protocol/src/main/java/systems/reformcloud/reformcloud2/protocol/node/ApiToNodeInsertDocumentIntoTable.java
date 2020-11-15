@@ -28,8 +28,8 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
@@ -65,7 +65,7 @@ public class ApiToNodeInsertDocumentIntoTable extends ProtocolPacket {
         buffer.writeString(this.tableName);
         buffer.writeString(this.key);
         buffer.writeString(this.id);
-        buffer.writeArray(this.data.toPrettyBytes());
+        buffer.writeString(this.data.toPrettyString());
     }
 
     @Override
@@ -73,6 +73,6 @@ public class ApiToNodeInsertDocumentIntoTable extends ProtocolPacket {
         this.tableName = buffer.readString();
         this.key = buffer.readString();
         this.id = buffer.readString();
-        this.data = new JsonConfiguration(buffer.readArray());
+        this.data = JsonConfiguration.newJsonConfiguration(buffer.readString());
     }
 }

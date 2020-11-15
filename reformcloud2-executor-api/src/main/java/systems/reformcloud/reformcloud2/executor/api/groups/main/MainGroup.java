@@ -53,6 +53,8 @@ public interface MainGroup extends Nameable, JsonDataHolder<MainGroup>, Serializ
     @UnmodifiableView
     Collection<String> getSubGroups();
 
+    void setSubGroups(@NotNull Collection<String> subGroups);
+
     void addSubGroup(@NotNull String subGroup);
 
     void removeSubGroup(@NotNull String subGroup);
@@ -60,8 +62,6 @@ public interface MainGroup extends Nameable, JsonDataHolder<MainGroup>, Serializ
     boolean hasSubGroup(@NotNull String name);
 
     void removeAllSubGroups();
-
-    void setSubGroups(@NotNull Collection<String> subGroups);
 
     void update();
 

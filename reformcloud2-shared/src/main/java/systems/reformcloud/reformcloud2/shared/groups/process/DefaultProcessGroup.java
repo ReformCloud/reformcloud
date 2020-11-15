@@ -27,7 +27,6 @@ package systems.reformcloud.reformcloud2.shared.groups.process;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessBuilder;
 import systems.reformcloud.reformcloud2.executor.api.configuration.data.DefaultJsonDataHolder;
 import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.process.player.PlayerAccessConfiguration;
@@ -35,6 +34,7 @@ import systems.reformcloud.reformcloud2.executor.api.groups.process.startup.Star
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessBuilder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -146,6 +146,11 @@ public class DefaultProcessGroup extends DefaultJsonDataHolder<ProcessGroup> imp
     }
 
     @Override
+    public void setTemplates(@NotNull List<Template> templates) {
+        this.templates = new ArrayList<>(templates);
+    }
+
+    @Override
     public @NotNull Optional<Template> getTemplate(@NotNull String name) {
         return this.templates.stream().filter(template -> template.getName().equals(name)).findFirst();
     }
@@ -163,11 +168,6 @@ public class DefaultProcessGroup extends DefaultJsonDataHolder<ProcessGroup> imp
     @Override
     public void removeTemplate(@NotNull String name) {
         this.getTemplate(name).ifPresent(this.templates::remove);
-    }
-
-    @Override
-    public void setTemplates(@NotNull List<Template> templates) {
-        this.templates = new ArrayList<>(templates);
     }
 
     @Override

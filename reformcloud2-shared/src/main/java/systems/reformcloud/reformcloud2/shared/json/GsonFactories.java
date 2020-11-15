@@ -31,6 +31,10 @@ import systems.reformcloud.reformcloud2.executor.api.configuration.json.JsonFact
 
 public class GsonFactories extends JsonFactories {
 
+    private GsonFactories() {
+        throw new UnsupportedOperationException();
+    }
+
     public static void init() {
         DEFAULT_PARSER.set(new GsonParser());
         BUILDER_FACTORY.set(GsonAdapterBuilder::new);
@@ -50,9 +54,5 @@ public class GsonFactories extends JsonFactories {
                 throw new IllegalStateException("Unsupported object " + o.getClass().getName());
             }
         });
-    }
-
-    private GsonFactories() {
-        throw new UnsupportedOperationException();
     }
 }

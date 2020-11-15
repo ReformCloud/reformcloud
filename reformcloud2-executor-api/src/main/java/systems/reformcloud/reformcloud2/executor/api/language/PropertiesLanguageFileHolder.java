@@ -43,6 +43,15 @@ public class PropertiesLanguageFileHolder implements LanguageFileHolder {
         copyTranslations(translations, this.translations);
     }
 
+    private static void copyTranslations(@NotNull Properties source, @NotNull Map<String, String> target) {
+        for (String stringPropertyName : source.stringPropertyNames()) {
+            final String translation = source.getProperty(stringPropertyName);
+            if (translation != null) {
+                target.put(stringPropertyName, translation);
+            }
+        }
+    }
+
     @Override
     public @NotNull Optional<String> getTranslation(@NotNull String key) {
         return Optional.ofNullable(this.translations.get(key));
@@ -69,14 +78,5 @@ public class PropertiesLanguageFileHolder implements LanguageFileHolder {
     @Override
     public @NotNull String getName() {
         return this.languageCode;
-    }
-
-    private static void copyTranslations(@NotNull Properties source, @NotNull Map<String, String> target) {
-        for (String stringPropertyName : source.stringPropertyNames()) {
-            final String translation = source.getProperty(stringPropertyName);
-            if (translation != null) {
-                target.put(stringPropertyName, translation);
-            }
-        }
     }
 }

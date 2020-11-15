@@ -27,11 +27,12 @@ package systems.reformcloud.reformcloud2.protocol.node;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
+import systems.reformcloud.reformcloud2.shared.process.DefaultProcessInformation;
 
 public class ApiToNodeUpdateProcessInformation extends ProtocolPacket {
 
@@ -61,6 +62,6 @@ public class ApiToNodeUpdateProcessInformation extends ProtocolPacket {
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.processInformation = buffer.readObject(ProcessInformation.class);
+        this.processInformation = buffer.readObject(DefaultProcessInformation.class);
     }
 }

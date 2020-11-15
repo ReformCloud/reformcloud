@@ -282,12 +282,12 @@ public class DefaultTemplate extends DefaultJsonDataHolder<Template> implements 
     }
 
     @Override
-    public void setName(@NotNull String newName) {
-        this.name = newName;
+    public @NotNull String getName() {
+        return this.name;
     }
 
     @Override
-    public @NotNull String getName() {
-        return this.name;
+    public void setName(@NotNull String newName) {
+        this.name = newName;
     }
 }

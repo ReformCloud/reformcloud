@@ -26,11 +26,11 @@ package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.version.DefaultVersion;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Version;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
@@ -61,11 +61,11 @@ public class ApiToNodeGetProcessInformationObjectsByVersion extends ProtocolPack
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeInt(this.version.ordinal());
+        buffer.writeObject(this.version);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.version = EnumUtil.findEnumFieldByIndex(Version.class, buffer.readInt()).orElse(null);
+        this.version = buffer.readObject(DefaultVersion.class);
     }
 }

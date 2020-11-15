@@ -44,6 +44,15 @@ public class NettyChannelListenerWrapper extends ChannelInboundHandlerAdapter {
         this.channelListenerFactory = channelListenerFactory;
     }
 
+    private static void release(@NotNull Object msg) {
+        if (msg instanceof ReferenceCounted) {
+            ReferenceCounted referenceCounted = (ReferenceCounted) msg;
+            if (referenceCounted.refCnt() > 0) {
+                referenceCounted.release(referenceCounted.refCnt());
+            }
+        }
+    }
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         if (this.networkChannel == null) {
@@ -89,15 +98,6 @@ public class NettyChannelListenerWrapper extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         if (this.networkChannel != null) {
             this.networkChannel.getListener().exceptionCaught(this.networkChannel, cause);
-        }
-    }
-
-    private static void release(@NotNull Object msg) {
-        if (msg instanceof ReferenceCounted) {
-            ReferenceCounted referenceCounted = (ReferenceCounted) msg;
-            if (referenceCounted.refCnt() > 0) {
-                referenceCounted.release(referenceCounted.refCnt());
-            }
         }
     }
 }

@@ -28,8 +28,8 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
@@ -46,7 +46,7 @@ public class ApiToNodeSetProcessRuntimeState extends ProtocolPacket {
     }
 
     public ApiToNodeSetProcessRuntimeState(ProcessInformation information, ProcessState runtimeState) {
-        this.processUniqueId = information.getProcessDetail().getProcessUniqueID();
+        this.processUniqueId = information.getId().getUniqueId();
         this.runtimeState = runtimeState;
     }
 
