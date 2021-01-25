@@ -34,25 +34,25 @@ import java.util.logging.Level;
 
 public class BukkitPermissionPlugin extends JavaPlugin {
 
-    @Override
-    public void onEnable() {
-        PermissionPluginUtil.awaitConnection(() -> {
-            Bukkit.getPluginManager().registerEvents(new BukkitPermissionListener(), this);
-            if (!Bukkit.getPluginManager().isPluginEnabled("Vault") && !Bukkit.getPluginManager().isPluginEnabled("VaultAPI")) {
-                super.getLogger().info("Vault not detected - not trying to load vault support");
-                return;
-            }
+  @Override
+  public void onEnable() {
+    PermissionPluginUtil.awaitConnection(() -> {
+      Bukkit.getPluginManager().registerEvents(new BukkitPermissionListener(), this);
+      if (!Bukkit.getPluginManager().isPluginEnabled("Vault") && !Bukkit.getPluginManager().isPluginEnabled("VaultAPI")) {
+        super.getLogger().info("Vault not detected - not trying to load vault support");
+        return;
+      }
 
-            try {
-                VaultUtil.tryInvoke(this);
-            } catch (Throwable throwable) {
-                super.getLogger().log(Level.WARNING, "Unable to hook into vault", throwable);
-            }
-        });
-    }
+      try {
+        VaultUtil.tryInvoke(this);
+      } catch (Throwable throwable) {
+        super.getLogger().log(Level.WARNING, "Unable to hook into vault", throwable);
+      }
+    });
+  }
 
-    @Override
-    public void onDisable() {
-        Bukkit.getScheduler().cancelTasks(this);
-    }
+  @Override
+  public void onDisable() {
+    Bukkit.getScheduler().cancelTasks(this);
+  }
 }

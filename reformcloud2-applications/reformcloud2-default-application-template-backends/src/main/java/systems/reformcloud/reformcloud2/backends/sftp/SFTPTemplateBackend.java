@@ -40,12 +40,12 @@ import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackend;
 import systems.reformcloud.reformcloud2.node.template.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,275 +58,275 @@ import java.util.Collection;
 
 public final class SFTPTemplateBackend implements TemplateBackend {
 
-    private final SFTPConfig config;
+  private final SFTPConfig config;
 
-    private SSHClient sshClient;
-    private SFTPClient sftpClient;
+  private SSHClient sshClient;
+  private SFTPClient sftpClient;
 
-    private SFTPTemplateBackend(SFTPConfig config) {
-        this.config = config;
-        this.ensureConnected();
+  private SFTPTemplateBackend(SFTPConfig config) {
+    this.config = config;
+    this.ensureConnected();
+  }
+
+  public static void load(Path configPath) {
+    if (Files.notExists(configPath)) {
+      new JsonConfiguration().add("config", new SFTPConfig(
+        false, "127.0.0.1", 22, "rc", "password", "rc/templates"
+      )).write(configPath);
     }
 
-    public static void load(Path configPath) {
-        if (Files.notExists(configPath)) {
-            new JsonConfiguration().add("config", new SFTPConfig(
-                false, "127.0.0.1", 22, "rc", "password", "rc/templates"
-            )).write(configPath);
-        }
-
-        SFTPConfig config = JsonConfiguration.read(configPath).get("config", SFTPConfig.class);
-        if (config == null || !config.isEnabled()) {
-            return;
-        }
-
-        config.validate();
-        TemplateBackendManager.registerBackend(new SFTPTemplateBackend(config));
+    SFTPConfig config = JsonConfiguration.read(configPath).get("config", SFTPConfig.class);
+    if (config == null || !config.isEnabled()) {
+      return;
     }
 
-    public static void unload() {
-        TemplateBackendManager.unregisterBackend("SFTP");
+    config.validate();
+    TemplateBackendManager.registerBackend(new SFTPTemplateBackend(config));
+  }
+
+  public static void unload() {
+    TemplateBackendManager.unregisterBackend("SFTP");
+  }
+
+  @Override
+  public boolean existsTemplate(@NotNull String group, @NotNull String template) {
+    this.ensureConnected();
+
+    try {
+      FileAttributes fileAttributes = this.sftpClient.statExistence(this.config.getBaseDirectory() + group + "/" + template);
+      return fileAttributes != null && fileAttributes.getType() != null && fileAttributes.getType() == FileMode.Type.DIRECTORY;
+    } catch (IOException exception) {
+      return false;
+    }
+  }
+
+  @Override
+  public void createTemplate(@NotNull String group, @NotNull String template) {
+    Task.runAsync(() -> {
+      this.ensureConnected();
+      this.executeSilently(() -> this.sftpClient.mkdirs(this.config.getBaseDirectory() + group + "/" + template));
+    });
+  }
+
+  @Override
+  public @NotNull Task<Void> loadTemplate(@NotNull String group, @NotNull String template, @NotNull Path target) {
+    return this.executeTask(() -> this.downloadDirectory(this.config.getBaseDirectory() + group + "/" + template, target.toString()));
+  }
+
+  @Override
+  public @NotNull Task<Void> loadGlobalTemplates(@NotNull DefaultProcessGroup group, @NotNull Path target) {
+    Collection<Task<Void>> tasks = new ArrayList<>();
+    for (DefaultTemplate template : group.getTemplates()) {
+      if (template.isGlobal()) {
+        tasks.add(this.loadTemplate(group.getName(), template.getName(), target));
+      }
     }
 
-    @Override
-    public boolean existsTemplate(@NotNull String group, @NotNull String template) {
-        this.ensureConnected();
-
+    return Task.supply(() -> {
+      while (MoreCollections.hasMatch(tasks, t -> !t.isDone())) {
         try {
-            FileAttributes fileAttributes = this.sftpClient.statExistence(this.config.getBaseDirectory() + group + "/" + template);
-            return fileAttributes != null && fileAttributes.getType() != null && fileAttributes.getType() == FileMode.Type.DIRECTORY;
-        } catch (IOException exception) {
-            return false;
+          Thread.sleep(50);
+        } catch (InterruptedException exception) {
+          break;
         }
+      }
+
+      return null;
+    });
+  }
+
+  @Override
+  public @NotNull Task<Void> loadPath(@NotNull String path, @NotNull Path target) {
+    return this.executeTask(() -> this.downloadDirectory(this.config.getBaseDirectory() + path, target.toString()));
+  }
+
+  @Override
+  public void deployTemplate(@NotNull String group, @NotNull String template, @NotNull Path current, @NotNull Collection<String> excluded) {
+    Task.runAsync(() -> {
+      this.executeSilently(() -> this.deleteDirectory(this.config.getBaseDirectory() + group + "/" + template));
+      this.executeSilently(() -> this.uploadDirectory(this.config.getBaseDirectory() + group + "/" + template, current.toString(), excluded));
+    });
+  }
+
+  @Override
+  public void deleteTemplate(@NotNull String group, @NotNull String template) {
+    Task.runAsync(() -> {
+      this.ensureConnected();
+      this.executeSilently(() -> this.deleteDirectory(this.config.getBaseDirectory() + group + "/" + template));
+    });
+  }
+
+  @Override
+  public @NotNull String getName() {
+    return "SFTP";
+  }
+
+  protected @NotNull Task<Void> executeTask(@NotNull ExceptionRunnable runnable) {
+    return Task.supply(() -> {
+      this.ensureConnected();
+      runnable.run();
+      return null;
+    });
+  }
+
+  protected boolean isReady() {
+    return this.sshClient != null && this.sftpClient != null && this.sshClient.isConnected() && this.sshClient.isAuthenticated();
+  }
+
+  protected void ensureConnected() {
+    if (!this.isReady()) {
+      this.connect();
+      Conditions.isTrue(this.isReady());
+    }
+  }
+
+  protected void downloadDirectory(String remoteDir, String localDir) throws IOException {
+    if (!remoteDir.endsWith("/")) {
+      remoteDir += "/";
+    }
+
+    if (!localDir.endsWith("/")) {
+      localDir += "/";
+    }
+
+    Path local = Path.of(localDir);
+    Files.createDirectories(local);
+
+    for (RemoteResourceInfo resourceInfo : this.sftpClient.ls(remoteDir)) {
+      if (resourceInfo.isDirectory()) {
+        this.downloadDirectory(remoteDir + resourceInfo.getName(), localDir + resourceInfo.getName());
+        continue;
+      }
+
+      Files.createFile(local.resolve(resourceInfo.getName()));
+      this.sftpClient.get(remoteDir + resourceInfo.getName(), localDir + resourceInfo.getName());
+    }
+  }
+
+  protected void deleteDirectory(String remoteDir) throws IOException {
+    if (!remoteDir.endsWith("/")) {
+      remoteDir += "/";
+    }
+
+    for (RemoteResourceInfo resourceInfo : this.sftpClient.ls(remoteDir)) {
+      if (resourceInfo.isDirectory()) {
+        this.deleteDirectory(remoteDir + resourceInfo.getName());
+        continue;
+      }
+
+      this.sftpClient.rm(remoteDir + resourceInfo.getName());
+    }
+
+    this.sftpClient.rmdir(remoteDir);
+  }
+
+  protected void uploadDirectory(String remoteDir, String localDir, Collection<String> excluded) throws IOException {
+    if (!remoteDir.endsWith("/")) {
+      remoteDir += "/";
+    }
+
+    if (!localDir.endsWith("/")) {
+      localDir += "/";
+    }
+
+    try {
+      this.sftpClient.mkdir(remoteDir);
+    } catch (SFTPException ignored) {
+      // discard silently
+    }
+
+    try (DirectoryStream<Path> stream = Files.newDirectoryStream(Path.of(localDir))) {
+      for (Path path : stream) {
+        Path fileName = path.getFileName();
+        if (fileName == null || excluded.contains(fileName.toString())) {
+          continue;
+        }
+
+        if (Files.isDirectory(path)) {
+          this.uploadDirectory(remoteDir + path.getFileName(), path.toString(), excluded);
+          continue;
+        }
+
+        this.sftpClient.put(path.toString(), remoteDir + fileName);
+      }
+    }
+  }
+
+  protected void connect() {
+    this.sshClient = new SSHClient(new InternalConfig());
+    this.sshClient.setConnectTimeout(3000);
+    this.sshClient.setTimeout(3000);
+    this.sshClient.setRemoteCharset(StandardCharsets.UTF_8);
+
+    if (this.config.getKnownHostsFile() == null) {
+      this.executeSilently(() -> this.sshClient.loadKnownHosts());
+      this.sshClient.addHostKeyVerifier(new PromiscuousVerifier());
+    } else {
+      try {
+        this.sshClient.loadKnownHosts(new File(this.config.getKnownHostsFile()));
+      } catch (IOException exception) {
+        exception.printStackTrace();
+      }
+    }
+
+    try {
+      this.sshClient.connect(this.config.getHost(), this.config.getPort());
+    } catch (IOException exception) {
+      throw new RuntimeException("Unable to connect to remote ssh host", exception);
+    }
+
+    try {
+      if (this.config.getPrivateKeyFile() == null) {
+        this.sshClient.authPassword(this.config.getUser(), this.config.getPassword());
+      } else {
+        this.sshClient.authPublickey(this.config.getUser(), this.config.getPrivateKeyFile());
+      }
+    } catch (UserAuthException exception) {
+      throw new RuntimeException("Unable to authenticate with remote host", exception);
+    } catch (TransportException exception) {
+      throw new RuntimeException("Transportation exception while authenticating with remote host", exception);
+    }
+
+    try {
+      this.sftpClient = this.sshClient.newSFTPClient();
+    } catch (IOException exception) {
+      throw new RuntimeException("Exception starting the sftp sub system", exception);
+    }
+  }
+
+  protected void executeSilently(@NotNull ExceptionRunnable runnable) {
+    try {
+      runnable.run();
+    } catch (Exception ignored) {
+    }
+  }
+
+  @FunctionalInterface
+  private interface ExceptionRunnable {
+
+    void run() throws Exception;
+  }
+
+  private static class InternalConfig extends DefaultConfig {
+
+    @Override
+    public LoggerFactory getLoggerFactory() {
+      return InternalLoggingFactory.NOP_FACTORY;
+    }
+  }
+
+  private static class InternalLoggingFactory implements LoggerFactory {
+
+    private static final LoggerFactory NOP_FACTORY = new InternalLoggingFactory();
+
+    @Override
+    public Logger getLogger(String name) {
+      return NOPLogger.NOP_LOGGER;
     }
 
     @Override
-    public void createTemplate(@NotNull String group, @NotNull String template) {
-        Task.runAsync(() -> {
-            this.ensureConnected();
-            this.executeSilently(() -> this.sftpClient.mkdirs(this.config.getBaseDirectory() + group + "/" + template));
-        });
+    public Logger getLogger(Class<?> clazz) {
+      return NOPLogger.NOP_LOGGER;
     }
-
-    @Override
-    public @NotNull Task<Void> loadTemplate(@NotNull String group, @NotNull String template, @NotNull Path target) {
-        return this.executeTask(() -> this.downloadDirectory(this.config.getBaseDirectory() + group + "/" + template, target.toString()));
-    }
-
-    @Override
-    public @NotNull Task<Void> loadGlobalTemplates(@NotNull DefaultProcessGroup group, @NotNull Path target) {
-        Collection<Task<Void>> tasks = new ArrayList<>();
-        for (DefaultTemplate template : group.getTemplates()) {
-            if (template.isGlobal()) {
-                tasks.add(this.loadTemplate(group.getName(), template.getName(), target));
-            }
-        }
-
-        return Task.supply(() -> {
-            while (Streams.hasMatch(tasks, t -> !t.isDone())) {
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException exception) {
-                    break;
-                }
-            }
-
-            return null;
-        });
-    }
-
-    @Override
-    public @NotNull Task<Void> loadPath(@NotNull String path, @NotNull Path target) {
-        return this.executeTask(() -> this.downloadDirectory(this.config.getBaseDirectory() + path, target.toString()));
-    }
-
-    @Override
-    public void deployTemplate(@NotNull String group, @NotNull String template, @NotNull Path current, @NotNull Collection<String> excluded) {
-        Task.runAsync(() -> {
-            this.executeSilently(() -> this.deleteDirectory(this.config.getBaseDirectory() + group + "/" + template));
-            this.executeSilently(() -> this.uploadDirectory(this.config.getBaseDirectory() + group + "/" + template, current.toString(), excluded));
-        });
-    }
-
-    @Override
-    public void deleteTemplate(@NotNull String group, @NotNull String template) {
-        Task.runAsync(() -> {
-            this.ensureConnected();
-            this.executeSilently(() -> this.deleteDirectory(this.config.getBaseDirectory() + group + "/" + template));
-        });
-    }
-
-    @Override
-    public @NotNull String getName() {
-        return "SFTP";
-    }
-
-    protected @NotNull Task<Void> executeTask(@NotNull ExceptionRunnable runnable) {
-        return Task.supply(() -> {
-            this.ensureConnected();
-            runnable.run();
-            return null;
-        });
-    }
-
-    protected boolean isReady() {
-        return this.sshClient != null && this.sftpClient != null && this.sshClient.isConnected() && this.sshClient.isAuthenticated();
-    }
-
-    protected void ensureConnected() {
-        if (!this.isReady()) {
-            this.connect();
-            Conditions.isTrue(this.isReady());
-        }
-    }
-
-    protected void downloadDirectory(String remoteDir, String localDir) throws IOException {
-        if (!remoteDir.endsWith("/")) {
-            remoteDir += "/";
-        }
-
-        if (!localDir.endsWith("/")) {
-            localDir += "/";
-        }
-
-        Path local = Path.of(localDir);
-        Files.createDirectories(local);
-
-        for (RemoteResourceInfo resourceInfo : this.sftpClient.ls(remoteDir)) {
-            if (resourceInfo.isDirectory()) {
-                this.downloadDirectory(remoteDir + resourceInfo.getName(), localDir + resourceInfo.getName());
-                continue;
-            }
-
-            Files.createFile(local.resolve(resourceInfo.getName()));
-            this.sftpClient.get(remoteDir + resourceInfo.getName(), localDir + resourceInfo.getName());
-        }
-    }
-
-    protected void deleteDirectory(String remoteDir) throws IOException {
-        if (!remoteDir.endsWith("/")) {
-            remoteDir += "/";
-        }
-
-        for (RemoteResourceInfo resourceInfo : this.sftpClient.ls(remoteDir)) {
-            if (resourceInfo.isDirectory()) {
-                this.deleteDirectory(remoteDir + resourceInfo.getName());
-                continue;
-            }
-
-            this.sftpClient.rm(remoteDir + resourceInfo.getName());
-        }
-
-        this.sftpClient.rmdir(remoteDir);
-    }
-
-    protected void uploadDirectory(String remoteDir, String localDir, Collection<String> excluded) throws IOException {
-        if (!remoteDir.endsWith("/")) {
-            remoteDir += "/";
-        }
-
-        if (!localDir.endsWith("/")) {
-            localDir += "/";
-        }
-
-        try {
-            this.sftpClient.mkdir(remoteDir);
-        } catch (SFTPException ignored) {
-            // discard silently
-        }
-
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Path.of(localDir))) {
-            for (Path path : stream) {
-                Path fileName = path.getFileName();
-                if (fileName == null || excluded.contains(fileName.toString())) {
-                    continue;
-                }
-
-                if (Files.isDirectory(path)) {
-                    this.uploadDirectory(remoteDir + path.getFileName(), path.toString(), excluded);
-                    continue;
-                }
-
-                this.sftpClient.put(path.toString(), remoteDir + fileName);
-            }
-        }
-    }
-
-    protected void connect() {
-        this.sshClient = new SSHClient(new InternalConfig());
-        this.sshClient.setConnectTimeout(3000);
-        this.sshClient.setTimeout(3000);
-        this.sshClient.setRemoteCharset(StandardCharsets.UTF_8);
-
-        if (this.config.getKnownHostsFile() == null) {
-            this.executeSilently(() -> this.sshClient.loadKnownHosts());
-            this.sshClient.addHostKeyVerifier(new PromiscuousVerifier());
-        } else {
-            try {
-                this.sshClient.loadKnownHosts(new File(this.config.getKnownHostsFile()));
-            } catch (IOException exception) {
-                exception.printStackTrace();
-            }
-        }
-
-        try {
-            this.sshClient.connect(this.config.getHost(), this.config.getPort());
-        } catch (IOException exception) {
-            throw new RuntimeException("Unable to connect to remote ssh host", exception);
-        }
-
-        try {
-            if (this.config.getPrivateKeyFile() == null) {
-                this.sshClient.authPassword(this.config.getUser(), this.config.getPassword());
-            } else {
-                this.sshClient.authPublickey(this.config.getUser(), this.config.getPrivateKeyFile());
-            }
-        } catch (UserAuthException exception) {
-            throw new RuntimeException("Unable to authenticate with remote host", exception);
-        } catch (TransportException exception) {
-            throw new RuntimeException("Transportation exception while authenticating with remote host", exception);
-        }
-
-        try {
-            this.sftpClient = this.sshClient.newSFTPClient();
-        } catch (IOException exception) {
-            throw new RuntimeException("Exception starting the sftp sub system", exception);
-        }
-    }
-
-    protected void executeSilently(@NotNull ExceptionRunnable runnable) {
-        try {
-            runnable.run();
-        } catch (Exception ignored) {
-        }
-    }
-
-    @FunctionalInterface
-    private interface ExceptionRunnable {
-
-        void run() throws Exception;
-    }
-
-    private static class InternalConfig extends DefaultConfig {
-
-        @Override
-        public LoggerFactory getLoggerFactory() {
-            return InternalLoggingFactory.NOP_FACTORY;
-        }
-    }
-
-    private static class InternalLoggingFactory implements LoggerFactory {
-
-        private static final LoggerFactory NOP_FACTORY = new InternalLoggingFactory();
-
-        @Override
-        public Logger getLogger(String name) {
-            return NOPLogger.NOP_LOGGER;
-        }
-
-        @Override
-        public Logger getLogger(Class<?> clazz) {
-            return NOPLogger.NOP_LOGGER;
-        }
-    }
+  }
 }

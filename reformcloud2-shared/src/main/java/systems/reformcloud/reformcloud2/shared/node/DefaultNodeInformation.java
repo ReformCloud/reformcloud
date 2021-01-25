@@ -26,128 +26,133 @@ package systems.reformcloud.reformcloud2.shared.node;
 
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.network.address.NetworkAddress;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.shared.platform.Platform;
 import systems.reformcloud.reformcloud2.shared.process.DefaultProcessRuntimeInformation;
 
+import java.lang.reflect.Type;
 import java.util.UUID;
 
 public class DefaultNodeInformation implements NodeInformation {
 
-    public static final TypeToken<DefaultNodeInformation> TYPE = new TypeToken<>() {
-    };
+  public static final Type TYPE = new TypeToken<DefaultNodeInformation>() {
+  }.getType();
 
-    private String name;
-    private UUID nodeUniqueID;
+  private String name;
+  private UUID nodeUniqueID;
 
-    private long startupTime;
-    private long lastUpdate;
-    private long usedMemory;
-    private long maxMemory;
+  private long startupTime;
+  private long lastUpdate;
+  private long usedMemory;
+  private long maxMemory;
 
-    private ProcessRuntimeInformation processRuntimeInformation;
+  private NetworkAddress processStartHost;
+  private ProcessRuntimeInformation processRuntimeInformation;
 
-    public DefaultNodeInformation() {
+  public DefaultNodeInformation() {
+  }
+
+  public DefaultNodeInformation(String name, UUID nodeUniqueID, long startupTime, long usedMemory, long maxMemory, NetworkAddress processStartHost) {
+    this.name = name;
+    this.nodeUniqueID = nodeUniqueID;
+    this.startupTime = this.lastUpdate = startupTime;
+    this.usedMemory = usedMemory;
+    this.maxMemory = maxMemory;
+    this.processRuntimeInformation = Platform.createProcessRuntimeInformation();
+    this.processStartHost = processStartHost;
+  }
+
+  @NotNull
+  @Override
+  public String getName() {
+    return this.name;
+  }
+
+  @Override
+  public @NotNull UUID getUniqueId() {
+    return this.nodeUniqueID;
+  }
+
+  @Override
+  public long getStartupMillis() {
+    return this.startupTime;
+  }
+
+  @Override
+  public long getLastUpdateTimestamp() {
+    return this.lastUpdate;
+  }
+
+  @Override
+  public long getUsedMemory() {
+    return this.usedMemory;
+  }
+
+  @Override
+  public long getMaxMemory() {
+    return this.maxMemory;
+  }
+
+  @Override
+  public @NotNull NetworkAddress getProcessStartHost() {
+    return this.processStartHost;
+  }
+
+  @NotNull
+  @Override
+  public ProcessRuntimeInformation getProcessRuntimeInformation() {
+    return this.processRuntimeInformation;
+  }
+
+  public void addUsedMemory(int memory) {
+    this.usedMemory += memory;
+  }
+
+  public void removeUsedMemory(int memory) {
+    this.usedMemory -= memory;
+  }
+
+  public void update() {
+    this.processRuntimeInformation = Platform.createProcessRuntimeInformation();
+    this.lastUpdate = System.currentTimeMillis();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
 
-    public DefaultNodeInformation(String name, UUID nodeUniqueID, long startupTime, long usedMemory, long maxMemory) {
-        this.name = name;
-        this.nodeUniqueID = nodeUniqueID;
-        this.startupTime = this.lastUpdate = startupTime;
-        this.usedMemory = usedMemory;
-        this.maxMemory = maxMemory;
-        this.processRuntimeInformation = Platform.createProcessRuntimeInformation();
+    if (!(o instanceof DefaultNodeInformation)) {
+      return false;
     }
 
-    @NotNull
-    @Override
-    public String getName() {
-        return this.name;
-    }
+    DefaultNodeInformation that = (DefaultNodeInformation) o;
+    return this.nodeUniqueID.equals(that.nodeUniqueID);
+  }
 
-    @Override
-    public @NotNull UUID getUniqueId() {
-        return this.nodeUniqueID;
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.name);
+    buffer.writeUniqueId(this.nodeUniqueID);
+    buffer.writeLong(this.startupTime);
+    buffer.writeLong(this.lastUpdate);
+    buffer.writeLong(this.usedMemory);
+    buffer.writeLong(this.maxMemory);
+    buffer.writeObject(this.processRuntimeInformation);
+  }
 
-    @Override
-    public long getStartupMillis() {
-        return this.startupTime;
-    }
-
-    @Override
-    public long getLastUpdateTimestamp() {
-        return this.lastUpdate;
-    }
-
-    @Override
-    public long getUsedMemory() {
-        return this.usedMemory;
-    }
-
-    @Override
-    public long getMaxMemory() {
-        return this.maxMemory;
-    }
-
-    public void setMaxMemory(long maxMemory) {
-        this.maxMemory = maxMemory;
-    }
-
-    @NotNull
-    @Override
-    public ProcessRuntimeInformation getProcessRuntimeInformation() {
-        return this.processRuntimeInformation;
-    }
-
-    public void addUsedMemory(int memory) {
-        this.usedMemory += memory;
-    }
-
-    public void removeUsedMemory(int memory) {
-        this.usedMemory -= memory;
-    }
-
-    public void update() {
-        this.processRuntimeInformation = Platform.createProcessRuntimeInformation();
-        this.lastUpdate = System.currentTimeMillis();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (!(o instanceof DefaultNodeInformation)) {
-            return false;
-        }
-
-        DefaultNodeInformation that = (DefaultNodeInformation) o;
-        return this.nodeUniqueID.equals(that.nodeUniqueID);
-    }
-
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.name);
-        buffer.writeUniqueId(this.nodeUniqueID);
-        buffer.writeLong(this.startupTime);
-        buffer.writeLong(this.lastUpdate);
-        buffer.writeLong(this.usedMemory);
-        buffer.writeLong(this.maxMemory);
-        buffer.writeObject(this.processRuntimeInformation);
-    }
-
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.name = buffer.readString();
-        this.nodeUniqueID = buffer.readUniqueId();
-        this.startupTime = buffer.readLong();
-        this.lastUpdate = buffer.readLong();
-        this.usedMemory = buffer.readLong();
-        this.maxMemory = buffer.readLong();
-        this.processRuntimeInformation = buffer.readObject(DefaultProcessRuntimeInformation.class, ProcessRuntimeInformation.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.name = buffer.readString();
+    this.nodeUniqueID = buffer.readUniqueId();
+    this.startupTime = buffer.readLong();
+    this.lastUpdate = buffer.readLong();
+    this.usedMemory = buffer.readLong();
+    this.maxMemory = buffer.readLong();
+    this.processRuntimeInformation = buffer.readObject(DefaultProcessRuntimeInformation.class, ProcessRuntimeInformation.class);
+  }
 }

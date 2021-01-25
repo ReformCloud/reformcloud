@@ -41,11 +41,11 @@ import systems.reformcloud.reformcloud2.executor.api.event.events.process.Proces
 import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUnregisterEvent;
 import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUpdateEvent;
 import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
-import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
+import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessInclusion;
@@ -80,300 +80,301 @@ import systems.reformcloud.reformcloud2.protocol.api.NodeToApiProcessGroupUpdate
 import systems.reformcloud.reformcloud2.protocol.api.NodeToApiProcessRegister;
 import systems.reformcloud.reformcloud2.protocol.api.NodeToApiProcessUnregister;
 import systems.reformcloud.reformcloud2.protocol.api.NodeToApiProcessUpdated;
+import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 
 import java.util.Collection;
 import java.util.UUID;
 
 public class DefaultClusterManager implements ClusterManager {
 
-    private final DefaultNodeNodeInformationProvider nodeInformationProvider;
-    private final DefaultNodeProcessProvider processProvider;
-    private final DefaultNodeProcessGroupProvider processGroupProvider;
-    private final DefaultNodeMainGroupProvider mainGroupProvider;
-    private DefaultNodeInformation head;
+  private final DefaultNodeNodeInformationProvider nodeInformationProvider;
+  private final DefaultNodeProcessProvider processProvider;
+  private final DefaultNodeProcessGroupProvider processGroupProvider;
+  private final DefaultNodeMainGroupProvider mainGroupProvider;
+  private NodeInformation head;
 
-    public DefaultClusterManager(DefaultNodeNodeInformationProvider nodeInformationProvider, DefaultNodeProcessProvider processProvider,
-                                 DefaultNodeProcessGroupProvider processGroupProvider, DefaultNodeMainGroupProvider mainGroupProvider,
-                                 DefaultNodeInformation head) {
-        this.nodeInformationProvider = nodeInformationProvider;
-        this.processProvider = processProvider;
-        this.processGroupProvider = processGroupProvider;
-        this.mainGroupProvider = mainGroupProvider;
-        this.head = head;
+  public DefaultClusterManager(DefaultNodeNodeInformationProvider nodeInformationProvider, DefaultNodeProcessProvider processProvider,
+                               DefaultNodeProcessGroupProvider processGroupProvider, DefaultNodeMainGroupProvider mainGroupProvider,
+                               DefaultNodeInformation head) {
+    this.nodeInformationProvider = nodeInformationProvider;
+    this.processProvider = processProvider;
+    this.processGroupProvider = processGroupProvider;
+    this.mainGroupProvider = mainGroupProvider;
+    this.head = head;
+  }
+
+  @Override
+  public @NotNull Task<ProcessWrapper> createProcess(@NotNull ProcessGroup processGroup, @Nullable String node, @Nullable String displayName,
+                                                     @Nullable String messageOfTheDay, @Nullable Template template, @NotNull Collection<ProcessInclusion> inclusions,
+                                                     @NotNull JsonConfiguration jsonConfiguration, @NotNull ProcessState initialState, @NotNull UUID uniqueId, int memory,
+                                                     int id, int maxPlayers, @Nullable String targetProcessFactory) {
+    return ClusterAccessController.createProcessPrivileged(
+      processGroup, node, displayName, messageOfTheDay, template, inclusions, jsonConfiguration,
+      initialState, uniqueId, memory, id, maxPlayers, targetProcessFactory
+    ).thenSupply(result -> {
+      if (result == null) {
+        return null;
+      }
+
+      if (NodeExecutor.getInstance().isOwnIdentity(result.getId().getNodeName())) {
+        return ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(result.getId().getUniqueId()).orElse(null);
+      }
+
+      return new DefaultNodeRemoteProcessWrapper(result);
+    });
+  }
+
+  @Override
+  public void handleNodeConnect(@NotNull NodeInformation nodeInformation) {
+    this.nodeInformationProvider.addNode(nodeInformation);
+    this.updateHead();
+  }
+
+  @Override
+  public void handleNodeUpdate(@NotNull NodeInformation nodeInformation) {
+    this.nodeInformationProvider.updateNode(nodeInformation);
+  }
+
+  @Override
+  public void publishNodeUpdate(@NotNull NodeInformation nodeInformation) {
+    this.sendPacketToNodes(new NodeToNodeUpdateNodeInformation(nodeInformation));
+  }
+
+  @Override
+  public void handleNodeDisconnect(@NotNull String name) {
+    this.nodeInformationProvider.removeNode(name);
+    this.updateHead();
+  }
+
+  @Override
+  public void handleProcessRegister(@NotNull ProcessInformation processInformation) {
+    this.processProvider.registerProcess(processInformation);
+    this.sendPacketToProcesses(new NodeToApiProcessRegister(processInformation));
+
+    this.callEvent(new ProcessRegisterEvent(processInformation));
+  }
+
+  @Override
+  public void publishProcessRegister(@NotNull ProcessInformation processInformation) {
+    this.sendPacketToNodes(new NodeToNodeRegisterProcess(processInformation));
+    this.sendPacketToProcesses(new NodeToApiProcessRegister(processInformation));
+
+    this.callEvent(new ProcessRegisterEvent(processInformation));
+  }
+
+  @Override
+  public void handleProcessUpdate(@NotNull ProcessInformation processInformation) {
+    this.processProvider.updateProcessInformation0(processInformation);
+    this.sendPacketToProcesses(new NodeToApiProcessUpdated(processInformation));
+
+    this.callEvent(new ProcessUpdateEvent(processInformation));
+  }
+
+  @Override
+  public void publishProcessUpdate(@NotNull ProcessInformation processInformation) {
+    this.sendPacketToNodes(new NodeToNodeUpdateProcess(processInformation));
+    this.sendPacketToProcesses(new NodeToApiProcessUpdated(processInformation));
+
+    this.callEvent(new ProcessUpdateEvent(processInformation));
+  }
+
+  @Override
+  public void handleProcessUnregister(@NotNull String name) {
+    this.processProvider.getProcessByName(name).ifPresent(processWrapper -> {
+      this.sendPacketToProcesses(new NodeToApiProcessUnregister(processWrapper.getProcessInformation()));
+      this.callEvent(new ProcessUnregisterEvent(processWrapper.getProcessInformation()));
+    });
+    this.processProvider.unregisterProcess(name);
+  }
+
+  @Override
+  public void publishProcessUnregister(@NotNull ProcessInformation processInformation) {
+    this.processProvider.unregisterProcess(processInformation.getName());
+
+    this.sendPacketToNodes(new NodeToNodeUnregisterProcess(processInformation.getName()));
+    this.sendPacketToProcesses(new NodeToApiProcessUnregister(processInformation));
+
+    this.callEvent(new ProcessUnregisterEvent(processInformation));
+  }
+
+  @Override
+  public void handleProcessSet(@NotNull Collection<ProcessInformation> processInformation) {
+    for (ProcessInformation information : processInformation) {
+      this.handleProcessRegister(information);
     }
+  }
 
-    @Override
-    public @NotNull Task<ProcessWrapper> createProcess(@NotNull DefaultProcessGroup processGroup, @Nullable String node, @Nullable String displayName,
-                                                       @Nullable String messageOfTheDay, @Nullable DefaultTemplate template, @NotNull Collection<ProcessInclusion> inclusions,
-                                                       @NotNull JsonConfiguration jsonConfiguration, @NotNull ProcessState initialState, @NotNull UUID uniqueId, int memory,
-                                                       int id, int maxPlayers, @Nullable String targetProcessFactory) {
-        return ClusterAccessController.createProcessPrivileged(
-            processGroup, node, displayName, messageOfTheDay, template, inclusions, jsonConfiguration,
-            initialState, uniqueId, memory, id, maxPlayers, targetProcessFactory
-        ).thenSupply(result -> {
-            if (result == null) {
-                return null;
-            }
+  @Override
+  public void publishProcessSet(@NotNull Collection<ProcessInformation> processInformation) {
+    this.sendPacketToNodes(new NodeToNodeSetProcesses(processInformation));
+  }
 
-            if (NodeExecutor.getInstance().isOwnIdentity(result.getProcessDetail().getParentName())) {
-                return ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(result.getProcessDetail().getProcessUniqueID()).orElse(null);
-            }
+  @Override
+  public void handleProcessGroupCreate(@NotNull ProcessGroup processGroup) {
+    this.processGroupProvider.addProcessGroup0(processGroup);
+    this.sendPacketToProcesses(new NodeToApiProcessGroupCreate(processGroup));
 
-            return new DefaultNodeRemoteProcessWrapper(result);
-        });
-    }
+    this.callEvent(new ProcessGroupCreateEvent(processGroup));
+  }
 
-    @Override
-    public void handleNodeConnect(@NotNull DefaultNodeInformation nodeInformation) {
-        this.nodeInformationProvider.addNode(nodeInformation);
-        this.updateHead();
-    }
+  @Override
+  public void publishProcessGroupCreate(@NotNull ProcessGroup processGroup) {
+    this.sendPacketToNodes(new NodeToNodeCreateProcessGroup(processGroup));
+    this.sendPacketToProcesses(new NodeToApiProcessGroupCreate(processGroup));
 
-    @Override
-    public void handleNodeUpdate(@NotNull DefaultNodeInformation nodeInformation) {
-        this.nodeInformationProvider.updateNode(nodeInformation);
-    }
+    this.callEvent(new ProcessGroupCreateEvent(processGroup));
+  }
 
-    @Override
-    public void publishNodeUpdate(@NotNull DefaultNodeInformation nodeInformation) {
-        this.sendPacketToNodes(new NodeToNodeUpdateNodeInformation(nodeInformation));
-    }
+  @Override
+  public void handleProcessGroupUpdate(@NotNull ProcessGroup processGroup) {
+    this.processGroupProvider.updateProcessGroup0(processGroup);
+    this.sendPacketToProcesses(new NodeToApiProcessGroupUpdated(processGroup));
 
-    @Override
-    public void handleNodeDisconnect(@NotNull String name) {
-        this.nodeInformationProvider.removeNode(name);
-        this.updateHead();
-    }
+    this.callEvent(new ProcessGroupUpdateEvent(processGroup));
+  }
 
-    @Override
-    public void handleProcessRegister(@NotNull ProcessInformation processInformation) {
-        this.processProvider.registerProcess(processInformation);
-        this.sendPacketToProcesses(new NodeToApiProcessRegister(processInformation));
+  @Override
+  public void publishProcessGroupUpdate(@NotNull ProcessGroup processGroup) {
+    this.sendPacketToNodes(new NodeToNodeUpdateProcessGroup(processGroup));
+    this.sendPacketToProcesses(new NodeToApiProcessGroupUpdated(processGroup));
 
-        this.callEvent(new ProcessRegisterEvent(processInformation));
-    }
+    this.callEvent(new ProcessGroupUpdateEvent(processGroup));
+  }
 
-    @Override
-    public void publishProcessRegister(@NotNull ProcessInformation processInformation) {
-        this.sendPacketToNodes(new NodeToNodeRegisterProcess(processInformation));
-        this.sendPacketToProcesses(new NodeToApiProcessRegister(processInformation));
+  @Override
+  public void handleProcessGroupDelete(@NotNull ProcessGroup processGroup) {
+    this.processGroupProvider.deleteProcessGroup0(processGroup.getName());
+    this.sendPacketToProcesses(new NodeToApiProcessGroupDelete(processGroup));
 
-        this.callEvent(new ProcessRegisterEvent(processInformation));
-    }
+    this.callEvent(new ProcessGroupDeleteEvent(processGroup));
+  }
 
-    @Override
-    public void handleProcessUpdate(@NotNull ProcessInformation processInformation) {
-        this.processProvider.updateProcessInformation0(processInformation);
-        this.sendPacketToProcesses(new NodeToApiProcessUpdated(processInformation));
+  @Override
+  public void publishProcessGroupDelete(@NotNull ProcessGroup processGroup) {
+    this.sendPacketToNodes(new NodeToNodeDeleteProcessGroup(processGroup));
+    this.sendPacketToProcesses(new NodeToApiProcessGroupDelete(processGroup));
 
-        this.callEvent(new ProcessUpdateEvent(processInformation));
-    }
+    this.callEvent(new ProcessGroupDeleteEvent(processGroup));
+  }
 
-    @Override
-    public void publishProcessUpdate(@NotNull ProcessInformation processInformation) {
-        this.sendPacketToNodes(new NodeToNodeUpdateProcess(processInformation));
-        this.sendPacketToProcesses(new NodeToApiProcessUpdated(processInformation));
-
-        this.callEvent(new ProcessUpdateEvent(processInformation));
-    }
-
-    @Override
-    public void handleProcessUnregister(@NotNull String name) {
-        this.processProvider.getProcessByName(name).ifPresent(processWrapper -> {
-            this.sendPacketToProcesses(new NodeToApiProcessUnregister(processWrapper.getProcessInformation()));
-            this.callEvent(new ProcessUnregisterEvent(processWrapper.getProcessInformation()));
-        });
-        this.processProvider.unregisterProcess(name);
-    }
-
-    @Override
-    public void publishProcessUnregister(@NotNull ProcessInformation processInformation) {
-        this.processProvider.unregisterProcess(processInformation.getProcessDetail().getName());
-
-        this.sendPacketToNodes(new NodeToNodeUnregisterProcess(processInformation.getProcessDetail().getName()));
-        this.sendPacketToProcesses(new NodeToApiProcessUnregister(processInformation));
-
-        this.callEvent(new ProcessUnregisterEvent(processInformation));
-    }
-
-    @Override
-    public void handleProcessSet(@NotNull Collection<ProcessInformation> processInformation) {
-        for (ProcessInformation information : processInformation) {
-            this.handleProcessRegister(information);
-        }
-    }
-
-    @Override
-    public void publishProcessSet(@NotNull Collection<ProcessInformation> processInformation) {
-        this.sendPacketToNodes(new NodeToNodeSetProcesses(processInformation));
-    }
-
-    @Override
-    public void handleProcessGroupCreate(@NotNull DefaultProcessGroup processGroup) {
+  @Override
+  public void handleProcessGroupSet(@NotNull Collection<ProcessGroup> processGroups) {
+    for (ProcessGroup processGroup : processGroups) {
+      if (!this.processGroupProvider.getProcessGroup(processGroup.getName()).isPresent()) {
         this.processGroupProvider.addProcessGroup0(processGroup);
-        this.sendPacketToProcesses(new NodeToApiProcessGroupCreate(processGroup));
-
-        this.callEvent(new ProcessGroupCreateEvent(processGroup));
-    }
-
-    @Override
-    public void publishProcessGroupCreate(@NotNull DefaultProcessGroup processGroup) {
-        this.sendPacketToNodes(new NodeToNodeCreateProcessGroup(processGroup));
-        this.sendPacketToProcesses(new NodeToApiProcessGroupCreate(processGroup));
-
-        this.callEvent(new ProcessGroupCreateEvent(processGroup));
-    }
-
-    @Override
-    public void handleProcessGroupUpdate(@NotNull DefaultProcessGroup processGroup) {
+      } else {
         this.processGroupProvider.updateProcessGroup0(processGroup);
-        this.sendPacketToProcesses(new NodeToApiProcessGroupUpdated(processGroup));
-
-        this.callEvent(new ProcessGroupUpdateEvent(processGroup));
+      }
     }
+  }
 
-    @Override
-    public void publishProcessGroupUpdate(@NotNull DefaultProcessGroup processGroup) {
-        this.sendPacketToNodes(new NodeToNodeUpdateProcessGroup(processGroup));
-        this.sendPacketToProcesses(new NodeToApiProcessGroupUpdated(processGroup));
+  @Override
+  public void publishProcessGroupSet(@NotNull Collection<ProcessGroup> processGroups) {
+    this.sendPacketToNodes(new NodeToNodeSetProcessGroups(processGroups));
+  }
 
-        this.callEvent(new ProcessGroupUpdateEvent(processGroup));
-    }
+  @Override
+  public void handleMainGroupCreate(@NotNull MainGroup mainGroup) {
+    this.mainGroupProvider.addGroup0(mainGroup);
+    this.sendPacketToProcesses(new NodeToApiMainGroupCreate(mainGroup));
 
-    @Override
-    public void handleProcessGroupDelete(@NotNull DefaultProcessGroup processGroup) {
-        this.processGroupProvider.deleteProcessGroup0(processGroup.getName());
-        this.sendPacketToProcesses(new NodeToApiProcessGroupDelete(processGroup));
+    this.callEvent(new MainGroupCreateEvent(mainGroup));
+  }
 
-        this.callEvent(new ProcessGroupDeleteEvent(processGroup));
-    }
+  @Override
+  public void publishMainGroupCreate(@NotNull MainGroup mainGroup) {
+    this.sendPacketToNodes(new NodeToNodeCreateMainGroup(mainGroup));
+    this.sendPacketToProcesses(new NodeToApiMainGroupCreate(mainGroup));
 
-    @Override
-    public void publishProcessGroupDelete(@NotNull DefaultProcessGroup processGroup) {
-        this.sendPacketToNodes(new NodeToNodeDeleteProcessGroup(processGroup));
-        this.sendPacketToProcesses(new NodeToApiProcessGroupDelete(processGroup));
+    this.callEvent(new MainGroupCreateEvent(mainGroup));
+  }
 
-        this.callEvent(new ProcessGroupDeleteEvent(processGroup));
-    }
+  @Override
+  public void handleMainGroupUpdate(@NotNull MainGroup mainGroup) {
+    this.mainGroupProvider.updateMainGroup0(mainGroup);
+    this.sendPacketToProcesses(new NodeToApiMainGroupUpdated(mainGroup));
 
-    @Override
-    public void handleProcessGroupSet(@NotNull Collection<DefaultProcessGroup> processGroups) {
-        for (DefaultProcessGroup processGroup : processGroups) {
-            if (this.processGroupProvider.getProcessGroup(processGroup.getName()).isEmpty()) {
-                this.processGroupProvider.addProcessGroup0(processGroup);
-            } else {
-                this.processGroupProvider.updateProcessGroup0(processGroup);
-            }
-        }
-    }
+    this.callEvent(new MainGroupUpdateEvent(mainGroup));
+  }
 
-    @Override
-    public void publishProcessGroupSet(@NotNull Collection<DefaultProcessGroup> processGroups) {
-        this.sendPacketToNodes(new NodeToNodeSetProcessGroups(processGroups));
-    }
+  @Override
+  public void publishMainGroupUpdate(@NotNull MainGroup mainGroup) {
+    this.sendPacketToNodes(new NodeToNodeUpdateMainGroup(mainGroup));
+    this.sendPacketToProcesses(new NodeToApiMainGroupUpdated(mainGroup));
 
-    @Override
-    public void handleMainGroupCreate(@NotNull MainGroup mainGroup) {
+    this.callEvent(new MainGroupUpdateEvent(mainGroup));
+  }
+
+  @Override
+  public void handleMainGroupDelete(@NotNull MainGroup mainGroup) {
+    this.mainGroupProvider.deleteMainGroup0(mainGroup.getName());
+    this.sendPacketToProcesses(new NodeToApiMainGroupDelete(mainGroup));
+
+    this.callEvent(new MainGroupDeleteEvent(mainGroup));
+  }
+
+  @Override
+  public void publishMainGroupDelete(@NotNull MainGroup mainGroup) {
+    this.sendPacketToNodes(new NodeToNodeDeleteMainGroup(mainGroup));
+    this.sendPacketToProcesses(new NodeToApiMainGroupDelete(mainGroup));
+
+    this.callEvent(new MainGroupDeleteEvent(mainGroup));
+  }
+
+  @Override
+  public void handleMainGroupSet(@NotNull Collection<MainGroup> mainGroups) {
+    for (MainGroup mainGroup : mainGroups) {
+      if (!this.mainGroupProvider.getMainGroup(mainGroup.getName()).isPresent()) {
         this.mainGroupProvider.addGroup0(mainGroup);
-        this.sendPacketToProcesses(new NodeToApiMainGroupCreate(mainGroup));
-
-        this.callEvent(new MainGroupCreateEvent(mainGroup));
-    }
-
-    @Override
-    public void publishMainGroupCreate(@NotNull MainGroup mainGroup) {
-        this.sendPacketToNodes(new NodeToNodeCreateMainGroup(mainGroup));
-        this.sendPacketToProcesses(new NodeToApiMainGroupCreate(mainGroup));
-
-        this.callEvent(new MainGroupCreateEvent(mainGroup));
-    }
-
-    @Override
-    public void handleMainGroupUpdate(@NotNull MainGroup mainGroup) {
+      } else {
         this.mainGroupProvider.updateMainGroup0(mainGroup);
-        this.sendPacketToProcesses(new NodeToApiMainGroupUpdated(mainGroup));
-
-        this.callEvent(new MainGroupUpdateEvent(mainGroup));
+      }
     }
+  }
 
-    @Override
-    public void publishMainGroupUpdate(@NotNull MainGroup mainGroup) {
-        this.sendPacketToNodes(new NodeToNodeUpdateMainGroup(mainGroup));
-        this.sendPacketToProcesses(new NodeToApiMainGroupUpdated(mainGroup));
+  @Override
+  public void publishMainGroupSet(@NotNull Collection<MainGroup> mainGroups) {
+    this.sendPacketToNodes(new NodeToNodeSetMainGroups(mainGroups));
+  }
 
-        this.callEvent(new MainGroupUpdateEvent(mainGroup));
+  @Override
+  public boolean isHeadNode() {
+    return this.getHeadNode().getUniqueId().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID());
+  }
+
+  @Override
+  public @NotNull NodeInformation getHeadNode() {
+    return this.head;
+  }
+
+  private void updateHead() {
+    Collection<NodeInformation> nodes = ExecutorAPI.getInstance().getNodeInformationProvider().getNodes();
+    Conditions.isTrue(!nodes.isEmpty(), "All node information were unregistered");
+
+    for (NodeInformation node : nodes) {
+      if (node.getStartupMillis() < this.head.getStartupMillis()) {
+        this.head = node;
+      }
     }
+  }
 
-    @Override
-    public void handleMainGroupDelete(@NotNull MainGroup mainGroup) {
-        this.mainGroupProvider.deleteMainGroup0(mainGroup.getName());
-        this.sendPacketToProcesses(new NodeToApiMainGroupDelete(mainGroup));
-
-        this.callEvent(new MainGroupDeleteEvent(mainGroup));
+  private void sendPacketToNodes(@NotNull Packet packet) {
+    for (NodeInformation node : ExecutorAPI.getInstance().getNodeInformationProvider().getNodes()) {
+      ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
+        .getChannel(node.getName())
+        .ifPresent(channel -> channel.sendPacket(packet));
     }
+  }
 
-    @Override
-    public void publishMainGroupDelete(@NotNull MainGroup mainGroup) {
-        this.sendPacketToNodes(new NodeToNodeDeleteMainGroup(mainGroup));
-        this.sendPacketToProcesses(new NodeToApiMainGroupDelete(mainGroup));
-
-        this.callEvent(new MainGroupDeleteEvent(mainGroup));
+  private void sendPacketToProcesses(@NotNull Packet packet) {
+    for (ProcessInformation process : ExecutorAPI.getInstance().getProcessProvider().getProcesses()) {
+      ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
+        .getChannel(process.getName())
+        .ifPresent(channel -> channel.sendPacket(packet));
     }
+  }
 
-    @Override
-    public void handleMainGroupSet(@NotNull Collection<MainGroup> mainGroups) {
-        for (MainGroup mainGroup : mainGroups) {
-            if (this.mainGroupProvider.getMainGroup(mainGroup.getName()).isEmpty()) {
-                this.mainGroupProvider.addGroup0(mainGroup);
-            } else {
-                this.mainGroupProvider.updateMainGroup0(mainGroup);
-            }
-        }
-    }
-
-    @Override
-    public void publishMainGroupSet(@NotNull Collection<MainGroup> mainGroups) {
-        this.sendPacketToNodes(new NodeToNodeSetMainGroups(mainGroups));
-    }
-
-    @Override
-    public boolean isHeadNode() {
-        return this.getHeadNode().getNodeUniqueID().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID());
-    }
-
-    @Override
-    public @NotNull DefaultNodeInformation getHeadNode() {
-        return this.head;
-    }
-
-    private void updateHead() {
-        Collection<DefaultNodeInformation> nodes = ExecutorAPI.getInstance().getNodeInformationProvider().getNodes();
-        Conditions.isTrue(!nodes.isEmpty(), "All node information were unregistered");
-
-        for (DefaultNodeInformation node : nodes) {
-            if (node.getStartupTime() < this.head.getStartupTime()) {
-                this.head = node;
-            }
-        }
-    }
-
-    private void sendPacketToNodes(@NotNull Packet packet) {
-        for (DefaultNodeInformation node : ExecutorAPI.getInstance().getNodeInformationProvider().getNodes()) {
-            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
-                .getChannel(node.getName())
-                .ifPresent(channel -> channel.sendPacket(packet));
-        }
-    }
-
-    private void sendPacketToProcesses(@NotNull Packet packet) {
-        for (ProcessInformation process : ExecutorAPI.getInstance().getProcessProvider().getProcesses()) {
-            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
-                .getChannel(process.getProcessDetail().getName())
-                .ifPresent(channel -> channel.sendPacket(packet));
-        }
-    }
-
-    private void callEvent(@NotNull Event event) {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(event);
-    }
+  private void callEvent(@NotNull Event event) {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(event);
+  }
 }

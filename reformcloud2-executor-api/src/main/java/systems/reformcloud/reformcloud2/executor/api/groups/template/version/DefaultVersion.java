@@ -146,7 +146,7 @@ public final class DefaultVersion implements Version {
         this.installer = buffer.readString();
         this.versionName = buffer.readString();
         this.downloadUrl = buffer.readString();
-        this.versionType = EnumUtil.findEnumFieldByIndex(VersionType.class, buffer.readByte()).orElseThrow();
+        this.versionType = EnumUtil.findEnumFieldByIndex(VersionType.class, buffer.readByte()).orElse(null);
         this.defaultStartPort = buffer.readInt();
         this.nativeTransportSupported = buffer.readBoolean();
     }

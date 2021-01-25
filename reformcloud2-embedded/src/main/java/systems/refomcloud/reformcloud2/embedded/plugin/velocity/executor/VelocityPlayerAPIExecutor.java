@@ -36,48 +36,48 @@ import java.util.UUID;
 
 public class VelocityPlayerAPIExecutor extends PlayerAPIExecutor {
 
-    private final ProxyServer proxyServer;
+  private final ProxyServer proxyServer;
 
-    public VelocityPlayerAPIExecutor(@NotNull ProxyServer proxyServer) {
-        this.proxyServer = proxyServer;
-    }
+  public VelocityPlayerAPIExecutor(@NotNull ProxyServer proxyServer) {
+    this.proxyServer = proxyServer;
+  }
 
-    @Override
-    public void executeSendMessage(UUID player, String message) {
-        this.proxyServer.getPlayer(player).ifPresent(val -> val.sendMessage(Identity.nil(), VelocityExecutor.SERIALIZER.deserialize(message)));
-    }
+  @Override
+  public void executeSendMessage(UUID player, String message) {
+    this.proxyServer.getPlayer(player).ifPresent(val -> val.sendMessage(Identity.nil(), VelocityExecutor.SERIALIZER.deserialize(message)));
+  }
 
-    @Override
-    public void executeKickPlayer(UUID player, String message) {
-        this.proxyServer.getPlayer(player).ifPresent(val -> val.disconnect(VelocityExecutor.SERIALIZER.deserialize(message)));
-    }
+  @Override
+  public void executeKickPlayer(UUID player, String message) {
+    this.proxyServer.getPlayer(player).ifPresent(val -> val.disconnect(VelocityExecutor.SERIALIZER.deserialize(message)));
+  }
 
-    @Override
-    public void executePlaySound(UUID player, String sound, float f1, float f2) {
-    }
+  @Override
+  public void executePlaySound(UUID player, String sound, float f1, float f2) {
+  }
 
-    @Override
-    public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
-        this.proxyServer.getPlayer(player).ifPresent(val -> {
-            Title velocityTitle = Title.title(
-                VelocityExecutor.SERIALIZER.deserialize(title),
-                VelocityExecutor.SERIALIZER.deserialize(subTitle),
-                Title.Times.of(Duration.ofSeconds(fadeIn / 20), Duration.ofSeconds(stay / 20), Duration.ofSeconds(fadeOut / 20))
-            );
-            val.showTitle(velocityTitle);
-        });
-    }
+  @Override
+  public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
+    this.proxyServer.getPlayer(player).ifPresent(val -> {
+      Title velocityTitle = Title.title(
+        VelocityExecutor.SERIALIZER.deserialize(title),
+        VelocityExecutor.SERIALIZER.deserialize(subTitle),
+        Title.Times.of(Duration.ofSeconds(fadeIn / 20), Duration.ofSeconds(stay / 20), Duration.ofSeconds(fadeOut / 20))
+      );
+      val.showTitle(velocityTitle);
+    });
+  }
 
-    @Override
-    public void executePlayEffect(UUID player, String entityEffect) {
-    }
+  @Override
+  public void executePlayEffect(UUID player, String entityEffect) {
+  }
 
-    @Override
-    public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
-    }
+  @Override
+  public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
+  }
 
-    @Override
-    public void executeConnect(UUID player, String server) {
-        this.proxyServer.getPlayer(player).ifPresent(val -> this.proxyServer.getServer(server).ifPresent(s -> val.createConnectionRequest(s).fireAndForget()));
-    }
+  @Override
+  public void executeConnect(UUID player, String server) {
+    this.proxyServer.getPlayer(player).ifPresent(val -> this.proxyServer.getServer(server).ifPresent(s -> val.createConnectionRequest(s).fireAndForget()));
+  }
 }

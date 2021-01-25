@@ -35,58 +35,58 @@ import java.util.function.Function;
 
 public class DefaultArgumentParser implements ArgumentParser {
 
-    private final Properties properties;
+  private final Properties properties;
 
-    public DefaultArgumentParser(@NonNls String[] args) {
-        this.properties = StringUtil.parseProperties(args, 0);
+  public DefaultArgumentParser(@NonNls String[] args) {
+    this.properties = StringUtil.parseProperties(args, 0);
+  }
+
+  @Override
+  public boolean has(@NotNull String key) {
+    return this.properties.containsKey(key);
+  }
+
+  @Override
+  public @NotNull Optional<String> getArgumentRaw(@NotNull String key) {
+    return Optional.ofNullable(this.properties.getProperty(key));
+  }
+
+  @Override
+  public boolean getBoolean(@NotNull String key) {
+    return this.get(key, Boolean::parseBoolean, null).orElse(false);
+  }
+
+  @Override
+  public int getInt(@NotNull String key) {
+    return this.get(key, Integer::parseInt, null).orElse(0);
+  }
+
+  @Override
+  public long getLong(@NotNull String key) {
+    return this.get(key, Long::parseLong, null).orElse(0L);
+  }
+
+  @Override
+  public float getFloat(@NotNull String key) {
+    return this.get(key, Float::parseFloat, null).orElse(0F);
+  }
+
+  @Override
+  public double getDouble(@NotNull String key) {
+    return this.get(key, Double::parseDouble, null).orElse(0D);
+  }
+
+  @Override
+  public @NotNull <T> Optional<T> get(@NotNull String key, @NotNull Function<String, T> function, @Nullable T defaultValue) {
+    try {
+      String value = this.properties.getProperty(key);
+      if (value == null) {
+        return Optional.ofNullable(defaultValue);
+      }
+
+      return Optional.ofNullable(function.apply(value));
+    } catch (Throwable throwable) {
+      return Optional.ofNullable(defaultValue);
     }
-
-    @Override
-    public boolean has(@NotNull String key) {
-        return this.properties.containsKey(key);
-    }
-
-    @Override
-    public @NotNull Optional<String> getArgumentRaw(@NotNull String key) {
-        return Optional.ofNullable(this.properties.getProperty(key));
-    }
-
-    @Override
-    public boolean getBoolean(@NotNull String key) {
-        return this.get(key, Boolean::parseBoolean, null).orElse(false);
-    }
-
-    @Override
-    public int getInt(@NotNull String key) {
-        return this.get(key, Integer::parseInt, null).orElse(0);
-    }
-
-    @Override
-    public long getLong(@NotNull String key) {
-        return this.get(key, Long::parseLong, null).orElse(0L);
-    }
-
-    @Override
-    public float getFloat(@NotNull String key) {
-        return this.get(key, Float::parseFloat, null).orElse(0F);
-    }
-
-    @Override
-    public double getDouble(@NotNull String key) {
-        return this.get(key, Double::parseDouble, null).orElse(0D);
-    }
-
-    @Override
-    public @NotNull <T> Optional<T> get(@NotNull String key, @NotNull Function<String, T> function, @Nullable T defaultValue) {
-        try {
-            String value = this.properties.getProperty(key);
-            if (value == null) {
-                return Optional.ofNullable(defaultValue);
-            }
-
-            return Optional.ofNullable(function.apply(value));
-        } catch (Throwable throwable) {
-            return Optional.ofNullable(defaultValue);
-        }
-    }
+  }
 }

@@ -26,13 +26,13 @@ package systems.reformcloud.reformcloud2.backends.url;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackend;
+import systems.reformcloud.reformcloud2.executor.api.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
 import systems.reformcloud.reformcloud2.node.template.TemplateBackendManager;
+import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.shared.io.DownloadHelper;
 import systems.reformcloud.reformcloud2.shared.io.IOUtils;
-import systems.reformcloud.reformcloud2.executor.api.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -43,86 +43,86 @@ import java.util.Collection;
 
 public final class URLTemplateBackend implements TemplateBackend {
 
-    private final String basePath;
+  private final String basePath;
 
-    private URLTemplateBackend(JsonConfiguration configuration) {
-        this.basePath = configuration.getString("baseUrl");
+  private URLTemplateBackend(JsonConfiguration configuration) {
+    this.basePath = configuration.getString("baseUrl");
+  }
+
+  public static void load(Path configPath) {
+    if (Files.notExists(configPath)) {
+      new JsonConfiguration().add("baseUrl", "https://127.0.0.1/rc/templates").write(configPath);
     }
 
-    public static void load(Path configPath) {
-        if (Files.notExists(configPath)) {
-            new JsonConfiguration().add("baseUrl", "https://127.0.0.1/rc/templates").write(configPath);
-        }
+    TemplateBackendManager.registerBackend(new URLTemplateBackend(JsonConfiguration.read(configPath)));
+  }
 
-        TemplateBackendManager.registerBackend(new URLTemplateBackend(JsonConfiguration.read(configPath)));
+  public static void unload() {
+    TemplateBackendManager.unregisterBackend("URL");
+  }
+
+  @Override
+  public boolean existsTemplate(@NotNull String group, @NotNull String template) {
+    try {
+      HttpURLConnection connection = (HttpURLConnection) new URL(this.getBasePath() + group + "-" + template + ".zip").openConnection();
+      connection.setRequestProperty(
+        "User-Agent",
+        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11"
+      );
+      connection.setUseCaches(false);
+      connection.connect();
+
+      return connection.getResponseCode() >= 200 && connection.getResponseCode() < 300;
+    } catch (final IOException ex) {
+      return false;
     }
+  }
 
-    public static void unload() {
-        TemplateBackendManager.unregisterBackend("URL");
-    }
+  @Override
+  public void createTemplate(@NotNull String group, @NotNull String template) {
+  }
 
-    @Override
-    public boolean existsTemplate(@NotNull String group, @NotNull String template) {
-        try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(this.getBasePath() + group + "-" + template + ".zip").openConnection();
-            connection.setRequestProperty(
-                "User-Agent",
-                "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11"
-            );
-            connection.setUseCaches(false);
-            connection.connect();
+  @NotNull
+  @Override
+  public Task<Void> loadTemplate(@NotNull String group, @NotNull String template, @NotNull Path target) {
+    DownloadHelper.download(this.getBasePath() + group + "-" + template + ".zip", "reformcloud/files/temp/template.zip");
+    IOUtils.unZip(Path.of("reformcloud/files/temp/template.zip"), target);
+    IOUtils.deleteFile("reformcloud/files/temp/template.zip");
+    return Task.completedTask(null);
+  }
 
-            return connection.getResponseCode() >= 200 && connection.getResponseCode() < 300;
-        } catch (final IOException ex) {
-            return false;
-        }
-    }
+  @NotNull
+  @Override
+  public Task<Void> loadGlobalTemplates(@NotNull DefaultProcessGroup group, @NotNull Path target) {
+    MoreCollections.allOf(group.getTemplates(), e -> e.getBackend().equals(this.getName())
+      && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target));
+    return Task.completedTask(null);
+  }
 
-    @Override
-    public void createTemplate(@NotNull String group, @NotNull String template) {
-    }
+  @NotNull
+  @Override
+  public Task<Void> loadPath(@NotNull String path, @NotNull Path target) {
+    DownloadHelper.download(this.getBasePath() + path, "reformcloud/files/temp/template.zip");
+    IOUtils.unZip(Path.of("reformcloud/files/temp/template.zip"), target);
+    IOUtils.deleteFile("reformcloud/files/temp/template.zip");
+    return Task.completedTask(null);
+  }
 
-    @NotNull
-    @Override
-    public Task<Void> loadTemplate(@NotNull String group, @NotNull String template, @NotNull Path target) {
-        DownloadHelper.download(this.getBasePath() + group + "-" + template + ".zip", "reformcloud/files/temp/template.zip");
-        IOUtils.unZip(Path.of("reformcloud/files/temp/template.zip"), target);
-        IOUtils.deleteFile("reformcloud/files/temp/template.zip");
-        return Task.completedTask(null);
-    }
+  @Override
+  public void deployTemplate(@NotNull String group, @NotNull String template, @NotNull Path current, @NotNull Collection<String> collection) {
+  }
 
-    @NotNull
-    @Override
-    public Task<Void> loadGlobalTemplates(@NotNull DefaultProcessGroup group, @NotNull Path target) {
-        Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(this.getName())
-            && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target));
-        return Task.completedTask(null);
-    }
+  @Override
+  public void deleteTemplate(@NotNull String group, @NotNull String template) {
+  }
 
-    @NotNull
-    @Override
-    public Task<Void> loadPath(@NotNull String path, @NotNull Path target) {
-        DownloadHelper.download(this.getBasePath() + path, "reformcloud/files/temp/template.zip");
-        IOUtils.unZip(Path.of("reformcloud/files/temp/template.zip"), target);
-        IOUtils.deleteFile("reformcloud/files/temp/template.zip");
-        return Task.completedTask(null);
-    }
+  private String getBasePath() {
+    return this.basePath.endsWith("/") ? this.basePath : this.basePath + "/";
+  }
 
-    @Override
-    public void deployTemplate(@NotNull String group, @NotNull String template, @NotNull Path current, @NotNull Collection<String> collection) {
-    }
-
-    @Override
-    public void deleteTemplate(@NotNull String group, @NotNull String template) {
-    }
-
-    private String getBasePath() {
-        return this.basePath.endsWith("/") ? this.basePath : this.basePath + "/";
-    }
-
-    @NotNull
-    @Override
-    public String getName() {
-        return "URL";
-    }
+  @NotNull
+  @Override
+  public String getName() {
+    return "URL";
+  }
 }

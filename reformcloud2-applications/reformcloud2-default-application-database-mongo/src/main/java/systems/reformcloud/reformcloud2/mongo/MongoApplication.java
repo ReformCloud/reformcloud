@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.mongo;
 
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
+import systems.reformcloud.reformcloud2.executor.api.application.Application;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.provider.DatabaseProvider;
 import systems.reformcloud.reformcloud2.mongo.config.MongoConfig;
@@ -36,35 +36,35 @@ import java.nio.file.Path;
 
 public class MongoApplication extends Application {
 
-    private DatabaseProvider before;
+  private DatabaseProvider before;
 
-    @Override
-    public void onLoad() {
-        ExecutorAPI.getInstance().getDependencyLoader().load(
-            DependencyFileLoader.collectDependenciesFromFile(MongoApplication.class.getClassLoader().getResourceAsStream("dependencies.txt"))
-        );
+  @Override
+  public void onLoad() {
+    ExecutorAPI.getInstance().getDependencyLoader().load(
+      DependencyFileLoader.collectDependenciesFromFile(MongoApplication.class.getClassLoader().getResourceAsStream("dependencies.txt"))
+    );
 
-        Path configPath = this.getDataDirectory().resolve("config.json");
-        if (Files.notExists(configPath)) {
-            new JsonConfiguration().add("config", new MongoConfig("127.0.0.1", 3306, "cloud", "cloud", "")).write(configPath);
-        }
-
-        MongoConfig config = JsonConfiguration.read(configPath).get("config", MongoConfig.class);
-        if (config == null) {
-            System.err.println("Unable to load configuration for mongo module");
-            return;
-        }
-
-        this.before = ExecutorAPI.getInstance().getDatabaseProvider();
-        ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, new MongoDatabaseProvider(config), false, true);
+    Path configPath = this.getDataDirectory().resolve("config.json");
+    if (Files.notExists(configPath)) {
+      new JsonConfiguration().add("config", new MongoConfig("127.0.0.1", 3306, "cloud", "cloud", "")).write(configPath);
     }
 
-    @Override
-    public void onDisable() {
-        DatabaseProvider providerUnchecked = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(DatabaseProvider.class);
-        if (providerUnchecked instanceof MongoDatabaseProvider) {
-            ((MongoDatabaseProvider) providerUnchecked).close();
-            ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, this.before, false, true);
-        }
+    MongoConfig config = JsonConfiguration.read(configPath).get("config", MongoConfig.class);
+    if (config == null) {
+      System.err.println("Unable to load configuration for mongo module");
+      return;
     }
+
+    this.before = ExecutorAPI.getInstance().getDatabaseProvider();
+    ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, new MongoDatabaseProvider(config), false, true);
+  }
+
+  @Override
+  public void onDisable() {
+    DatabaseProvider providerUnchecked = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(DatabaseProvider.class);
+    if (providerUnchecked instanceof MongoDatabaseProvider) {
+      ((MongoDatabaseProvider) providerUnchecked).close();
+      ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, this.before, false, true);
+    }
+  }
 }

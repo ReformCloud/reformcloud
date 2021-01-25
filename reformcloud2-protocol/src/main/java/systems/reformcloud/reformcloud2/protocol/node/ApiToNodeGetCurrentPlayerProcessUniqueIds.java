@@ -34,58 +34,57 @@ import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 import systems.reformcloud.reformcloud2.shared.collect.Entry2;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 public class ApiToNodeGetCurrentPlayerProcessUniqueIds extends ProtocolPacket {
 
-    private UUID playerUniqueId;
+  private UUID playerUniqueId;
 
-    public ApiToNodeGetCurrentPlayerProcessUniqueIds() {
+  public ApiToNodeGetCurrentPlayerProcessUniqueIds() {
+  }
+
+  public ApiToNodeGetCurrentPlayerProcessUniqueIds(UUID playerUniqueId) {
+    this.playerUniqueId = playerUniqueId;
+  }
+
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 47;
+  }
+
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetCurrentPlayerProcessUniqueIdsResult(this.getPlayerProcess().orElse(null)));
+  }
+
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.playerUniqueId);
+  }
+
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.playerUniqueId = buffer.readUniqueId();
+  }
+
+  @NotNull
+  private Optional<Entry2<UUID, UUID>> getPlayerProcess() {
+    UUID proxy = null;
+    UUID server = null;
+
+    for (ProcessInformation process : ExecutorAPI.getInstance().getProcessProvider().getProcesses()) {
+      if (process.getPrimaryTemplate().getVersion().getVersionType().isServer()
+        && process.getPlayerByUniqueId(this.playerUniqueId).isPresent()
+        && server == null) {
+        server = process.getId().getUniqueId();
+      } else if (process.getPrimaryTemplate().getVersion().getVersionType().isProxy()
+        && process.getPlayerByUniqueId(this.playerUniqueId).isPresent()
+        && proxy == null) {
+        proxy = process.getId().getUniqueId();
+      }
     }
 
-    public ApiToNodeGetCurrentPlayerProcessUniqueIds(UUID playerUniqueId) {
-        this.playerUniqueId = playerUniqueId;
-    }
-
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 47;
-    }
-
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetCurrentPlayerProcessUniqueIdsResult(this.getPlayerProcess().orElse(null)));
-    }
-
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.playerUniqueId);
-    }
-
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.playerUniqueId = buffer.readUniqueId();
-    }
-
-    @NotNull
-    private Optional<Map.Entry<UUID, UUID>> getPlayerProcess() {
-        UUID proxy = null;
-        UUID server = null;
-
-        for (ProcessInformation process : ExecutorAPI.getInstance().getProcessProvider().getProcesses()) {
-            if (process.getPrimaryTemplate().getVersion().getVersionType().isServer()
-                && process.getPlayerByUniqueId(this.playerUniqueId).isPresent()
-                && server == null) {
-                server = process.getId().getUniqueId();
-            } else if (process.getPrimaryTemplate().getVersion().getVersionType().isProxy()
-                && process.getPlayerByUniqueId(this.playerUniqueId).isPresent()
-                && proxy == null) {
-                proxy = process.getId().getUniqueId();
-            }
-        }
-
-        return proxy == null || server == null ? Optional.empty() : Optional.of(new Entry2<>(proxy, server));
-    }
+    return proxy == null || server == null ? Optional.empty() : Optional.of(new Entry2<>(proxy, server));
+  }
 }

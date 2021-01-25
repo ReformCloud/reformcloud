@@ -33,16 +33,16 @@ import systems.reformcloud.reformcloud2.permissions.application.ReformCloudAppli
 
 public final class ProcessInclusionHandler {
 
-    @Listener
-    public void handle(final @NotNull LocalProcessPrePrepareEvent event) {
-        this.includeSelfFile(event.getProcessInformation());
-    }
+  @Listener
+  public void handle(final @NotNull LocalProcessPrePrepareEvent event) {
+    this.includeSelfFile(event.getProcessInformation());
+  }
 
-    private void includeSelfFile(@NotNull ProcessInformation processInformation) {
-        processInformation.getPreInclusions().add(new ProcessInclusion(
-            "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-permissions-"
-                + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar",
-            "plugins/permissions-" + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar"
-        ));
-    }
+  private void includeSelfFile(@NotNull ProcessInformation processInformation) {
+    processInformation.getPreInclusions().add(new ProcessInclusion(
+      "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-permissions-"
+        + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar",
+      "plugins/permissions-" + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar"
+    ));
+  }
 }

@@ -37,39 +37,39 @@ import systems.reformcloud.reformcloud2.protocol.shared.PacketChannelMessage;
 
 public class DefaultNodeChannelMessageProvider implements ChannelMessageProvider {
 
-    @Override
-    public void sendChannelMessage(@NotNull ProcessInformation receiver, @NotNull String channel, @NotNull JsonConfiguration data) {
-        this.getChannelManager().getChannel(receiver.getProcessDetail().getName()).ifPresent(netChannel -> netChannel.sendPacket(new PacketChannelMessage(channel, data)));
+  @Override
+  public void sendChannelMessage(@NotNull ProcessInformation receiver, @NotNull String channel, @NotNull JsonConfiguration data) {
+    this.getChannelManager().getChannel(receiver.getId().getName()).ifPresent(netChannel -> netChannel.sendPacket(new PacketChannelMessage(channel, data)));
+  }
+
+  @Override
+  public void sendChannelMessage(@NotNull String processGroup, @NotNull String channel, @NotNull JsonConfiguration data) {
+    for (ProcessInformation processInformation : ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(processGroup)) {
+      this.sendChannelMessage(processInformation, channel, data);
+    }
+  }
+
+  @Override
+  public void publishChannelMessageToAll(@NotNull String node, @NotNull String channel, @NotNull JsonConfiguration data) {
+    if (NodeExecutor.getInstance().isOwnIdentity(node)) {
+      ExecutorAPI.getInstance().getProcessProvider().getProcesses()
+        .stream()
+        .filter(processInformation -> processInformation.getId().getNodeName().equals(node))
+        .forEach(processInformation -> this.sendChannelMessage(processInformation, channel, data));
+      return;
     }
 
-    @Override
-    public void sendChannelMessage(@NotNull String processGroup, @NotNull String channel, @NotNull JsonConfiguration data) {
-        for (ProcessInformation processInformation : ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(processGroup)) {
-            this.sendChannelMessage(processInformation, channel, data);
-        }
-    }
+    this.getChannelManager().getChannel(node).ifPresent(netChannel -> netChannel.sendPacket(new NodeToNodePublishChannelMessage(channel, data)));
+  }
 
-    @Override
-    public void publishChannelMessageToAll(@NotNull String node, @NotNull String channel, @NotNull JsonConfiguration data) {
-        if (NodeExecutor.getInstance().isOwnIdentity(node)) {
-            ExecutorAPI.getInstance().getProcessProvider().getProcesses()
-                .stream()
-                .filter(processInformation -> processInformation.getProcessDetail().getParentName().equals(node))
-                .forEach(processInformation -> this.sendChannelMessage(processInformation, channel, data));
-            return;
-        }
-
-        this.getChannelManager().getChannel(node).ifPresent(netChannel -> netChannel.sendPacket(new NodeToNodePublishChannelMessage(channel, data)));
+  @Override
+  public void publishChannelMessage(@NotNull String channel, @NotNull JsonConfiguration data) {
+    for (NetworkChannel registeredChannel : this.getChannelManager().getRegisteredChannels()) {
+      registeredChannel.sendPacket(new PacketChannelMessage(channel, data));
     }
+  }
 
-    @Override
-    public void publishChannelMessage(@NotNull String channel, @NotNull JsonConfiguration data) {
-        for (NetworkChannel registeredChannel : this.getChannelManager().getRegisteredChannels()) {
-            registeredChannel.sendPacket(new PacketChannelMessage(channel, data));
-        }
-    }
-
-    private @NotNull ChannelManager getChannelManager() {
-        return ExecutorAPI.getInstance().getServiceRegistry().getProvider(ChannelManager.class).orElseThrow(() -> new RuntimeException("Channel manager was unregistered"));
-    }
+  private @NotNull ChannelManager getChannelManager() {
+    return ExecutorAPI.getInstance().getServiceRegistry().getProvider(ChannelManager.class).orElseThrow(() -> new RuntimeException("Channel manager was unregistered"));
+  }
 }

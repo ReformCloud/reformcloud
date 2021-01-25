@@ -34,13 +34,13 @@ import systems.reformcloud.reformcloud2.permissions.sponge.service.SpongePermiss
 
 public final class CollectionCatalog {
 
-    public static final SubjectCollection FACTORY_COLLECTION = new FactoryCollection(SpongePermissionService.getInstance());
-    public static final SubjectCollection GROUP_COLLECTION = new GroupSubjectCollection(SpongePermissionService.getInstance());
-    public static final SubjectCollection USER_COLLECTION = new UserCollection(SpongePermissionService.getInstance());
-    public static final SubjectCollection COMMAND_BLOCK_COLLECTION = new SystemSubjectCollection(PermissionService.SUBJECTS_COMMAND_BLOCK, SpongePermissionService.getInstance());
-    public static final SubjectCollection SYSTEM_COLLECTION = new SystemSubjectCollection(PermissionService.SUBJECTS_SYSTEM, SpongePermissionService.getInstance());
+  public static final SubjectCollection FACTORY_COLLECTION = new FactoryCollection(SpongePermissionService.getInstance());
+  public static final SubjectCollection GROUP_COLLECTION = new GroupSubjectCollection(SpongePermissionService.getInstance());
+  public static final SubjectCollection USER_COLLECTION = new UserCollection(SpongePermissionService.getInstance());
+  public static final SubjectCollection COMMAND_BLOCK_COLLECTION = new SystemSubjectCollection(PermissionService.SUBJECTS_COMMAND_BLOCK, SpongePermissionService.getInstance());
+  public static final SubjectCollection SYSTEM_COLLECTION = new SystemSubjectCollection(PermissionService.SUBJECTS_SYSTEM, SpongePermissionService.getInstance());
 
-    private CollectionCatalog() {
-        throw new UnsupportedOperationException();
-    }
+  private CollectionCatalog() {
+    throw new UnsupportedOperationException();
+  }
 }

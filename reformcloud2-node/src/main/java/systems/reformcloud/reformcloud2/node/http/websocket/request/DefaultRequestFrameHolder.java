@@ -31,21 +31,21 @@ import systems.reformcloud.reformcloud2.executor.api.http.websocket.request.Sock
 
 public class DefaultRequestFrameHolder implements RequestFrameHolder {
 
-    private final SocketFrame<?> socketFrame;
-    private final SocketFrameSource frameSource;
+  private final SocketFrame<?> socketFrame;
+  private final SocketFrameSource frameSource;
 
-    public DefaultRequestFrameHolder(SocketFrame<?> socketFrame, SocketFrameSource frameSource) {
-        this.socketFrame = socketFrame;
-        this.frameSource = frameSource;
-    }
+  public DefaultRequestFrameHolder(SocketFrame<?> socketFrame, SocketFrameSource frameSource) {
+    this.socketFrame = socketFrame;
+    this.frameSource = frameSource;
+  }
 
-    @Override
-    public @NotNull SocketFrame<?> request() {
-        return this.socketFrame;
-    }
+  @Override
+  public @NotNull SocketFrame<?> request() {
+    return this.socketFrame;
+  }
 
-    @Override
-    public @NotNull SocketFrameSource source() {
-        return this.frameSource;
-    }
+  @Override
+  public @NotNull SocketFrameSource source() {
+    return this.frameSource;
+  }
 }

@@ -33,28 +33,28 @@ import systems.reformcloud.reformcloud2.node.http.decode.DefaultDecodeResultHold
 
 public abstract class DefaultHttpInformation<T extends HttpInformation<T>> extends DefaultDecodeResultHolder<T> implements HttpInformation<T>, InstanceHolder<T> {
 
-    protected final Headers headers;
-    protected HttpVersion httpVersion;
+  protected final Headers headers;
+  protected HttpVersion httpVersion;
 
-    protected DefaultHttpInformation(HttpVersion httpVersion, Headers headers, DecodeResult decodeResult) {
-        super(decodeResult);
-        this.headers = headers;
-        this.httpVersion = httpVersion;
-    }
+  protected DefaultHttpInformation(HttpVersion httpVersion, Headers headers, DecodeResult decodeResult) {
+    super(decodeResult);
+    this.headers = headers;
+    this.httpVersion = httpVersion;
+  }
 
-    @Override
-    public @NotNull HttpVersion httpVersion() {
-        return this.httpVersion;
-    }
+  @Override
+  public @NotNull HttpVersion httpVersion() {
+    return this.httpVersion;
+  }
 
-    @Override
-    public @NotNull T httpVersion(@NotNull HttpVersion httpVersion) {
-        this.httpVersion = httpVersion;
-        return this.self();
-    }
+  @Override
+  public @NotNull T httpVersion(@NotNull HttpVersion httpVersion) {
+    this.httpVersion = httpVersion;
+    return this.self();
+  }
 
-    @Override
-    public @NotNull Headers headers() {
-        return this.headers;
-    }
+  @Override
+  public @NotNull Headers headers() {
+    return this.headers;
+  }
 }

@@ -28,6 +28,6 @@ import org.jetbrains.annotations.NotNull;
 
 public interface InstanceHolder<T> {
 
-    @NotNull
-    T self();
+  @NotNull
+  T self();
 }

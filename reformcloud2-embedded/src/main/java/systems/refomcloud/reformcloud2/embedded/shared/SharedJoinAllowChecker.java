@@ -32,6 +32,7 @@ import systems.reformcloud.reformcloud2.executor.api.groups.process.player.Playe
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.shared.collect.Entry2;
+import systems.reformcloud.reformcloud2.shared.process.DefaultPlayer;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -39,48 +40,46 @@ import java.util.function.Function;
 
 public final class SharedJoinAllowChecker {
 
-    private SharedJoinAllowChecker() {
-        throw new UnsupportedOperationException();
+  private SharedJoinAllowChecker() {
+    throw new UnsupportedOperationException();
+  }
+
+  @NotNull
+  public static Entry2<Boolean, String> checkIfConnectAllowed(@NotNull Function<String, Boolean> permissionChecker,
+                                                              @NotNull IngameMessages messages,
+                                                              @Nullable Collection<ProcessInformation> checkedConnectedServices,
+                                                              @NotNull UUID playerUniqueId,
+                                                              @NotNull String username) {
+    ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
+    PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
+
+    if (checkedConnectedServices != null
+      && checkedConnectedServices.stream().anyMatch(e -> e.getPlayerByUniqueId(playerUniqueId).isPresent())) {
+      return new Entry2<>(false, messages.format(messages.getAlreadyConnectedToNetwork()));
     }
 
-    @NotNull
-    public static Entry2<Boolean, String> checkIfConnectAllowed(@NotNull Function<String, Boolean> permissionChecker,
-                                                                @NotNull IngameMessages messages,
-                                                                @Nullable Collection<ProcessInformation> checkedConnectedServices,
-                                                                @NotNull UUID playerUniqueId,
-                                                                @NotNull String username) {
-        ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-        PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
-
-        if (checkedConnectedServices != null
-            && checkedConnectedServices.stream().anyMatch(e -> e.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(playerUniqueId))) {
-            return new Entry2<>(false, messages.format(messages.getAlreadyConnectedToNetwork()));
-        }
-
-        if (current.getProcessDetail().getMaxPlayers() <= current.getProcessPlayerManager().getOnlineCount()
-            && !permissionChecker.apply(configuration.getFullJoinPermission())) {
-            return new Entry2<>(false, messages.format(messages.getProcessFullMessage()));
-        }
-
-        if (configuration.isJoinOnlyPerPermission() && !permissionChecker.apply(configuration.getJoinPermission())) {
-            return new Entry2<>(false, messages.format(messages.getProcessEnterPermissionNotSet()));
-        }
-
-        if (configuration.isMaintenance() && !permissionChecker.apply(configuration.getMaintenanceJoinPermission())) {
-            return new Entry2<>(false, messages.format(messages.getProcessInMaintenanceMessage()));
-        }
-
-        if (!current.getProcessPlayerManager().onLogin(playerUniqueId, username)) {
-            return new Entry2<>(false, messages.format(messages.getAlreadyConnectedMessage()));
-        }
-
-        if (configuration.isUseCloudPlayerLimit()
-            && current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-            && current.getProcessDetail().getMaxPlayers() <= current.getProcessPlayerManager().getOnlineCount() + 1) {
-            current.getProcessDetail().setProcessState(ProcessState.FULL);
-        }
-
-        Embedded.getInstance().updateCurrentProcessInformation();
-        return new Entry2<>(true, null);
+    if (configuration.isUsePlayerLimit() && configuration.getMaxPlayers() <= current.getOnlineCount()
+      && !permissionChecker.apply(configuration.getFullJoinPermission())) {
+      return new Entry2<>(false, messages.format(messages.getProcessFullMessage()));
     }
+
+    if (configuration.isJoinOnlyWithPermission() && !permissionChecker.apply(configuration.getJoinPermission())) {
+      return new Entry2<>(false, messages.format(messages.getProcessEnterPermissionNotSet()));
+    }
+
+    if (configuration.isMaintenance() && !permissionChecker.apply(configuration.getMaintenanceJoinPermission())) {
+      return new Entry2<>(false, messages.format(messages.getProcessInMaintenanceMessage()));
+    }
+
+    if (configuration.isUsePlayerLimit()
+      && current.getCurrentState().equals(ProcessState.READY)
+      && configuration.getMaxPlayers() <= current.getOnlineCount() + 1) {
+      current.setCurrentState(ProcessState.FULL);
+    }
+
+    current.getPlayers().add(new DefaultPlayer(playerUniqueId, username, System.currentTimeMillis()));
+
+    Embedded.getInstance().updateCurrentProcessInformation();
+    return new Entry2<>(true, null);
+  }
 }

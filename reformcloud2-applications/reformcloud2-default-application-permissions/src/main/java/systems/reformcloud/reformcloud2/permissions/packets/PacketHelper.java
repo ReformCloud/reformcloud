@@ -29,14 +29,14 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvid
 
 public final class PacketHelper {
 
-    public static final int PERMISSION_BUS = 8000;
+  public static final int PERMISSION_BUS = 8000;
 
-    private PacketHelper() {
-        throw new UnsupportedOperationException();
-    }
+  private PacketHelper() {
+    throw new UnsupportedOperationException();
+  }
 
-    public static void addPacketHandler() {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacketIgnored(PacketGroupAction.class);
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacketIgnored(PacketUserAction.class);
-    }
+  public static void addPacketHandler() {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacketIgnored(PacketGroupAction.class);
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacketIgnored(PacketUserAction.class);
+  }
 }

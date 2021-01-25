@@ -28,8 +28,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryManager;
@@ -49,69 +49,69 @@ import java.util.UUID;
 
 public final class ClusterAccessController {
 
-    private ClusterAccessController() {
-        throw new AssertionError("You should not instantiate this class");
+  private ClusterAccessController() {
+    throw new AssertionError("You should not instantiate this class");
+  }
+
+  public static void ensurePrivileged(@NotNull String reason) {
+    if (!getClusterManager().isHeadNode()) {
+      throw new IllegalStateException("Unprivileged " + reason + "!");
+    }
+  }
+
+  @NotNull
+  public static Task<ProcessInformation> createProcessPrivileged(@NotNull ProcessGroup processGroup, @Nullable String node,
+                                                                 @Nullable String displayName, @Nullable String messageOfTheDay,
+                                                                 @Nullable Template template, @NotNull Collection<ProcessInclusion> inclusions,
+                                                                 @NotNull JsonConfiguration jsonConfiguration, @NotNull ProcessState initial, @NotNull UUID uniqueId,
+                                                                 int memory, int id, int maxPlayers, @Nullable String targetProcessFactory) {
+    return createProcessPrivileged(
+      new ProcessFactoryConfiguration(node, displayName, messageOfTheDay, processGroup, template, inclusions, jsonConfiguration, initial, uniqueId, memory, id, maxPlayers),
+      targetProcessFactory
+    );
+  }
+
+  @NotNull
+  public static Task<ProcessInformation> createProcessPrivileged(@NotNull ProcessFactoryConfiguration configuration, @Nullable String targetProcessFactory) {
+    if (getClusterManager().isHeadNode()) {
+      return createProcessPrivileged0(configuration, targetProcessFactory);
     }
 
-    public static void ensurePrivileged(@NotNull String reason) {
-        if (!getClusterManager().isHeadNode()) {
-            throw new IllegalStateException("Unprivileged " + reason + "!");
+    NetworkChannel channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
+      .getChannel(getClusterManager().getHeadNode().getName())
+      .orElseThrow(() -> new IllegalStateException("Head node channel not connected"));
+    return createProcessOnHeadNode(channel, configuration, targetProcessFactory);
+  }
+
+  @NotNull
+  private static Task<ProcessInformation> createProcessOnHeadNode(@NotNull NetworkChannel channel, @NotNull ProcessFactoryConfiguration configuration, @Nullable String targetProcessFactory) {
+    Task<ProcessInformation> task = new DefaultTask<>();
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class)
+      .sendPacketQuery(channel, new NodeToHeadNodeCreateProcess(configuration, targetProcessFactory))
+      .onComplete(packet -> {
+        if (packet instanceof NodeToHeadNodeCreateProcessResult) {
+          task.complete(((NodeToHeadNodeCreateProcessResult) packet).getProcessInformation());
+        } else {
+          task.complete(null);
         }
+      });
+    return task;
+  }
+
+  @NotNull
+  private static Task<ProcessInformation> createProcessPrivileged0(@NotNull ProcessFactoryConfiguration configuration, @Nullable String targetProcessFactory) {
+    ProcessFactoryController factoryController = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProcessFactoryController.class);
+    if (targetProcessFactory == null) {
+      return factoryController.getDefaultProcessFactory().buildProcessInformation(configuration);
     }
 
-    @NotNull
-    public static Task<ProcessInformation> createProcessPrivileged(@NotNull DefaultProcessGroup processGroup, @Nullable String node,
-                                                                   @Nullable String displayName, @Nullable String messageOfTheDay,
-                                                                   @Nullable DefaultTemplate template, @NotNull Collection<ProcessInclusion> inclusions,
-                                                                   @NotNull JsonConfiguration jsonConfiguration, @NotNull ProcessState initial, @NotNull UUID uniqueId,
-                                                                   int memory, int id, int maxPlayers, @Nullable String targetProcessFactory) {
-        return createProcessPrivileged(
-            new ProcessFactoryConfiguration(node, displayName, messageOfTheDay, processGroup, template, inclusions, jsonConfiguration, initial, uniqueId, memory, id, maxPlayers),
-            targetProcessFactory
-        );
-    }
+    return factoryController
+      .getProcessFactoryByName(targetProcessFactory)
+      .orElse(factoryController.getDefaultProcessFactory())
+      .buildProcessInformation(configuration);
+  }
 
-    @NotNull
-    public static Task<ProcessInformation> createProcessPrivileged(@NotNull ProcessFactoryConfiguration configuration, @Nullable String targetProcessFactory) {
-        if (getClusterManager().isHeadNode()) {
-            return createProcessPrivileged0(configuration, targetProcessFactory);
-        }
-
-        NetworkChannel channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
-            .getChannel(getClusterManager().getHeadNode().getName())
-            .orElseThrow(() -> new IllegalStateException("Head node channel not connected"));
-        return createProcessOnHeadNode(channel, configuration, targetProcessFactory);
-    }
-
-    @NotNull
-    private static Task<ProcessInformation> createProcessOnHeadNode(@NotNull NetworkChannel channel, @NotNull ProcessFactoryConfiguration configuration, @Nullable String targetProcessFactory) {
-        Task<ProcessInformation> task = new DefaultTask<>();
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class)
-            .sendPacketQuery(channel, new NodeToHeadNodeCreateProcess(configuration, targetProcessFactory))
-            .onComplete(packet -> {
-                if (packet instanceof NodeToHeadNodeCreateProcessResult) {
-                    task.complete(((NodeToHeadNodeCreateProcessResult) packet).getProcessInformation());
-                } else {
-                    task.complete(null);
-                }
-            });
-        return task;
-    }
-
-    @NotNull
-    private static Task<ProcessInformation> createProcessPrivileged0(@NotNull ProcessFactoryConfiguration configuration, @Nullable String targetProcessFactory) {
-        ProcessFactoryController factoryController = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProcessFactoryController.class);
-        if (targetProcessFactory == null) {
-            return factoryController.getDefaultProcessFactory().buildProcessInformation(configuration);
-        }
-
-        return factoryController
-            .getProcessFactoryByName(targetProcessFactory)
-            .orElse(factoryController.getDefaultProcessFactory())
-            .buildProcessInformation(configuration);
-    }
-
-    private static @NotNull ClusterManager getClusterManager() {
-        return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class);
-    }
+  private static @NotNull ClusterManager getClusterManager() {
+    return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class);
+  }
 }

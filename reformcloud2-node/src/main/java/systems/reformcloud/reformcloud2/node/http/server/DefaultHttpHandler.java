@@ -46,12 +46,12 @@ import systems.reformcloud.reformcloud2.executor.api.http.listener.HttpListenerR
 import systems.reformcloud.reformcloud2.executor.api.http.reponse.ListeningHttpServerResponse;
 import systems.reformcloud.reformcloud2.executor.api.http.request.HttpRequest;
 import systems.reformcloud.reformcloud2.executor.api.http.request.RequestMethod;
-import systems.reformcloud.reformcloud2.shared.StringUtil;
 import systems.reformcloud.reformcloud2.node.http.DefaultHeaders;
 import systems.reformcloud.reformcloud2.node.http.cookie.CookieCoder;
 import systems.reformcloud.reformcloud2.node.http.request.DefaultHttpRequest;
 import systems.reformcloud.reformcloud2.node.http.request.DefaultHttpRequestSource;
 import systems.reformcloud.reformcloud2.node.http.utils.BinaryUtils;
+import systems.reformcloud.reformcloud2.shared.StringUtil;
 
 import java.io.IOException;
 import java.net.URI;
@@ -62,185 +62,184 @@ import java.util.Map;
 
 public class DefaultHttpHandler extends SimpleChannelInboundHandler<io.netty.handler.codec.http.HttpRequest> {
 
-    private final HttpListenerRegistry registry;
+  private final HttpListenerRegistry registry;
 
-    public DefaultHttpHandler(HttpListenerRegistry registry) {
-        this.registry = registry;
+  public DefaultHttpHandler(HttpListenerRegistry registry) {
+    this.registry = registry;
+  }
+
+  @NotNull
+  private static ChannelFuture sendResponse(@NotNull ListeningHttpServerResponse<?> response, @NotNull Channel channel) {
+    FullHttpResponse fullHttpResponse = new DefaultFullHttpResponse(
+      response.httpVersion() == systems.reformcloud.reformcloud2.executor.api.http.HttpVersion.HTTP_1_0
+        ? HttpVersion.HTTP_1_0
+        : HttpVersion.HTTP_1_1,
+      HttpResponseStatus.valueOf(response.status().code()),
+      Unpooled.wrappedBuffer(response.body()),
+      toNettyHeaders(response),
+      new DefaultHttpHeaders()
+    );
+    return channel.writeAndFlush(fullHttpResponse);
+  }
+
+  private static boolean shouldHandle(@NotNull String registeredPath, @NotNull String uri) {
+    String[] registeredPathParts = registeredPath.split("/");
+    String[] uriParts = uri.split("/");
+
+    if (uriParts.length != registeredPathParts.length) {
+      return false;
     }
 
-    @NotNull
-    private static ChannelFuture sendResponse(@NotNull ListeningHttpServerResponse<?> response, @NotNull Channel channel) {
-        FullHttpResponse fullHttpResponse = new DefaultFullHttpResponse(
-            response.httpVersion() == systems.reformcloud.reformcloud2.executor.api.http.HttpVersion.HTTP_1_0
-                ? HttpVersion.HTTP_1_0
-                : HttpVersion.HTTP_1_1,
-            HttpResponseStatus.valueOf(response.status().code()),
-            Unpooled.wrappedBuffer(response.body()),
-            toNettyHeaders(response),
-            new DefaultHttpHeaders()
+    for (int i = 0; i < registeredPathParts.length; i++) {
+      String registeredPart = registeredPathParts[i];
+      if ((!registeredPart.startsWith("{") || !registeredPart.endsWith("}")) && !uriParts[i].equalsIgnoreCase(registeredPart)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  @NotNull
+  private static Map<String, String> pathParameters(@NotNull String registeredPath, @NotNull String uri) {
+    Map<String, String> result = new HashMap<>();
+
+    String[] registeredPathParts = registeredPath.split("/");
+    String[] uriParts = uri.split("/");
+
+    if (uriParts.length != registeredPathParts.length) {
+      return result;
+    }
+
+    for (int i = 0; i < registeredPathParts.length; i++) {
+      String registeredPart = registeredPathParts[i];
+      if (registeredPart.startsWith("{") && registeredPart.endsWith("}")) {
+        result.put(StringUtil.replaceLastEmpty(registeredPart.replaceFirst("\\{", ""), "}"), uriParts[i]);
+      }
+    }
+
+    return result;
+  }
+
+  @NotNull
+  private static HttpHeaders toNettyHeaders(ListeningHttpServerResponse<?> response) {
+    HttpHeaders httpHeaders = new DefaultHttpHeaders();
+    for (Map.Entry<String, String> entry : response.headers().entries()) {
+      httpHeaders.set(entry.getKey(), entry.getValue());
+    }
+
+    if (!response.cookies().isEmpty()) {
+      httpHeaders.set(HttpHeaderNames.SET_COOKIE.toString(), CookieCoder.encode(response.cookies()));
+    }
+
+    return httpHeaders;
+  }
+
+  @NotNull
+  private static RequestMethod fromNetty(@NotNull HttpMethod method) {
+    if (method.equals(HttpMethod.TRACE)) {
+      return RequestMethod.TRACE;
+    } else if (method.equals(HttpMethod.DELETE)) {
+      return RequestMethod.DELETE;
+    } else if (method.equals(HttpMethod.GET)) {
+      return RequestMethod.GET;
+    } else if (method.equals(HttpMethod.PUT)) {
+      return RequestMethod.PUT;
+    } else if (method.equals(HttpMethod.PATCH)) {
+      return RequestMethod.PATCH;
+    } else if (method.equals(HttpMethod.OPTIONS)) {
+      return RequestMethod.OPTIONS;
+    } else if (method.equals(HttpMethod.POST)) {
+      return RequestMethod.POST;
+    } else if (method.equals(HttpMethod.HEAD)) {
+      return RequestMethod.HEAD;
+    } else {
+      throw new IllegalStateException("Unknown request method: " + method);
+    }
+  }
+
+  private static byte[] readBodyFromRequest(@NotNull FullHttpRequest request) {
+    return BinaryUtils.binaryArrayFromByteBuf(request);
+  }
+
+  @Override
+  public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+    if (!(cause instanceof IOException)) {
+      cause.printStackTrace();
+    }
+  }
+
+  @Override
+  public void channelReadComplete(ChannelHandlerContext ctx) {
+    ctx.flush();
+  }
+
+  @Override
+  public void channelInactive(ChannelHandlerContext ctx) {
+    if (!ctx.channel().isActive() || !ctx.channel().isOpen() || !ctx.channel().isWritable()) {
+      ctx.channel().close();
+    }
+  }
+
+  @Override
+  protected void channelRead0(ChannelHandlerContext ctx, io.netty.handler.codec.http.HttpRequest msg) {
+    if (!msg.decoderResult().isSuccess()) {
+      ctx.close();
+      return;
+    }
+
+    String path = URI.create(msg.uri()).getPath();
+    if (path.isEmpty()) {
+      path = "/";
+    } else if (path.endsWith("/")) {
+      path = path.substring(0, path.length() - 1);
+    }
+
+    ListeningHttpServerResponse<?> response = null;
+    for (Map.Entry<String, List<HttpListenerRegistryEntry>> entry : this.registry.getListeners().entrySet()) {
+      if (shouldHandle(entry.getKey(), path)) {
+        HttpRequest<?> request = new DefaultHttpRequest(
+          msg instanceof FullHttpRequest ? readBodyFromRequest((FullHttpRequest) msg) : new byte[0],
+          msg.protocolVersion() == HttpVersion.HTTP_1_0
+            ? systems.reformcloud.reformcloud2.executor.api.http.HttpVersion.HTTP_1_0
+            : systems.reformcloud.reformcloud2.executor.api.http.HttpVersion.HTTP_1_1,
+          new DefaultHeaders(msg.headers()),
+          msg.decoderResult().isSuccess() ? DecodeResult.success() : msg.decoderResult().isFailure()
+            ? DecodeResult.result(msg.decoderResult().cause()) : DecodeResult.unfinished(),
+          new DefaultHttpRequestSource(ctx.channel(), msg),
+          fromNetty(msg.method()),
+          msg.uri(),
+          path,
+          pathParameters(entry.getKey(), path)
         );
-        return channel.writeAndFlush(fullHttpResponse);
-    }
+        for (HttpListenerRegistryEntry httpListener : entry.getValue()) {
+          if (Arrays.binarySearch(httpListener.getHandlingRequestMethods(), request.requestMethod()) < 0) {
+            continue;
+          }
 
-    private static boolean shouldHandle(@NotNull String registeredPath, @NotNull String uri) {
-        String[] registeredPathParts = registeredPath.split("/");
-        String[] uriParts = uri.split("/");
-
-        if (uriParts.length != registeredPathParts.length) {
-            return false;
-        }
-
-        for (int i = 0; i < registeredPathParts.length; i++) {
-            String registeredPart = registeredPathParts[i];
-            if ((!registeredPart.startsWith("{") || !registeredPart.endsWith("}")) && !uriParts[i].equalsIgnoreCase(registeredPart)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    @NotNull
-    private static Map<String, String> pathParameters(@NotNull String registeredPath, @NotNull String uri) {
-        Map<String, String> result = new HashMap<>();
-
-        String[] registeredPathParts = registeredPath.split("/");
-        String[] uriParts = uri.split("/");
-
-        if (uriParts.length != registeredPathParts.length) {
-            return result;
-        }
-
-        for (int i = 0; i < registeredPathParts.length; i++) {
-            String registeredPart = registeredPathParts[i];
-            if (registeredPart.startsWith("{") && registeredPart.endsWith("}")) {
-                result.put(StringUtil.replaceLastEmpty(registeredPart.replaceFirst("\\{", ""), "}"), uriParts[i]);
-            }
-        }
-
-        return result;
-    }
-
-    @NotNull
-    private static HttpHeaders toNettyHeaders(ListeningHttpServerResponse<?> response) {
-        HttpHeaders httpHeaders = new DefaultHttpHeaders();
-        for (Map.Entry<String, String> entry : response.headers().entries()) {
-            httpHeaders.set(entry.getKey(), entry.getValue());
-        }
-
-        if (!response.cookies().isEmpty()) {
-            httpHeaders.set(HttpHeaderNames.SET_COOKIE.toString(), CookieCoder.encode(response.cookies()));
-        }
-
-        return httpHeaders;
-    }
-
-    @NotNull
-    private static RequestMethod fromNetty(@NotNull HttpMethod method) {
-        if (method.equals(HttpMethod.TRACE)) {
-            return RequestMethod.TRACE;
-        } else if (method.equals(HttpMethod.DELETE)) {
-            return RequestMethod.DELETE;
-        } else if (method.equals(HttpMethod.GET)) {
-            return RequestMethod.GET;
-        } else if (method.equals(HttpMethod.PUT)) {
-            return RequestMethod.PUT;
-        } else if (method.equals(HttpMethod.PATCH)) {
-            return RequestMethod.PATCH;
-        } else if (method.equals(HttpMethod.OPTIONS)) {
-            return RequestMethod.OPTIONS;
-        } else if (method.equals(HttpMethod.POST)) {
-            return RequestMethod.POST;
-        } else if (method.equals(HttpMethod.HEAD)) {
-            return RequestMethod.HEAD;
-        } else {
-            throw new IllegalStateException("Unknown request method: " + method);
-        }
-    }
-
-    @NotNull
-    private static byte[] readBodyFromRequest(@NotNull FullHttpRequest request) {
-        return BinaryUtils.binaryArrayFromByteBuf(request);
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        if (!(cause instanceof IOException)) {
-            cause.printStackTrace();
-        }
-    }
-
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) {
-        ctx.flush();
-    }
-
-    @Override
-    public void channelInactive(ChannelHandlerContext ctx) {
-        if (!ctx.channel().isActive() || !ctx.channel().isOpen() || !ctx.channel().isWritable()) {
-            ctx.channel().close();
-        }
-    }
-
-    @Override
-    protected void channelRead0(ChannelHandlerContext ctx, io.netty.handler.codec.http.HttpRequest msg) {
-        if (!msg.decoderResult().isSuccess()) {
-            ctx.close();
-            return;
-        }
-
-        String path = URI.create(msg.uri()).getPath();
-        if (path.isEmpty()) {
-            path = "/";
-        } else if (path.endsWith("/")) {
-            path = path.substring(0, path.length() - 1);
-        }
-
-        ListeningHttpServerResponse<?> response = null;
-        for (Map.Entry<String, List<HttpListenerRegistryEntry>> entry : this.registry.getListeners().entrySet()) {
-            if (shouldHandle(entry.getKey(), path)) {
-                HttpRequest<?> request = new DefaultHttpRequest(
-                    msg instanceof FullHttpRequest ? readBodyFromRequest((FullHttpRequest) msg) : new byte[0],
-                    msg.protocolVersion() == HttpVersion.HTTP_1_0
-                        ? systems.reformcloud.reformcloud2.executor.api.http.HttpVersion.HTTP_1_0
-                        : systems.reformcloud.reformcloud2.executor.api.http.HttpVersion.HTTP_1_1,
-                    new DefaultHeaders(msg.headers()),
-                    msg.decoderResult().isSuccess() ? DecodeResult.success() : msg.decoderResult().isFailure()
-                        ? DecodeResult.result(msg.decoderResult().cause()) : DecodeResult.unfinished(),
-                    new DefaultHttpRequestSource(ctx.channel(), msg),
-                    fromNetty(msg.method()),
-                    msg.uri(),
-                    path,
-                    pathParameters(entry.getKey(), path)
-                );
-                for (HttpListenerRegistryEntry httpListener : entry.getValue()) {
-                    if (Arrays.binarySearch(httpListener.getHandlingRequestMethods(), request.requestMethod()) < 0) {
-                        continue;
-                    }
-
-                    response = httpListener.getListener().handleRequest(request);
-                    if (response.lastHandler()) {
-                        ChannelFuture channelFuture = sendResponse(response, ctx.channel());
-                        if (response.closeAfterSent()) {
-                            channelFuture.addListener(ChannelFutureListener.CLOSE);
-                        }
-
-                        return;
-                    }
-                }
-            }
-        }
-
-        if (response == null) {
-            ctx.channel().writeAndFlush(new DefaultFullHttpResponse(
-                msg.protocolVersion(),
-                HttpResponseStatus.NOT_FOUND
-            )).addListener(ChannelFutureListener.CLOSE);
-        } else {
+          response = httpListener.getListener().handleRequest(request);
+          if (response.lastHandler()) {
             ChannelFuture channelFuture = sendResponse(response, ctx.channel());
             if (response.closeAfterSent()) {
-                channelFuture.addListener(ChannelFutureListener.CLOSE);
+              channelFuture.addListener(ChannelFutureListener.CLOSE);
             }
+
+            return;
+          }
         }
+      }
     }
+
+    if (response == null) {
+      ctx.channel().writeAndFlush(new DefaultFullHttpResponse(
+        msg.protocolVersion(),
+        HttpResponseStatus.NOT_FOUND
+      )).addListener(ChannelFutureListener.CLOSE);
+    } else {
+      ChannelFuture channelFuture = sendResponse(response, ctx.channel());
+      if (response.closeAfterSent()) {
+        channelFuture.addListener(ChannelFutureListener.CLOSE);
+      }
+    }
+  }
 }

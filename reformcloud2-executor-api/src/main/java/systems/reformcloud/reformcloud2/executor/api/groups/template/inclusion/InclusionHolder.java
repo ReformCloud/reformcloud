@@ -33,41 +33,41 @@ import java.util.Optional;
 
 public interface InclusionHolder extends SerializableObject {
 
-    @NotNull
-    @UnmodifiableView
-    Collection<Inclusion> getTemplateInclusions();
+  @NotNull
+  @UnmodifiableView
+  Collection<Inclusion> getTemplateInclusions();
 
-    @NotNull
-    @UnmodifiableView
-    Collection<Inclusion> getTemplateInclusions(@NotNull Inclusion.InclusionLoadType loadType);
+  @NotNull
+  @UnmodifiableView
+  Collection<Inclusion> getTemplateInclusions(@NotNull Inclusion.InclusionLoadType loadType);
 
-    @NotNull
-    Optional<Inclusion> getTemplateInclusion(@NotNull String template);
+  @NotNull
+  Optional<Inclusion> getTemplateInclusion(@NotNull String template);
 
-    void addTemplateInclusions(@NotNull Inclusion inclusion);
+  void addTemplateInclusions(@NotNull Inclusion inclusion);
 
-    void removeTemplateInclusion(@NotNull Inclusion inclusion);
+  void removeTemplateInclusion(@NotNull Inclusion inclusion);
 
-    void removeTemplateInclusion(@NotNull String template);
+  void removeTemplateInclusion(@NotNull String template);
 
-    void removeAllTemplateInclusions();
+  void removeAllTemplateInclusions();
 
-    @NotNull
-    @UnmodifiableView
-    Collection<Inclusion> getPathInclusions();
+  @NotNull
+  @UnmodifiableView
+  Collection<Inclusion> getPathInclusions();
 
-    @NotNull
-    @UnmodifiableView
-    Collection<Inclusion> getPathInclusions(@NotNull Inclusion.InclusionLoadType loadType);
+  @NotNull
+  @UnmodifiableView
+  Collection<Inclusion> getPathInclusions(@NotNull Inclusion.InclusionLoadType loadType);
 
-    @NotNull
-    Optional<Inclusion> getPathInclusion(@NotNull String path);
+  @NotNull
+  Optional<Inclusion> getPathInclusion(@NotNull String path);
 
-    void addPathInclusions(@NotNull Inclusion inclusion);
+  void addPathInclusions(@NotNull Inclusion inclusion);
 
-    void removePathInclusion(@NotNull Inclusion inclusion);
+  void removePathInclusion(@NotNull Inclusion inclusion);
 
-    void removePathInclusion(@NotNull String path);
+  void removePathInclusion(@NotNull String path);
 
-    void removeAllPathInclusions();
+  void removeAllPathInclusions();
 }

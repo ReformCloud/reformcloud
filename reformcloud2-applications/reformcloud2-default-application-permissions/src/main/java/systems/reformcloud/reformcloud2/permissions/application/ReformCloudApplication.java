@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.permissions.application;
 
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
+import systems.reformcloud.reformcloud2.executor.api.application.Application;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
@@ -39,40 +39,40 @@ import systems.reformcloud.reformcloud2.permissions.packets.PacketHelper;
 
 public class ReformCloudApplication extends Application {
 
-    private static final ApplicationUpdateRepository REPOSITORY = new PermissionsAddonUpdater();
+  private static final ApplicationUpdateRepository REPOSITORY = new PermissionsAddonUpdater();
 
-    private static ReformCloudApplication instance;
+  private static ReformCloudApplication instance;
 
-    public static ReformCloudApplication getInstance() {
-        return instance;
-    }
+  public static ReformCloudApplication getInstance() {
+    return instance;
+  }
 
-    @Override
-    public void onLoad() {
-        instance = this;
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ProcessInclusionHandler());
-    }
+  @Override
+  public void onLoad() {
+    instance = this;
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ProcessInclusionHandler());
+  }
 
-    @Override
-    public void onEnable() {
-        PermissionManagement.setup();
-        PacketHelper.addPacketHandler();
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class).registerCommand(
-            new CommandPerms(),
-            "Manages the permission users and permission groups in the database and on all currently running processes",
-            "permissions", "cloudperms", "perms");
-    }
+  @Override
+  public void onEnable() {
+    PermissionManagement.setup();
+    PacketHelper.addPacketHandler();
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class).registerCommand(
+      new CommandPerms(),
+      "Manages the permission users and permission groups in the database and on all currently running processes",
+      "permissions", "cloudperms", "perms");
+  }
 
-    @Override
-    public void onDisable() {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketHelper.PERMISSION_BUS + 1);
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketHelper.PERMISSION_BUS + 4);
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class).unregisterCommand("permissions");
-    }
+  @Override
+  public void onDisable() {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketHelper.PERMISSION_BUS + 1);
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketHelper.PERMISSION_BUS + 4);
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class).unregisterCommand("permissions");
+  }
 
-    @Nullable
-    @Override
-    public ApplicationUpdateRepository getUpdateRepository() {
-        return REPOSITORY;
-    }
+  @Nullable
+  @Override
+  public ApplicationUpdateRepository getUpdateRepository() {
+    return REPOSITORY;
+  }
 }

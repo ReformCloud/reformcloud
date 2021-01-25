@@ -27,51 +27,51 @@ package systems.reformcloud.reformcloud2.node.protocol;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class NodeToNodePublishChannelMessage extends ProtocolPacket {
 
-    private String channel;
-    private JsonConfiguration data;
+  private String channel;
+  private JsonConfiguration data;
 
-    public NodeToNodePublishChannelMessage() {
-    }
+  public NodeToNodePublishChannelMessage() {
+  }
 
-    public NodeToNodePublishChannelMessage(String channel, JsonConfiguration data) {
-        this.channel = channel;
-        this.data = data;
-    }
+  public NodeToNodePublishChannelMessage(String channel, JsonConfiguration data) {
+    this.channel = channel;
+    this.data = data;
+  }
 
-    public String getChannel() {
-        return this.channel;
-    }
+  public String getChannel() {
+    return this.channel;
+  }
 
-    public JsonConfiguration getData() {
-        return this.data;
-    }
+  public JsonConfiguration getData() {
+    return this.data;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 4;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 4;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        super.post(channel, NodeToNodePublishChannelMessage.class, this);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    super.post(channel, NodeToNodePublishChannelMessage.class, this);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.channel);
-        buffer.writeArray(this.data.toPrettyBytes());
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.channel);
+    buffer.writeArray(this.data.toPrettyBytes());
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.channel = buffer.readString();
-        this.data = new JsonConfiguration(buffer.readArray());
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.channel = buffer.readString();
+    this.data = JsonConfiguration.newJsonConfiguration(buffer.readArray());
+  }
 }

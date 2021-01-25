@@ -22,38 +22,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.factory;
+package systems.reformcloud.reformcloud2.node.process;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.runtime.DefaultRuntimeConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.runtime.RuntimeConfiguration;
 
 final class MemoryCalculator {
 
-    private MemoryCalculator() {
-        throw new UnsupportedOperationException();
+  private MemoryCalculator() {
+    throw new UnsupportedOperationException();
+  }
+
+  static int calcMemory(@NotNull String group, @NotNull Template template) {
+    RuntimeConfiguration configuration = template.getRuntimeConfiguration();
+    if (configuration.getInitialJvmMemoryAllocation() < 0 || configuration.getDynamicMemory() < 0) {
+      return configuration.getInitialJvmMemoryAllocation() < 0 ? 512 : configuration.getInitialJvmMemoryAllocation();
     }
 
-    static int calcMemory(@NotNull String group, @NotNull DefaultTemplate template) {
-        DefaultRuntimeConfiguration configuration = template.getRuntimeConfiguration();
-        if (configuration.getMaxMemory() < 0 || configuration.getDynamicMemory() < 0) {
-            return configuration.getMaxMemory() < 0 ? 512 : configuration.getMaxMemory();
-        }
-
-        if (configuration.getDynamicMemory() <= configuration.getMaxMemory()) {
-            return configuration.getMaxMemory();
-        }
-
-        int online = ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(group).size();
-        if (online > 9) {
-            return configuration.getMaxMemory();
-        }
-
-        if (online == 0) {
-            return configuration.getDynamicMemory();
-        }
-
-        return ((configuration.getDynamicMemory() - configuration.getMaxMemory()) / 100) * (((10 - online) * 10)) + configuration.getMaxMemory();
+    if (configuration.getDynamicMemory() <= configuration.getMaximumJvmMemoryAllocation()) {
+      return configuration.getMaximumJvmMemoryAllocation();
     }
+
+    int online = ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(group).size();
+    if (online > 9) {
+      return configuration.getMaximumJvmMemoryAllocation();
+    }
+
+    if (online == 0) {
+      return configuration.getDynamicMemory();
+    }
+
+    return ((configuration.getDynamicMemory() - configuration.getInitialJvmMemoryAllocation()) / 100)
+      * (((10 - online) * 10)) + configuration.getInitialJvmMemoryAllocation();
+  }
 }

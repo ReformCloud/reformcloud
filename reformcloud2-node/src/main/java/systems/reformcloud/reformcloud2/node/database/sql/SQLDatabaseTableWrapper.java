@@ -92,7 +92,7 @@ public final class SQLDatabaseTableWrapper implements DatabaseTableWrapper {
                 }
 
                 try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
-                    return Optional.of(new JsonConfiguration(inputStream));
+                    return Optional.of(JsonConfiguration.newJsonConfiguration(inputStream));
                 } catch (final IOException ex) {
                     ex.printStackTrace();
                     return Optional.empty();
@@ -149,7 +149,7 @@ public final class SQLDatabaseTableWrapper implements DatabaseTableWrapper {
                     }
 
                     try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
-                        result.add(new JsonConfiguration(inputStream));
+                        result.add(JsonConfiguration.newJsonConfiguration(inputStream));
                     } catch (final IOException ex) {
                         ex.printStackTrace();
                     }

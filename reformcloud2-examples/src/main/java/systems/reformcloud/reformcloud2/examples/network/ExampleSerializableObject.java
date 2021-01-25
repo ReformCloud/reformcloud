@@ -25,8 +25,8 @@
 package systems.reformcloud.reformcloud2.examples.network;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 
 /**
  * An example object which can get written into a protocol buffer

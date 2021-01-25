@@ -29,7 +29,7 @@ import systems.reformcloud.reformcloud2.cloudflare.api.CloudFlareHelper;
 import systems.reformcloud.reformcloud2.cloudflare.listener.ProcessListener;
 import systems.reformcloud.reformcloud2.cloudflare.update.CloudFlareAddonUpdater;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
+import systems.reformcloud.reformcloud2.executor.api.application.Application;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
@@ -41,43 +41,43 @@ import java.util.Properties;
 
 public class ReformCloudApplication extends Application {
 
-    private static final ProcessListener LISTENER = new ProcessListener();
-    private static boolean loaded = false;
-    private final ApplicationUpdateRepository applicationUpdateRepository = new CloudFlareAddonUpdater(this);
+  private static final ProcessListener LISTENER = new ProcessListener();
+  private static boolean loaded = false;
+  private final ApplicationUpdateRepository applicationUpdateRepository = new CloudFlareAddonUpdater(this);
 
-    @Override
-    public void onEnable() {
-        try (InputStream stream = this.getClass().getClassLoader().getResourceAsStream("language-cloudflare.properties")) {
-            Properties properties = new Properties();
-            properties.load(stream);
-            TranslationHolder.loadAddonMessageFile(this.getApplication().getName(), new LanguageLoader.InternalLanguage(properties));
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
-
-        if (CloudFlareHelper.init(this.getDataDirectory().resolve("config.json"))) {
-            System.err.println(TranslationHolder.translate("cloudflare-first-init"));
-            return;
-        }
-
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(LISTENER);
-        CloudFlareHelper.loadAlreadyRunning();
-        loaded = true;
+  @Override
+  public void onEnable() {
+    try (InputStream stream = this.getClass().getClassLoader().getResourceAsStream("language-cloudflare.properties")) {
+      Properties properties = new Properties();
+      properties.load(stream);
+      TranslationHolder.loadAddonMessageFile(this.getApplication().getName(), new LanguageLoader.InternalLanguage(properties));
+    } catch (final IOException ex) {
+      ex.printStackTrace();
     }
 
-    @Override
-    public void onPreDisable() {
-        if (!loaded) {
-            return;
-        }
-
-        CloudFlareHelper.handleStop();
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).unregisterListener(LISTENER);
+    if (CloudFlareHelper.init(this.getDataDirectory().resolve("config.json"))) {
+      System.err.println(TranslationHolder.translate("cloudflare-first-init"));
+      return;
     }
 
-    @Nullable
-    @Override
-    public ApplicationUpdateRepository getUpdateRepository() {
-        return this.applicationUpdateRepository;
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(LISTENER);
+    CloudFlareHelper.loadAlreadyRunning();
+    loaded = true;
+  }
+
+  @Override
+  public void onPreDisable() {
+    if (!loaded) {
+      return;
     }
+
+    CloudFlareHelper.handleStop();
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).unregisterListener(LISTENER);
+  }
+
+  @Nullable
+  @Override
+  public ApplicationUpdateRepository getUpdateRepository() {
+    return this.applicationUpdateRepository;
+  }
 }

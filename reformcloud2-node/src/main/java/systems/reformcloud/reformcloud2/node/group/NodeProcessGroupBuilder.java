@@ -25,37 +25,38 @@
 package systems.reformcloud.reformcloud2.node.group;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
+import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroupBuilder;
 
 public class NodeProcessGroupBuilder extends DefaultProcessGroupBuilder {
 
-    private final DefaultNodeProcessGroupProvider processGroupProvider;
+  private final DefaultNodeProcessGroupProvider processGroupProvider;
 
-    public NodeProcessGroupBuilder(DefaultNodeProcessGroupProvider processGroupProvider) {
-        this.processGroupProvider = processGroupProvider;
-    }
+  public NodeProcessGroupBuilder(DefaultNodeProcessGroupProvider processGroupProvider) {
+    this.processGroupProvider = processGroupProvider;
+  }
 
-    @NotNull
-    @Override
-    public Task<DefaultProcessGroup> createPermanently() {
-        return Task.supply(() -> {
-            if (this.processGroupProvider.getProcessGroup(super.name).isPresent()) {
-                return null;
-            }
+  @NotNull
+  @Override
+  public Task<ProcessGroup> createPermanently() {
+    return Task.supply(() -> {
+      if (this.processGroupProvider.getProcessGroup(super.name).isPresent()) {
+        return null;
+      }
 
-            DefaultProcessGroup processGroup = new DefaultProcessGroup(
-                super.name,
-                super.showId,
-                super.startupConfiguration,
-                super.templates,
-                super.playerAccessConfiguration,
-                super.staticGroup,
-                super.lobby
-            );
-            this.processGroupProvider.addProcessGroup(processGroup);
-            return processGroup;
-        });
-    }
+      ProcessGroup processGroup = new DefaultProcessGroup(
+        super.startupConfiguration,
+        super.playerAccessConfiguration,
+        super.showId,
+        super.staticGroup,
+        super.lobby,
+        super.templates,
+        super.name
+      );
+      this.processGroupProvider.addProcessGroup(processGroup);
+      return processGroup;
+    });
+  }
 }

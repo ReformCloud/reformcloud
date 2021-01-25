@@ -27,8 +27,8 @@ package systems.reformcloud.reformcloud2.cloudflare.update;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.cloudflare.ReformCloudApplication;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationRemoteUpdate;
-import systems.reformcloud.reformcloud2.executor.api.application.updater.basic.BasicApplicationRemoteUpdate;
-import systems.reformcloud.reformcloud2.executor.api.application.updater.basic.DefaultApplicationUpdateRepository;
+import systems.reformcloud.reformcloud2.executor.api.application.updater.BasicApplicationRemoteUpdate;
+import systems.reformcloud.reformcloud2.executor.api.application.updater.DefaultApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.shared.io.DownloadHelper;
 
 import java.io.IOException;
@@ -36,40 +36,40 @@ import java.util.Properties;
 
 public class CloudFlareAddonUpdater extends DefaultApplicationUpdateRepository {
 
-    private final ReformCloudApplication application;
-    private String newVersion;
+  private final ReformCloudApplication application;
+  private String newVersion;
 
-    public CloudFlareAddonUpdater(ReformCloudApplication application) {
-        this.application = application;
+  public CloudFlareAddonUpdater(ReformCloudApplication application) {
+    this.application = application;
+  }
+
+  @Override
+  public void fetchOrigin() {
+    DownloadHelper.connect("https://internal.reformcloud.systems/version.properties", inputStream -> {
+      try {
+        Properties properties = new Properties();
+        properties.load(inputStream);
+
+        this.newVersion = properties.getProperty("version");
+      } catch (final IOException ex) {
+        ex.printStackTrace();
+      }
+    });
+  }
+
+  @Override
+  public boolean isNewVersionAvailable() {
+    return !this.application.getApplication().getApplicationConfig().getVersion().equals(this.newVersion);
+  }
+
+  @Nullable
+  @Override
+  public ApplicationRemoteUpdate getUpdate() {
+    if (!this.isNewVersionAvailable()) {
+      return null;
     }
 
-    @Override
-    public void fetchOrigin() {
-        DownloadHelper.connect("https://internal.reformcloud.systems/version.properties", inputStream -> {
-            try {
-                Properties properties = new Properties();
-                properties.load(inputStream);
-
-                this.newVersion = properties.getProperty("version");
-            } catch (final IOException ex) {
-                ex.printStackTrace();
-            }
-        });
-    }
-
-    @Override
-    public boolean isNewVersionAvailable() {
-        return !this.application.getApplication().getApplicationConfig().getVersion().equals(this.newVersion);
-    }
-
-    @Nullable
-    @Override
-    public ApplicationRemoteUpdate getUpdate() {
-        if (!this.isNewVersionAvailable()) {
-            return null;
-        }
-
-        return new BasicApplicationRemoteUpdate(this.newVersion,
-            "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-cloudflare-" + this.newVersion + ".jar");
-    }
+    return new BasicApplicationRemoteUpdate(this.newVersion,
+      "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-cloudflare-" + this.newVersion + ".jar");
+  }
 }

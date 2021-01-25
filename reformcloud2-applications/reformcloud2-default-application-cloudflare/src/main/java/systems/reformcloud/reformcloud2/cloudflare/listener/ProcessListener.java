@@ -32,30 +32,30 @@ import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 
 public final class ProcessListener {
 
-    @Listener
-    public void handle(ProcessRegisterEvent event) {
-        if (!CloudFlareHelper.shouldHandle(event.getProcessInformation()) || !event.getProcessInformation().getNetworkInfo().isConnected()) {
-            return;
-        }
-
-        CloudFlareHelper.createForProcess(event.getProcessInformation());
+  @Listener
+  public void handle(ProcessRegisterEvent event) {
+    if (!CloudFlareHelper.shouldHandle(event.getProcessInformation()) || !event.getProcessInformation().getNetworkInfo().isConnected()) {
+      return;
     }
 
-    @Listener
-    public void handle(ProcessUpdateEvent event) {
-        if (!CloudFlareHelper.shouldHandle(event.getProcessInformation())) {
-            return;
-        }
+    CloudFlareHelper.createForProcess(event.getProcessInformation());
+  }
 
-        if (!event.getProcessInformation().getNetworkInfo().isConnected() && CloudFlareHelper.hasEntry(event.getProcessInformation())) {
-            CloudFlareHelper.deleteRecord(event.getProcessInformation());
-        } else if (event.getProcessInformation().getNetworkInfo().isConnected() && !CloudFlareHelper.hasEntry(event.getProcessInformation())) {
-            CloudFlareHelper.createForProcess(event.getProcessInformation());
-        }
+  @Listener
+  public void handle(ProcessUpdateEvent event) {
+    if (!CloudFlareHelper.shouldHandle(event.getProcessInformation())) {
+      return;
     }
 
-    @Listener
-    public void handle(ProcessUnregisterEvent event) {
-        CloudFlareHelper.deleteRecord(event.getProcessInformation());
+    if (!event.getProcessInformation().getNetworkInfo().isConnected() && CloudFlareHelper.hasEntry(event.getProcessInformation())) {
+      CloudFlareHelper.deleteRecord(event.getProcessInformation());
+    } else if (event.getProcessInformation().getNetworkInfo().isConnected() && !CloudFlareHelper.hasEntry(event.getProcessInformation())) {
+      CloudFlareHelper.createForProcess(event.getProcessInformation());
     }
+  }
+
+  @Listener
+  public void handle(ProcessUnregisterEvent event) {
+    CloudFlareHelper.deleteRecord(event.getProcessInformation());
+  }
 }

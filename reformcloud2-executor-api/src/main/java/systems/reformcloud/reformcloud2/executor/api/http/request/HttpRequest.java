@@ -114,7 +114,6 @@ public interface HttpRequest<T extends HttpRequest<T>> extends CookieHolder<T> {
      *
      * @return the request body.
      */
-    @NotNull
     byte[] body();
 
     /**

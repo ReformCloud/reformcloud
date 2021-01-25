@@ -22,28 +22,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.application.updater.basic;
+package systems.reformcloud.reformcloud2.executor.api.application.updater;
 
-import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationRemoteUpdate;
+import org.jetbrains.annotations.NotNull;
 
 public class BasicApplicationRemoteUpdate implements ApplicationRemoteUpdate {
 
-    private final String version;
+  private final String version;
+  private final String downloadUrl;
 
-    private final String downloadURL;
+  public BasicApplicationRemoteUpdate(String version, String downloadUrl) {
+    this.version = version;
+    this.downloadUrl = downloadUrl;
+  }
 
-    public BasicApplicationRemoteUpdate(String version, String downloadURL) {
-        this.version = version;
-        this.downloadURL = downloadURL;
-    }
+  @Override
+  public @NotNull String getNewVersion() {
+    return this.version;
+  }
 
-    @Override
-    public String getNewVersion() {
-        return this.version;
-    }
-
-    @Override
-    public String getDownloadUrl() {
-        return this.downloadURL;
-    }
+  @Override
+  public @NotNull String getDownloadUrl() {
+    return this.downloadUrl;
+  }
 }

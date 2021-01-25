@@ -32,26 +32,26 @@ import java.lang.reflect.Field;
 
 public final class CloudBurstUtil {
 
-    private static final Field PERM;
+  private static final Field PERM;
 
-    static {
-        try {
-            PERM = Player.class.getDeclaredField("perm");
-            PERM.setAccessible(true);
-        } catch (NoSuchFieldException exception) {
-            throw new RuntimeException(exception);
-        }
+  static {
+    try {
+      PERM = Player.class.getDeclaredField("perm");
+      PERM.setAccessible(true);
+    } catch (NoSuchFieldException exception) {
+      throw new RuntimeException(exception);
     }
+  }
 
-    private CloudBurstUtil() {
-        throw new UnsupportedOperationException();
-    }
+  private CloudBurstUtil() {
+    throw new UnsupportedOperationException();
+  }
 
-    public static void inject(@NotNull Player player) {
-        try {
-            PERM.set(player, new DefaultPermissible(player));
-        } catch (IllegalAccessException exception) {
-            exception.printStackTrace();
-        }
+  public static void inject(@NotNull Player player) {
+    try {
+      PERM.set(player, new DefaultPermissible(player));
+    } catch (IllegalAccessException exception) {
+      exception.printStackTrace();
     }
+  }
 }

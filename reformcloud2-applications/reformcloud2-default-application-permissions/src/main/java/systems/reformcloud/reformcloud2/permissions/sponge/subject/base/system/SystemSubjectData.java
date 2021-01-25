@@ -36,17 +36,17 @@ import java.util.Set;
 
 public class SystemSubjectData extends AbstractSpongeSubjectData {
 
-    private static final Map<String, Boolean> PERMS = Collections.singletonMap("*", true);
+  private static final Map<String, Boolean> PERMS = Collections.singletonMap("*", true);
 
-    @Override
-    @NotNull
-    public Map<Set<Context>, Map<String, Boolean>> getAllPermissions() {
-        return Collections.singletonMap(SubjectData.GLOBAL_CONTEXT, PERMS);
-    }
+  @Override
+  @NotNull
+  public Map<Set<Context>, Map<String, Boolean>> getAllPermissions() {
+    return Collections.singletonMap(SubjectData.GLOBAL_CONTEXT, PERMS);
+  }
 
-    @Override
-    @NotNull
-    public Map<String, Boolean> getPermissions(@Nullable Set<Context> contexts) {
-        return PERMS;
-    }
+  @Override
+  @NotNull
+  public Map<String, Boolean> getPermissions(@Nullable Set<Context> contexts) {
+    return PERMS;
+  }
 }

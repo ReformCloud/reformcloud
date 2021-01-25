@@ -93,7 +93,6 @@ public interface SocketFrame<T extends SocketFrame<T>> {
      *
      * @return the content of the web socket frame.
      */
-    @NotNull
     byte[] content();
 
     /**
@@ -103,7 +102,7 @@ public interface SocketFrame<T extends SocketFrame<T>> {
      * @return the same instance of this class, for chaining
      */
     @NotNull
-    T content(@NotNull byte[] content);
+    T content(byte[] content);
 
     /**
      * Get if this frame is the last fragment of a web socket framed message. The first

@@ -30,28 +30,28 @@ import java.util.function.Function;
 
 public class DefaultSetupQuestion implements SetupQuestion {
 
-    private final Function<SetupAnswer, Boolean> answerHandler;
-    private final String invalidInputMessage;
-    private final String originalQuestion;
+  private final Function<SetupAnswer, Boolean> answerHandler;
+  private final String invalidInputMessage;
+  private final String originalQuestion;
 
-    public DefaultSetupQuestion(Function<SetupAnswer, Boolean> answerHandler, String invalidInputMessage, String originalQuestion) {
-        this.answerHandler = answerHandler;
-        this.invalidInputMessage = invalidInputMessage;
-        this.originalQuestion = originalQuestion;
-    }
+  public DefaultSetupQuestion(Function<SetupAnswer, Boolean> answerHandler, String invalidInputMessage, String originalQuestion) {
+    this.answerHandler = answerHandler;
+    this.invalidInputMessage = invalidInputMessage;
+    this.originalQuestion = originalQuestion;
+  }
 
-    @Override
-    public @NotNull Function<SetupAnswer, Boolean> getAnswerHandler() {
-        return this.answerHandler;
-    }
+  @Override
+  public @NotNull Function<SetupAnswer, Boolean> getAnswerHandler() {
+    return this.answerHandler;
+  }
 
-    @Override
-    public @NotNull String getInvalidInputMessage() {
-        return this.invalidInputMessage;
-    }
+  @Override
+  public @NotNull String getInvalidInputMessage() {
+    return this.invalidInputMessage;
+  }
 
-    @Override
-    public @NotNull String getOriginalQuestion() {
-        return this.originalQuestion;
-    }
+  @Override
+  public @NotNull String getOriginalQuestion() {
+    return this.originalQuestion;
+  }
 }

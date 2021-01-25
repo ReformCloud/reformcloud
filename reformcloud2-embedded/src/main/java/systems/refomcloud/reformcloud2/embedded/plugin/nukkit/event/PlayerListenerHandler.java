@@ -40,46 +40,45 @@ import systems.reformcloud.reformcloud2.shared.collect.Entry2;
 
 public final class PlayerListenerHandler implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGH)
-    public void handle(final @NotNull PlayerLoginEvent event) {
-        if (!Embedded.getInstance().isReady()) {
-            event.setCancelled(true);
-            event.setKickMessage(NukkitExecutor.getInstance().getIngameMessages().format(
-                NukkitExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
-            ));
-            return;
-        }
-
-        Entry2<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
-            event.getPlayer()::hasPermission,
-            NukkitExecutor.getInstance().getIngameMessages(),
-            null,
-            event.getPlayer().getUniqueId(),
-            event.getPlayer().getName()
-        );
-        if (!checked.getFirst() && checked.getSecond() != null) {
-            event.setCancelled(true);
-            event.setKickMessage(checked.getSecond());
-        }
+  @EventHandler(priority = EventPriority.HIGH)
+  public void handle(final @NotNull PlayerLoginEvent event) {
+    if (!Embedded.getInstance().isReady()) {
+      event.setCancelled(true);
+      event.setKickMessage(NukkitExecutor.getInstance().getIngameMessages().format(
+        NukkitExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
+      ));
+      return;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void handle(final @NotNull PlayerQuitEvent event) {
-        ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-        if (!current.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(event.getPlayer().getUniqueId())) {
-            return;
-        }
-
-        Server.getInstance().getScheduler().scheduleTask(NukkitExecutor.getInstance().getPlugin(), () -> {
-            if (Server.getInstance().getOnlinePlayers().size() < current.getProcessDetail().getMaxPlayers()
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
-                current.getProcessDetail().setProcessState(ProcessState.READY);
-            }
-
-            current.updateRuntimeInformation();
-            current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
-            Embedded.getInstance().updateCurrentProcessInformation();
-        });
+    Entry2<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
+      event.getPlayer()::hasPermission,
+      NukkitExecutor.getInstance().getIngameMessages(),
+      null,
+      event.getPlayer().getUniqueId(),
+      event.getPlayer().getName()
+    );
+    if (!checked.getFirst() && checked.getSecond() != null) {
+      event.setCancelled(true);
+      event.setKickMessage(checked.getSecond());
     }
+  }
+
+  @EventHandler(priority = EventPriority.LOWEST)
+  public void handle(final @NotNull PlayerQuitEvent event) {
+    ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
+    if (!current.getPlayerByUniqueId(event.getPlayer().getUniqueId()).isPresent()) {
+      return;
+    }
+
+    Server.getInstance().getScheduler().scheduleTask(NukkitExecutor.getInstance().getPlugin(), () -> {
+      if (Server.getInstance().getOnlinePlayers().size() < Embedded.getInstance().getMaxPlayers()
+        && !current.getCurrentState().equals(ProcessState.READY)
+        && !current.getCurrentState().equals(ProcessState.INVISIBLE)) {
+        current.setCurrentState(ProcessState.READY);
+      }
+
+      current.getPlayers().removeIf(player -> player.getUniqueID().equals(event.getPlayer().getUniqueId()));
+      Embedded.getInstance().updateCurrentProcessInformation();
+    });
+  }
 }

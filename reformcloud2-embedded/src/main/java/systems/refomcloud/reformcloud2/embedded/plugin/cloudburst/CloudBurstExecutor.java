@@ -32,37 +32,37 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 
 public final class CloudBurstExecutor extends Embedded {
 
-    private static CloudBurstExecutor instance;
-    private final Object plugin;
+  private static CloudBurstExecutor instance;
+  private final Object plugin;
 
-    protected CloudBurstExecutor(Object plugin) {
-        super.type = ExecutorType.API;
+  protected CloudBurstExecutor(Object plugin) {
+    super.type = ExecutorType.API;
 
-        instance = this;
-        this.plugin = plugin;
+    instance = this;
+    this.plugin = plugin;
 
-        this.fixInvalidPlayers();
-    }
+    this.fixInvalidPlayers();
+  }
 
-    @NotNull
-    public static CloudBurstExecutor getInstance() {
-        return instance;
-    }
+  @NotNull
+  public static CloudBurstExecutor getInstance() {
+    return instance;
+  }
 
-    @NotNull
-    public Object getPlugin() {
-        return this.plugin;
-    }
+  @NotNull
+  public Object getPlugin() {
+    return this.plugin;
+  }
 
-    @Override
-    protected int getMaxPlayersOfEnvironment() {
-        return Server.getInstance().getMaxPlayers();
-    }
+  @Override
+  protected int getMaxPlayersOfEnvironment() {
+    return Server.getInstance().getMaxPlayers();
+  }
 
-    private void fixInvalidPlayers() {
-        SharedInvalidPlayerFixer.start(
-            uuid -> Server.getInstance().getPlayer(uuid).isPresent(),
-            () -> Server.getInstance().getOnlinePlayers().size()
-        );
-    }
+  private void fixInvalidPlayers() {
+    SharedInvalidPlayerFixer.start(
+      uuid -> Server.getInstance().getPlayer(uuid).isPresent(),
+      () -> Server.getInstance().getOnlinePlayers().size()
+    );
+  }
 }

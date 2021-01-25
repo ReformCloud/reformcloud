@@ -33,10 +33,10 @@ import java.util.UUID;
 
 public final class SubjectDefaultData {
 
-    private static final UUID DEFAULT_UUID = UUID.fromString("a038e8a0-d294-45a5-86f0-bf44d316beec");
-    public static final Subject DEFAULT = new SpongeSubject(DEFAULT_UUID, CollectionCatalog.USER_COLLECTION, SpongePermissionService.getInstance());
+  private static final UUID DEFAULT_UUID = UUID.fromString("a038e8a0-d294-45a5-86f0-bf44d316beec");
+  public static final Subject DEFAULT = new SpongeSubject(DEFAULT_UUID, CollectionCatalog.USER_COLLECTION, SpongePermissionService.getInstance());
 
-    private SubjectDefaultData() {
-        throw new UnsupportedOperationException();
-    }
+  private SubjectDefaultData() {
+    throw new UnsupportedOperationException();
+  }
 }

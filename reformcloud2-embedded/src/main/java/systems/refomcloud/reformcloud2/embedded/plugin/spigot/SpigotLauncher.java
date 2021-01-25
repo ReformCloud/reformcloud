@@ -27,24 +27,22 @@ package systems.refomcloud.reformcloud2.embedded.plugin.spigot;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import systems.refomcloud.reformcloud2.embedded.plugin.spigot.event.PlayerListenerHandler;
-import systems.reformcloud.reformcloud2.shared.language.LanguageLoader;
 
 public final class SpigotLauncher extends JavaPlugin {
 
-    @Override
-    public void onLoad() {
-        LanguageLoader.doLoad();
-        Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-    }
+  @Override
+  public void onLoad() {
+    Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+  }
 
-    @Override
-    public void onEnable() {
-        new SpigotExecutor(this);
-        Bukkit.getServer().getPluginManager().registerEvents(new PlayerListenerHandler(), this);
-    }
+  @Override
+  public void onEnable() {
+    new SpigotExecutor(this);
+    Bukkit.getServer().getPluginManager().registerEvents(new PlayerListenerHandler(), this);
+  }
 
-    @Override
-    public void onDisable() {
-        Bukkit.getScheduler().cancelTasks(this);
-    }
+  @Override
+  public void onDisable() {
+    Bukkit.getScheduler().cancelTasks(this);
+  }
 }

@@ -24,19 +24,20 @@
  */
 package systems.refomcloud.reformcloud2.embedded.plugin.velocity.fallback;
 
+import systems.reformcloud.reformcloud2.executor.api.groups.template.version.VersionType;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
 import java.util.function.Predicate;
 
 public final class VelocityFallbackExtraFilter implements Predicate<ProcessInformation> {
 
-    public static final VelocityFallbackExtraFilter INSTANCE = new VelocityFallbackExtraFilter();
+  public static final VelocityFallbackExtraFilter INSTANCE = new VelocityFallbackExtraFilter();
 
-    private VelocityFallbackExtraFilter() {
-    }
+  private VelocityFallbackExtraFilter() {
+  }
 
-    @Override
-    public boolean test(ProcessInformation processInformation) {
-        return processInformation.getProcessDetail().getTemplate().getVersion().getId() == 1;
-    }
+  @Override
+  public boolean test(ProcessInformation processInformation) {
+    return processInformation.getPrimaryTemplate().getVersion().getVersionType() == VersionType.JAVA_SERVER;
+  }
 }

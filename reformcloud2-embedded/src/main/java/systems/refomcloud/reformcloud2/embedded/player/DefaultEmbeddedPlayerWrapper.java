@@ -29,7 +29,6 @@ import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
-import systems.reformcloud.reformcloud2.shared.collect.Entry2;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.PlayerWrapper;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeConnectPlayerToPlayer;
@@ -42,91 +41,92 @@ import systems.reformcloud.reformcloud2.protocol.shared.PacketPlaySoundToPlayer;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketSendPlayerMessage;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketSendPlayerTitle;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketSetPlayerLocation;
+import systems.reformcloud.reformcloud2.shared.collect.Entry2;
 
 import java.util.Optional;
 import java.util.UUID;
 
 public class DefaultEmbeddedPlayerWrapper implements PlayerWrapper {
 
-    private final UUID playerUniqueId;
+  private final UUID playerUniqueId;
 
-    DefaultEmbeddedPlayerWrapper(UUID playerUniqueId) {
-        this.playerUniqueId = playerUniqueId;
-    }
+  DefaultEmbeddedPlayerWrapper(UUID playerUniqueId) {
+    this.playerUniqueId = playerUniqueId;
+  }
 
-    @NotNull
-    private Optional<Entry2<UUID, UUID>> getPlayerProcess() {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetCurrentPlayerProcessUniqueIds(this.playerUniqueId))
-            .map(result -> {
-                if (result instanceof ApiToNodeGetCurrentPlayerProcessUniqueIdsResult) {
-                    return Optional.ofNullable(((ApiToNodeGetCurrentPlayerProcessUniqueIdsResult) result).getResult());
-                }
+  @NotNull
+  private Optional<Entry2<UUID, UUID>> getPlayerProcess() {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetCurrentPlayerProcessUniqueIds(this.playerUniqueId))
+      .map(result -> {
+        if (result instanceof ApiToNodeGetCurrentPlayerProcessUniqueIdsResult) {
+          return Optional.ofNullable(((ApiToNodeGetCurrentPlayerProcessUniqueIdsResult) result).getResult());
+        }
 
-                return Optional.<Entry2<UUID, UUID>>empty();
-            }).orElseGet(Optional::empty);
-    }
+        return Optional.<Entry2<UUID, UUID>>empty();
+      }).orElseGet(Optional::empty);
+  }
 
-    @Override
-    public @NotNull Task<Optional<ProcessInformation>> getConnectedProxy() {
-        return Task.supply(() -> this.getPlayerProcess()
-            .flatMap(duo -> ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(duo.getFirst()))
-            .map(ProcessWrapper::getProcessInformation));
-    }
+  @Override
+  public @NotNull Task<Optional<ProcessInformation>> getConnectedProxy() {
+    return Task.supply(() -> this.getPlayerProcess()
+      .flatMap(duo -> ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(duo.getFirst()))
+      .map(ProcessWrapper::getProcessInformation));
+  }
 
-    @Override
-    public @NotNull Task<Optional<ProcessInformation>> getConnectedServer() {
-        return Task.supply(() -> this.getPlayerProcess()
-            .flatMap(duo -> ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(duo.getSecond()))
-            .map(ProcessWrapper::getProcessInformation));
-    }
+  @Override
+  public @NotNull Task<Optional<ProcessInformation>> getConnectedServer() {
+    return Task.supply(() -> this.getPlayerProcess()
+      .flatMap(duo -> ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(duo.getSecond()))
+      .map(ProcessWrapper::getProcessInformation));
+  }
 
-    @Override
-    public @NotNull Optional<UUID> getConnectedProxyUniqueId() {
-        return this.getPlayerProcess().map(Entry2::getFirst);
-    }
+  @Override
+  public @NotNull Optional<UUID> getConnectedProxyUniqueId() {
+    return this.getPlayerProcess().map(Entry2::getFirst);
+  }
 
-    @Override
-    public @NotNull Optional<UUID> getConnectedServerUniqueId() {
-        return this.getPlayerProcess().map(Entry2::getSecond);
-    }
+  @Override
+  public @NotNull Optional<UUID> getConnectedServerUniqueId() {
+    return this.getPlayerProcess().map(Entry2::getSecond);
+  }
 
-    @Override
-    public void sendMessage(@NotNull String message) {
-        Embedded.getInstance().sendPacket(new PacketSendPlayerMessage(this.playerUniqueId, message));
-    }
+  @Override
+  public void sendMessage(@NotNull String message) {
+    Embedded.getInstance().sendPacket(new PacketSendPlayerMessage(this.playerUniqueId, message));
+  }
 
-    @Override
-    public void disconnect(@NotNull String kickReason) {
-        Embedded.getInstance().sendPacket(new PacketDisconnectPlayer(this.playerUniqueId, kickReason));
-    }
+  @Override
+  public void disconnect(@NotNull String kickReason) {
+    Embedded.getInstance().sendPacket(new PacketDisconnectPlayer(this.playerUniqueId, kickReason));
+  }
 
-    @Override
-    public void playSound(@NotNull String sound, float volume, float pitch) {
-        Embedded.getInstance().sendPacket(new PacketPlaySoundToPlayer(this.playerUniqueId, sound, volume, pitch));
-    }
+  @Override
+  public void playSound(@NotNull String sound, float volume, float pitch) {
+    Embedded.getInstance().sendPacket(new PacketPlaySoundToPlayer(this.playerUniqueId, sound, volume, pitch));
+  }
 
-    @Override
-    public void sendTitle(@NotNull String title, @NotNull String subTitle, int fadeIn, int stay, int fadeOut) {
-        Embedded.getInstance().sendPacket(new PacketSendPlayerTitle(this.playerUniqueId, title, subTitle, fadeIn, stay, fadeOut));
-    }
+  @Override
+  public void sendTitle(@NotNull String title, @NotNull String subTitle, int fadeIn, int stay, int fadeOut) {
+    Embedded.getInstance().sendPacket(new PacketSendPlayerTitle(this.playerUniqueId, title, subTitle, fadeIn, stay, fadeOut));
+  }
 
-    @Override
-    public void playEffect(@NotNull String effect) {
-        Embedded.getInstance().sendPacket(new PacketPlayEffectToPlayer(this.playerUniqueId, effect));
-    }
+  @Override
+  public void playEffect(@NotNull String effect) {
+    Embedded.getInstance().sendPacket(new PacketPlayEffectToPlayer(this.playerUniqueId, effect));
+  }
 
-    @Override
-    public void setLocation(@NotNull String world, double x, double y, double z, float yaw, float pitch) {
-        Embedded.getInstance().sendPacket(new PacketSetPlayerLocation(this.playerUniqueId, world, x, y, z, yaw, pitch));
-    }
+  @Override
+  public void setLocation(@NotNull String world, double x, double y, double z, float yaw, float pitch) {
+    Embedded.getInstance().sendPacket(new PacketSetPlayerLocation(this.playerUniqueId, world, x, y, z, yaw, pitch));
+  }
 
-    @Override
-    public void connect(@NotNull String server) {
-        Embedded.getInstance().sendPacket(new PacketConnectPlayerToServer(this.playerUniqueId, server));
-    }
+  @Override
+  public void connect(@NotNull String server) {
+    Embedded.getInstance().sendPacket(new PacketConnectPlayerToServer(this.playerUniqueId, server));
+  }
 
-    @Override
-    public void connect(@NotNull UUID otherPlayer) {
-        Embedded.getInstance().sendPacket(new ApiToNodeConnectPlayerToPlayer(this.playerUniqueId, otherPlayer));
-    }
+  @Override
+  public void connect(@NotNull UUID otherPlayer) {
+    Embedded.getInstance().sendPacket(new ApiToNodeConnectPlayerToPlayer(this.playerUniqueId, otherPlayer));
+  }
 }

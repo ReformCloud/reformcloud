@@ -37,54 +37,55 @@ import java.util.UUID;
 
 public class DefaultNodePlayerProvider implements PlayerProvider {
 
-    @Override
-    public boolean isPlayerOnline(@NotNull String name) {
-        for (ProcessInformation process : this.getProcessProvider().getProcesses()) {
-            if (process.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(name)) {
-                return true;
-            }
-        }
-
-        return false;
+  @Override
+  public boolean isPlayerOnline(@NotNull String name) {
+    for (ProcessInformation process : this.getProcessProvider().getProcesses()) {
+      if (process.getPlayerByName(name).isPresent()) {
+        return true;
+      }
     }
 
-    @Override
-    public boolean isPlayerOnline(@NotNull UUID uniqueId) {
-        for (ProcessInformation process : this.getProcessProvider().getProcesses()) {
-            if (process.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(uniqueId)) {
-                return true;
-            }
-        }
+    return false;
+  }
 
-        return false;
+  @Override
+  public boolean isPlayerOnline(@NotNull UUID uniqueId) {
+    for (ProcessInformation process : this.getProcessProvider().getProcesses()) {
+      if (process.getPlayerByUniqueId(uniqueId).isPresent()) {
+        return true;
+      }
     }
 
-    @NotNull
-    @Override
-    public Optional<PlayerWrapper> getPlayer(@NotNull String name) {
-        for (ProcessInformation process : this.getProcessProvider().getProcesses()) {
-            Player playerByName = process.getProcessPlayerManager().getPlayerByName(name);
-            if (playerByName != null) {
-                return Optional.of(new DefaultNodePlayerWrapper(playerByName.getUniqueID()));
-            }
-        }
+    return false;
+  }
 
-        return Optional.empty();
+  @NotNull
+  @Override
+  public Optional<PlayerWrapper> getPlayer(@NotNull String name) {
+    for (ProcessInformation process : this.getProcessProvider().getProcesses()) {
+      Optional<Player> playerByName = process.getPlayerByName(name);
+      if (playerByName.isPresent()) {
+        return Optional.of(new DefaultNodePlayerWrapper(playerByName.get().getUniqueID()));
+      }
     }
 
-    @NotNull
-    @Override
-    public Optional<PlayerWrapper> getPlayer(@NotNull UUID uniqueId) {
-        for (ProcessInformation process : this.getProcessProvider().getProcesses()) {
-            if (process.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(uniqueId)) {
-                return Optional.of(new DefaultNodePlayerWrapper(uniqueId));
-            }
-        }
+    return Optional.empty();
+  }
 
-        return Optional.empty();
+  @NotNull
+  @Override
+  public Optional<PlayerWrapper> getPlayer(@NotNull UUID uniqueId) {
+    for (ProcessInformation process : this.getProcessProvider().getProcesses()) {
+      Optional<Player> playerByName = process.getPlayerByUniqueId(uniqueId);
+      if (playerByName.isPresent()) {
+        return Optional.of(new DefaultNodePlayerWrapper(playerByName.get().getUniqueID()));
+      }
     }
 
-    private @NotNull ProcessProvider getProcessProvider() {
-        return ExecutorAPI.getInstance().getProcessProvider();
-    }
+    return Optional.empty();
+  }
+
+  private @NotNull ProcessProvider getProcessProvider() {
+    return ExecutorAPI.getInstance().getProcessProvider();
+  }
 }

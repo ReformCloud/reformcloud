@@ -30,46 +30,46 @@ import systems.reformcloud.reformcloud2.node.http.InstanceHolder;
 
 public abstract class DefaultSocketFrame<T extends DefaultSocketFrame<T>> implements SocketFrame<T>, InstanceHolder<T> {
 
-    private int rsv;
-    private byte[] content;
-    private boolean finalFragment;
+  private int rsv;
+  private byte[] content;
+  private boolean finalFragment;
 
-    public DefaultSocketFrame(int rsv, boolean finalFragment, byte[] content) {
-        this.rsv = rsv;
-        this.finalFragment = finalFragment;
-        this.content = content;
-    }
+  public DefaultSocketFrame(int rsv, boolean finalFragment, byte[] content) {
+    this.rsv = rsv;
+    this.finalFragment = finalFragment;
+    this.content = content;
+  }
 
-    @Override
-    public @NotNull byte[] content() {
-        return this.content;
-    }
+  @Override
+  public byte[] content() {
+    return this.content;
+  }
 
-    @Override
-    public @NotNull T content(@NotNull byte[] content) {
-        this.content = content;
-        return this.self();
-    }
+  @Override
+  public @NotNull T content(byte[] content) {
+    this.content = content;
+    return this.self();
+  }
 
-    @Override
-    public boolean finalFragment() {
-        return this.finalFragment;
-    }
+  @Override
+  public boolean finalFragment() {
+    return this.finalFragment;
+  }
 
-    @Override
-    public @NotNull T finalFragment(boolean finalFragment) {
-        this.finalFragment = finalFragment;
-        return this.self();
-    }
+  @Override
+  public @NotNull T finalFragment(boolean finalFragment) {
+    this.finalFragment = finalFragment;
+    return this.self();
+  }
 
-    @Override
-    public int rsv() {
-        return this.rsv;
-    }
+  @Override
+  public int rsv() {
+    return this.rsv;
+  }
 
-    @Override
-    public @NotNull T rsv(int rsv) {
-        this.rsv = rsv;
-        return this.self();
-    }
+  @Override
+  public @NotNull T rsv(int rsv) {
+    this.rsv = rsv;
+    return this.self();
+  }
 }

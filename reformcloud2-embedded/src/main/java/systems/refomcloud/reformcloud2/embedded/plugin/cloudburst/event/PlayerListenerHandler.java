@@ -39,46 +39,45 @@ import systems.reformcloud.reformcloud2.shared.collect.Entry2;
 
 public final class PlayerListenerHandler {
 
-    @Listener(priority = EventPriority.HIGH)
-    public void handle(final @NotNull PlayerLoginEvent event) {
-        if (!Embedded.getInstance().isReady()) {
-            event.setCancelled(true);
-            event.setKickMessage(CloudBurstExecutor.getInstance().getIngameMessages().format(
-                CloudBurstExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
-            ));
-            return;
-        }
-
-        Entry2<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
-            event.getPlayer()::hasPermission,
-            CloudBurstExecutor.getInstance().getIngameMessages(),
-            null,
-            event.getPlayer().getServerId(),
-            event.getPlayer().getName()
-        );
-        if (!checked.getFirst() && checked.getSecond() != null) {
-            event.setCancelled(true);
-            event.setKickMessage(checked.getSecond());
-        }
+  @Listener(priority = EventPriority.HIGH)
+  public void handle(final @NotNull PlayerLoginEvent event) {
+    if (!Embedded.getInstance().isReady()) {
+      event.setCancelled(true);
+      event.setKickMessage(CloudBurstExecutor.getInstance().getIngameMessages().format(
+        CloudBurstExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
+      ));
+      return;
     }
 
-    @Listener(priority = EventPriority.LOWEST)
-    public void handle(final @NotNull PlayerQuitEvent event) {
-        ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-        if (!current.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(event.getPlayer().getServerId())) {
-            return;
-        }
-
-        Server.getInstance().getScheduler().scheduleTask(CloudBurstExecutor.getInstance().getPlugin(), () -> {
-            if (Server.getInstance().getOnlinePlayers().size() < current.getProcessDetail().getMaxPlayers()
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
-                current.getProcessDetail().setProcessState(ProcessState.READY);
-            }
-
-            current.updateRuntimeInformation();
-            current.getProcessPlayerManager().onLogout(event.getPlayer().getServerId());
-            Embedded.getInstance().updateCurrentProcessInformation();
-        });
+    Entry2<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
+      event.getPlayer()::hasPermission,
+      CloudBurstExecutor.getInstance().getIngameMessages(),
+      null,
+      event.getPlayer().getServerId(),
+      event.getPlayer().getName()
+    );
+    if (!checked.getFirst() && checked.getSecond() != null) {
+      event.setCancelled(true);
+      event.setKickMessage(checked.getSecond());
     }
+  }
+
+  @Listener(priority = EventPriority.LOWEST)
+  public void handle(final @NotNull PlayerQuitEvent event) {
+    ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
+    if (!current.getPlayerByUniqueId(event.getPlayer().getServerId()).isPresent()) {
+      return;
+    }
+
+    Server.getInstance().getScheduler().scheduleTask(CloudBurstExecutor.getInstance().getPlugin(), () -> {
+      if (Server.getInstance().getOnlinePlayers().size() < Embedded.getInstance().getMaxPlayers()
+        && !current.getCurrentState().equals(ProcessState.READY)
+        && !current.getCurrentState().equals(ProcessState.INVISIBLE)) {
+        current.setCurrentState(ProcessState.READY);
+      }
+
+      current.getPlayers().removeIf(player -> player.getUniqueID().equals(event.getPlayer().getServerId()));
+      Embedded.getInstance().updateCurrentProcessInformation();
+    });
+  }
 }

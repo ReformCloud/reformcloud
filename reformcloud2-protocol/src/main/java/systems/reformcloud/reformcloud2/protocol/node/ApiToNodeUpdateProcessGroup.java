@@ -32,7 +32,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChan
 import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroup;
 
 public class ApiToNodeUpdateProcessGroup extends ProtocolPacket {
 

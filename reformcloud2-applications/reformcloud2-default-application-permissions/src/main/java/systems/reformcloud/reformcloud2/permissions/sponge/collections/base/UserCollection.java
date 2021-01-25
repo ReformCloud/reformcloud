@@ -40,27 +40,27 @@ import java.util.concurrent.CompletableFuture;
 
 public class UserCollection extends DefaultSubjectCollection {
 
-    public UserCollection(PermissionService service) {
-        super(PermissionService.SUBJECTS_USER, service);
-    }
+  public UserCollection(PermissionService service) {
+    super(PermissionService.SUBJECTS_USER, service);
+  }
 
-    @NotNull
-    @Override
-    protected Subject load(String id) {
-        UUID uniqueID = Parsers.UNIQUE_ID.parse(id);
-        Conditions.isTrue(uniqueID != null);
-        return new SpongeSubject(uniqueID, this, this.service);
-    }
+  @NotNull
+  @Override
+  protected Subject load(String id) {
+    UUID uniqueID = Parsers.UNIQUE_ID.parse(id);
+    Conditions.isTrue(uniqueID != null);
+    return new SpongeSubject(uniqueID, this, this.service);
+  }
 
-    @Override
-    @NotNull
-    public CompletableFuture<Boolean> hasSubject(@NotNull String identifier) {
-        return CompletableFuture.completedFuture(true);
-    }
+  @Override
+  @NotNull
+  public CompletableFuture<Boolean> hasSubject(@NotNull String identifier) {
+    return CompletableFuture.completedFuture(true);
+  }
 
-    @Override
-    @NotNull
-    public Collection<Subject> getLoadedSubjects() {
-        return new ArrayList<>(Sponge.getServer().getOnlinePlayers());
-    }
+  @Override
+  @NotNull
+  public Collection<Subject> getLoadedSubjects() {
+    return new ArrayList<>(Sponge.getServer().getOnlinePlayers());
+  }
 }

@@ -34,30 +34,30 @@ import systems.reformcloud.reformcloud2.executor.api.http.websocket.TextSocketFr
 
 public final class DefaultSocketFrameFactory extends SocketFrameFactory {
 
-    private DefaultSocketFrameFactory() {
-    }
+  private DefaultSocketFrameFactory() {
+  }
 
-    public static void init() {
-        SocketFrameFactory.DEFAULT.set(new DefaultSocketFrameFactory());
-    }
+  public static void init() {
+    SocketFrameFactory.DEFAULT.set(new DefaultSocketFrameFactory());
+  }
 
-    @Override
-    public @NotNull SocketFrame<?> forType(@NotNull SocketFrameType frameType) {
-        return new TypedSocketFrame(frameType, 0, true, new byte[0]);
-    }
+  @Override
+  public @NotNull SocketFrame<?> forType(@NotNull SocketFrameType frameType) {
+    return new TypedSocketFrame(frameType, 0, true, new byte[0]);
+  }
 
-    @Override
-    public @NotNull CloseSocketFrame<?> close(int status, @NotNull String statusText) {
-        return new DefaultCloseSocketFrame(0, true, status, statusText);
-    }
+  @Override
+  public @NotNull CloseSocketFrame<?> close(int status, @NotNull String statusText) {
+    return new DefaultCloseSocketFrame(0, true, status, statusText);
+  }
 
-    @Override
-    public @NotNull ContinuationSocketFrame<?> continuation(@NotNull String text) {
-        return new DefaultContinuationSocketFrame(0, true, text);
-    }
+  @Override
+  public @NotNull ContinuationSocketFrame<?> continuation(@NotNull String text) {
+    return new DefaultContinuationSocketFrame(0, true, text);
+  }
 
-    @Override
-    public @NotNull TextSocketFrame<?> text(@NotNull String text) {
-        return new DefaultTextSocketFrame(0, true, text);
-    }
+  @Override
+  public @NotNull TextSocketFrame<?> text(@NotNull String text) {
+    return new DefaultTextSocketFrame(0, true, text);
+  }
 }

@@ -26,9 +26,9 @@ package systems.reformcloud.reformcloud2.file;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
-import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.provider.DatabaseProvider;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.DatabaseTableWrapper;
+import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -39,43 +39,43 @@ import java.util.Collection;
 
 public class FileDatabaseProvider implements DatabaseProvider {
 
-    public FileDatabaseProvider() {
-        try {
-            Class.forName("de.derklaro.projects.deer.executor.BasicDatabaseDriver");
-        } catch (ClassNotFoundException exception) {
-            throw new RuntimeException(exception);
-        }
+  public FileDatabaseProvider() {
+    try {
+      Class.forName("de.derklaro.projects.deer.executor.BasicDatabaseDriver");
+    } catch (ClassNotFoundException exception) {
+      throw new RuntimeException(exception);
+    }
+  }
+
+  @Override
+  public @NotNull
+  DatabaseTableWrapper createTable(@NotNull String tableName) {
+    return new FileDatabaseTableWrapper(tableName);
+  }
+
+  @Override
+  public void deleteTable(@NotNull String tableName) {
+    IOUtils.deleteDirectory(Path.of("reformcloud/.database", tableName));
+  }
+
+  @Override
+  public @NotNull
+  @UnmodifiableView Collection<String> getTableNames() {
+    Collection<String> collection = new ArrayList<>();
+    try (DirectoryStream<Path> stream = Files.newDirectoryStream(Path.of("reformcloud/.database"))) {
+      for (Path path : stream) {
+        collection.add(path.getFileName().toString());
+      }
+    } catch (IOException exception) {
+      exception.printStackTrace();
     }
 
-    @Override
-    public @NotNull
-    DatabaseTableWrapper createTable(@NotNull String tableName) {
-        return new FileDatabaseTableWrapper(tableName);
-    }
+    return collection;
+  }
 
-    @Override
-    public void deleteTable(@NotNull String tableName) {
-        IOUtils.deleteDirectory(Path.of("reformcloud/.database", tableName));
-    }
-
-    @Override
-    public @NotNull
-    @UnmodifiableView Collection<String> getTableNames() {
-        Collection<String> collection = new ArrayList<>();
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Path.of("reformcloud/.database"))) {
-            for (Path path : stream) {
-                collection.add(path.getFileName().toString());
-            }
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
-
-        return collection;
-    }
-
-    @Override
-    public @NotNull
-    DatabaseTableWrapper getDatabase(@NotNull String tableName) {
-        return new FileDatabaseTableWrapper(tableName);
-    }
+  @Override
+  public @NotNull
+  DatabaseTableWrapper getDatabase(@NotNull String tableName) {
+    return new FileDatabaseTableWrapper(tableName);
+  }
 }

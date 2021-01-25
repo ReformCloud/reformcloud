@@ -28,72 +28,72 @@ import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 
 public final class SFTPConfig {
 
-    private final boolean enabled;
-    private final String host;
-    private final int port;
-    private final String user;
-    private final String password;
-    private final String privateKeyFile;
-    private final String knownHostsFile;
+  private final boolean enabled;
+  private final String host;
+  private final int port;
+  private final String user;
+  private final String password;
+  private final String privateKeyFile;
+  private final String knownHostsFile;
 
-    private String baseDirectory;
+  private String baseDirectory;
 
-    public SFTPConfig(boolean enabled, String host, int port, String user, String password, String baseDirectory) {
-        this.enabled = enabled;
-        this.host = host;
-        this.port = port;
-        this.user = user;
-        this.password = password;
-        this.privateKeyFile = null;
-        this.knownHostsFile = null;
-        this.baseDirectory = baseDirectory;
+  public SFTPConfig(boolean enabled, String host, int port, String user, String password, String baseDirectory) {
+    this.enabled = enabled;
+    this.host = host;
+    this.port = port;
+    this.user = user;
+    this.password = password;
+    this.privateKeyFile = null;
+    this.knownHostsFile = null;
+    this.baseDirectory = baseDirectory;
+  }
+
+  public void validate() {
+    if (!this.baseDirectory.startsWith("/")) {
+      this.baseDirectory = "/" + this.baseDirectory;
     }
 
-    public void validate() {
-        if (!this.baseDirectory.startsWith("/")) {
-            this.baseDirectory = "/" + this.baseDirectory;
-        }
-
-        if (!this.baseDirectory.endsWith("/")) {
-            this.baseDirectory += "/";
-        }
-
-        Conditions.isTrue(this.port >= 0, "SSH Port must be higher than 0");
-        Conditions.nonNull(this.user, "Username has to be given");
-        if (this.password == null) {
-            Conditions.nonNull(this.privateKeyFile, "If no user and password is given, the publickey has to be given");
-        }
+    if (!this.baseDirectory.endsWith("/")) {
+      this.baseDirectory += "/";
     }
 
-    public boolean isEnabled() {
-        return this.enabled;
+    Conditions.isTrue(this.port >= 0, "SSH Port must be higher than 0");
+    Conditions.nonNull(this.user, "Username has to be given");
+    if (this.password == null) {
+      Conditions.nonNull(this.privateKeyFile, "If no user and password is given, the publickey has to be given");
     }
+  }
 
-    public String getHost() {
-        return this.host;
-    }
+  public boolean isEnabled() {
+    return this.enabled;
+  }
 
-    public int getPort() {
-        return this.port;
-    }
+  public String getHost() {
+    return this.host;
+  }
 
-    public String getUser() {
-        return this.user;
-    }
+  public int getPort() {
+    return this.port;
+  }
 
-    public String getPassword() {
-        return this.password;
-    }
+  public String getUser() {
+    return this.user;
+  }
 
-    public String getPrivateKeyFile() {
-        return this.privateKeyFile;
-    }
+  public String getPassword() {
+    return this.password;
+  }
 
-    public String getKnownHostsFile() {
-        return this.knownHostsFile;
-    }
+  public String getPrivateKeyFile() {
+    return this.privateKeyFile;
+  }
 
-    public String getBaseDirectory() {
-        return this.baseDirectory.endsWith("/") ? this.baseDirectory : this.baseDirectory + "/";
-    }
+  public String getKnownHostsFile() {
+    return this.knownHostsFile;
+  }
+
+  public String getBaseDirectory() {
+    return this.baseDirectory.endsWith("/") ? this.baseDirectory : this.baseDirectory + "/";
+  }
 }

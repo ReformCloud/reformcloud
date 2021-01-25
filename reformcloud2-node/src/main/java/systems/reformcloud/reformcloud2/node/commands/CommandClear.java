@@ -31,8 +31,8 @@ import systems.reformcloud.reformcloud2.node.NodeExecutor;
 
 public final class CommandClear implements Command {
 
-    @Override
-    public void process(@NotNull CommandSender sender, String[] strings, @NotNull String commandLine) {
-        NodeExecutor.getInstance().getConsole().clearScreen();
-    }
+  @Override
+  public void process(@NotNull CommandSender sender, String[] strings, @NotNull String commandLine) {
+    NodeExecutor.getInstance().getConsole().clearScreen();
+  }
 }

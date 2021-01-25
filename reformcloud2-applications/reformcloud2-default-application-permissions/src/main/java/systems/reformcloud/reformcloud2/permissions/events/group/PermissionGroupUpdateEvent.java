@@ -29,13 +29,13 @@ import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGrou
 
 public class PermissionGroupUpdateEvent extends Event {
 
-    private final PermissionGroup permissionGroup;
+  private final PermissionGroup permissionGroup;
 
-    public PermissionGroupUpdateEvent(PermissionGroup permissionGroup) {
-        this.permissionGroup = permissionGroup;
-    }
+  public PermissionGroupUpdateEvent(PermissionGroup permissionGroup) {
+    this.permissionGroup = permissionGroup;
+  }
 
-    public PermissionGroup getPermissionGroup() {
-        return this.permissionGroup;
-    }
+  public PermissionGroup getPermissionGroup() {
+    return this.permissionGroup;
+  }
 }

@@ -50,92 +50,92 @@ import java.util.Optional;
 
 public class DefaultEmbeddedDatabaseTableWrapper implements DatabaseTableWrapper {
 
-    private final String tableName;
+  private final String tableName;
 
-    public DefaultEmbeddedDatabaseTableWrapper(String tableName) {
-        this.tableName = tableName;
-    }
+  public DefaultEmbeddedDatabaseTableWrapper(String tableName) {
+    this.tableName = tableName;
+  }
 
-    @Override
-    public void insert(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration data) {
-        Embedded.getInstance().sendPacket(new ApiToNodeInsertDocumentIntoTable(this.tableName, key, id, data));
-    }
+  @Override
+  public void insert(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration data) {
+    Embedded.getInstance().sendPacket(new ApiToNodeInsertDocumentIntoTable(this.tableName, key, id, data));
+  }
 
-    @Override
-    public void update(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration newData) {
-        Embedded.getInstance().sendPacket(new ApiToNodeUpdateDocumentInTable(this.tableName, key, id, newData));
-    }
+  @Override
+  public void update(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration newData) {
+    Embedded.getInstance().sendPacket(new ApiToNodeUpdateDocumentInTable(this.tableName, key, id, newData));
+  }
 
-    @Override
-    public void remove(@NotNull String key, @NotNull String id) {
-        Embedded.getInstance().sendPacket(new ApiToNodeRemoveDocumentFromTable(this.tableName, key, id));
-    }
+  @Override
+  public void remove(@NotNull String key, @NotNull String id) {
+    Embedded.getInstance().sendPacket(new ApiToNodeRemoveDocumentFromTable(this.tableName, key, id));
+  }
 
-    @NotNull
-    @Override
-    public Optional<JsonConfiguration> get(@NotNull String key, @NotNull String id) {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetDatabaseDocument(this.tableName, key, id))
-            .map(result -> {
-                if (result instanceof ApiToNodeGetDatabaseDocumentResult) {
-                    return ((ApiToNodeGetDatabaseDocumentResult) result).getResult();
-                }
+  @NotNull
+  @Override
+  public Optional<JsonConfiguration> get(@NotNull String key, @NotNull String id) {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetDatabaseDocument(this.tableName, key, id))
+      .map(result -> {
+        if (result instanceof ApiToNodeGetDatabaseDocumentResult) {
+          return ((ApiToNodeGetDatabaseDocumentResult) result).getResult();
+        }
 
-                return new JsonConfiguration();
-            });
-    }
+        return JsonConfiguration.newJsonConfiguration();
+      });
+  }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Collection<String> getEntryNames() {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetTableEntryNames(this.tableName))
-            .map(result -> {
-                if (result instanceof ApiToNodeGetTableEntryNamesResult) {
-                    return ((ApiToNodeGetTableEntryNamesResult) result).getNames();
-                }
+  @NotNull
+  @Override
+  public @UnmodifiableView Collection<String> getEntryNames() {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetTableEntryNames(this.tableName))
+      .map(result -> {
+        if (result instanceof ApiToNodeGetTableEntryNamesResult) {
+          return ((ApiToNodeGetTableEntryNamesResult) result).getNames();
+        }
 
-                return new ArrayList<String>();
-            }).orElseGet(ArrayList::new);
-    }
+        return new ArrayList<String>();
+      }).orElseGet(ArrayList::new);
+  }
 
-    @Override
-    public long count() {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetDatabaseEntryCount(this.tableName))
-            .map(result -> {
-                if (result instanceof ApiToNodeGetDatabaseEntryCountResult) {
-                    return ((ApiToNodeGetDatabaseEntryCountResult) result).getCount();
-                }
+  @Override
+  public long count() {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetDatabaseEntryCount(this.tableName))
+      .map(result -> {
+        if (result instanceof ApiToNodeGetDatabaseEntryCountResult) {
+          return ((ApiToNodeGetDatabaseEntryCountResult) result).getCount();
+        }
 
-                return 0L;
-            }).orElseGet(() -> 0L);
-    }
+        return 0L;
+      }).orElseGet(() -> 0L);
+  }
 
-    @Override
-    public void clear() {
-        Embedded.getInstance().sendPacket(new ApiToNodeClearDatabaseTable(this.tableName));
-    }
+  @Override
+  public void clear() {
+    Embedded.getInstance().sendPacket(new ApiToNodeClearDatabaseTable(this.tableName));
+  }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Collection<JsonConfiguration> getAll() {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetAllTableEntries(this.tableName))
-            .map(result -> {
-                if (result instanceof ApiToNodeGetAllTableEntriesResult) {
-                    return ((ApiToNodeGetAllTableEntriesResult) result).getAll();
-                }
+  @NotNull
+  @Override
+  public @UnmodifiableView Collection<JsonConfiguration> getAll() {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetAllTableEntries(this.tableName))
+      .map(result -> {
+        if (result instanceof ApiToNodeGetAllTableEntriesResult) {
+          return ((ApiToNodeGetAllTableEntriesResult) result).getAll();
+        }
 
-                return new ArrayList<JsonConfiguration>();
-            }).orElseGet(ArrayList::new);
-    }
+        return new ArrayList<JsonConfiguration>();
+      }).orElseGet(ArrayList::new);
+  }
 
-    @Override
-    public boolean has(@NotNull String key) {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeHasTableDocument(this.tableName, key))
-            .map(result -> {
-                if (result instanceof ApiToNodeHasTableDocumentResult) {
-                    return ((ApiToNodeHasTableDocumentResult) result).has();
-                }
+  @Override
+  public boolean has(@NotNull String key) {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeHasTableDocument(this.tableName, key))
+      .map(result -> {
+        if (result instanceof ApiToNodeHasTableDocumentResult) {
+          return ((ApiToNodeHasTableDocumentResult) result).has();
+        }
 
-                return false;
-            }).orElseGet(() -> false);
-    }
+        return false;
+      }).orElseGet(() -> false);
+  }
 }

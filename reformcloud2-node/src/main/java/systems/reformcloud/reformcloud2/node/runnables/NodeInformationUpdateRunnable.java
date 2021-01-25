@@ -30,9 +30,10 @@ import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 
 public class NodeInformationUpdateRunnable implements Runnable {
 
-    @Override
-    public void run() {
-        ExecutorAPI.getInstance().getServiceRegistry().getProvider(ClusterManager.class)
-            .ifPresent(e -> e.publishNodeUpdate(NodeExecutor.getInstance().updateCurrentNodeInformation()));
-    }
+  @Override
+  public void run() {
+    ExecutorAPI.getInstance().getServiceRegistry()
+      .getProvider(ClusterManager.class)
+      .ifPresent(e -> e.publishNodeUpdate(NodeExecutor.getInstance().updateCurrentNodeInformation()));
+  }
 }

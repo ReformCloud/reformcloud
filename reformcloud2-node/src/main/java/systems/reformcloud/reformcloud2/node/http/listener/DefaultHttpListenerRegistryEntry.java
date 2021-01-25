@@ -31,28 +31,28 @@ import systems.reformcloud.reformcloud2.executor.api.http.request.RequestMethod;
 
 final class DefaultHttpListenerRegistryEntry implements HttpListenerRegistryEntry {
 
-    private final HttpListener listener;
-    private final RequestMethod[] requestMethods;
-    private final int priority;
+  private final HttpListener listener;
+  private final RequestMethod[] requestMethods;
+  private final int priority;
 
-    DefaultHttpListenerRegistryEntry(HttpListener listener, RequestMethod[] requestMethods, int priority) {
-        this.listener = listener;
-        this.requestMethods = requestMethods;
-        this.priority = priority;
-    }
+  DefaultHttpListenerRegistryEntry(HttpListener listener, RequestMethod[] requestMethods, int priority) {
+    this.listener = listener;
+    this.requestMethods = requestMethods;
+    this.priority = priority;
+  }
 
-    @Override
-    public @NotNull HttpListener getListener() {
-        return this.listener;
-    }
+  @Override
+  public @NotNull HttpListener getListener() {
+    return this.listener;
+  }
 
-    @Override
-    public @NotNull RequestMethod[] getHandlingRequestMethods() {
-        return this.requestMethods;
-    }
+  @Override
+  public @NotNull RequestMethod[] getHandlingRequestMethods() {
+    return this.requestMethods;
+  }
 
-    @Override
-    public int priority() {
-        return this.priority;
-    }
+  @Override
+  public int priority() {
+    return this.priority;
+  }
 }

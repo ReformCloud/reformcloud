@@ -26,18 +26,16 @@ package systems.refomcloud.reformcloud2.embedded.plugin.bungee;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
-import systems.reformcloud.reformcloud2.shared.language.LanguageLoader;
 
 public final class BungeeLauncher extends Plugin {
 
-    @Override
-    public void onEnable() {
-        LanguageLoader.doLoad();
-        new BungeeExecutor(this);
-    }
+  @Override
+  public void onEnable() {
+    new BungeeExecutor(this);
+  }
 
-    @Override
-    public void onDisable() {
-        ProxyServer.getInstance().getScheduler().cancel(this);
-    }
+  @Override
+  public void onDisable() {
+    ProxyServer.getInstance().getScheduler().cancel(this);
+  }
 }

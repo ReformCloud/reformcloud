@@ -79,76 +79,76 @@ import systems.reformcloud.reformcloud2.protocol.shared.PacketSetPlayerLocation;
 
 final class PacketRegister {
 
-    private PacketRegister() {
-        throw new AssertionError("You should not instantiate this class");
-    }
+  private PacketRegister() {
+    throw new AssertionError("You should not instantiate this class");
+  }
 
-    static void preAuth() {
-        getPacketProvider().registerPacket(PacketAuthSuccess.class);
-    }
+  static void preAuth() {
+    getPacketProvider().registerPacket(PacketAuthSuccess.class);
+  }
 
-    static void postAuth() {
-        PacketProvider packetProvider = getPacketProvider();
+  static void postAuth() {
+    PacketProvider packetProvider = getPacketProvider();
 
-        // unregister auth packet
-        packetProvider.unregisterPacket(PacketIds.AUTH_BUS_END);
+    // unregister auth packet
+    packetProvider.unregisterPacket(PacketIds.AUTH_BUS + 1);
 
-        // api -> node query result packets
-        packetProvider.registerPacket(ApiToNodeCreateMainGroupResult.class);
-        packetProvider.registerPacket(ApiToNodeCreateProcessGroupResult.class);
-        packetProvider.registerPacket(ApiToNodeGetAllTableEntriesResult.class);
-        packetProvider.registerPacket(ApiToNodeGetCurrentPlayerProcessUniqueIdsResult.class);
-        packetProvider.registerPacket(ApiToNodeGetDatabaseDocumentResult.class);
-        packetProvider.registerPacket(ApiToNodeGetDatabaseEntryCountResult.class);
-        packetProvider.registerPacket(ApiToNodeGetDatabaseNamesResult.class);
-        packetProvider.registerPacket(ApiToNodeGetIngameMessagesResult.class);
-        packetProvider.registerPacket(ApiToNodeGetMainGroupCountResult.class);
-        packetProvider.registerPacket(ApiToNodeGetMainGroupObjectsResult.class);
-        packetProvider.registerPacket(ApiToNodeGetMainGroupResult.class);
-        packetProvider.registerPacket(ApiToNodeGetNodeInformationResult.class);
-        packetProvider.registerPacket(ApiToNodeGetNodeNamesResult.class);
-        packetProvider.registerPacket(ApiToNodeGetNodeObjectsResult.class);
-        packetProvider.registerPacket(ApiToNodeGetNodeUniqueIdsResult.class);
-        packetProvider.registerPacket(ApiToNodeGetPlayerUniqueIdFromNameResult.class);
-        packetProvider.registerPacket(ApiToNodeGetProcessCountResult.class);
-        packetProvider.registerPacket(ApiToNodeGetProcessGroupCountResult.class);
-        packetProvider.registerPacket(ApiToNodeGetProcessGroupObjectsResult.class);
-        packetProvider.registerPacket(ApiToNodeGetProcessGroupResult.class);
-        packetProvider.registerPacket(ApiToNodeGetProcessInformationObjectsResult.class);
-        packetProvider.registerPacket(ApiToNodeGetProcessInformationResult.class);
-        packetProvider.registerPacket(ApiToNodeGetProcessUniqueIdsResult.class);
-        packetProvider.registerPacket(ApiToNodeGetStringCollectionResult.class);
-        packetProvider.registerPacket(ApiToNodeGetTableEntryNamesResult.class);
-        packetProvider.registerPacket(ApiToNodeHasTableDocumentResult.class);
-        packetProvider.registerPacket(ApiToNodeIsNodePresentResult.class);
-        packetProvider.registerPacket(ApiToNodeIsPlayerOnlineResult.class);
-        packetProvider.registerPacket(ApiToNodeUploadProcessLogResult.class);
+    // api -> node query result packets
+    packetProvider.registerPacket(ApiToNodeCreateMainGroupResult.class);
+    packetProvider.registerPacket(ApiToNodeCreateProcessGroupResult.class);
+    packetProvider.registerPacket(ApiToNodeGetAllTableEntriesResult.class);
+    packetProvider.registerPacket(ApiToNodeGetCurrentPlayerProcessUniqueIdsResult.class);
+    packetProvider.registerPacket(ApiToNodeGetDatabaseDocumentResult.class);
+    packetProvider.registerPacket(ApiToNodeGetDatabaseEntryCountResult.class);
+    packetProvider.registerPacket(ApiToNodeGetDatabaseNamesResult.class);
+    packetProvider.registerPacket(ApiToNodeGetIngameMessagesResult.class);
+    packetProvider.registerPacket(ApiToNodeGetMainGroupCountResult.class);
+    packetProvider.registerPacket(ApiToNodeGetMainGroupObjectsResult.class);
+    packetProvider.registerPacket(ApiToNodeGetMainGroupResult.class);
+    packetProvider.registerPacket(ApiToNodeGetNodeInformationResult.class);
+    packetProvider.registerPacket(ApiToNodeGetNodeNamesResult.class);
+    packetProvider.registerPacket(ApiToNodeGetNodeObjectsResult.class);
+    packetProvider.registerPacket(ApiToNodeGetNodeUniqueIdsResult.class);
+    packetProvider.registerPacket(ApiToNodeGetPlayerUniqueIdFromNameResult.class);
+    packetProvider.registerPacket(ApiToNodeGetProcessCountResult.class);
+    packetProvider.registerPacket(ApiToNodeGetProcessGroupCountResult.class);
+    packetProvider.registerPacket(ApiToNodeGetProcessGroupObjectsResult.class);
+    packetProvider.registerPacket(ApiToNodeGetProcessGroupResult.class);
+    packetProvider.registerPacket(ApiToNodeGetProcessInformationObjectsResult.class);
+    packetProvider.registerPacket(ApiToNodeGetProcessInformationResult.class);
+    packetProvider.registerPacket(ApiToNodeGetProcessUniqueIdsResult.class);
+    packetProvider.registerPacket(ApiToNodeGetStringCollectionResult.class);
+    packetProvider.registerPacket(ApiToNodeGetTableEntryNamesResult.class);
+    packetProvider.registerPacket(ApiToNodeHasTableDocumentResult.class);
+    packetProvider.registerPacket(ApiToNodeIsNodePresentResult.class);
+    packetProvider.registerPacket(ApiToNodeIsPlayerOnlineResult.class);
+    packetProvider.registerPacket(ApiToNodeUploadProcessLogResult.class);
 
-        // node -> api
-        packetProvider.registerPacket(NodeToApiMainGroupCreate.class);
-        packetProvider.registerPacket(NodeToApiMainGroupDelete.class);
-        packetProvider.registerPacket(NodeToApiMainGroupUpdated.class);
-        packetProvider.registerPacket(NodeToApiProcessGroupCreate.class);
-        packetProvider.registerPacket(NodeToApiProcessGroupDelete.class);
-        packetProvider.registerPacket(NodeToApiProcessGroupUpdated.class);
-        packetProvider.registerPacket(NodeToApiProcessRegister.class);
-        packetProvider.registerPacket(NodeToApiProcessUnregister.class);
-        packetProvider.registerPacket(NodeToApiProcessUpdated.class);
-        packetProvider.registerPacket(NodeToApiRequestProcessInformationUpdate.class);
+    // node -> api
+    packetProvider.registerPacket(NodeToApiMainGroupCreate.class);
+    packetProvider.registerPacket(NodeToApiMainGroupDelete.class);
+    packetProvider.registerPacket(NodeToApiMainGroupUpdated.class);
+    packetProvider.registerPacket(NodeToApiProcessGroupCreate.class);
+    packetProvider.registerPacket(NodeToApiProcessGroupDelete.class);
+    packetProvider.registerPacket(NodeToApiProcessGroupUpdated.class);
+    packetProvider.registerPacket(NodeToApiProcessRegister.class);
+    packetProvider.registerPacket(NodeToApiProcessUnregister.class);
+    packetProvider.registerPacket(NodeToApiProcessUpdated.class);
+    packetProvider.registerPacket(NodeToApiRequestProcessInformationUpdate.class);
 
-        // node <-> api (shared packets)
-        packetProvider.registerPacket(PacketChannelMessage.class);
-        packetProvider.registerPacket(PacketConnectPlayerToServer.class);
-        packetProvider.registerPacket(PacketDisconnectPlayer.class);
-        packetProvider.registerPacket(PacketPlayEffectToPlayer.class);
-        packetProvider.registerPacket(PacketPlaySoundToPlayer.class);
-        packetProvider.registerPacket(PacketSendPlayerMessage.class);
-        packetProvider.registerPacket(PacketSendPlayerTitle.class);
-        packetProvider.registerPacket(PacketSetPlayerLocation.class);
-    }
+    // node <-> api (shared packets)
+    packetProvider.registerPacket(PacketChannelMessage.class);
+    packetProvider.registerPacket(PacketConnectPlayerToServer.class);
+    packetProvider.registerPacket(PacketDisconnectPlayer.class);
+    packetProvider.registerPacket(PacketPlayEffectToPlayer.class);
+    packetProvider.registerPacket(PacketPlaySoundToPlayer.class);
+    packetProvider.registerPacket(PacketSendPlayerMessage.class);
+    packetProvider.registerPacket(PacketSendPlayerTitle.class);
+    packetProvider.registerPacket(PacketSetPlayerLocation.class);
+  }
 
-    @NotNull
-    private static PacketProvider getPacketProvider() {
-        return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class);
-    }
+  @NotNull
+  private static PacketProvider getPacketProvider() {
+    return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class);
+  }
 }

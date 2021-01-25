@@ -47,70 +47,70 @@ import java.util.Queue;
 
 public class DefaultEmbeddedProcessWrapper implements ProcessWrapper {
 
-    private ProcessInformation processInformation;
+  private ProcessInformation processInformation;
 
-    public DefaultEmbeddedProcessWrapper(ProcessInformation processInformation) {
-        this.processInformation = processInformation;
-    }
+  public DefaultEmbeddedProcessWrapper(ProcessInformation processInformation) {
+    this.processInformation = processInformation;
+  }
 
-    @NotNull
-    @Override
-    public ProcessInformation getProcessInformation() {
-        return this.processInformation;
-    }
+  @NotNull
+  @Override
+  public ProcessInformation getProcessInformation() {
+    return this.processInformation;
+  }
 
-    @NotNull
-    @Override
-    public Optional<ProcessInformation> requestProcessInformationUpdate() {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeRequestProcessInformationUpdate(this.processInformation))
-            .map(result -> {
-                if (result instanceof ApiToNodeGetProcessInformationResult) {
-                    ProcessInformation process = ((ApiToNodeGetProcessInformationResult) result).getProcessInformation();
-                    return process != null ? this.processInformation = process : null;
-                }
+  @NotNull
+  @Override
+  public Optional<ProcessInformation> requestProcessInformationUpdate() {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeRequestProcessInformationUpdate(this.processInformation))
+      .map(result -> {
+        if (result instanceof ApiToNodeGetProcessInformationResult) {
+          ProcessInformation process = ((ApiToNodeGetProcessInformationResult) result).getProcessInformation();
+          return process != null ? this.processInformation = process : null;
+        }
 
-                return null;
-            });
-    }
+        return null;
+      });
+  }
 
-    @NotNull
-    @Override
-    public Optional<String> uploadLog() {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeUploadProcessLog(this.processInformation))
-            .map(result -> {
-                if (result instanceof ApiToNodeUploadProcessLogResult) {
-                    return ((ApiToNodeUploadProcessLogResult) result).getLogUrl();
-                }
+  @NotNull
+  @Override
+  public Optional<String> uploadLog() {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeUploadProcessLog(this.processInformation))
+      .map(result -> {
+        if (result instanceof ApiToNodeUploadProcessLogResult) {
+          return ((ApiToNodeUploadProcessLogResult) result).getLogUrl();
+        }
 
-                return null;
-            });
-    }
+        return null;
+      });
+  }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Queue<String> getLastLogLines() {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetLastProcessLogLines(this.processInformation))
-            .map(result -> {
-                if (result instanceof ApiToNodeGetStringCollectionResult) {
-                    return new ArrayDeque<>(((ApiToNodeGetStringCollectionResult) result).getResult());
-                }
+  @NotNull
+  @Override
+  public @UnmodifiableView Queue<String> getLastLogLines() {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetLastProcessLogLines(this.processInformation))
+      .map(result -> {
+        if (result instanceof ApiToNodeGetStringCollectionResult) {
+          return new ArrayDeque<>(((ApiToNodeGetStringCollectionResult) result).getResult());
+        }
 
-                return new ArrayDeque<String>();
-            }).orElse(Constants.EMPTY_STRING_QUEUE);
-    }
+        return new ArrayDeque<String>();
+      }).orElse(Constants.EMPTY_STRING_QUEUE);
+  }
 
-    @Override
-    public void sendCommand(@NotNull String commandLine) {
-        Embedded.getInstance().sendPacket(new ApiToNodeSendProcessCommand(this.processInformation, commandLine));
-    }
+  @Override
+  public void sendCommand(@NotNull String commandLine) {
+    Embedded.getInstance().sendPacket(new ApiToNodeSendProcessCommand(this.processInformation, commandLine));
+  }
 
-    @Override
-    public void setRuntimeState(@NotNull ProcessState state) {
-        Embedded.getInstance().sendPacket(new ApiToNodeSetProcessRuntimeState(this.processInformation, state));
-    }
+  @Override
+  public void setRuntimeState(@NotNull ProcessState state) {
+    Embedded.getInstance().sendPacket(new ApiToNodeSetProcessRuntimeState(this.processInformation, state));
+  }
 
-    @Override
-    public void copy(@NotNull String templateGroup, @NotNull String templateName, @NotNull String templateBackend) {
-        Embedded.getInstance().sendPacket(new ApiToNodeCopyProcess(this.processInformation, templateGroup, templateName, templateBackend));
-    }
+  @Override
+  public void copy(@NotNull String templateGroup, @NotNull String templateName, @NotNull String templateBackend) {
+    Embedded.getInstance().sendPacket(new ApiToNodeCopyProcess(this.processInformation, templateGroup, templateName, templateBackend));
+  }
 }

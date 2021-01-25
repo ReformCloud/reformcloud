@@ -29,8 +29,8 @@ import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreenControl
 
 public class ProcessScreenTickRunnable implements Runnable {
 
-    @Override
-    public void run() {
-        ExecutorAPI.getInstance().getServiceRegistry().getProvider(ProcessScreenController.class).ifPresent(ProcessScreenController::tick);
-    }
+  @Override
+  public void run() {
+    ExecutorAPI.getInstance().getServiceRegistry().getProvider(ProcessScreenController.class).ifPresent(ProcessScreenController::tick);
+  }
 }

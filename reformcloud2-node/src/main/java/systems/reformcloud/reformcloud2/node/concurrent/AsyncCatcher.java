@@ -29,19 +29,19 @@ import systems.reformcloud.reformcloud2.node.NodeExecutor;
 
 public final class AsyncCatcher {
 
-    private AsyncCatcher() {
-        throw new AssertionError("You should not instantiate this class");
-    }
+  private AsyncCatcher() {
+    throw new UnsupportedOperationException();
+  }
 
-    public static void ensureMainThread(@NotNull String reason) {
-        if (Thread.currentThread() != NodeExecutor.getInstance().getCloudTickWorker().getMainThread()) {
-            throw new IllegalStateException("Asynchronous " + reason + "!");
-        }
+  public static void ensureMainThread(@NotNull String reason) {
+    if (Thread.currentThread() != NodeExecutor.getInstance().getCloudTickWorker().getMainThread()) {
+      throw new IllegalStateException("Asynchronous " + reason + "!");
     }
+  }
 
-    public static void ensureNotMainThread(@NotNull String reason) {
-        if (Thread.currentThread() == NodeExecutor.getInstance().getCloudTickWorker().getMainThread()) {
-            throw new IllegalStateException("Synchronous " + reason + "!");
-        }
+  public static void ensureNotMainThread(@NotNull String reason) {
+    if (Thread.currentThread() == NodeExecutor.getInstance().getCloudTickWorker().getMainThread()) {
+      throw new IllegalStateException("Synchronous " + reason + "!");
     }
+  }
 }

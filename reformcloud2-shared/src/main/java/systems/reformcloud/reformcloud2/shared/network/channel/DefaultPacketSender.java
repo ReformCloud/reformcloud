@@ -34,45 +34,45 @@ import java.util.concurrent.Future;
 
 public abstract class DefaultPacketSender implements PacketSender {
 
-    protected Channel channel;
+  protected Channel channel;
 
-    public DefaultPacketSender() {
-    }
+  public DefaultPacketSender() {
+  }
 
-    protected DefaultPacketSender(Channel channel) {
-        this.channel = channel;
-    }
+  protected DefaultPacketSender(Channel channel) {
+    this.channel = channel;
+  }
 
-    @Override
-    public @NotNull Future<Void> sendPacket(@NotNull Packet packet) {
-        return this.channel.writeAndFlush(packet);
-    }
+  @Override
+  public @NotNull Future<Void> sendPacket(@NotNull Packet packet) {
+    return this.channel.writeAndFlush(packet);
+  }
 
-    @Override
-    public void sendPacketSync(@NotNull Packet packet) {
-        this.channel.writeAndFlush(packet).syncUninterruptibly();
-    }
+  @Override
+  public void sendPacketSync(@NotNull Packet packet) {
+    this.channel.writeAndFlush(packet).syncUninterruptibly();
+  }
 
-    @Override
-    public void sendPackets(@NotNull Packet... packets) {
-        for (Packet packet : packets) {
-            this.channel.writeAndFlush(packet).syncUninterruptibly();
-        }
+  @Override
+  public void sendPackets(@NotNull Packet... packets) {
+    for (Packet packet : packets) {
+      this.channel.writeAndFlush(packet).syncUninterruptibly();
     }
+  }
 
-    @Override
-    public void sendQueryResult(@NotNull UUID queryUniqueId, @NotNull Packet result) {
-        result.setQueryUniqueID(queryUniqueId);
-        this.sendPacket(result);
-    }
+  @Override
+  public void sendQueryResult(@NotNull UUID queryUniqueId, @NotNull Packet result) {
+    result.setQueryUniqueID(queryUniqueId);
+    this.sendPacket(result);
+  }
 
-    @Override
-    public @NotNull Future<Void> close() {
-        return this.channel.close();
-    }
+  @Override
+  public @NotNull Future<Void> close() {
+    return this.channel.close();
+  }
 
-    @Override
-    public void closeSync() {
-        this.channel.close().syncUninterruptibly();
-    }
+  @Override
+  public void closeSync() {
+    this.channel.close().syncUninterruptibly();
+  }
 }

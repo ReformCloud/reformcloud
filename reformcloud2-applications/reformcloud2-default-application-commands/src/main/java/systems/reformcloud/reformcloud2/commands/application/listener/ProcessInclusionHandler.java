@@ -33,18 +33,18 @@ import systems.reformcloud.reformcloud2.node.event.process.LocalProcessPrePrepar
 
 public final class ProcessInclusionHandler {
 
-    @Listener
-    public void handle(final @NotNull LocalProcessPrePrepareEvent event) {
-        if (!event.getProcessInformation().getProcessDetail().getTemplate().isServer()) {
-            this.includeSelfFile(event.getProcessInformation());
-        }
+  @Listener
+  public void handle(final @NotNull LocalProcessPrePrepareEvent event) {
+    if (!event.getProcessInformation().getProcessDetail().getTemplate().isServer()) {
+      this.includeSelfFile(event.getProcessInformation());
     }
+  }
 
-    private void includeSelfFile(@NotNull ProcessInformation processInformation) {
-        processInformation.getPreInclusions().add(new ProcessInclusion(
-            "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-commands-"
-                + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar",
-            "plugins/commands-" + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar"
-        ));
-    }
+  private void includeSelfFile(@NotNull ProcessInformation processInformation) {
+    processInformation.getPreInclusions().add(new ProcessInclusion(
+      "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-commands-"
+        + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar",
+      "plugins/commands-" + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar"
+    ));
+  }
 }

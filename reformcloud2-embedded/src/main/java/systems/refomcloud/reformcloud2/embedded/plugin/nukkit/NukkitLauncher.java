@@ -27,23 +27,17 @@ package systems.refomcloud.reformcloud2.embedded.plugin.nukkit;
 import cn.nukkit.Server;
 import cn.nukkit.plugin.PluginBase;
 import systems.refomcloud.reformcloud2.embedded.plugin.nukkit.event.PlayerListenerHandler;
-import systems.reformcloud.reformcloud2.shared.language.LanguageLoader;
 
 public final class NukkitLauncher extends PluginBase {
 
-    @Override
-    public void onLoad() {
-        LanguageLoader.doLoad();
-    }
+  @Override
+  public void onEnable() {
+    new NukkitExecutor(this);
+    Server.getInstance().getPluginManager().registerEvents(new PlayerListenerHandler(), this);
+  }
 
-    @Override
-    public void onEnable() {
-        new NukkitExecutor(this);
-        Server.getInstance().getPluginManager().registerEvents(new PlayerListenerHandler(), this);
-    }
-
-    @Override
-    public void onDisable() {
-        Server.getInstance().getScheduler().cancelTask(this);
-    }
+  @Override
+  public void onDisable() {
+    Server.getInstance().getScheduler().cancelTask(this);
+  }
 }

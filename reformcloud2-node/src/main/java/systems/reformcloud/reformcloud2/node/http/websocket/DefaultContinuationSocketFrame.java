@@ -31,27 +31,27 @@ import java.nio.charset.StandardCharsets;
 
 public class DefaultContinuationSocketFrame extends DefaultSocketFrame<DefaultContinuationSocketFrame> implements ContinuationSocketFrame<DefaultContinuationSocketFrame> {
 
-    private String text;
+  private String text;
 
-    public DefaultContinuationSocketFrame(int rsv, boolean finalFragment, String text) {
-        super(rsv, finalFragment, text.isEmpty() ? new byte[0] : text.getBytes(StandardCharsets.UTF_8));
-        this.text = text;
-    }
+  public DefaultContinuationSocketFrame(int rsv, boolean finalFragment, String text) {
+    super(rsv, finalFragment, text.isEmpty() ? new byte[0] : text.getBytes(StandardCharsets.UTF_8));
+    this.text = text;
+  }
 
-    @Override
-    public @NotNull String text() {
-        return this.text;
-    }
+  @Override
+  public @NotNull String text() {
+    return this.text;
+  }
 
-    @Override
-    public @NotNull DefaultContinuationSocketFrame text(@NotNull String text) {
-        this.text = text;
-        super.content(text.getBytes(StandardCharsets.UTF_8));
-        return this;
-    }
+  @Override
+  public @NotNull DefaultContinuationSocketFrame text(@NotNull String text) {
+    this.text = text;
+    super.content(text.getBytes(StandardCharsets.UTF_8));
+    return this;
+  }
 
-    @Override
-    public @NotNull DefaultContinuationSocketFrame self() {
-        return this;
-    }
+  @Override
+  public @NotNull DefaultContinuationSocketFrame self() {
+    return this;
+  }
 }

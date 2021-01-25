@@ -38,31 +38,31 @@ import java.util.Map;
 @ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
 public final class SubjectGroupPermissionCalculator {
 
-    private SubjectGroupPermissionCalculator() {
-        throw new UnsupportedOperationException();
-    }
+  private SubjectGroupPermissionCalculator() {
+    throw new UnsupportedOperationException();
+  }
 
-    public static Map<String, Boolean> getPermissionsOf(PermissionGroup group) {
-        Map<String, Boolean> out = new HashMap<>();
-        final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-        Collection<PermissionNode> permissionNodes = group.getPerGroupPermissions().get(current.getProcessGroup().getName());
-        if (permissionNodes != null) {
-            permissionNodes.forEach(e -> {
-                if (!e.isValid()) {
-                    return;
-                }
-
-                out.put(e.getActualPermission(), e.isSet());
-            });
+  public static Map<String, Boolean> getPermissionsOf(PermissionGroup group) {
+    Map<String, Boolean> out = new HashMap<>();
+    final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
+    Collection<PermissionNode> permissionNodes = group.getPerGroupPermissions().get(current.getProcessGroup().getName());
+    if (permissionNodes != null) {
+      permissionNodes.forEach(e -> {
+        if (!e.isValid()) {
+          return;
         }
 
-        group.getPermissionNodes().forEach(e -> {
-            if (!e.isValid()) {
-                return;
-            }
-
-            out.put(e.getActualPermission(), e.isSet());
-        });
-        return out;
+        out.put(e.getActualPermission(), e.isSet());
+      });
     }
+
+    group.getPermissionNodes().forEach(e -> {
+      if (!e.isValid()) {
+        return;
+      }
+
+      out.put(e.getActualPermission(), e.isSet());
+    });
+    return out;
+  }
 }

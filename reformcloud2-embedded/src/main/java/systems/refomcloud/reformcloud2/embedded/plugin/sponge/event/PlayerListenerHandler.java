@@ -41,47 +41,45 @@ import java.util.concurrent.TimeUnit;
 
 public final class PlayerListenerHandler {
 
-    @Listener(order = Order.LATE)
-    public void handle(final @NotNull ClientConnectionEvent.Login event) {
-        if (!Embedded.getInstance().isReady()) {
-            event.setCancelled(true);
-            event.setMessage(Text.of(SpongeExecutor.getInstance().getIngameMessages().format(
-                SpongeExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
-            )));
-            return;
-        }
-
-        Entry2<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
-            event.getTargetUser()::hasPermission,
-            SpongeExecutor.getInstance().getIngameMessages(),
-            null,
-            event.getTargetUser().getUniqueId(),
-            event.getTargetUser().getName()
-        );
-        if (!checked.getFirst() && checked.getSecond() != null) {
-            event.setCancelled(true);
-            event.setMessage(Text.of(checked.getSecond()));
-        }
+  @Listener(order = Order.LATE)
+  public void handle(final @NotNull ClientConnectionEvent.Login event) {
+    if (!Embedded.getInstance().isReady()) {
+      event.setCancelled(true);
+      event.setMessage(Text.of(SpongeExecutor.getInstance().getIngameMessages().format(
+        SpongeExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
+      )));
+      return;
     }
 
-    @Listener(order = Order.FIRST)
-    public void handle(final @NotNull ClientConnectionEvent.Disconnect event) {
-        ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-        if (!current.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(event.getTargetEntity().getUniqueId())) {
-            return;
-        }
-
-        SpongeExecutor.getInstance().getExecutorService().schedule(() -> {
-            if (Sponge.getServer().getOnlinePlayers().size() < current.getProcessDetail().getMaxPlayers()
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
-                current.getProcessDetail().setProcessState(ProcessState.READY);
-            }
-
-            current.updateRuntimeInformation();
-            current.getProcessPlayerManager().onLogout(event.getTargetEntity().getUniqueId());
-
-            Embedded.getInstance().updateCurrentProcessInformation();
-        }, 20, TimeUnit.MILLISECONDS);
+    Entry2<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
+      event.getTargetUser()::hasPermission,
+      SpongeExecutor.getInstance().getIngameMessages(),
+      null,
+      event.getTargetUser().getUniqueId(),
+      event.getTargetUser().getName()
+    );
+    if (!checked.getFirst() && checked.getSecond() != null) {
+      event.setCancelled(true);
+      event.setMessage(Text.of(checked.getSecond()));
     }
+  }
+
+  @Listener(order = Order.FIRST)
+  public void handle(final @NotNull ClientConnectionEvent.Disconnect event) {
+    ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
+    if (!current.getPlayerByUniqueId(event.getTargetEntity().getUniqueId()).isPresent()) {
+      return;
+    }
+
+    SpongeExecutor.getInstance().getExecutorService().schedule(() -> {
+      if (Sponge.getServer().getOnlinePlayers().size() < Embedded.getInstance().getMaxPlayers()
+        && !current.getCurrentState().equals(ProcessState.READY)
+        && !current.getCurrentState().equals(ProcessState.INVISIBLE)) {
+        current.setCurrentState(ProcessState.READY);
+      }
+
+      current.getPlayers().removeIf(player -> player.getUniqueID().equals(event.getTargetEntity().getUniqueId()));
+      Embedded.getInstance().updateCurrentProcessInformation();
+    }, 20, TimeUnit.MILLISECONDS);
+  }
 }

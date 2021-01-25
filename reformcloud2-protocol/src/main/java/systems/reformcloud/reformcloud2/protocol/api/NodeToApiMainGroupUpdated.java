@@ -34,7 +34,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChan
 import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
-import systems.reformcloud.reformcloud2.shared.groups.main.DefaultMainGroup;
+import systems.reformcloud.reformcloud2.shared.group.DefaultMainGroup;
 
 public class NodeToApiMainGroupUpdated extends ProtocolPacket {
 

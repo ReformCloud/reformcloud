@@ -34,36 +34,36 @@ import java.lang.reflect.Field;
 
 public final class BukkitUtil {
 
-    private static Field perm;
+  private static Field perm;
 
-    static {
-        try {
-            try {
-                // bukkit
-                String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-                perm = Class.forName("org.bukkit.craftbukkit." + version + ".entity.CraftHumanEntity").getDeclaredField("perm");
-                perm.setAccessible(true);
-            } catch (final Throwable ex) {
-                // glowstone
-                perm = Class.forName("net.glowstone.entity.GlowHumanEntity").getDeclaredField("permissions");
-                perm.setAccessible(true);
-            }
-        } catch (final ClassNotFoundException | NoSuchFieldException ex) {
-            throw new RuntimeException("Error while obtaining bukkit or glowstone perm fields (are you using your own build?)", ex);
-        }
+  static {
+    try {
+      try {
+        // bukkit
+        String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+        perm = Class.forName("org.bukkit.craftbukkit." + version + ".entity.CraftHumanEntity").getDeclaredField("perm");
+        perm.setAccessible(true);
+      } catch (final Throwable ex) {
+        // glowstone
+        perm = Class.forName("net.glowstone.entity.GlowHumanEntity").getDeclaredField("permissions");
+        perm.setAccessible(true);
+      }
+    } catch (final ClassNotFoundException | NoSuchFieldException ex) {
+      throw new RuntimeException("Error while obtaining bukkit or glowstone perm fields (are you using your own build?)", ex);
     }
+  }
 
-    private BukkitUtil() {
-        throw new UnsupportedOperationException();
+  private BukkitUtil() {
+    throw new UnsupportedOperationException();
+  }
+
+  public static void injectPlayer(@NotNull Player player) {
+    Conditions.isTrue(perm != null);
+
+    try {
+      perm.set(player, new DefaultPermissible(player));
+    } catch (final IllegalAccessException ex) {
+      ex.printStackTrace();
     }
-
-    public static void injectPlayer(@NotNull Player player) {
-        Conditions.isTrue(perm != null);
-
-        try {
-            perm.set(player, new DefaultPermissible(player));
-        } catch (final IllegalAccessException ex) {
-            ex.printStackTrace();
-        }
-    }
+  }
 }

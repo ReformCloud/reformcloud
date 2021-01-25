@@ -28,8 +28,8 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
@@ -38,83 +38,83 @@ import systems.reformcloud.reformcloud2.permissions.packets.util.PermissionActio
 
 public class PacketGroupAction extends Packet {
 
-    private PermissionGroup permissionGroup;
-    private PermissionAction permissionAction;
+  private PermissionGroup permissionGroup;
+  private PermissionAction permissionAction;
 
-    public PacketGroupAction() {
-    }
+  public PacketGroupAction() {
+  }
 
-    public PacketGroupAction(PermissionGroup permissionGroup, PermissionAction permissionAction) {
-        this.permissionGroup = permissionGroup;
-        this.permissionAction = permissionAction;
-    }
+  public PacketGroupAction(PermissionGroup permissionGroup, PermissionAction permissionAction) {
+    this.permissionGroup = permissionGroup;
+    this.permissionAction = permissionAction;
+  }
 
-    @Override
-    public int getId() {
-        return PacketHelper.PERMISSION_BUS + 1;
-    }
+  @Override
+  public int getId() {
+    return PacketHelper.PERMISSION_BUS + 1;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
-            switch (this.permissionAction) {
-                case CREATE: {
-                    PermissionManagement.getInstance().createPermissionGroup(this.permissionGroup);
-                    PermissionManagement.getInstance().handleInternalPermissionGroupCreate(this.permissionGroup);
-                    break;
-                }
-
-                case UPDATE: {
-                    PermissionManagement.getInstance().updateGroup(this.permissionGroup);
-                    PermissionManagement.getInstance().handleInternalPermissionGroupUpdate(this.permissionGroup);
-                    break;
-                }
-
-                case DELETE: {
-                    PermissionManagement.getInstance().deleteGroup(this.permissionGroup.getName());
-                    PermissionManagement.getInstance().handleInternalPermissionGroupDelete(this.permissionGroup);
-                    break;
-                }
-
-                default: {
-                    throw new IllegalStateException("Unhandled permission action: " + this.permissionAction);
-                }
-            }
-
-            return;
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
+      switch (this.permissionAction) {
+        case CREATE: {
+          PermissionManagement.getInstance().createPermissionGroup(this.permissionGroup);
+          PermissionManagement.getInstance().handleInternalPermissionGroupCreate(this.permissionGroup);
+          break;
         }
 
-        switch (this.permissionAction) {
-            case UPDATE: {
-                PermissionManagement.getInstance().handleInternalPermissionGroupUpdate(this.permissionGroup);
-                break;
-            }
-
-            case DELETE: {
-                PermissionManagement.getInstance().handleInternalPermissionGroupDelete(this.permissionGroup);
-                break;
-            }
-
-            case CREATE: {
-                PermissionManagement.getInstance().handleInternalPermissionGroupCreate(this.permissionGroup);
-                break;
-            }
-
-            default: {
-                throw new IllegalStateException("Unhandled permission action: " + this.permissionAction);
-            }
+        case UPDATE: {
+          PermissionManagement.getInstance().updateGroup(this.permissionGroup);
+          PermissionManagement.getInstance().handleInternalPermissionGroupUpdate(this.permissionGroup);
+          break;
         }
+
+        case DELETE: {
+          PermissionManagement.getInstance().deleteGroup(this.permissionGroup.getName());
+          PermissionManagement.getInstance().handleInternalPermissionGroupDelete(this.permissionGroup);
+          break;
+        }
+
+        default: {
+          throw new IllegalStateException("Unhandled permission action: " + this.permissionAction);
+        }
+      }
+
+      return;
     }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.permissionGroup);
-        buffer.writeInt(this.permissionAction.ordinal());
-    }
+    switch (this.permissionAction) {
+      case UPDATE: {
+        PermissionManagement.getInstance().handleInternalPermissionGroupUpdate(this.permissionGroup);
+        break;
+      }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.permissionGroup = buffer.readObject(PermissionGroup.class);
-        this.permissionAction = EnumUtil.findEnumFieldByIndex(PermissionAction.class, buffer.readInt()).orElse(null);
+      case DELETE: {
+        PermissionManagement.getInstance().handleInternalPermissionGroupDelete(this.permissionGroup);
+        break;
+      }
+
+      case CREATE: {
+        PermissionManagement.getInstance().handleInternalPermissionGroupCreate(this.permissionGroup);
+        break;
+      }
+
+      default: {
+        throw new IllegalStateException("Unhandled permission action: " + this.permissionAction);
+      }
     }
+  }
+
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.permissionGroup);
+    buffer.writeInt(this.permissionAction.ordinal());
+  }
+
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.permissionGroup = buffer.readObject(PermissionGroup.class);
+    this.permissionAction = EnumUtil.findEnumFieldByIndex(PermissionAction.class, buffer.readInt()).orElse(null);
+  }
 }

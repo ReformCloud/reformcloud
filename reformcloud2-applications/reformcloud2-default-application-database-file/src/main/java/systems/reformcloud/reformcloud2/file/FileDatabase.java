@@ -25,26 +25,26 @@
 package systems.reformcloud.reformcloud2.file;
 
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
+import systems.reformcloud.reformcloud2.executor.api.application.Application;
 import systems.reformcloud.reformcloud2.executor.api.provider.DatabaseProvider;
 import systems.reformcloud.reformcloud2.shared.dependency.DependencyFileLoader;
 
 public class FileDatabase extends Application {
 
-    private DatabaseProvider before;
+  private DatabaseProvider before;
 
-    @Override
-    public void onLoad() {
-        ExecutorAPI.getInstance().getDependencyLoader().load(
-            DependencyFileLoader.collectDependenciesFromFile(FileDatabase.class.getClassLoader().getResourceAsStream("dependencies.txt"))
-        );
+  @Override
+  public void onLoad() {
+    ExecutorAPI.getInstance().getDependencyLoader().load(
+      DependencyFileLoader.collectDependenciesFromFile(FileDatabase.class.getClassLoader().getResourceAsStream("dependencies.txt"))
+    );
 
-        this.before = ExecutorAPI.getInstance().getDatabaseProvider();
-        ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, new FileDatabaseProvider(), false, true);
-    }
+    this.before = ExecutorAPI.getInstance().getDatabaseProvider();
+    ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, new FileDatabaseProvider(), false, true);
+  }
 
-    @Override
-    public void onDisable() {
-        ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, this.before, false, true);
-    }
+  @Override
+  public void onDisable() {
+    ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, this.before, false, true);
+  }
 }

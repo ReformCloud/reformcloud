@@ -27,14 +27,14 @@ package systems.reformcloud.reformcloud2.signs.application;
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
+import systems.reformcloud.reformcloud2.executor.api.application.Application;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
 import systems.reformcloud.reformcloud2.signs.application.listener.ProcessInclusionHandler;
 import systems.reformcloud.reformcloud2.signs.application.packets.PacketCreateSign;
 import systems.reformcloud.reformcloud2.signs.application.packets.PacketDeleteBulkSigns;
@@ -86,7 +86,7 @@ public class ReformCloudApplication extends Application {
             return;
         }
 
-        Streams.findFirst(signs, e -> e.getLocation().equals(cloudSign.getLocation())).ifPresent(signs::remove);
+        MoreCollections.findFirst(signs, e -> e.getLocation().equals(cloudSign.getLocation())).ifPresent(signs::remove);
         databaseEntry.add("signs", signs);
 
         insert();

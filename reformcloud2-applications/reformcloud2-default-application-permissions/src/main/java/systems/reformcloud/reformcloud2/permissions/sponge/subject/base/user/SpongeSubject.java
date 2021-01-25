@@ -34,36 +34,36 @@ import java.util.UUID;
 
 public class SpongeSubject extends AbstractUserSpongeSubject {
 
-    private final UUID uniqueUserID;
-    private final SubjectCollection source;
-    private final PermissionService service;
+  private final UUID uniqueUserID;
+  private final SubjectCollection source;
+  private final PermissionService service;
 
-    public SpongeSubject(@NotNull UUID user, @NotNull SubjectCollection source, @NotNull PermissionService service) {
-        super(user);
-        this.uniqueUserID = user;
-        this.source = source;
-        this.service = service;
-    }
+  public SpongeSubject(@NotNull UUID user, @NotNull SubjectCollection source, @NotNull PermissionService service) {
+    super(user);
+    this.uniqueUserID = user;
+    this.source = source;
+    this.service = service;
+  }
 
-    @Override
-    protected PermissionService service() {
-        return this.service;
-    }
+  @Override
+  protected PermissionService service() {
+    return this.service;
+  }
 
-    @Override
-    protected boolean has(String permission) {
-        return PermissionManagement.getInstance().loadUser(this.uniqueUserID).hasPermission(permission);
-    }
+  @Override
+  protected boolean has(String permission) {
+    return PermissionManagement.getInstance().loadUser(this.uniqueUserID).hasPermission(permission);
+  }
 
-    @Override
-    @NotNull
-    public SubjectCollection getContainingCollection() {
-        return this.source;
-    }
+  @Override
+  @NotNull
+  public SubjectCollection getContainingCollection() {
+    return this.source;
+  }
 
-    @Override
-    @NotNull
-    public String getIdentifier() {
-        return this.uniqueUserID.toString();
-    }
+  @Override
+  @NotNull
+  public String getIdentifier() {
+    return this.uniqueUserID.toString();
+  }
 }

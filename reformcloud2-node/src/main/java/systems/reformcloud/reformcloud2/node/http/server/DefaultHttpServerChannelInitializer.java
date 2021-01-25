@@ -34,18 +34,18 @@ import systems.reformcloud.reformcloud2.executor.api.http.listener.HttpListenerR
 
 public class DefaultHttpServerChannelInitializer extends ChannelInitializer<Channel> {
 
-    private final HttpListenerRegistry listenerRegistry;
+  private final HttpListenerRegistry listenerRegistry;
 
-    public DefaultHttpServerChannelInitializer(HttpListenerRegistry listenerRegistry) {
-        this.listenerRegistry = listenerRegistry;
-    }
+  public DefaultHttpServerChannelInitializer(HttpListenerRegistry listenerRegistry) {
+    this.listenerRegistry = listenerRegistry;
+  }
 
-    @Override
-    protected void initChannel(Channel ch) {
-        ch.pipeline()
-            .addLast(ServerConstants.HTTP_SERVER_CODEC, new HttpServerCodec())
-            .addLast(ServerConstants.HTTP_OBJECT_AGGREGATOR, new HttpObjectAggregator(Short.MAX_VALUE))
-            .addLast(ServerConstants.HTTP_CORS_HANDLER, new CorsHandler(CorsConfigBuilder.forAnyOrigin().allowNullOrigin().allowCredentials().build()))
-            .addLast(ServerConstants.HTTP_HANDLER, new DefaultHttpHandler(this.listenerRegistry));
-    }
+  @Override
+  protected void initChannel(Channel ch) {
+    ch.pipeline()
+      .addLast(ServerConstants.HTTP_SERVER_CODEC, new HttpServerCodec())
+      .addLast(ServerConstants.HTTP_OBJECT_AGGREGATOR, new HttpObjectAggregator(Short.MAX_VALUE))
+      .addLast(ServerConstants.HTTP_CORS_HANDLER, new CorsHandler(CorsConfigBuilder.forAnyOrigin().allowNullOrigin().allowCredentials().build()))
+      .addLast(ServerConstants.HTTP_HANDLER, new DefaultHttpHandler(this.listenerRegistry));
+  }
 }

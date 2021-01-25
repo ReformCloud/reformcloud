@@ -29,13 +29,17 @@ import systems.reformcloud.reformcloud2.executor.api.task.Task;
 
 public interface Console extends AutoCloseable {
 
-    @NotNull
-    Task<String> readString();
+  @NotNull
+  Task<String> readString();
 
-    @NotNull
-    String getPrompt();
+  @NotNull
+  String getPrompt();
 
-    void setPrompt(@NotNull String prompt);
+  void setPrompt(@NotNull String prompt);
 
-    void clearScreen();
+  void addHistoryEntry(@NotNull String entry);
+
+  void clearHistory();
+
+  void clearScreen();
 }

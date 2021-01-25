@@ -29,20 +29,20 @@ import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrameT
 
 public class TypedSocketFrame extends DefaultSocketFrame<TypedSocketFrame> {
 
-    private final SocketFrameType socketFrameType;
+  private final SocketFrameType socketFrameType;
 
-    public TypedSocketFrame(SocketFrameType type, int rsv, boolean finalFragment, byte[] content) {
-        super(rsv, finalFragment, content);
-        this.socketFrameType = type;
-    }
+  public TypedSocketFrame(SocketFrameType type, int rsv, boolean finalFragment, byte[] content) {
+    super(rsv, finalFragment, content);
+    this.socketFrameType = type;
+  }
 
-    @Override
-    public @NotNull SocketFrameType type() {
-        return this.socketFrameType;
-    }
+  @Override
+  public @NotNull SocketFrameType type() {
+    return this.socketFrameType;
+  }
 
-    @Override
-    public @NotNull TypedSocketFrame self() {
-        return this;
-    }
+  @Override
+  public @NotNull TypedSocketFrame self() {
+    return this;
+  }
 }

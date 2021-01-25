@@ -27,9 +27,9 @@ package systems.refomcloud.reformcloud2.embedded.process;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
-import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessBuilder;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Version;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessBuilder;
 import systems.reformcloud.reformcloud2.executor.api.provider.ProcessProvider;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetProcessCount;
@@ -55,129 +55,129 @@ import java.util.UUID;
 
 public class DefaultEmbeddedProcessProvider implements ProcessProvider {
 
-    @NotNull
-    @Override
-    public Optional<ProcessWrapper> getProcessByName(@NotNull String name) {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessInformationByName(name))
-            .map(result -> {
-                if (result instanceof ApiToNodeGetProcessInformationResult) {
-                    return new DefaultEmbeddedProcessWrapper(((ApiToNodeGetProcessInformationResult) result).getProcessInformation());
-                }
+  @NotNull
+  @Override
+  public Optional<ProcessWrapper> getProcessByName(@NotNull String name) {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessInformationByName(name))
+      .map(result -> {
+        if (result instanceof ApiToNodeGetProcessInformationResult) {
+          return new DefaultEmbeddedProcessWrapper(((ApiToNodeGetProcessInformationResult) result).getProcessInformation());
+        }
 
-                return null;
-            });
-    }
+        return null;
+      });
+  }
 
-    @NotNull
-    @Override
-    public Optional<ProcessWrapper> getProcessByUniqueId(@NotNull UUID uniqueId) {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessInformationByUniqueId(uniqueId))
-            .map(result -> {
-                if (result instanceof ApiToNodeGetProcessInformationResult) {
-                    return new DefaultEmbeddedProcessWrapper(((ApiToNodeGetProcessInformationResult) result).getProcessInformation());
-                }
+  @NotNull
+  @Override
+  public Optional<ProcessWrapper> getProcessByUniqueId(@NotNull UUID uniqueId) {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessInformationByUniqueId(uniqueId))
+      .map(result -> {
+        if (result instanceof ApiToNodeGetProcessInformationResult) {
+          return new DefaultEmbeddedProcessWrapper(((ApiToNodeGetProcessInformationResult) result).getProcessInformation());
+        }
 
-                return null;
-            });
-    }
+        return null;
+      });
+  }
 
-    @NotNull
-    @Override
-    public ProcessBuilder createProcess() {
-        return new DefaultEmbeddedProcessBuilder();
-    }
+  @NotNull
+  @Override
+  public ProcessBuilder createProcess() {
+    return new DefaultEmbeddedProcessBuilder();
+  }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Collection<ProcessInformation> getProcesses() {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessInformationObjects())
-            .map(result -> {
-                if (result instanceof ApiToNodeGetProcessInformationObjectsResult) {
-                    return ((ApiToNodeGetProcessInformationObjectsResult) result).getProcessInformation();
-                }
+  @NotNull
+  @Override
+  public @UnmodifiableView Collection<ProcessInformation> getProcesses() {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessInformationObjects())
+      .map(result -> {
+        if (result instanceof ApiToNodeGetProcessInformationObjectsResult) {
+          return ((ApiToNodeGetProcessInformationObjectsResult) result).getProcessInformation();
+        }
 
-                return new ArrayList<ProcessInformation>();
-            }).orElseGet(Collections::emptyList);
-    }
+        return new ArrayList<ProcessInformation>();
+      }).orElseGet(Collections::emptyList);
+  }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Collection<ProcessInformation> getProcessesByProcessGroup(@NotNull String processGroup) {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessInformationObjectsByProcessGroup(processGroup))
-            .map(result -> {
-                if (result instanceof ApiToNodeGetProcessInformationObjectsResult) {
-                    return ((ApiToNodeGetProcessInformationObjectsResult) result).getProcessInformation();
-                }
+  @NotNull
+  @Override
+  public @UnmodifiableView Collection<ProcessInformation> getProcessesByProcessGroup(@NotNull String processGroup) {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessInformationObjectsByProcessGroup(processGroup))
+      .map(result -> {
+        if (result instanceof ApiToNodeGetProcessInformationObjectsResult) {
+          return ((ApiToNodeGetProcessInformationObjectsResult) result).getProcessInformation();
+        }
 
-                return new ArrayList<ProcessInformation>();
-            }).orElseGet(Collections::emptyList);
-    }
+        return new ArrayList<ProcessInformation>();
+      }).orElseGet(Collections::emptyList);
+  }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Collection<ProcessInformation> getProcessesByMainGroup(@NotNull String mainGroup) {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessInformationObjectsByMainGroup(mainGroup))
-            .map(result -> {
-                if (result instanceof ApiToNodeGetProcessInformationObjectsResult) {
-                    return ((ApiToNodeGetProcessInformationObjectsResult) result).getProcessInformation();
-                }
+  @NotNull
+  @Override
+  public @UnmodifiableView Collection<ProcessInformation> getProcessesByMainGroup(@NotNull String mainGroup) {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessInformationObjectsByMainGroup(mainGroup))
+      .map(result -> {
+        if (result instanceof ApiToNodeGetProcessInformationObjectsResult) {
+          return ((ApiToNodeGetProcessInformationObjectsResult) result).getProcessInformation();
+        }
 
-                return new ArrayList<ProcessInformation>();
-            }).orElseGet(Collections::emptyList);
-    }
+        return new ArrayList<ProcessInformation>();
+      }).orElseGet(Collections::emptyList);
+  }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Collection<ProcessInformation> getProcessesByVersion(@NotNull Version version) {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessInformationObjectsByVersion(version))
-            .map(result -> {
-                if (result instanceof ApiToNodeGetProcessInformationObjectsResult) {
-                    return ((ApiToNodeGetProcessInformationObjectsResult) result).getProcessInformation();
-                }
+  @NotNull
+  @Override
+  public @UnmodifiableView Collection<ProcessInformation> getProcessesByVersion(@NotNull Version version) {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessInformationObjectsByVersion(version))
+      .map(result -> {
+        if (result instanceof ApiToNodeGetProcessInformationObjectsResult) {
+          return ((ApiToNodeGetProcessInformationObjectsResult) result).getProcessInformation();
+        }
 
-                return new ArrayList<ProcessInformation>();
-            }).orElseGet(Collections::emptyList);
-    }
+        return new ArrayList<ProcessInformation>();
+      }).orElseGet(Collections::emptyList);
+  }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Collection<UUID> getProcessUniqueIds() {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessUniqueIds())
-            .map(result -> {
-                if (result instanceof ApiToNodeGetProcessUniqueIdsResult) {
-                    return ((ApiToNodeGetProcessUniqueIdsResult) result).getUniqueIds();
-                }
+  @NotNull
+  @Override
+  public @UnmodifiableView Collection<UUID> getProcessUniqueIds() {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessUniqueIds())
+      .map(result -> {
+        if (result instanceof ApiToNodeGetProcessUniqueIdsResult) {
+          return ((ApiToNodeGetProcessUniqueIdsResult) result).getUniqueIds();
+        }
 
-                return new ArrayList<UUID>();
-            }).orElseGet(Collections::emptyList);
-    }
+        return new ArrayList<UUID>();
+      }).orElseGet(Collections::emptyList);
+  }
 
-    @Override
-    public long getProcessCount() {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessCount())
-            .map(result -> {
-                if (result instanceof ApiToNodeGetProcessCountResult) {
-                    return ((ApiToNodeGetProcessCountResult) result).getResult();
-                }
+  @Override
+  public long getProcessCount() {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessCount())
+      .map(result -> {
+        if (result instanceof ApiToNodeGetProcessCountResult) {
+          return ((ApiToNodeGetProcessCountResult) result).getResult();
+        }
 
-                return 0L;
-            }).orElseGet(() -> 0L);
-    }
+        return 0L;
+      }).orElseGet(() -> 0L);
+  }
 
-    @Override
-    public long getProcessCount(@NotNull String processGroup) {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessCountByProcessGroup(processGroup))
-            .map(result -> {
-                if (result instanceof ApiToNodeGetProcessCountResult) {
-                    return ((ApiToNodeGetProcessCountResult) result).getResult();
-                }
+  @Override
+  public long getProcessCount(@NotNull String processGroup) {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessCountByProcessGroup(processGroup))
+      .map(result -> {
+        if (result instanceof ApiToNodeGetProcessCountResult) {
+          return ((ApiToNodeGetProcessCountResult) result).getResult();
+        }
 
-                return 0L;
-            }).orElseGet(() -> 0L);
-    }
+        return 0L;
+      }).orElseGet(() -> 0L);
+  }
 
-    @Override
-    public void updateProcessInformation(@NotNull ProcessInformation processInformation) {
-        Embedded.getInstance().sendPacket(new ApiToNodeUpdateProcessInformation(processInformation));
-    }
+  @Override
+  public void updateProcessInformation(@NotNull ProcessInformation processInformation) {
+    Embedded.getInstance().sendPacket(new ApiToNodeUpdateProcessInformation(processInformation));
+  }
 }

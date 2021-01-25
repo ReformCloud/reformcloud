@@ -36,52 +36,52 @@ import java.util.UUID;
 
 public class NukkitPlayerAPIExecutor extends PlayerAPIExecutor {
 
-    @Override
-    public void executeSendMessage(UUID player, String message) {
-        Server.getInstance().getPlayer(player).ifPresent(val -> val.sendMessage(message));
+  @Override
+  public void executeSendMessage(UUID player, String message) {
+    Server.getInstance().getPlayer(player).ifPresent(val -> val.sendMessage(message));
+  }
+
+  @Override
+  public void executeKickPlayer(UUID player, String message) {
+    Server.getInstance().getPlayer(player).ifPresent(val -> val.kick(message));
+  }
+
+  @Override
+  public void executePlaySound(UUID player, String sound, float f1, float f2) {
+    Sound nukkitSound = EnumUtil.findEnumFieldByName(Sound.class, sound).orElse(null);
+    if (nukkitSound == null) {
+      return;
     }
 
-    @Override
-    public void executeKickPlayer(UUID player, String message) {
-        Server.getInstance().getPlayer(player).ifPresent(val -> val.kick(message));
+    Server.getInstance().getPlayer(player).ifPresent(val -> val.getLevel().addSound(val.getLocation(), nukkitSound, f1, f2, val));
+  }
+
+  @Override
+  public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
+    Server.getInstance().getPlayer(player).ifPresent(val -> val.sendTitle(title, subTitle, fadeIn, stay, fadeOut));
+  }
+
+  @Override
+  public void executePlayEffect(UUID player, String entityEffect) {
+    ParticleEffect effect = EnumUtil.findEnumFieldByName(ParticleEffect.class, entityEffect).orElse(null);
+    if (effect == null) {
+      return;
     }
 
-    @Override
-    public void executePlaySound(UUID player, String sound, float f1, float f2) {
-        Sound nukkitSound = EnumUtil.findEnumFieldByName(Sound.class, sound).orElse(null);
-        if (nukkitSound == null) {
-            return;
-        }
+    Server.getInstance().getPlayer(player).ifPresent(val -> val.getLevel().addParticleEffect(val.getLocation(), effect));
+  }
 
-        Server.getInstance().getPlayer(player).ifPresent(val -> val.getLevel().addSound(val.getLocation(), nukkitSound, f1, f2, val));
-    }
+  @Override
+  public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
+    Server.getInstance().getPlayer(player).ifPresent(val -> {
+      Level level = Server.getInstance().getLevelByName(world);
+      if (level != null) {
+        val.teleport(new Location(x, y, z, yaw, pitch, level));
+      }
+    });
+  }
 
-    @Override
-    public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
-        Server.getInstance().getPlayer(player).ifPresent(val -> val.sendTitle(title, subTitle, fadeIn, stay, fadeOut));
-    }
-
-    @Override
-    public void executePlayEffect(UUID player, String entityEffect) {
-        ParticleEffect effect = EnumUtil.findEnumFieldByName(ParticleEffect.class, entityEffect).orElse(null);
-        if (effect == null) {
-            return;
-        }
-
-        Server.getInstance().getPlayer(player).ifPresent(val -> val.getLevel().addParticleEffect(val.getLocation(), effect));
-    }
-
-    @Override
-    public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
-        Server.getInstance().getPlayer(player).ifPresent(val -> {
-            Level level = Server.getInstance().getLevelByName(world);
-            if (level != null) {
-                val.teleport(new Location(x, y, z, yaw, pitch, level));
-            }
-        });
-    }
-
-    @Override
-    public void executeConnect(UUID player, String server) {
-    }
+  @Override
+  public void executeConnect(UUID player, String server) {
+  }
 }

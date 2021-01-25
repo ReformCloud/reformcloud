@@ -33,13 +33,13 @@ import systems.reformcloud.reformcloud2.permissions.nukkit.NukkitUtil;
 
 public class NukkitPermissionListener implements Listener {
 
-    @EventHandler
-    public void handle(final PlayerLoginEvent event) {
-        NukkitUtil.inject(event.getPlayer());
-    }
+  @EventHandler
+  public void handle(final PlayerLoginEvent event) {
+    NukkitUtil.inject(event.getPlayer());
+  }
 
-    @EventHandler
-    public void handle(final PlayerQuitEvent event) {
-        PermissionManagement.getInstance().handleDisconnect(event.getPlayer().getUniqueId());
-    }
+  @EventHandler
+  public void handle(final PlayerQuitEvent event) {
+    PermissionManagement.getInstance().handleDisconnect(event.getPlayer().getUniqueId());
+  }
 }

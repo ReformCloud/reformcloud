@@ -27,180 +27,185 @@ package systems.reformcloud.reformcloud2.node.factory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
-import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
-import systems.reformcloud.reformcloud2.executor.api.process.NetworkInfo;
+import systems.reformcloud.reformcloud2.executor.api.network.address.NetworkAddress;
+import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.process.detail.ProcessDetail;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.NodeProcessWrapper;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.node.process.DefaultNodeProcessProvider;
+import systems.reformcloud.reformcloud2.shared.process.DefaultIdentity;
+import systems.reformcloud.reformcloud2.shared.process.DefaultProcessInformation;
+import systems.reformcloud.reformcloud2.shared.process.DefaultProcessRuntimeInformation;
 
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DefaultProcessFactory implements ProcessFactory {
 
-    private final DefaultNodeProcessProvider defaultNodeProcessProvider;
+  private final DefaultNodeProcessProvider defaultNodeProcessProvider;
 
-    public DefaultProcessFactory(DefaultNodeProcessProvider defaultNodeProcessProvider) {
-        this.defaultNodeProcessProvider = defaultNodeProcessProvider;
+  public DefaultProcessFactory(DefaultNodeProcessProvider defaultNodeProcessProvider) {
+    this.defaultNodeProcessProvider = defaultNodeProcessProvider;
+  }
+
+  @Override
+  public @NotNull Task<ProcessInformation> buildProcessInformation(@NotNull ProcessFactoryConfiguration configuration) {
+    return NodeExecutor.getInstance().getTaskScheduler().queue(() -> {
+      Template template = configuration.getTemplate() == null ? this.nextTemplate(configuration.getProcessGroup()) : configuration.getTemplate();
+      if (template == null) {
+        System.err.println(TranslationHolder.translateDef("process-unable-to-find-template", configuration.getProcessGroup().getName()));
+        return null;
+      }
+
+      NodeInformation nodeInformation = this.getNode(configuration.getNode()).orElseGet(() -> this.getBestNode(configuration.getProcessGroup()));
+      if (nodeInformation == null) {
+        System.err.println(TranslationHolder.translateDef("process-unable-to-find-node", configuration.getProcessGroup().getName()));
+        return null;
+      }
+
+      int id = this.nextId(configuration.getProcessGroup().getName(), configuration.getId() <= 0 ? 1 : configuration.getId());
+      UUID processUniqueId = this.preventCollision(configuration.getProcessUniqueId());
+
+      ProcessInformation processInformation = new DefaultProcessInformation(
+        configuration.getExtra(),
+        new DefaultIdentity(
+          configuration.getProcessGroup().getName() + template.getServerNameSplitter() + id,
+          configuration.getDisplayName() != null ? configuration.getDisplayName() : configuration.getProcessGroup().getName()
+            + (configuration.getProcessGroup().showIdInName() ? template.getServerNameSplitter() + id : ""),
+          processUniqueId,
+          id,
+          nodeInformation.getName(),
+          nodeInformation.getUniqueId()
+        ),
+        NetworkAddress.address(
+          nodeInformation.getProcessStartHost().getHost(),
+          this.nextPort(configuration.getTemplate().getVersion().getDefaultStartPort())
+        ),
+        configuration.getTemplate(),
+        configuration.getProcessGroup(),
+        DefaultProcessRuntimeInformation.EMPTY,
+        new CopyOnWriteArrayList<>(),
+        ProcessState.CREATED,
+        configuration.getInitialState(),
+        configuration.getInclusions()
+      );
+
+      this.defaultNodeProcessProvider.registerProcess(processInformation);
+      ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessRegister(processInformation);
+
+      return processInformation;
+    });
+  }
+
+  @Override
+  public boolean isDefault() {
+    return true;
+  }
+
+  @NotNull
+  @Override
+  public String getName() {
+    return DefaultProcessFactory.class.getName();
+  }
+
+  private @NotNull Optional<NodeInformation> getNode(@Nullable String nodeName) {
+    if (nodeName == null) {
+      return Optional.empty();
     }
 
-    @Override
-    public @NotNull Task<ProcessInformation> buildProcessInformation(@NotNull ProcessFactoryConfiguration configuration) {
-        return NodeExecutor.getInstance().getTaskScheduler().queue(() -> {
-            DefaultTemplate template = configuration.getTemplate() == null ? this.nextTemplate(configuration.getProcessGroup()) : configuration.getTemplate();
-            if (template == null) {
-                System.err.println(TranslationHolder.translate("process-unable-to-find-template", configuration.getProcessGroup().getName()));
-                return null;
-            }
+    return ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(nodeName).map(NodeProcessWrapper::getNodeInformation);
+  }
 
-            DefaultNodeInformation nodeInformation = this.getNode(configuration.getNode()).orElseGet(() -> this.getBestNode(configuration.getProcessGroup()));
-            if (nodeInformation == null) {
-                System.err.println(TranslationHolder.translate("process-unable-to-find-node", configuration.getProcessGroup().getName()));
-                return null;
-            }
+  private @Nullable NodeInformation getBestNode(@NotNull ProcessGroup processGroup) {
+    NodeInformation best = null;
+    for (NodeInformation node : ExecutorAPI.getInstance().getNodeInformationProvider().getNodes()) {
+      if (!processGroup.getStartupConfiguration().getStartingNodes().isEmpty()
+        && !processGroup.getStartupConfiguration().getStartingNodes().contains(node.getName())) {
+        continue;
+      }
 
-            int memory = MemoryCalculator.calcMemory(configuration.getProcessGroup().getName(), template);
-            int id = this.nextId(configuration.getProcessGroup().getName(), configuration.getId() <= 0 ? 1 : configuration.getId());
-            UUID processUniqueId = this.preventCollision(configuration.getProcessUniqueId());
+      if (best == null) {
+        best = node;
+        continue;
+      }
 
-            ProcessInformation processInformation = new ProcessInformation(new ProcessDetail(
-                processUniqueId,
-                nodeInformation.getNodeUniqueID(),
-                nodeInformation.getName(),
-                configuration.getProcessGroup().getName() + template.getServerNameSplitter() + id,
-                configuration.getDisplayName() != null ? configuration.getDisplayName() : configuration.getProcessGroup().getName()
-                    + (configuration.getProcessGroup().isShowIdInName() ? template.getServerNameSplitter() + id : ""),
-                id,
-                template,
-                configuration.getMemory() == -1 ? memory : configuration.getMemory(),
-                configuration.getInitialState()
-            ), new NetworkInfo(
-                this.nextPort(configuration.getProcessGroup().getStartupConfiguration().getStartPort())
-            ), configuration.getProcessGroup(), configuration.getExtra(), configuration.getInclusions());
-
-            if (configuration.getMaxPlayers() >= 0) {
-                processInformation.updateMaxPlayers(configuration.getMaxPlayers());
-            } else if (configuration.getProcessGroup().getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
-                processInformation.updateMaxPlayers(configuration.getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers());
-            }
-
-            this.defaultNodeProcessProvider.registerProcess(processInformation);
-            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessRegister(processInformation);
-
-            return processInformation;
-        });
-    }
-
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
-
-    @NotNull
-    @Override
-    public String getName() {
-        return DefaultProcessFactory.class.getName();
-    }
-
-    private @NotNull Optional<DefaultNodeInformation> getNode(@Nullable String nodeName) {
-        if (nodeName == null) {
-            return Optional.empty();
+      if (node.getUsedMemory() < best.getUsedMemory()) {
+        if (node.getProcessRuntimeInformation().getCpuUsageSystem() == -1 || best.getProcessRuntimeInformation().getCpuUsageSystem() == -1) {
+          best = node;
+          continue;
         }
 
-        return ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(nodeName).map(NodeProcessWrapper::getNodeInformation);
+        if (node.getProcessRuntimeInformation().getCpuUsageSystem() < best.getProcessRuntimeInformation().getCpuUsageSystem()) {
+          best = node;
+        }
+      }
     }
 
-    private @Nullable DefaultNodeInformation getBestNode(@NotNull DefaultProcessGroup processGroup) {
-        DefaultNodeInformation best = null;
+    return best;
+  }
 
-        for (DefaultNodeInformation node : ExecutorAPI.getInstance().getNodeInformationProvider().getNodes()) {
-            if (!processGroup.getStartupConfiguration().isSearchBestClientAlone()
-                && !processGroup.getStartupConfiguration().getUseOnlyTheseClients().contains(node.getName())) {
-                continue;
-            }
+  private int nextId(@NotNull String groupName, int beginId) {
+    Collection<Integer> ids = MoreCollections.map(
+      ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(groupName),
+      processInformation -> processInformation.getId().getId()
+    );
 
-            if (best == null) {
-                best = node;
-                continue;
-            }
-
-            if (node.getUsedMemory() < best.getUsedMemory()) {
-                if (node.getProcessRuntimeInformation().getCpuUsageSystem() == -1 || best.getProcessRuntimeInformation().getCpuUsageSystem() == -1) {
-                    best = node;
-                    continue;
-                }
-
-                if (node.getProcessRuntimeInformation().getCpuUsageSystem() < best.getProcessRuntimeInformation().getCpuUsageSystem()) {
-                    best = node;
-                }
-            }
-        }
-
-        return best;
+    while (ids.contains(beginId)) {
+      beginId++;
     }
 
-    private int nextId(@NotNull String groupName, int beginId) {
-        Collection<Integer> ids = Streams.map(
-            ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(groupName),
-            processInformation -> processInformation.getProcessDetail().getId()
-        );
+    return beginId;
+  }
 
-        while (ids.contains(beginId)) {
-            beginId++;
-        }
+  private int nextPort(int start) {
+    Collection<Integer> ports = MoreCollections.map(
+      ExecutorAPI.getInstance().getProcessProvider().getProcesses(),
+      processInformation -> processInformation.getHost().getPort()
+    );
 
-        return beginId;
+    int port = start;
+    while (ports.contains(port)) {
+      port++;
     }
 
-    private int nextPort(int start) {
-        Collection<Integer> ports = Streams.map(
-            ExecutorAPI.getInstance().getProcessProvider().getProcesses(),
-            processInformation -> processInformation.getNetworkInfo().getPort()
-        );
+    return port;
+  }
 
-        int port = start;
-        while (ports.contains(port)) {
-            port++;
-        }
-
-        return port;
+  private @Nullable Template nextTemplate(@NotNull ProcessGroup processGroup) {
+    if (processGroup.getTemplates().isEmpty()) {
+      return null;
     }
 
-    private @Nullable DefaultTemplate nextTemplate(@NotNull DefaultProcessGroup processGroup) {
-        if (processGroup.getTemplates().isEmpty()) {
-            return null;
-        }
+    Template result = null;
+    for (Template template : processGroup.getTemplates()) {
+      if (template.isGlobal()) {
+        continue;
+      }
 
-        DefaultTemplate result = null;
-        for (DefaultTemplate template : processGroup.getTemplates()) {
-            if (template.isGlobal()) {
-                continue;
-            }
-
-            if (result == null) {
-                result = template;
-            } else if (result.getPriority() < template.getPriority()) {
-                result = template;
-            }
-        }
-
-        return result;
+      if (result == null) {
+        result = template;
+      } else if (result.getPriority() < template.getPriority()) {
+        result = template;
+      }
     }
 
-    private @NotNull UUID preventCollision(@NotNull UUID current) {
-        while (ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(current).isPresent()) {
-            current = UUID.randomUUID();
-        }
+    return result;
+  }
 
-        return current;
+  private @NotNull UUID preventCollision(@NotNull UUID current) {
+    while (ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(current).isPresent()) {
+      current = UUID.randomUUID();
     }
+
+    return current;
+  }
 }

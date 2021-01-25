@@ -50,94 +50,96 @@ import java.util.concurrent.TimeUnit;
 
 public final class PlayerListenerHandler {
 
-    @Subscribe(order = PostOrder.FIRST)
-    public void handle(final @NotNull ServerPreConnectEvent event) {
-        if (event.getPlayer().getCurrentServer().isEmpty()) {
-            SharedPlayerFallbackFilter.filterFallback(
-                event.getPlayer().getUniqueId(),
-                this.getServerController().getCachedLobbyServers(),
-                event.getPlayer()::hasPermission,
-                VelocityFallbackExtraFilter.INSTANCE,
-                null
-            ).ifPresentOrElse(processInformation -> {
-                Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(processInformation.getProcessDetail().getName());
-                if (server.isEmpty()) {
-                    event.getPlayer().disconnect(VelocityExecutor.SERIALIZER.deserialize(VelocityExecutor.getInstance().getIngameMessages().format(
-                        VelocityExecutor.getInstance().getIngameMessages().getNoHubServerAvailable()
-                    )));
-                } else {
-                    event.setResult(ServerPreConnectEvent.ServerResult.allowed(server.get()));
-                }
-            }, () -> {
-                event.getPlayer().disconnect(VelocityExecutor.SERIALIZER.deserialize(VelocityExecutor.getInstance().getIngameMessages().format(
-                    VelocityExecutor.getInstance().getIngameMessages().getNoHubServerAvailable()
-                )));
-            });
+  @Subscribe(order = PostOrder.FIRST)
+  public void handle(final @NotNull ServerPreConnectEvent event) {
+    if (!event.getPlayer().getCurrentServer().isPresent()) {
+      final Optional<ProcessInformation> fallback = SharedPlayerFallbackFilter.filterFallback(
+        event.getPlayer().getUniqueId(),
+        this.getServerController().getCachedLobbyServers(),
+        event.getPlayer()::hasPermission,
+        VelocityFallbackExtraFilter.INSTANCE,
+        null
+      );
+      if (fallback.isPresent()) {
+        Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(fallback.get().getName());
+        if (!server.isPresent()) {
+          event.getPlayer().disconnect(VelocityExecutor.SERIALIZER.deserialize(VelocityExecutor.getInstance().getIngameMessages().format(
+            VelocityExecutor.getInstance().getIngameMessages().getNoHubServerAvailable()
+          )));
+        } else {
+          event.setResult(ServerPreConnectEvent.ServerResult.allowed(server.get()));
         }
+      } else {
+        event.getPlayer().disconnect(VelocityExecutor.SERIALIZER.deserialize(VelocityExecutor.getInstance().getIngameMessages().format(
+          VelocityExecutor.getInstance().getIngameMessages().getNoHubServerAvailable()
+        )));
+      }
+    }
+  }
+
+  @Subscribe(order = PostOrder.FIRST)
+  public void handle(final @NotNull LoginEvent event) {
+    if (!Embedded.getInstance().isReady()) {
+      event.setResult(ResultedEvent.ComponentResult.denied(VelocityExecutor.SERIALIZER.deserialize(VelocityExecutor.getInstance().getIngameMessages().format(
+        VelocityExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
+      ))));
+      return;
     }
 
-    @Subscribe(order = PostOrder.FIRST)
-    public void handle(final @NotNull LoginEvent event) {
-        if (!Embedded.getInstance().isReady()) {
-            event.setResult(ResultedEvent.ComponentResult.denied(VelocityExecutor.SERIALIZER.deserialize(VelocityExecutor.getInstance().getIngameMessages().format(
-                VelocityExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
-            ))));
-            return;
-        }
-
-        Entry2<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
-            event.getPlayer()::hasPermission,
-            VelocityExecutor.getInstance().getIngameMessages(),
-            this.getServerController().getCachedProxies(),
-            event.getPlayer().getUniqueId(),
-            event.getPlayer().getUsername()
-        );
-        if (!checked.getFirst() && checked.getSecond() != null) {
-            event.setResult(ResultedEvent.ComponentResult.denied(VelocityExecutor.SERIALIZER.deserialize(checked.getSecond())));
-        }
+    Entry2<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
+      event.getPlayer()::hasPermission,
+      VelocityExecutor.getInstance().getIngameMessages(),
+      this.getServerController().getCachedProxies(),
+      event.getPlayer().getUniqueId(),
+      event.getPlayer().getUsername()
+    );
+    if (!checked.getFirst() && checked.getSecond() != null) {
+      event.setResult(ResultedEvent.ComponentResult.denied(VelocityExecutor.SERIALIZER.deserialize(checked.getSecond())));
     }
+  }
 
-    @Subscribe(order = PostOrder.FIRST)
-    public void handle(final @NotNull KickedFromServerEvent event) {
-        SharedPlayerFallbackFilter.filterFallback(
-            event.getPlayer().getUniqueId(),
-            this.getServerController().getCachedLobbyServers(),
-            event.getPlayer()::hasPermission,
-            VelocityFallbackExtraFilter.INSTANCE,
-            event.getPlayer().getCurrentServer().map(e -> e.getServerInfo().getName()).orElse(null)
-        ).ifPresentOrElse(processInformation -> {
-            Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(processInformation.getProcessDetail().getName());
-            if (server.isEmpty()) {
-                event.setResult(KickedFromServerEvent.DisconnectPlayer.create(VelocityExecutor.SERIALIZER.deserialize(
-                    VelocityExecutor.getInstance().getIngameMessages().format(VelocityExecutor.getInstance().getIngameMessages().getNoHubServerAvailable())
-                )));
-            } else {
-                event.setResult(KickedFromServerEvent.RedirectPlayer.create(server.get()));
-                event.getServerKickReason().ifPresent(reason -> event.getPlayer().sendMessage(Identity.nil(), reason));
-            }
-        }, () -> event.setResult(KickedFromServerEvent.DisconnectPlayer.create(VelocityExecutor.SERIALIZER.deserialize(
-            VelocityExecutor.getInstance().getIngameMessages().format(VelocityExecutor.getInstance().getIngameMessages().getNoHubServerAvailable())
-        ))));
+  @Subscribe(order = PostOrder.FIRST)
+  public void handle(final @NotNull KickedFromServerEvent event) {
+    final Optional<ProcessInformation> fallback = SharedPlayerFallbackFilter.filterFallback(
+      event.getPlayer().getUniqueId(),
+      this.getServerController().getCachedLobbyServers(),
+      event.getPlayer()::hasPermission,
+      VelocityFallbackExtraFilter.INSTANCE,
+      event.getPlayer().getCurrentServer().map(e -> e.getServerInfo().getName()).orElse(null)
+    );
+    if (fallback.isPresent()) {
+      Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(fallback.get().getName());
+      if (!server.isPresent()) {
+        event.setResult(KickedFromServerEvent.DisconnectPlayer.create(VelocityExecutor.SERIALIZER.deserialize(
+          VelocityExecutor.getInstance().getIngameMessages().format(VelocityExecutor.getInstance().getIngameMessages().getNoHubServerAvailable())
+        )));
+      } else {
+        event.setResult(KickedFromServerEvent.RedirectPlayer.create(server.get()));
+        event.getServerKickReason().ifPresent(reason -> event.getPlayer().sendMessage(Identity.nil(), reason));
+      }
+    } else {
+      event.setResult(KickedFromServerEvent.DisconnectPlayer.create(VelocityExecutor.SERIALIZER.deserialize(
+        VelocityExecutor.getInstance().getIngameMessages().format(VelocityExecutor.getInstance().getIngameMessages().getNoHubServerAvailable())
+      )));
     }
+  }
 
-    @Subscribe(order = PostOrder.FIRST)
-    public void handle(final DisconnectEvent event) {
-        VelocityExecutor.getInstance().getProxyServer().getScheduler().buildTask(VelocityExecutor.getInstance().getPlugin(), () -> {
-            ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-            if (VelocityExecutor.getInstance().getProxyServer().getPlayerCount() < current.getProcessDetail().getMaxPlayers()
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
-                current.getProcessDetail().setProcessState(ProcessState.READY);
-            }
+  @Subscribe(order = PostOrder.FIRST)
+  public void handle(final DisconnectEvent event) {
+    VelocityExecutor.getInstance().getProxyServer().getScheduler().buildTask(VelocityExecutor.getInstance().getPlugin(), () -> {
+      ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
+      if (VelocityExecutor.getInstance().getProxyServer().getPlayerCount() < Embedded.getInstance().getMaxPlayers()
+        && !current.getCurrentState().equals(ProcessState.READY)
+        && !current.getCurrentState().equals(ProcessState.INVISIBLE)) {
+        current.setCurrentState(ProcessState.READY);
+      }
 
-            current.updateRuntimeInformation();
-            current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
+      current.getPlayers().removeIf(player -> player.getUniqueID().equals(event.getPlayer().getUniqueId()));
+      Embedded.getInstance().updateCurrentProcessInformation();
+    }).delay(20, TimeUnit.MILLISECONDS).schedule();
+  }
 
-            Embedded.getInstance().updateCurrentProcessInformation();
-        }).delay(20, TimeUnit.MILLISECONDS).schedule();
-    }
-
-    private @NotNull ProxyServerController getServerController() {
-        return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class);
-    }
+  private @NotNull ProxyServerController getServerController() {
+    return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class);
+  }
 }

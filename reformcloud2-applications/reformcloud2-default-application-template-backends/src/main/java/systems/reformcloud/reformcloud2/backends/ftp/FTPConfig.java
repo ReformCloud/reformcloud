@@ -26,49 +26,49 @@ package systems.reformcloud.reformcloud2.backends.ftp;
 
 public final class FTPConfig {
 
-    private final boolean sslEnabled;
-    private final boolean enabled;
-    private final String host;
-    private final int port;
-    private final String user;
-    private final String password;
-    private final String baseDirectory;
+  private final boolean sslEnabled;
+  private final boolean enabled;
+  private final String host;
+  private final int port;
+  private final String user;
+  private final String password;
+  private final String baseDirectory;
 
-    public FTPConfig(boolean sslEnabled, boolean enabled, String host, int port, String user, String password, String baseDirectory) {
-        this.sslEnabled = sslEnabled;
-        this.enabled = enabled;
-        this.host = host;
-        this.port = port;
-        this.user = user;
-        this.password = password;
-        this.baseDirectory = baseDirectory;
-    }
+  public FTPConfig(boolean sslEnabled, boolean enabled, String host, int port, String user, String password, String baseDirectory) {
+    this.sslEnabled = sslEnabled;
+    this.enabled = enabled;
+    this.host = host;
+    this.port = port;
+    this.user = user;
+    this.password = password;
+    this.baseDirectory = baseDirectory;
+  }
 
-    public boolean isSslEnabled() {
-        return this.sslEnabled;
-    }
+  public boolean isSslEnabled() {
+    return this.sslEnabled;
+  }
 
-    public boolean isEnabled() {
-        return this.enabled;
-    }
+  public boolean isEnabled() {
+    return this.enabled;
+  }
 
-    public String getHost() {
-        return this.host;
-    }
+  public String getHost() {
+    return this.host;
+  }
 
-    public int getPort() {
-        return this.port;
-    }
+  public int getPort() {
+    return this.port;
+  }
 
-    public String getUser() {
-        return this.user;
-    }
+  public String getUser() {
+    return this.user;
+  }
 
-    public String getPassword() {
-        return this.password;
-    }
+  public String getPassword() {
+    return this.password;
+  }
 
-    public String getBaseDirectory() {
-        return this.baseDirectory;
-    }
+  public String getBaseDirectory() {
+    return this.baseDirectory;
+  }
 }

@@ -39,47 +39,47 @@ import java.util.UUID;
 
 public class DefaultEmbeddedPlayerProvider implements PlayerProvider {
 
-    @Override
-    public boolean isPlayerOnline(@NotNull String name) {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeIsPlayerOnlineByName(name))
-            .map(result -> {
-                if (result instanceof ApiToNodeIsPlayerOnlineResult) {
-                    return ((ApiToNodeIsPlayerOnlineResult) result).isOnline();
-                }
+  @Override
+  public boolean isPlayerOnline(@NotNull String name) {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeIsPlayerOnlineByName(name))
+      .map(result -> {
+        if (result instanceof ApiToNodeIsPlayerOnlineResult) {
+          return ((ApiToNodeIsPlayerOnlineResult) result).isOnline();
+        }
 
-                return false;
-            }).orElseGet(() -> false);
-    }
+        return false;
+      }).orElseGet(() -> false);
+  }
 
-    @Override
-    public boolean isPlayerOnline(@NotNull UUID uniqueId) {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeIsPlayerOnlineByUniqueId(uniqueId))
-            .map(result -> {
-                if (result instanceof ApiToNodeIsPlayerOnlineResult) {
-                    return ((ApiToNodeIsPlayerOnlineResult) result).isOnline();
-                }
+  @Override
+  public boolean isPlayerOnline(@NotNull UUID uniqueId) {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeIsPlayerOnlineByUniqueId(uniqueId))
+      .map(result -> {
+        if (result instanceof ApiToNodeIsPlayerOnlineResult) {
+          return ((ApiToNodeIsPlayerOnlineResult) result).isOnline();
+        }
 
-                return false;
-            }).orElseGet(() -> false);
-    }
+        return false;
+      }).orElseGet(() -> false);
+  }
 
-    @NotNull
-    @Override
-    public Optional<PlayerWrapper> getPlayer(@NotNull String name) {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetPlayerUniqueIdFromName(name))
-            .map(result -> {
-                if (result instanceof ApiToNodeGetPlayerUniqueIdFromNameResult) {
-                    UUID uniqueId = ((ApiToNodeGetPlayerUniqueIdFromNameResult) result).getUniqueId();
-                    return Optional.<PlayerWrapper>of(new DefaultEmbeddedPlayerWrapper(uniqueId));
-                }
+  @NotNull
+  @Override
+  public Optional<PlayerWrapper> getPlayer(@NotNull String name) {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetPlayerUniqueIdFromName(name))
+      .map(result -> {
+        if (result instanceof ApiToNodeGetPlayerUniqueIdFromNameResult) {
+          UUID uniqueId = ((ApiToNodeGetPlayerUniqueIdFromNameResult) result).getUniqueId();
+          return Optional.<PlayerWrapper>of(new DefaultEmbeddedPlayerWrapper(uniqueId));
+        }
 
-                return Optional.<PlayerWrapper>empty();
-            }).orElseGet(Optional::empty);
-    }
+        return Optional.<PlayerWrapper>empty();
+      }).orElseGet(Optional::empty);
+  }
 
-    @NotNull
-    @Override
-    public Optional<PlayerWrapper> getPlayer(@NotNull UUID uniqueId) {
-        return Optional.of(new DefaultEmbeddedPlayerWrapper(uniqueId));
-    }
+  @NotNull
+  @Override
+  public Optional<PlayerWrapper> getPlayer(@NotNull UUID uniqueId) {
+    return Optional.of(new DefaultEmbeddedPlayerWrapper(uniqueId));
+  }
 }

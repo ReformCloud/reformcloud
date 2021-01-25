@@ -27,8 +27,8 @@ package systems.reformcloud.reformcloud2.node.protocol;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
@@ -57,7 +57,7 @@ public class NodeToNodeProcessScreenLines extends ProtocolPacket {
     @Override
     public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
         for (String line : this.newLines) {
-            System.out.println(TranslationHolder.translate(
+            System.out.println(TranslationHolder.translateDef(
                 "screen-line-added",
                 this.processName,
                 this.nodeName,

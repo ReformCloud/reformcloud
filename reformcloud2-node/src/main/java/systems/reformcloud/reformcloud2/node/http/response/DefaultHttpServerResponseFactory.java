@@ -36,20 +36,20 @@ import systems.reformcloud.reformcloud2.node.http.DefaultHeaders;
 
 public class DefaultHttpServerResponseFactory extends HttpServerResponseFactory {
 
-    private DefaultHttpServerResponseFactory() {
-    }
+  private DefaultHttpServerResponseFactory() {
+  }
 
-    public static void init() {
-        HttpServerResponseFactory.DEFAULT_FACTORY.set(new DefaultHttpServerResponseFactory());
-    }
+  public static void init() {
+    HttpServerResponseFactory.DEFAULT_FACTORY.set(new DefaultHttpServerResponseFactory());
+  }
 
-    @Override
-    public @NotNull ListeningHttpServerResponse<?> response(@NotNull HttpRequest<?> request) {
-        return this.response(request.httpVersion(), new DefaultHeaders(new DefaultHttpHeaders()), request.result());
-    }
+  @Override
+  public @NotNull ListeningHttpServerResponse<?> response(@NotNull HttpRequest<?> request) {
+    return this.response(request.httpVersion(), new DefaultHeaders(new DefaultHttpHeaders()), request.result());
+  }
 
-    @Override
-    public @NotNull ListeningHttpServerResponse<?> response(@NotNull HttpVersion httpVersion, @NotNull Headers headers, @NotNull DecodeResult decodeResult) {
-        return new DefaultListeningHttpServerResponse(httpVersion, headers, decodeResult);
-    }
+  @Override
+  public @NotNull ListeningHttpServerResponse<?> response(@NotNull HttpVersion httpVersion, @NotNull Headers headers, @NotNull DecodeResult decodeResult) {
+    return new DefaultListeningHttpServerResponse(httpVersion, headers, decodeResult);
+  }
 }

@@ -32,7 +32,7 @@ import systems.reformcloud.reformcloud2.executor.api.http.HttpVersion;
 import systems.reformcloud.reformcloud2.executor.api.http.cookie.CookieHolder;
 import systems.reformcloud.reformcloud2.executor.api.http.cookie.HttpCookie;
 import systems.reformcloud.reformcloud2.executor.api.http.decode.DecodeResult;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
 import systems.reformcloud.reformcloud2.node.http.DefaultHttpInformation;
 import systems.reformcloud.reformcloud2.node.http.InstanceHolder;
 
@@ -43,38 +43,38 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 public abstract class DefaultCookieHolder<T extends CookieHolder<T>> extends DefaultHttpInformation<T> implements CookieHolder<T>, InstanceHolder<T> {
 
-    private final Collection<HttpCookie> cookies;
+  private final Collection<HttpCookie> cookies;
 
-    protected DefaultCookieHolder(HttpVersion httpVersion, Headers headers, DecodeResult decodeResult) {
-        super(httpVersion, headers, decodeResult);
-        this.cookies = headers.get(HttpHeaderNames.COOKIE.toString()).map(CookieCoder::decode).orElseGet(() -> new CopyOnWriteArraySet<>());
-    }
+  protected DefaultCookieHolder(HttpVersion httpVersion, Headers headers, DecodeResult decodeResult) {
+    super(httpVersion, headers, decodeResult);
+    this.cookies = headers.get(HttpHeaderNames.COOKIE.toString()).map(CookieCoder::decode).orElseGet(() -> new CopyOnWriteArraySet<>());
+  }
 
-    @Override
-    public @NotNull Optional<HttpCookie> cookie(@NotNull String name) {
-        return Optional.ofNullable(Streams.filter(this.cookies, cookie -> cookie.name().equals(name)));
-    }
+  @Override
+  public @NotNull Optional<HttpCookie> cookie(@NotNull String name) {
+    return Optional.ofNullable(MoreCollections.filter(this.cookies, cookie -> cookie.name().equals(name)));
+  }
 
-    @Override
-    public @NotNull Collection<HttpCookie> cookies() {
-        return this.cookies;
-    }
+  @Override
+  public @NotNull Collection<HttpCookie> cookies() {
+    return this.cookies;
+  }
 
-    @Override
-    public @NotNull T cookie(@NotNull HttpCookie cookie) {
-        this.cookies.add(cookie);
-        return this.self();
-    }
+  @Override
+  public @NotNull T cookie(@NotNull HttpCookie cookie) {
+    this.cookies.add(cookie);
+    return this.self();
+  }
 
-    @Override
-    public @NotNull T cookies(@NonNls HttpCookie... cookies) {
-        this.cookies.addAll(Arrays.asList(cookies));
-        return this.self();
-    }
+  @Override
+  public @NotNull T cookies(@NonNls HttpCookie... cookies) {
+    this.cookies.addAll(Arrays.asList(cookies));
+    return this.self();
+  }
 
-    @Override
-    public @NotNull T cookies(@NotNull Collection<HttpCookie> cookies) {
-        this.cookies.addAll(cookies);
-        return this.self();
-    }
+  @Override
+  public @NotNull T cookies(@NotNull Collection<HttpCookie> cookies) {
+    this.cookies.addAll(cookies);
+    return this.self();
+  }
 }

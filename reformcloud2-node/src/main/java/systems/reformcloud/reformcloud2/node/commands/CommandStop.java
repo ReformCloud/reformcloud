@@ -31,14 +31,14 @@ import systems.reformcloud.reformcloud2.node.NodeExecutor;
 
 public final class CommandStop implements Command {
 
-    @Override
-    public void process(@NotNull CommandSender sender, String[] strings, @NotNull String commandLine) {
-        try {
-            NodeExecutor.getInstance().shutdown();
-        } catch (Exception exception) {
-            System.err.println("An exception occurred during system shutdown. Forcing");
-            exception.printStackTrace();
-            Runtime.getRuntime().halt(-1);
-        }
+  @Override
+  public void process(@NotNull CommandSender sender, String[] strings, @NotNull String commandLine) {
+    try {
+      NodeExecutor.getInstance().shutdown();
+    } catch (Exception exception) {
+      System.err.println("An exception occurred during system shutdown. Forcing");
+      exception.printStackTrace();
+      Runtime.getRuntime().halt(-1);
     }
+  }
 }

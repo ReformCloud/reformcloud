@@ -35,38 +35,38 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 
 public final class SpigotExecutor extends Embedded {
 
-    private static SpigotExecutor instance;
-    private final JavaPlugin plugin;
+  private static SpigotExecutor instance;
+  private final JavaPlugin plugin;
 
-    SpigotExecutor(JavaPlugin plugin) {
-        super.type = ExecutorType.API;
-        PlayerAPIExecutor.setInstance(new SpigotPlayerAPIExecutor());
+  SpigotExecutor(JavaPlugin plugin) {
+    super.type = ExecutorType.API;
+    PlayerAPIExecutor.setInstance(new SpigotPlayerAPIExecutor());
 
-        instance = this;
-        this.plugin = plugin;
+    instance = this;
+    this.plugin = plugin;
 
-        this.fixInvalidPlayers();
-    }
+    this.fixInvalidPlayers();
+  }
 
-    @NotNull
-    public static SpigotExecutor getInstance() {
-        return instance;
-    }
+  @NotNull
+  public static SpigotExecutor getInstance() {
+    return instance;
+  }
 
-    @Override
-    protected int getMaxPlayersOfEnvironment() {
-        return Bukkit.getMaxPlayers();
-    }
+  @Override
+  protected int getMaxPlayersOfEnvironment() {
+    return Bukkit.getMaxPlayers();
+  }
 
-    @NotNull
-    public JavaPlugin getPlugin() {
-        return this.plugin;
-    }
+  @NotNull
+  public JavaPlugin getPlugin() {
+    return this.plugin;
+  }
 
-    private void fixInvalidPlayers() {
-        SharedInvalidPlayerFixer.start(
-            uuid -> Bukkit.getPlayer(uuid) != null,
-            () -> Bukkit.getOnlinePlayers().size()
-        );
-    }
+  private void fixInvalidPlayers() {
+    SharedInvalidPlayerFixer.start(
+      uuid -> Bukkit.getPlayer(uuid) != null,
+      () -> Bukkit.getOnlinePlayers().size()
+    );
+  }
 }

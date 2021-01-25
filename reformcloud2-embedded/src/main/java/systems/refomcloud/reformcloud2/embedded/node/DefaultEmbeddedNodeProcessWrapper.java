@@ -27,7 +27,7 @@ package systems.refomcloud.reformcloud2.embedded.node;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
-import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
+import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.NodeProcessWrapper;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeCompleteCommandLine;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeDispatchCommandLine;
@@ -42,57 +42,57 @@ import java.util.Optional;
 
 public class DefaultEmbeddedNodeProcessWrapper implements NodeProcessWrapper {
 
-    private DefaultNodeInformation nodeInformation;
+  private NodeInformation nodeInformation;
 
-    DefaultEmbeddedNodeProcessWrapper(DefaultNodeInformation nodeInformation) {
-        this.nodeInformation = nodeInformation;
-    }
+  DefaultEmbeddedNodeProcessWrapper(NodeInformation nodeInformation) {
+    this.nodeInformation = nodeInformation;
+  }
 
-    @NotNull
-    @Override
-    public DefaultNodeInformation getNodeInformation() {
-        return this.nodeInformation;
-    }
+  @NotNull
+  @Override
+  public NodeInformation getNodeInformation() {
+    return this.nodeInformation;
+  }
 
-    @NotNull
-    @Override
-    public Optional<DefaultNodeInformation> requestNodeInformationUpdate() {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeRequestNodeInformationUpdate(this.nodeInformation.getNodeUniqueID()))
-            .map(result -> {
-                if (result instanceof ApiToNodeGetNodeInformationResult) {
-                    ApiToNodeGetNodeInformationResult packet = (ApiToNodeGetNodeInformationResult) result;
-                    return packet.getNodeInformation() == null
-                        ? Optional.<DefaultNodeInformation>empty()
-                        : Optional.of(this.nodeInformation = packet.getNodeInformation());
-                }
+  @NotNull
+  @Override
+  public Optional<NodeInformation> requestNodeInformationUpdate() {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeRequestNodeInformationUpdate(this.nodeInformation.getUniqueId()))
+      .map(result -> {
+        if (result instanceof ApiToNodeGetNodeInformationResult) {
+          ApiToNodeGetNodeInformationResult packet = (ApiToNodeGetNodeInformationResult) result;
+          return packet.getNodeInformation() == null
+            ? Optional.<NodeInformation>empty()
+            : Optional.of(this.nodeInformation = packet.getNodeInformation());
+        }
 
-                return Optional.<DefaultNodeInformation>empty();
-            }).orElseGet(Optional::empty);
-    }
+        return Optional.<NodeInformation>empty();
+      }).orElseGet(Optional::empty);
+  }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Collection<String> sendCommandLine(@NotNull String commandLine) {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeDispatchCommandLine(this.nodeInformation.getNodeUniqueID(), commandLine))
-            .map(result -> {
-                if (result instanceof ApiToNodeGetStringCollectionResult) {
-                    return ((ApiToNodeGetStringCollectionResult) result).getResult();
-                }
+  @NotNull
+  @Override
+  public @UnmodifiableView Collection<String> sendCommandLine(@NotNull String commandLine) {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeDispatchCommandLine(this.nodeInformation.getUniqueId(), commandLine))
+      .map(result -> {
+        if (result instanceof ApiToNodeGetStringCollectionResult) {
+          return ((ApiToNodeGetStringCollectionResult) result).getResult();
+        }
 
-                return new ArrayList<String>();
-            }).orElseGet(Collections::emptyList);
-    }
+        return new ArrayList<String>();
+      }).orElseGet(Collections::emptyList);
+  }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Collection<String> tabCompleteCommandLine(@NotNull String commandLine) {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeCompleteCommandLine(this.nodeInformation.getNodeUniqueID(), commandLine))
-            .map(result -> {
-                if (result instanceof ApiToNodeGetStringCollectionResult) {
-                    return ((ApiToNodeGetStringCollectionResult) result).getResult();
-                }
+  @NotNull
+  @Override
+  public @UnmodifiableView Collection<String> tabCompleteCommandLine(@NotNull String commandLine) {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeCompleteCommandLine(this.nodeInformation.getUniqueId(), commandLine))
+      .map(result -> {
+        if (result instanceof ApiToNodeGetStringCollectionResult) {
+          return ((ApiToNodeGetStringCollectionResult) result).getResult();
+        }
 
-                return new ArrayList<String>();
-            }).orElseGet(Collections::emptyList);
-    }
+        return new ArrayList<String>();
+      }).orElseGet(Collections::emptyList);
+  }
 }

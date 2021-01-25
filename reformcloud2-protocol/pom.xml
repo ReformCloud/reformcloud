@@ -16,7 +16,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-codec</artifactId>
-            <version>4.1.54.Final</version>
+            <version>4.1.58.Final</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
@@ -47,7 +47,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>3.6.0</version>
+            <version>3.7.7</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -35,45 +35,45 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 
 public class SpongeExecutor extends Embedded {
 
-    private static SpongeExecutor instance;
-    private final SpongeLauncher plugin;
-    private final SpongeExecutorService executorService;
+  private static SpongeExecutor instance;
+  private final SpongeLauncher plugin;
+  private final SpongeExecutorService executorService;
 
-    SpongeExecutor(SpongeLauncher launcher) {
-        super.type = ExecutorType.API;
-        PlayerAPIExecutor.setInstance(new SpongePlayerExecutor());
+  SpongeExecutor(SpongeLauncher launcher) {
+    super.type = ExecutorType.API;
+    PlayerAPIExecutor.setInstance(new SpongePlayerExecutor());
 
-        this.plugin = launcher;
-        this.executorService = Sponge.getScheduler().createSyncExecutor(launcher);
-        instance = this;
+    this.plugin = launcher;
+    this.executorService = Sponge.getScheduler().createSyncExecutor(launcher);
+    instance = this;
 
-        this.fixInvalidPlayers();
-    }
+    this.fixInvalidPlayers();
+  }
 
-    @NotNull
-    public static SpongeExecutor getInstance() {
-        return instance;
-    }
+  @NotNull
+  public static SpongeExecutor getInstance() {
+    return instance;
+  }
 
-    @Override
-    protected int getMaxPlayersOfEnvironment() {
-        return Sponge.getServer().getMaxPlayers();
-    }
+  @Override
+  protected int getMaxPlayersOfEnvironment() {
+    return Sponge.getServer().getMaxPlayers();
+  }
 
-    @NotNull
-    public SpongeLauncher getPlugin() {
-        return this.plugin;
-    }
+  @NotNull
+  public SpongeLauncher getPlugin() {
+    return this.plugin;
+  }
 
-    @NotNull
-    public SpongeExecutorService getExecutorService() {
-        return this.executorService;
-    }
+  @NotNull
+  public SpongeExecutorService getExecutorService() {
+    return this.executorService;
+  }
 
-    private void fixInvalidPlayers() {
-        SharedInvalidPlayerFixer.start(
-            uuid -> Sponge.getServer().getPlayer(uuid).isPresent(),
-            () -> Sponge.getServer().getOnlinePlayers().size()
-        );
-    }
+  private void fixInvalidPlayers() {
+    SharedInvalidPlayerFixer.start(
+      uuid -> Sponge.getServer().getPlayer(uuid).isPresent(),
+      () -> Sponge.getServer().getOnlinePlayers().size()
+    );
+  }
 }

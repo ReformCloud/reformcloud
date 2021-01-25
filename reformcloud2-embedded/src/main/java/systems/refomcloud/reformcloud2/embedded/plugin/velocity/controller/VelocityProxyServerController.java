@@ -38,89 +38,89 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class VelocityProxyServerController implements ProxyServerController {
 
-    private final ProxyServer proxyServer;
-    private final List<ProcessInformation> cachedProxies = new CopyOnWriteArrayList<>();
-    private final List<ProcessInformation> cachedLobbies = new CopyOnWriteArrayList<>();
+  private final ProxyServer proxyServer;
+  private final List<ProcessInformation> cachedProxies = new CopyOnWriteArrayList<>();
+  private final List<ProcessInformation> cachedLobbies = new CopyOnWriteArrayList<>();
 
-    public VelocityProxyServerController(ProxyServer proxyServer) {
-        this.proxyServer = proxyServer;
+  public VelocityProxyServerController(ProxyServer proxyServer) {
+    this.proxyServer = proxyServer;
+  }
+
+  @Override
+  public void registerProcess(@NotNull ProcessInformation processInformation) {
+    if (processInformation.getPrimaryTemplate().getVersion().getVersionType().isProxy()) {
+      this.cachedProxies.add(processInformation);
+      return;
     }
 
-    @Override
-    public void registerProcess(@NotNull ProcessInformation processInformation) {
-        if (!processInformation.getProcessDetail().getTemplate().isServer()) {
-            this.cachedProxies.add(processInformation);
-            return;
-        }
-
-        if (!processInformation.getNetworkInfo().isConnected()) {
-            return;
-        }
-
-        if (processInformation.getProcessGroup().isCanBeUsedAsLobby()) {
-            this.cachedLobbies.add(processInformation);
-        }
-
-        ServerInfo serverInfo = new ServerInfo(
-            processInformation.getProcessDetail().getName(),
-            processInformation.getNetworkInfo().toInet()
-        );
-        this.proxyServer.registerServer(serverInfo);
+    if (!processInformation.getCurrentState().isOnline()) {
+      return;
     }
 
-    @Override
-    public void handleProcessUpdate(@NotNull ProcessInformation processInformation) {
-        if (!processInformation.getNetworkInfo().isConnected()) {
-            this.cachedProxies.removeIf(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()));
-            this.cachedLobbies.removeIf(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()));
-            this.proxyServer.getServer(processInformation.getProcessDetail().getName())
-                .map(RegisteredServer::getServerInfo)
-                .ifPresent(this.proxyServer::unregisterServer);
-            return;
-        }
-
-        if (!processInformation.getProcessDetail().getTemplate().isServer()) {
-            this.cachedProxies.removeIf(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()));
-            this.cachedProxies.add(processInformation);
-            return;
-        }
-
-        if (processInformation.getProcessGroup().isCanBeUsedAsLobby()) {
-            this.cachedLobbies.removeIf(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()));
-            this.cachedLobbies.add(processInformation);
-        }
-
-        if (this.proxyServer.getServer(processInformation.getProcessDetail().getName()).isPresent()) {
-            return;
-        }
-
-        ServerInfo serverInfo = new ServerInfo(
-            processInformation.getProcessDetail().getName(),
-            processInformation.getNetworkInfo().toInet()
-        );
-        this.proxyServer.registerServer(serverInfo);
+    if (processInformation.getProcessGroup().isLobbyGroup()) {
+      this.cachedLobbies.add(processInformation);
     }
 
-    @Override
-    public void unregisterProcess(@NotNull ProcessInformation processInformation) {
-        if (!processInformation.getProcessDetail().getTemplate().isServer()) {
-            this.cachedProxies.removeIf(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()));
-            return;
-        }
+    ServerInfo serverInfo = new ServerInfo(
+      processInformation.getName(),
+      processInformation.getHost().toInetSocketAddress()
+    );
+    this.proxyServer.registerServer(serverInfo);
+  }
 
-        this.cachedLobbies.removeIf(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()));
-        this.proxyServer.getServer(processInformation.getProcessDetail().getName())
-            .map(RegisteredServer::getServerInfo)
-            .ifPresent(this.proxyServer::unregisterServer);
+  @Override
+  public void handleProcessUpdate(@NotNull ProcessInformation processInformation) {
+    if (!processInformation.getCurrentState().isOnline()) {
+      this.cachedProxies.removeIf(e -> e.getId().getUniqueId().equals(processInformation.getId().getUniqueId()));
+      this.cachedLobbies.removeIf(e -> e.getId().getUniqueId().equals(processInformation.getId().getUniqueId()));
+      this.proxyServer.getServer(processInformation.getName())
+        .map(RegisteredServer::getServerInfo)
+        .ifPresent(this.proxyServer::unregisterServer);
+      return;
     }
 
-    @Override
-    public @NotNull @UnmodifiableView List<ProcessInformation> getCachedLobbyServers() {
-        return Collections.unmodifiableList(this.cachedLobbies);
+    if (processInformation.getPrimaryTemplate().getVersion().getVersionType().isProxy()) {
+      this.cachedProxies.removeIf(e -> e.getId().getUniqueId().equals(processInformation.getId().getUniqueId()));
+      this.cachedProxies.add(processInformation);
+      return;
     }
 
-    @Override
-    public @NotNull @UnmodifiableView List<ProcessInformation> getCachedProxies() {
-        return Collections.unmodifiableList(this.cachedProxies);
+    if (processInformation.getProcessGroup().isLobbyGroup()) {
+      this.cachedLobbies.removeIf(e -> e.getId().getUniqueId().equals(processInformation.getId().getUniqueId()));
+      this.cachedLobbies.add(processInformation);
     }
+
+    if (this.proxyServer.getServer(processInformation.getName()).isPresent()) {
+      return;
+    }
+
+    ServerInfo serverInfo = new ServerInfo(
+      processInformation.getName(),
+      processInformation.getHost().toInetSocketAddress()
+    );
+    this.proxyServer.registerServer(serverInfo);
+  }
+
+  @Override
+  public void unregisterProcess(@NotNull ProcessInformation processInformation) {
+    if (processInformation.getPrimaryTemplate().getVersion().getVersionType().isProxy()) {
+      this.cachedProxies.removeIf(e -> e.getId().getUniqueId().equals(processInformation.getId().getUniqueId()));
+      return;
+    }
+
+    this.cachedLobbies.removeIf(e -> e.getId().getUniqueId().equals(processInformation.getId().getUniqueId()));
+    this.proxyServer.getServer(processInformation.getName())
+      .map(RegisteredServer::getServerInfo)
+      .ifPresent(this.proxyServer::unregisterServer);
+  }
+
+  @Override
+  public @NotNull @UnmodifiableView List<ProcessInformation> getCachedLobbyServers() {
+    return Collections.unmodifiableList(this.cachedLobbies);
+  }
+
+  @Override
+  public @NotNull @UnmodifiableView List<ProcessInformation> getCachedProxies() {
+    return Collections.unmodifiableList(this.cachedProxies);
+  }
 }

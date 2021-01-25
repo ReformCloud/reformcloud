@@ -151,7 +151,6 @@ public interface Configurable<X, V extends Configurable<X, V>> extends Cloneable
     @NotNull
     String toPrettyString();
 
-    @NotNull
     byte[] toPrettyBytes();
 
     @NotNull

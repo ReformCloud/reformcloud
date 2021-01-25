@@ -22,16 +22,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.application.updater.basic;
+package systems.reformcloud.reformcloud2.executor.api.application;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
 
-public abstract class DefaultApplicationUpdateRepository implements ApplicationUpdateRepository {
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 
-    @NotNull
+public final class AppClassLoader extends URLClassLoader {
+
+    static {
+        ClassLoader.registerAsParallelCapable();
+    }
+
+    public AppClassLoader(@NotNull URL[] urls, @NotNull ClassLoader parent) {
+        super(urls, parent);
+    }
+
     @Override
-    public String getName() {
-        return "ReformCloud-Internal";
+    public void close() {
+        try {
+            super.close();
+        } catch (final IOException ignored) {
+        }
     }
 }

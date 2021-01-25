@@ -29,37 +29,37 @@ import systems.reformcloud.reformcloud2.node.NodeExecutor;
 
 public final class SentryLoggingLoader {
 
-    private SentryLoggingLoader() {
-        throw new UnsupportedOperationException();
+  private SentryLoggingLoader() {
+    throw new UnsupportedOperationException();
+  }
+
+  public static void loadSentryLogging(@NotNull NodeExecutor nodeExecutor) {
+    if (!Boolean.getBoolean("systems.reformcloud.IKnownWhatIDid")) {
+      if (nodeExecutor.getNodeConfig().isSendAnonymousErrorReports()) {
+        printEnabledMessage();
+      } else {
+        printDisabledMessage();
+      }
     }
 
-    public static void loadSentryLogging(@NotNull NodeExecutor nodeExecutor) {
-        if (!Boolean.getBoolean("systems.reformcloud.IKnownWhatIDid")) {
-            if (nodeExecutor.getNodeConfig().isSendAnonymousErrorReports()) {
-                printEnabledMessage();
-            } else {
-                printDisabledMessage();
-            }
-        }
+    SentryErrorReporter.init(nodeExecutor);
+  }
 
-        SentryErrorReporter.init(nodeExecutor);
-    }
+  private static void printEnabledMessage() {
+    System.out.println("ReformCloud is collecting anonymous user data if an error occurs to fix them faster as before");
+    System.out.println("That included the running user-name, the os version, the java-version, some memory information " +
+      "and the error itself");
+    System.out.println("If don't want to help us fixing bugs much faster than before, set \"sendAnonymousErrorReports\" in the node " +
+      "configuration file to \"false\"");
+    System.out.println("If you don't want to see this message anymore append \"-Dsystems.reformcloud.IKnownWhatIDid=true\" " +
+      "to the startup script");
+    System.out.println("Thank you helping us out!");
+  }
 
-    private static void printEnabledMessage() {
-        System.out.println("ReformCloud is collecting anonymous user data if an error occurs to fix them faster as before");
-        System.out.println("That included the running user-name, the os version, the java-version, some memory information " +
-            "and the error itself");
-        System.out.println("If don't want to help us fixing bugs much faster than before, set \"sendAnonymousErrorReports\" in the node " +
-            "configuration file to \"false\"");
-        System.out.println("If you don't want to see this message anymore append \"-Dsystems.reformcloud.IKnownWhatIDid=true\" " +
-            "to the startup script");
-        System.out.println("Thank you helping us out!");
-    }
-
-    private static void printDisabledMessage() {
-        System.out.println("Sending anonymous user data is disabled!");
-        System.out.println("If you had changed your mind set  \"sendAnonymousErrorReports\" in the node " + "configuration file to \"true\"");
-        System.out.println("If you don't want to see this message anymore append \"-Dsystems.reformcloud.IKnownWhatIDid=true\" " +
-            "to the startup script");
-    }
+  private static void printDisabledMessage() {
+    System.out.println("Sending anonymous user data is disabled!");
+    System.out.println("If you had changed your mind set  \"sendAnonymousErrorReports\" in the node " + "configuration file to \"true\"");
+    System.out.println("If you don't want to see this message anymore append \"-Dsystems.reformcloud.IKnownWhatIDid=true\" " +
+      "to the startup script");
+  }
 }

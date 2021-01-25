@@ -26,6 +26,7 @@ package systems.refomcloud.reformcloud2.embedded.shared;
 
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.player.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.process.Player;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
@@ -40,40 +41,36 @@ import java.util.function.Supplier;
 
 public final class SharedInvalidPlayerFixer {
 
-    private SharedInvalidPlayerFixer() {
-        throw new UnsupportedOperationException();
-    }
+  private SharedInvalidPlayerFixer() {
+    throw new UnsupportedOperationException();
+  }
 
-    public static void start(@NotNull Function<UUID, Boolean> onlineChecker, @NotNull Supplier<Integer> onlineCountSupplier) {
-        Constants.SINGLE_THREAD_SCHEDULED_EXECUTOR.scheduleAtFixedRate(() -> {
-            ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-            Collection<UUID> forRemoval = new ArrayList<>();
+  public static void start(@NotNull Function<UUID, Boolean> onlineChecker, @NotNull Supplier<Integer> onlineCountSupplier) {
+    Constants.SINGLE_THREAD_SCHEDULED_EXECUTOR.scheduleAtFixedRate(() -> {
+      ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
+      Collection<Player> forRemoval = new ArrayList<>();
 
-            for (Player onlinePlayer : current.getProcessPlayerManager().getOnlinePlayers()) {
-                if (onlinePlayer.getJoined() + TimeUnit.SECONDS.toMillis(5) > System.currentTimeMillis()
-                    || onlineChecker.apply(onlinePlayer.getUniqueID())) {
-                    continue;
-                }
+      for (Player onlinePlayer : current.getPlayers()) {
+        if (onlinePlayer.getJoined() + TimeUnit.SECONDS.toMillis(5) > System.currentTimeMillis() || onlineChecker.apply(onlinePlayer.getUniqueID())) {
+          continue;
+        }
+        forRemoval.add(onlinePlayer);
+      }
 
-                forRemoval.add(onlinePlayer.getUniqueID());
-            }
+      if (forRemoval.isEmpty()) {
+        return;
+      }
 
-            if (forRemoval.isEmpty()) {
-                return;
-            }
+      current.getPlayers().removeAll(forRemoval);
 
-            for (UUID uuid : forRemoval) {
-                current.getProcessPlayerManager().onLogout(uuid);
-            }
+      final PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
+      if (configuration.isUsePlayerLimit() && onlineCountSupplier.get() < configuration.getMaxPlayers()
+        && !current.getCurrentState().equals(ProcessState.READY)
+        && !current.getCurrentState().equals(ProcessState.INVISIBLE)) {
+        current.setCurrentState(ProcessState.READY);
+      }
 
-            if (onlineCountSupplier.get() < current.getProcessDetail().getMaxPlayers()
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
-                current.getProcessDetail().setProcessState(ProcessState.READY);
-            }
-
-            current.updateRuntimeInformation();
-            Embedded.getInstance().updateCurrentProcessInformation();
-        }, 2, 2, TimeUnit.SECONDS);
-    }
+      Embedded.getInstance().updateCurrentProcessInformation();
+    }, 2, 2, TimeUnit.SECONDS);
+  }
 }

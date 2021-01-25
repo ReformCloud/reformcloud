@@ -33,42 +33,42 @@ import systems.reformcloud.reformcloud2.permissions.sponge.subject.base.system.S
 
 public class FactorySubject extends AbstractSpongeSubject {
 
-    private static final SubjectData DATA = new SystemSubjectData();
-    private final String id;
-    private final PermissionService service;
-    private final SubjectCollection source;
+  private static final SubjectData DATA = new SystemSubjectData();
+  private final String id;
+  private final PermissionService service;
+  private final SubjectCollection source;
 
-    public FactorySubject(String id, PermissionService service, SubjectCollection source) {
-        this.id = id;
-        this.service = service;
-        this.source = source;
-    }
+  public FactorySubject(String id, PermissionService service, SubjectCollection source) {
+    this.id = id;
+    this.service = service;
+    this.source = source;
+  }
 
-    @Override
-    protected PermissionService service() {
-        return this.service;
-    }
+  @Override
+  protected PermissionService service() {
+    return this.service;
+  }
 
-    @Override
-    protected boolean has(String permission) {
-        return true;
-    }
+  @Override
+  protected boolean has(String permission) {
+    return true;
+  }
 
-    @Override
-    @NotNull
-    public SubjectCollection getContainingCollection() {
-        return this.source;
-    }
+  @Override
+  @NotNull
+  public SubjectCollection getContainingCollection() {
+    return this.source;
+  }
 
-    @Override
-    @NotNull
-    public SubjectData getSubjectData() {
-        return DATA;
-    }
+  @Override
+  @NotNull
+  public SubjectData getSubjectData() {
+    return DATA;
+  }
 
-    @Override
-    @NotNull
-    public String getIdentifier() {
-        return this.id;
-    }
+  @Override
+  @NotNull
+  public String getIdentifier() {
+    return this.id;
+  }
 }

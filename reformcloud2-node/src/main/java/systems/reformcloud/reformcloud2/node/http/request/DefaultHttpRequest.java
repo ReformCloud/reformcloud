@@ -46,127 +46,127 @@ import java.util.Optional;
 
 public class DefaultHttpRequest extends DefaultCookieHolder<DefaultHttpRequest> implements HttpRequest<DefaultHttpRequest> {
 
-    private final byte[] body;
-    private final HttpRequestSource source;
-    private final Map<String, String> pathParameters;
-    private final Map<String, List<String>> queryParameters;
+  private final byte[] body;
+  private final HttpRequestSource source;
+  private final Map<String, String> pathParameters;
+  private final Map<String, List<String>> queryParameters;
 
-    private RequestMethod requestMethod;
-    private String uriString;
-    private String path;
+  private RequestMethod requestMethod;
+  private String uriString;
+  private String path;
 
-    public DefaultHttpRequest(byte[] body, HttpVersion httpVersion, Headers headers, DecodeResult decodeResult, HttpRequestSource source,
-                              RequestMethod requestMethod, String uriString, String path, Map<String, String> pathParameters) {
-        super(httpVersion, headers, decodeResult);
-        this.body = body;
-        this.source = source;
-        this.requestMethod = requestMethod;
-        this.uriString = uriString;
-        this.path = path;
-        this.pathParameters = pathParameters;
-        this.queryParameters = new QueryStringDecoder(this.uri()).parameters();
+  public DefaultHttpRequest(byte[] body, HttpVersion httpVersion, Headers headers, DecodeResult decodeResult, HttpRequestSource source,
+                            RequestMethod requestMethod, String uriString, String path, Map<String, String> pathParameters) {
+    super(httpVersion, headers, decodeResult);
+    this.body = body;
+    this.source = source;
+    this.requestMethod = requestMethod;
+    this.uriString = uriString;
+    this.path = path;
+    this.pathParameters = pathParameters;
+    this.queryParameters = new QueryStringDecoder(this.uri()).parameters();
 
-        headers.get(HttpHeaderNames.COOKIE.toString()).ifPresent(header -> this.cookies(CookieCoder.decode(header)));
-    }
+    headers.get(HttpHeaderNames.COOKIE.toString()).ifPresent(header -> this.cookies(CookieCoder.decode(header)));
+  }
 
-    @Override
-    public @NotNull HttpRequestSource source() {
-        return this.source;
-    }
+  @Override
+  public @NotNull HttpRequestSource source() {
+    return this.source;
+  }
 
-    @Override
-    public @NotNull RequestMethod requestMethod() {
-        return this.requestMethod;
-    }
+  @Override
+  public @NotNull RequestMethod requestMethod() {
+    return this.requestMethod;
+  }
 
-    @Override
-    public @NotNull DefaultHttpRequest requestMethod(@NotNull RequestMethod requestMethod) {
-        this.requestMethod = requestMethod;
-        return this;
-    }
+  @Override
+  public @NotNull DefaultHttpRequest requestMethod(@NotNull RequestMethod requestMethod) {
+    this.requestMethod = requestMethod;
+    return this;
+  }
 
-    @Override
-    public @NotNull String uriString() {
-        return this.uriString;
-    }
+  @Override
+  public @NotNull String uriString() {
+    return this.uriString;
+  }
 
-    @Override
-    public @NotNull URI uri() {
-        return URI.create(this.uriString());
-    }
+  @Override
+  public @NotNull URI uri() {
+    return URI.create(this.uriString());
+  }
 
-    @Override
-    public @NotNull DefaultHttpRequest uri(@NotNull String uri) {
-        this.uriString = uri;
-        return this;
-    }
+  @Override
+  public @NotNull DefaultHttpRequest uri(@NotNull String uri) {
+    this.uriString = uri;
+    return this;
+  }
 
-    @Override
-    public @NotNull String path() {
-        return this.path;
-    }
+  @Override
+  public @NotNull String path() {
+    return this.path;
+  }
 
-    @Override
-    public @NotNull DefaultHttpRequest path(@NotNull String path) {
-        this.path = path;
-        return this;
-    }
+  @Override
+  public @NotNull DefaultHttpRequest path(@NotNull String path) {
+    this.path = path;
+    return this;
+  }
 
-    @Override
-    public @NotNull byte[] body() {
-        return this.body;
-    }
+  @Override
+  public byte[] body() {
+    return this.body;
+  }
 
-    @Override
-    public @NotNull Map<String, String> pathParameters() {
-        return this.pathParameters;
-    }
+  @Override
+  public @NotNull Map<String, String> pathParameters() {
+    return this.pathParameters;
+  }
 
-    @Override
-    public @NotNull Optional<String> pathParameter(@NotNull String name) {
-        return Optional.ofNullable(this.pathParameters.get(name));
-    }
+  @Override
+  public @NotNull Optional<String> pathParameter(@NotNull String name) {
+    return Optional.ofNullable(this.pathParameters.get(name));
+  }
 
-    @Override
-    public @NotNull String pathParameter(@NotNull String name, @NotNull String defaultValue) {
-        return this.pathParameters.getOrDefault(name, defaultValue);
-    }
+  @Override
+  public @NotNull String pathParameter(@NotNull String name, @NotNull String defaultValue) {
+    return this.pathParameters.getOrDefault(name, defaultValue);
+  }
 
-    @Override
-    public @NotNull DefaultHttpRequest setPathParameter(@NotNull String name, @NotNull String value) {
-        this.pathParameters.put(name, value);
-        return this;
-    }
+  @Override
+  public @NotNull DefaultHttpRequest setPathParameter(@NotNull String name, @NotNull String value) {
+    this.pathParameters.put(name, value);
+    return this;
+  }
 
-    @Override
-    public @NotNull Map<String, List<String>> queryParameters() {
-        return this.queryParameters;
-    }
+  @Override
+  public @NotNull Map<String, List<String>> queryParameters() {
+    return this.queryParameters;
+  }
 
-    @Override
-    public @NotNull Optional<List<String>> queryParameter(@NotNull String name) {
-        return Optional.ofNullable(this.queryParameters.get(name));
-    }
+  @Override
+  public @NotNull Optional<List<String>> queryParameter(@NotNull String name) {
+    return Optional.ofNullable(this.queryParameters.get(name));
+  }
 
-    @Override
-    public @NotNull List<String> queryParameter(@NotNull String name, @NotNull List<String> defaultValue) {
-        return this.queryParameters.getOrDefault(name, defaultValue);
-    }
+  @Override
+  public @NotNull List<String> queryParameter(@NotNull String name, @NotNull List<String> defaultValue) {
+    return this.queryParameters.getOrDefault(name, defaultValue);
+  }
 
-    @Override
-    public @NotNull DefaultHttpRequest setQueryParameter(@NotNull String name, @NotNull String value) {
-        this.queryParameters.put(name, new ArrayList<>(Collections.singletonList(value)));
-        return this;
-    }
+  @Override
+  public @NotNull DefaultHttpRequest setQueryParameter(@NotNull String name, @NotNull String value) {
+    this.queryParameters.put(name, new ArrayList<>(Collections.singletonList(value)));
+    return this;
+  }
 
-    @Override
-    public @NotNull DefaultHttpRequest setQueryParameters(@NotNull String name, @NotNull String... value) {
-        this.queryParameters.put(name, new ArrayList<>(Arrays.asList(value)));
-        return this;
-    }
+  @Override
+  public @NotNull DefaultHttpRequest setQueryParameters(@NotNull String name, @NotNull String... value) {
+    this.queryParameters.put(name, new ArrayList<>(Arrays.asList(value)));
+    return this;
+  }
 
-    @Override
-    public @NotNull DefaultHttpRequest self() {
-        return this;
-    }
+  @Override
+  public @NotNull DefaultHttpRequest self() {
+    return this;
+  }
 }

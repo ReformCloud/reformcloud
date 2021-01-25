@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.examples;
 
 import systems.reformcloud.reformcloud2.examples.event.ExampleEventListener;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
+import systems.reformcloud.reformcloud2.executor.api.application.Application;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 
 /**

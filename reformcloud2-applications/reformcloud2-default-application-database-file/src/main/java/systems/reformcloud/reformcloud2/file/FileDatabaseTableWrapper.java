@@ -30,8 +30,8 @@ import de.derklaro.projects.deer.api.provider.DatabaseProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.DatabaseTableWrapper;
+import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -44,127 +44,127 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class FileDatabaseTableWrapper implements DatabaseTableWrapper {
 
-    private final Database<SerializableJsonConfiguration> database;
+  private final Database<SerializableJsonConfiguration> database;
 
-    public FileDatabaseTableWrapper(@NotNull String tableName) {
-        this.database = DatabaseProvider.getDatabaseDriver().getDatabase(
-            Path.of("reformcloud/.database").resolve(tableName).toFile(),
-            SerializableJsonConfiguration::new,
-            1
-        );
+  public FileDatabaseTableWrapper(@NotNull String tableName) {
+    this.database = DatabaseProvider.getDatabaseDriver().getDatabase(
+      Path.of("reformcloud/.database").resolve(tableName).toFile(),
+      SerializableJsonConfiguration::new,
+      1
+    );
+  }
+
+  @Override
+  public void insert(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration data) {
+    Optional<SerializableJsonConfiguration> entry = this.getEntry(key, id);
+    if (entry.isPresent()) {
+      this.database.updateKey(Filters.keyEq(key), new SerializableJsonConfiguration(data));
+    } else {
+      this.database.insert(key, new String[]{id}, new SerializableJsonConfiguration(data));
     }
+  }
 
-    @Override
-    public void insert(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration data) {
-        Optional<SerializableJsonConfiguration> entry = this.getEntry(key, id);
-        if (entry.isPresent()) {
-            this.database.updateKey(Filters.keyEq(key), new SerializableJsonConfiguration(data));
-        } else {
-            this.database.insert(key, new String[]{id}, new SerializableJsonConfiguration(data));
-        }
+  @Override
+  public void update(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration newData) {
+    Optional<SerializableJsonConfiguration> entry = this.getEntry(key, id);
+    if (entry.isPresent()) {
+      this.database.updateKey(Filters.keyEq(key), new SerializableJsonConfiguration(newData));
+    } else {
+      this.database.insert(key, new String[]{id}, new SerializableJsonConfiguration(newData));
     }
+  }
 
-    @Override
-    public void update(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration newData) {
-        Optional<SerializableJsonConfiguration> entry = this.getEntry(key, id);
-        if (entry.isPresent()) {
-            this.database.updateKey(Filters.keyEq(key), new SerializableJsonConfiguration(newData));
-        } else {
-            this.database.insert(key, new String[]{id}, new SerializableJsonConfiguration(newData));
-        }
-    }
+  @Override
+  public void remove(@NotNull String key, @NotNull String id) {
+    this.database.delete(Filters.keyEq(key));
+    this.database.delete(Filters.anyValueMatch(id));
+  }
 
-    @Override
-    public void remove(@NotNull String key, @NotNull String id) {
-        this.database.delete(Filters.keyEq(key));
-        this.database.delete(Filters.anyValueMatch(id));
-    }
+  @Override
+  public @NotNull
+  Optional<JsonConfiguration> get(@NotNull String key, @NotNull String id) {
+    return this.getEntry(key, id).map(result -> new JsonConfiguration(result.getJsonObject()));
+  }
 
-    @Override
-    public @NotNull
-    Optional<JsonConfiguration> get(@NotNull String key, @NotNull String id) {
-        return this.getEntry(key, id).map(result -> new JsonConfiguration(result.getJsonObject()));
-    }
-
-    @Override
-    public @NotNull
-    @UnmodifiableView Collection<String> getEntryNames() {
-        Collection<String> collection = new ArrayList<>();
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.database.getTargetFolder().toPath())) {
-            for (Path path : stream) {
-                if (path.toString().endsWith(".properties")) {
-                    continue;
-                }
-
-                String fileName = path.getFileName().toString();
-                collection.add(fileName.split("-")[0]);
-            }
-        } catch (IOException exception) {
-            exception.printStackTrace();
+  @Override
+  public @NotNull
+  @UnmodifiableView Collection<String> getEntryNames() {
+    Collection<String> collection = new ArrayList<>();
+    try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.database.getTargetFolder().toPath())) {
+      for (Path path : stream) {
+        if (path.toString().endsWith(".properties")) {
+          continue;
         }
 
-        return collection;
+        String fileName = path.getFileName().toString();
+        collection.add(fileName.split("-")[0]);
+      }
+    } catch (IOException exception) {
+      exception.printStackTrace();
     }
 
-    @Override
-    public long count() {
-        AtomicLong atomicLong = new AtomicLong();
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.database.getTargetFolder().toPath())) {
-            for (Path path : stream) {
-                if (path.toString().endsWith(".properties")) {
-                    continue;
-                }
+    return collection;
+  }
 
-                atomicLong.addAndGet(1);
-            }
-        } catch (IOException exception) {
-            exception.printStackTrace();
+  @Override
+  public long count() {
+    AtomicLong atomicLong = new AtomicLong();
+    try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.database.getTargetFolder().toPath())) {
+      for (Path path : stream) {
+        if (path.toString().endsWith(".properties")) {
+          continue;
         }
 
-        return atomicLong.get();
+        atomicLong.addAndGet(1);
+      }
+    } catch (IOException exception) {
+      exception.printStackTrace();
     }
 
-    @Override
-    public void clear() {
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.database.getTargetFolder().toPath())) {
-            for (Path path : stream) {
-                if (path.toString().endsWith(".properties")) {
-                    continue;
-                }
+    return atomicLong.get();
+  }
 
-                IOUtils.deleteFile(path);
-            }
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
-    }
-
-    @Override
-    public @NotNull
-    @UnmodifiableView Collection<JsonConfiguration> getAll() {
-        Collection<JsonConfiguration> collection = new ArrayList<>();
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.database.getTargetFolder().toPath())) {
-            for (Path path : stream) {
-                if (path.toString().endsWith(".properties")) {
-                    continue;
-                }
-
-                collection.add(JsonConfiguration.read(path));
-            }
-        } catch (IOException exception) {
-            exception.printStackTrace();
+  @Override
+  public void clear() {
+    try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.database.getTargetFolder().toPath())) {
+      for (Path path : stream) {
+        if (path.toString().endsWith(".properties")) {
+          continue;
         }
 
-        return collection;
+        IOUtils.deleteFile(path);
+      }
+    } catch (IOException exception) {
+      exception.printStackTrace();
+    }
+  }
+
+  @Override
+  public @NotNull
+  @UnmodifiableView Collection<JsonConfiguration> getAll() {
+    Collection<JsonConfiguration> collection = new ArrayList<>();
+    try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.database.getTargetFolder().toPath())) {
+      for (Path path : stream) {
+        if (path.toString().endsWith(".properties")) {
+          continue;
+        }
+
+        collection.add(JsonConfiguration.read(path));
+      }
+    } catch (IOException exception) {
+      exception.printStackTrace();
     }
 
-    @Override
-    public boolean has(@NotNull String key) {
-        return this.database.getEntry(Filters.keyEq(key)).isPresent();
-    }
+    return collection;
+  }
 
-    private Optional<SerializableJsonConfiguration> getEntry(String key, String id) {
-        Optional<SerializableJsonConfiguration> entry = this.database.getEntry(Filters.keyEq(key));
-        return entry.isPresent() ? entry : this.database.getEntry(Filters.anyValueMatch(id));
-    }
+  @Override
+  public boolean has(@NotNull String key) {
+    return this.database.getEntry(Filters.keyEq(key)).isPresent();
+  }
+
+  private Optional<SerializableJsonConfiguration> getEntry(String key, String id) {
+    Optional<SerializableJsonConfiguration> entry = this.database.getEntry(Filters.keyEq(key));
+    return entry.isPresent() ? entry : this.database.getEntry(Filters.anyValueMatch(id));
+  }
 }

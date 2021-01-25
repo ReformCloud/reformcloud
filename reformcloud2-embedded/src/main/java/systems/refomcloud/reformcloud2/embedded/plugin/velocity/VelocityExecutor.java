@@ -41,55 +41,55 @@ import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
 public final class VelocityExecutor extends Embedded {
 
-    public static final LegacyComponentSerializer SERIALIZER = LegacyComponentSerializer.builder().character('§').extractUrls().build();
+  public static final LegacyComponentSerializer SERIALIZER = LegacyComponentSerializer.builder().character('§').extractUrls().build();
 
-    private static VelocityExecutor instance;
-    private final ProxyServer proxyServer;
-    private final VelocityLauncher plugin;
+  private static VelocityExecutor instance;
+  private final ProxyServer proxyServer;
+  private final VelocityLauncher plugin;
 
-    VelocityExecutor(VelocityLauncher launcher, ProxyServer proxyServer) {
-        super.type = ExecutorType.API;
-        PlayerAPIExecutor.setInstance(new VelocityPlayerAPIExecutor(proxyServer));
+  VelocityExecutor(VelocityLauncher launcher, ProxyServer proxyServer) {
+    super.type = ExecutorType.API;
+    PlayerAPIExecutor.setInstance(new VelocityPlayerAPIExecutor(proxyServer));
 
-        instance = this;
-        this.plugin = launcher;
-        this.proxyServer = proxyServer;
+    instance = this;
+    this.plugin = launcher;
+    this.proxyServer = proxyServer;
 
-        super.getServiceRegistry().setProvider(ProxyServerController.class, new VelocityProxyServerController(proxyServer), true);
-        super.getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ProcessEventHandler());
+    super.getServiceRegistry().setProvider(ProxyServerController.class, new VelocityProxyServerController(proxyServer), true);
+    super.getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ProcessEventHandler());
 
-        for (ProcessInformation process : super.getProcessProvider().getProcesses()) {
-            this.getServiceRegistry().getProviderUnchecked(ProxyServerController.class).registerProcess(process);
-        }
-
-        proxyServer.getEventManager().register(launcher, new PlayerListenerHandler());
-        this.fixInvalidPlayers();
+    for (ProcessInformation process : super.getProcessProvider().getProcesses()) {
+      this.getServiceRegistry().getProviderUnchecked(ProxyServerController.class).registerProcess(process);
     }
 
-    @NotNull
-    public static VelocityExecutor getInstance() {
-        return instance;
-    }
+    proxyServer.getEventManager().register(launcher, new PlayerListenerHandler());
+    this.fixInvalidPlayers();
+  }
 
-    @Override
-    protected int getMaxPlayersOfEnvironment() {
-        return this.proxyServer.getConfiguration().getShowMaxPlayers();
-    }
+  @NotNull
+  public static VelocityExecutor getInstance() {
+    return instance;
+  }
 
-    @NotNull
-    public VelocityLauncher getPlugin() {
-        return this.plugin;
-    }
+  @Override
+  protected int getMaxPlayersOfEnvironment() {
+    return this.proxyServer.getConfiguration().getShowMaxPlayers();
+  }
 
-    @NotNull
-    public ProxyServer getProxyServer() {
-        return this.proxyServer;
-    }
+  @NotNull
+  public VelocityLauncher getPlugin() {
+    return this.plugin;
+  }
 
-    private void fixInvalidPlayers() {
-        SharedInvalidPlayerFixer.start(
-            uuid -> this.proxyServer.getPlayer(uuid).isPresent(),
-            this.proxyServer::getPlayerCount
-        );
-    }
+  @NotNull
+  public ProxyServer getProxyServer() {
+    return this.proxyServer;
+  }
+
+  private void fixInvalidPlayers() {
+    SharedInvalidPlayerFixer.start(
+      uuid -> this.proxyServer.getPlayer(uuid).isPresent(),
+      this.proxyServer::getPlayerCount
+    );
+  }
 }

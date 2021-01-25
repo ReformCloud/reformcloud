@@ -42,55 +42,55 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DefaultSocketFrameListenerRegistry implements SocketFrameListenerRegistry {
 
-    private static final Comparator<SocketFrameListenerRegistryEntry> PRIORITY_COMPARATOR = Comparator.comparingInt(SocketFrameListenerRegistryEntry::priority);
-    private final List<SocketFrameListenerRegistryEntry> listeners = new CopyOnWriteArrayList<>();
+  private static final Comparator<SocketFrameListenerRegistryEntry> PRIORITY_COMPARATOR = Comparator.comparingInt(SocketFrameListenerRegistryEntry::priority);
+  private final List<SocketFrameListenerRegistryEntry> listeners = new CopyOnWriteArrayList<>();
 
-    @Override
-    public @NotNull SocketFrameListenerRegistry registerListeners(@NotNull SocketFrameListener... frameListeners) {
-        try {
-            for (SocketFrameListener listener : frameListeners) {
-                Method handle = listener.getClass().getDeclaredMethod("handleFrame", RequestFrameHolder.class);
+  @Override
+  public @NotNull SocketFrameListenerRegistry registerListeners(@NotNull SocketFrameListener... frameListeners) {
+    try {
+      for (SocketFrameListener listener : frameListeners) {
+        Method handle = listener.getClass().getDeclaredMethod("handleFrame", RequestFrameHolder.class);
 
-                Priority priority = handle.getAnnotation(Priority.class);
-                int handlerPriority = priority == null ? 0 : priority.value();
+        Priority priority = handle.getAnnotation(Priority.class);
+        int handlerPriority = priority == null ? 0 : priority.value();
 
-                FrameTypes frameTypes = handle.getAnnotation(FrameTypes.class);
-                SocketFrameType[] frames = frameTypes == null ? new SocketFrameType[0] : frameTypes.value();
+        FrameTypes frameTypes = handle.getAnnotation(FrameTypes.class);
+        SocketFrameType[] frames = frameTypes == null ? new SocketFrameType[0] : frameTypes.value();
 
-                SocketFrameListenerRegistryEntry entry = new DefaultSocketFrameListenerRegistryEntry(listener, frames, handlerPriority);
-                this.listeners.add(entry);
-            }
-        } catch (NoSuchMethodException exception) {
-            throw new RuntimeException(exception);
-        }
-
-        this.listeners.sort(PRIORITY_COMPARATOR);
-        return this;
+        SocketFrameListenerRegistryEntry entry = new DefaultSocketFrameListenerRegistryEntry(listener, frames, handlerPriority);
+        this.listeners.add(entry);
+      }
+    } catch (NoSuchMethodException exception) {
+      throw new RuntimeException(exception);
     }
 
-    @Override
-    public @NotNull SocketFrameListenerRegistry unregisterListeners(@NotNull SocketFrameListener... frameListeners) {
-        for (SocketFrameListener listener : frameListeners) {
-            this.listeners.removeIf(entry -> entry.getListener().equals(listener));
-        }
+    this.listeners.sort(PRIORITY_COMPARATOR);
+    return this;
+  }
 
-        return this;
+  @Override
+  public @NotNull SocketFrameListenerRegistry unregisterListeners(@NotNull SocketFrameListener... frameListeners) {
+    for (SocketFrameListener listener : frameListeners) {
+      this.listeners.removeIf(entry -> entry.getListener().equals(listener));
     }
 
-    @Override
-    public @NotNull SocketFrameListenerRegistry unregisterListeners(@NotNull SocketFrameType frameType) {
-        this.listeners.removeIf(listener -> Arrays.binarySearch(listener.getHandlingFrameTypes(), frameType) >= 0);
-        return this;
-    }
+    return this;
+  }
 
-    @Override
-    public @NotNull SocketFrameListenerRegistry clearListeners() {
-        this.listeners.clear();
-        return this;
-    }
+  @Override
+  public @NotNull SocketFrameListenerRegistry unregisterListeners(@NotNull SocketFrameType frameType) {
+    this.listeners.removeIf(listener -> Arrays.binarySearch(listener.getHandlingFrameTypes(), frameType) >= 0);
+    return this;
+  }
 
-    @Override
-    public @NotNull @UnmodifiableView List<SocketFrameListenerRegistryEntry> getListeners() {
-        return this.listeners;
-    }
+  @Override
+  public @NotNull SocketFrameListenerRegistry clearListeners() {
+    this.listeners.clear();
+    return this;
+  }
+
+  @Override
+  public @NotNull @UnmodifiableView List<SocketFrameListenerRegistryEntry> getListeners() {
+    return this.listeners;
+  }
 }

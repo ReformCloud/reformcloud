@@ -66,7 +66,6 @@ public final class Platform {
         throw new UnsupportedOperationException();
     }
 
-    @NotNull
     public static long[] getDeadlockedThreads() {
         if (ManagementFactory.getThreadMXBean().isSynchronizerUsageSupported()) {
             long[] deadlockedThreads = ManagementFactory.getThreadMXBean().findDeadlockedThreads();

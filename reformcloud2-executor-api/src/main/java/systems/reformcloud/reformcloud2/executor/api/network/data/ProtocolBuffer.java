@@ -38,11 +38,11 @@ public interface ProtocolBuffer {
 
     @Nullable String readString();
 
-    void writeArray(@NotNull byte[] bytes);
+    void writeArray(byte[] bytes);
 
-    @NotNull byte[] readArray();
+    byte[] readArray();
 
-    @NotNull byte[] toByteArray();
+    byte[] toByteArray();
 
     void writeStringArray(@NotNull Collection<String> list);
 
@@ -56,9 +56,9 @@ public interface ProtocolBuffer {
 
     @NotNull String[] readStringArrays();
 
-    void writeLongArray(@NotNull long[] longs);
+    void writeLongArray(long[] longs);
 
-    @NotNull long[] readLongArray();
+    long[] readLongArray();
 
     <T extends SerializableObject> void writeObject(@Nullable T object);
 

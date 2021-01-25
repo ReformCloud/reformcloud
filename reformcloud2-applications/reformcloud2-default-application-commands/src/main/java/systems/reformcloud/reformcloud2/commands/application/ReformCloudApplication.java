@@ -32,15 +32,15 @@ import systems.reformcloud.reformcloud2.commands.application.update.CommandAddon
 import systems.reformcloud.reformcloud2.commands.config.CommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.packet.PacketReleaseCommandsConfig;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
+import systems.reformcloud.reformcloud2.executor.api.application.Application;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
-import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
+import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -48,56 +48,56 @@ import java.util.Arrays;
 
 public class ReformCloudApplication extends Application {
 
-    private static final ApplicationUpdateRepository REPOSITORY = new CommandAddonUpdater();
-    private static ReformCloudApplication instance;
-    private static CommandsConfig commandsConfig;
+  private static final ApplicationUpdateRepository REPOSITORY = new CommandAddonUpdater();
+  private static ReformCloudApplication instance;
+  private static CommandsConfig commandsConfig;
 
-    public static CommandsConfig getCommandsConfig() {
-        return commandsConfig;
+  public static CommandsConfig getCommandsConfig() {
+    return commandsConfig;
+  }
+
+  public static ReformCloudApplication getInstance() {
+    return instance;
+  }
+
+  @Override
+  public void onLoad() {
+    instance = this;
+  }
+
+  @Override
+  public void onEnable() {
+    final Path path = this.getDataDirectory().resolve("config.json");
+    if (Files.notExists(path)) {
+      IOUtils.createDirectory(path.getParent());
+      new JsonConfiguration()
+        .add("config", new CommandsConfig(
+          true, Arrays.asList("l", "leave", "lobby", "hub", "quit"),
+          true, Arrays.asList("reformcloud", "rc", "cloud")
+        )).write(path);
     }
 
-    public static ReformCloudApplication getInstance() {
-        return instance;
+    commandsConfig = JsonConfiguration.read(path).get("config", new TypeToken<>() {
+    });
+
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketGetCommandsConfig.class);
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ProcessInclusionHandler());
+
+    for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
+      if (registeredChannel.isAuthenticated()) {
+        registeredChannel.sendPacket(new PacketReleaseCommandsConfig(commandsConfig));
+      }
     }
+  }
 
-    @Override
-    public void onLoad() {
-        instance = this;
-    }
+  @Override
+  public void onDisable() {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketIds.RESERVED_EXTRA_BUS + 1);
+  }
 
-    @Override
-    public void onEnable() {
-        final Path path = this.getDataDirectory().resolve("config.json");
-        if (Files.notExists(path)) {
-            IOUtils.createDirectory(path.getParent());
-            new JsonConfiguration()
-                .add("config", new CommandsConfig(
-                    true, Arrays.asList("l", "leave", "lobby", "hub", "quit"),
-                    true, Arrays.asList("reformcloud", "rc", "cloud")
-                )).write(path);
-        }
-
-        commandsConfig = JsonConfiguration.read(path).get("config", new TypeToken<>() {
-        });
-
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketGetCommandsConfig.class);
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ProcessInclusionHandler());
-
-        for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
-            if (registeredChannel.isAuthenticated()) {
-                registeredChannel.sendPacket(new PacketReleaseCommandsConfig(commandsConfig));
-            }
-        }
-    }
-
-    @Override
-    public void onDisable() {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketIds.RESERVED_EXTRA_BUS + 1);
-    }
-
-    @Nullable
-    @Override
-    public ApplicationUpdateRepository getUpdateRepository() {
-        return REPOSITORY;
-    }
+  @Nullable
+  @Override
+  public ApplicationUpdateRepository getUpdateRepository() {
+    return REPOSITORY;
+  }
 }

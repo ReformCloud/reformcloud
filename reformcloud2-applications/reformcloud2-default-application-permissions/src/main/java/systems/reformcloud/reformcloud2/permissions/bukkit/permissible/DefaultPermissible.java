@@ -42,91 +42,91 @@ import java.util.stream.Collectors;
 
 public class DefaultPermissible extends PermissibleBase {
 
-    private final UUID uuid;
+  private final UUID uuid;
 
-    public DefaultPermissible(Player player) {
-        super(player);
-        this.uuid = player.getUniqueId();
+  public DefaultPermissible(Player player) {
+    super(player);
+    this.uuid = player.getUniqueId();
+  }
+
+  @Override
+  public boolean isOp() {
+    return false;
+  }
+
+  @Override
+  public void setOp(boolean value) {
+  }
+
+  @Override
+  public boolean isPermissionSet(@NotNull String name) {
+    return this.hasPermission(name);
+  }
+
+  @Override
+  public boolean isPermissionSet(@NotNull Permission perm) {
+    return this.hasPermission(perm.getName());
+  }
+
+  @Override
+  public boolean hasPermission(@NotNull String name) {
+    if (name.equalsIgnoreCase(Server.BROADCAST_CHANNEL_USERS) || name.equalsIgnoreCase(Server.BROADCAST_CHANNEL_ADMINISTRATIVE)) {
+      return true;
     }
 
-    @Override
-    public boolean isOp() {
-        return false;
-    }
+    return this.has(name);
+  }
 
-    @Override
-    public void setOp(boolean value) {
-    }
+  @Override
+  public boolean hasPermission(@NotNull Permission perm) {
+    return this.hasPermission(perm.getName());
+  }
 
-    @Override
-    public boolean isPermissionSet(@NotNull String name) {
-        return this.hasPermission(name);
-    }
+  @Override
+  @NotNull
+  public PermissionAttachment addAttachment(@NotNull Plugin plugin, @NotNull String name, boolean value) {
+    return new PermissionAttachment(plugin, this);
+  }
 
-    @Override
-    public boolean isPermissionSet(@NotNull Permission perm) {
-        return this.hasPermission(perm.getName());
-    }
+  @Override
+  @NotNull
+  public PermissionAttachment addAttachment(@NotNull Plugin plugin) {
+    return new PermissionAttachment(plugin, this);
+  }
 
-    @Override
-    public boolean hasPermission(@NotNull String name) {
-        if (name.equalsIgnoreCase(Server.BROADCAST_CHANNEL_USERS) || name.equalsIgnoreCase(Server.BROADCAST_CHANNEL_ADMINISTRATIVE)) {
-            return true;
-        }
+  @Override
+  public void removeAttachment(@NotNull PermissionAttachment attachment) {
+  }
 
-        return this.has(name);
-    }
+  @Override
+  public void recalculatePermissions() {
+  }
 
-    @Override
-    public boolean hasPermission(@NotNull Permission perm) {
-        return this.hasPermission(perm.getName());
-    }
+  @Override
+  public synchronized void clearPermissions() {
+  }
 
-    @Override
-    @NotNull
-    public PermissionAttachment addAttachment(@NotNull Plugin plugin, @NotNull String name, boolean value) {
-        return new PermissionAttachment(plugin, this);
-    }
+  @Override
+  public PermissionAttachment addAttachment(@NotNull Plugin plugin, @NotNull String name, boolean value, int ticks) {
+    return new PermissionAttachment(plugin, this);
+  }
 
-    @Override
-    @NotNull
-    public PermissionAttachment addAttachment(@NotNull Plugin plugin) {
-        return new PermissionAttachment(plugin, this);
-    }
+  @Override
+  public PermissionAttachment addAttachment(@NotNull Plugin plugin, int ticks) {
+    return new PermissionAttachment(plugin, this);
+  }
 
-    @Override
-    public void removeAttachment(@NotNull PermissionAttachment attachment) {
-    }
+  @Override
+  @NotNull
+  public Set<PermissionAttachmentInfo> getEffectivePermissions() {
+    return PermissionPluginUtil.collectPermissionsOfUser(PermissionManagement.getInstance().loadUser(this.uuid))
+      .stream()
+      .map(node -> new PermissionAttachmentInfo(this, node.getActualPermission(), null, node.isSet()))
+      .collect(Collectors.toSet());
+  }
 
-    @Override
-    public void recalculatePermissions() {
-    }
-
-    @Override
-    public synchronized void clearPermissions() {
-    }
-
-    @Override
-    public PermissionAttachment addAttachment(@NotNull Plugin plugin, @NotNull String name, boolean value, int ticks) {
-        return new PermissionAttachment(plugin, this);
-    }
-
-    @Override
-    public PermissionAttachment addAttachment(@NotNull Plugin plugin, int ticks) {
-        return new PermissionAttachment(plugin, this);
-    }
-
-    @Override
-    @NotNull
-    public Set<PermissionAttachmentInfo> getEffectivePermissions() {
-        return PermissionPluginUtil.collectPermissionsOfUser(PermissionManagement.getInstance().loadUser(this.uuid))
-            .stream()
-            .map(node -> new PermissionAttachmentInfo(this, node.getActualPermission(), null, node.isSet()))
-            .collect(Collectors.toSet());
-    }
-
-    private boolean has(String name) {
-        final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(this.uuid);
-        return permissionUser.hasPermission(name);
-    }
+  private boolean has(String name) {
+    final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(this.uuid);
+    return permissionUser.hasPermission(name);
+  }
 }

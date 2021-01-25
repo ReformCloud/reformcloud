@@ -31,28 +31,28 @@ import systems.reformcloud.reformcloud2.executor.api.http.websocket.listener.Soc
 
 final class DefaultSocketFrameListenerRegistryEntry implements SocketFrameListenerRegistryEntry {
 
-    private final SocketFrameListener listener;
-    private final SocketFrameType[] socketFrameType;
-    private final int priority;
+  private final SocketFrameListener listener;
+  private final SocketFrameType[] socketFrameType;
+  private final int priority;
 
-    DefaultSocketFrameListenerRegistryEntry(SocketFrameListener listener, SocketFrameType[] socketFrameType, int priority) {
-        this.listener = listener;
-        this.socketFrameType = socketFrameType;
-        this.priority = priority;
-    }
+  DefaultSocketFrameListenerRegistryEntry(SocketFrameListener listener, SocketFrameType[] socketFrameType, int priority) {
+    this.listener = listener;
+    this.socketFrameType = socketFrameType;
+    this.priority = priority;
+  }
 
-    @Override
-    public @NotNull SocketFrameListener getListener() {
-        return this.listener;
-    }
+  @Override
+  public @NotNull SocketFrameListener getListener() {
+    return this.listener;
+  }
 
-    @Override
-    public @NotNull SocketFrameType[] getHandlingFrameTypes() {
-        return this.socketFrameType;
-    }
+  @Override
+  public @NotNull SocketFrameType[] getHandlingFrameTypes() {
+    return this.socketFrameType;
+  }
 
-    @Override
-    public int priority() {
-        return this.priority;
-    }
+  @Override
+  public int priority() {
+    return this.priority;
+  }
 }

@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.permissions.util;
 
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
@@ -43,69 +43,69 @@ import java.util.stream.Collectors;
 
 public final class PermissionPluginUtil {
 
-    private PermissionPluginUtil() {
-        throw new UnsupportedOperationException();
+  private PermissionPluginUtil() {
+    throw new UnsupportedOperationException();
+  }
+
+  public static void awaitConnection(@NotNull Runnable then) {
+    PermissionManagement.setup();
+    PacketHelper.addPacketHandler();
+    then.run();
+  }
+
+  @NotNull
+  public static Collection<PermissionNode> collectPermissionsOfUser(@NotNull PermissionUser permissionUser) {
+    Collection<PermissionNode> permissionNodes = permissionUser.getPermissionNodes()
+      .stream()
+      .filter(PermissionNode::isValid)
+      .collect(Collectors.toCollection(CopyOnWriteArrayList::new));
+    Collection<PermissionNode> groupPerms = permissionUser.getPerGroupPermissions().get(Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName());
+    if (groupPerms != null) {
+      permissionNodes.addAll(groupPerms
+        .stream()
+        .filter(PermissionNode::isValid)
+        .filter(node -> permissionNodes.stream().noneMatch(setNode -> setNode.getActualPermission().equals(node.getActualPermission())))
+        .collect(Collectors.toList()));
     }
 
-    public static void awaitConnection(@NotNull Runnable then) {
-        PermissionManagement.setup();
-        PacketHelper.addPacketHandler();
-        then.run();
-    }
-
-    @NotNull
-    public static Collection<PermissionNode> collectPermissionsOfUser(@NotNull PermissionUser permissionUser) {
-        Collection<PermissionNode> permissionNodes = permissionUser.getPermissionNodes()
-            .stream()
-            .filter(PermissionNode::isValid)
-            .collect(Collectors.toCollection(CopyOnWriteArrayList::new));
-        Collection<PermissionNode> groupPerms = permissionUser.getPerGroupPermissions().get(Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName());
-        if (groupPerms != null) {
-            permissionNodes.addAll(groupPerms
-                .stream()
-                .filter(PermissionNode::isValid)
-                .filter(node -> permissionNodes.stream().noneMatch(setNode -> setNode.getActualPermission().equals(node.getActualPermission())))
-                .collect(Collectors.toList()));
+    Set<String> travelledGroups = new HashSet<>();
+    permissionUser.getGroups().stream()
+      .filter(NodeGroup::isValid)
+      .map(group -> PermissionManagement.getInstance().getPermissionGroup(group.getGroupName()).orElse(null))
+      .filter(Objects::nonNull)
+      .forEach(group -> {
+        // we have to recheck because we travel over each group which may has the group as sub-group
+        if (!travelledGroups.contains(group.getName())) {
+          collectPermissionsOfGroup(group, permissionNodes, travelledGroups);
         }
+      });
 
-        Set<String> travelledGroups = new HashSet<>();
-        permissionUser.getGroups().stream()
-            .filter(NodeGroup::isValid)
-            .map(group -> PermissionManagement.getInstance().getPermissionGroup(group.getGroupName()).orElse(null))
-            .filter(Objects::nonNull)
-            .forEach(group -> {
-                // we have to recheck because we travel over each group which may has the group as sub-group
-                if (!travelledGroups.contains(group.getName())) {
-                    collectPermissionsOfGroup(group, permissionNodes, travelledGroups);
-                }
-            });
+    return permissionNodes;
+  }
 
-        return permissionNodes;
-    }
+  @NotNull
+  public static Collection<PermissionNode> collectPermissionsOfGroup(@NotNull PermissionGroup permissionGroup) {
+    Collection<PermissionNode> permissionNodes = new CopyOnWriteArrayList<>();
+    collectPermissionsOfGroup(permissionGroup, permissionNodes, new HashSet<>());
+    return permissionNodes;
+  }
 
-    @NotNull
-    public static Collection<PermissionNode> collectPermissionsOfGroup(@NotNull PermissionGroup permissionGroup) {
-        Collection<PermissionNode> permissionNodes = new CopyOnWriteArrayList<>();
-        collectPermissionsOfGroup(permissionGroup, permissionNodes, new HashSet<>());
-        return permissionNodes;
-    }
-
-    private static void collectPermissionsOfGroup(@NotNull PermissionGroup permissionGroup, @NotNull Collection<PermissionNode> permissionNodes, @NotNull Set<String> travelledGroups) {
-        permissionNodes.addAll(permissionGroup.getPermissionNodes()
-            .stream()
-            .filter(PermissionNode::isValid)
-            .filter(node -> permissionNodes.stream().noneMatch(setNode -> setNode.getActualPermission().equals(node.getActualPermission())))
-            .collect(Collectors.toList()));
-        permissionGroup.getSubGroups()
-            .stream()
-            .filter(Streams.negate(travelledGroups::contains))
-            .map(group -> PermissionManagement.getInstance().getPermissionGroup(group).orElse(null))
-            .filter(Objects::nonNull)
-            .forEach(group -> {
-                // we have to recheck because we travel over each group which may has the group as sub-group
-                if (!travelledGroups.contains(group.getName())) {
-                    collectPermissionsOfGroup(group, permissionNodes, travelledGroups);
-                }
-            });
-    }
+  private static void collectPermissionsOfGroup(@NotNull PermissionGroup permissionGroup, @NotNull Collection<PermissionNode> permissionNodes, @NotNull Set<String> travelledGroups) {
+    permissionNodes.addAll(permissionGroup.getPermissionNodes()
+      .stream()
+      .filter(PermissionNode::isValid)
+      .filter(node -> permissionNodes.stream().noneMatch(setNode -> setNode.getActualPermission().equals(node.getActualPermission())))
+      .collect(Collectors.toList()));
+    permissionGroup.getSubGroups()
+      .stream()
+      .filter(MoreCollections.negate(travelledGroups::contains))
+      .map(group -> PermissionManagement.getInstance().getPermissionGroup(group).orElse(null))
+      .filter(Objects::nonNull)
+      .forEach(group -> {
+        // we have to recheck because we travel over each group which may has the group as sub-group
+        if (!travelledGroups.contains(group.getName())) {
+          collectPermissionsOfGroup(group, permissionNodes, travelledGroups);
+        }
+      });
+  }
 }

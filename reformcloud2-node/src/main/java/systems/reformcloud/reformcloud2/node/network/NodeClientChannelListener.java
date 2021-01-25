@@ -24,96 +24,100 @@
  */
 package systems.reformcloud.reformcloud2.node.network;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.shared.SharedChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
-import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketAuthBegin;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketAuthSuccess;
+import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 
 public final class NodeClientChannelListener extends SharedChannelListener {
 
-    private boolean wasActive = false;
+  private boolean wasActive = false;
 
-    @Override
-    public boolean shouldHandle(@NotNull Packet packet) {
-        return super.networkChannel.isAuthenticated() || packet.getId() == PacketIds.AUTH_BUS_END;
+  @Override
+  public boolean shouldHandle(@NotNull Packet packet) {
+    return super.networkChannel.getName() != null || packet.getId() == PacketIds.AUTH_BUS + 1;
+  }
+
+  @Override
+  public void channelInactive(@NotNull NetworkChannel context) {
+    if (context.isOpen() && context.isWritable()) {
+      return;
     }
 
-    @Override
-    public void channelInactive(@NotNull ChannelHandlerContext context) {
-        Channel channel = context.channel();
-        if (channel.isOpen() && channel.isWritable()) {
-            return;
-        }
-
-        if (super.networkChannel.getName().isEmpty()) {
-            // channel is not authenticated - no need to do anything
-            return;
-        }
-
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).unregisterChannel(super.networkChannel);
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleNodeDisconnect(super.networkChannel.getName());
+    if (super.networkChannel.getName().isEmpty()) {
+      // channel is not authenticated - no need to do anything
+      return;
     }
 
-    @Override
-    public void channelActive(@NotNull ChannelHandlerContext context) {
-        synchronized (this) {
-            if (!this.wasActive) {
-                this.wasActive = true;
-            } else {
-                return;
-            }
-        }
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).unregisterChannel(super.networkChannel);
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleNodeDisconnect(super.networkChannel.getName());
+  }
 
-        context.writeAndFlush(new PacketAuthBegin(
-            NodeExecutor.getInstance().getNodeExecutorConfig().getConnectionKey(),
-            1,
-            new JsonConfiguration().add("node", NodeExecutor.getInstance().getCurrentNodeInformation())
-        ), context.voidPromise());
+  @Override
+  public void channelWriteAbilityChanged(@NotNull NetworkChannel channel) {
+    if (!channel.isActive() && !channel.isOpen() && !channel.isWritable()) {
+      channel.closeSync();
+    }
+  }
+
+  @Override
+  public void channelActive(@NotNull NetworkChannel context) {
+    synchronized (this) {
+      if (!this.wasActive) {
+        this.wasActive = true;
+      } else {
+        return;
+      }
     }
 
-    @Override
-    public void handle(@NotNull Packet input) {
-        if (input.getId() == PacketIds.AUTH_BUS + 1) {
-            if (!(input instanceof PacketAuthSuccess)) {
-                // should never happen
-                super.networkChannel.close();
-                return;
-            }
+    context.sendPacket(new PacketAuthBegin(
+      NodeExecutor.getInstance().getNodeExecutorConfig().getConnectionKey(),
+      1,
+      JsonConfiguration.newJsonConfiguration().add("node", NodeExecutor.getInstance().getCurrentNodeInformation())
+    ));
+  }
 
-            PacketAuthSuccess packet = (PacketAuthSuccess) input;
-            DefaultNodeInformation node = packet.getData().get("node", DefaultNodeInformation.TYPE);
-            if (node == null) {
-                // invalid result sent by other node
-                super.networkChannel.close();
-                return;
-            }
+  @Override
+  public void handle(@NotNull Packet input) {
+    if (input.getId() == PacketIds.AUTH_BUS + 1) {
+      if (!(input instanceof PacketAuthSuccess)) {
+        // should never happen
+        super.networkChannel.close();
+        return;
+      }
 
-            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleNodeConnect(node);
+      PacketAuthSuccess packet = (PacketAuthSuccess) input;
+      DefaultNodeInformation node = packet.getData().get("node", DefaultNodeInformation.class);
+      if (node == null) {
+        // invalid result sent by other node
+        super.networkChannel.close();
+        return;
+      }
 
-            super.networkChannel.setName(node.getName());
-            super.networkChannel.setAuthenticated(true);
+      ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleNodeConnect(node);
 
-            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).registerChannel(super.networkChannel);
+      super.networkChannel.setName(node.getName());
 
-            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessGroupSet(
-                ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()
-            );
-            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishMainGroupSet(
-                ExecutorAPI.getInstance().getMainGroupProvider().getMainGroups()
-            );
-            return;
-        }
+      ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).registerChannel(super.networkChannel);
 
-        super.handle(input);
+      ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessGroupSet(
+        ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()
+      );
+      ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishMainGroupSet(
+        ExecutorAPI.getInstance().getMainGroupProvider().getMainGroups()
+      );
+      return;
     }
+
+    super.handle(input);
+  }
 }

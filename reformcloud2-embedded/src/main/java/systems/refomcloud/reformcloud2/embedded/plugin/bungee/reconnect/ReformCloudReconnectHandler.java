@@ -36,26 +36,26 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 
 public class ReformCloudReconnectHandler implements ReconnectHandler {
 
-    @Override
-    public ServerInfo getServer(@NotNull ProxiedPlayer proxiedPlayer) {
-        return SharedPlayerFallbackFilter.filterFallback(
-            proxiedPlayer.getUniqueId(),
-            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers(),
-            proxiedPlayer::hasPermission,
-            BungeeFallbackExtraFilter.INSTANCE,
-            proxiedPlayer.getServer() == null ? null : proxiedPlayer.getServer().getInfo().getName()
-        ).map(info -> ProxyServer.getInstance().getServerInfo(info.getProcessDetail().getName())).orElse(null);
-    }
+  @Override
+  public ServerInfo getServer(@NotNull ProxiedPlayer proxiedPlayer) {
+    return SharedPlayerFallbackFilter.filterFallback(
+      proxiedPlayer.getUniqueId(),
+      ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers(),
+      proxiedPlayer::hasPermission,
+      BungeeFallbackExtraFilter.INSTANCE,
+      proxiedPlayer.getServer() == null ? null : proxiedPlayer.getServer().getInfo().getName()
+    ).map(info -> ProxyServer.getInstance().getServerInfo(info.getName())).orElse(null);
+  }
 
-    @Override
-    public void setServer(ProxiedPlayer proxiedPlayer) {
-    }
+  @Override
+  public void setServer(ProxiedPlayer proxiedPlayer) {
+  }
 
-    @Override
-    public void save() {
-    }
+  @Override
+  public void save() {
+  }
 
-    @Override
-    public void close() {
-    }
+  @Override
+  public void close() {
+  }
 }

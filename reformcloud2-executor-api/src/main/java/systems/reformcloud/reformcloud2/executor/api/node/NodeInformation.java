@@ -25,6 +25,7 @@
 package systems.reformcloud.reformcloud2.executor.api.node;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.network.address.NetworkAddress;
 import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
@@ -33,17 +34,17 @@ import java.util.UUID;
 
 public interface NodeInformation extends Nameable, SerializableObject {
 
-    @NotNull
-    UUID getUniqueId();
+  @NotNull UUID getUniqueId();
 
-    long getStartupMillis();
+  long getStartupMillis();
 
-    long getLastUpdateTimestamp();
+  long getLastUpdateTimestamp();
 
-    long getUsedMemory();
+  long getUsedMemory();
 
-    long getMaxMemory();
+  long getMaxMemory();
 
-    @NotNull
-    ProcessRuntimeInformation getProcessRuntimeInformation();
+  @NotNull NetworkAddress getProcessStartHost();
+
+  @NotNull ProcessRuntimeInformation getProcessRuntimeInformation();
 }

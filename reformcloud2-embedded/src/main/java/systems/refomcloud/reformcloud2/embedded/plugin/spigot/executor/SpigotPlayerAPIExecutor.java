@@ -36,57 +36,57 @@ import java.util.UUID;
 
 public class SpigotPlayerAPIExecutor extends PlayerAPIExecutor {
 
-    @Override
-    public void executeSendMessage(UUID player, String message) {
-        Player bukkitPlayer = Bukkit.getPlayer(player);
-        if (bukkitPlayer != null) {
-            bukkitPlayer.sendMessage(message);
-        }
+  @Override
+  public void executeSendMessage(UUID player, String message) {
+    Player bukkitPlayer = Bukkit.getPlayer(player);
+    if (bukkitPlayer != null) {
+      bukkitPlayer.sendMessage(message);
     }
+  }
 
-    @Override
-    public void executeKickPlayer(UUID player, String message) {
-        Player bukkitPlayer = Bukkit.getPlayer(player);
-        if (bukkitPlayer != null) {
-            bukkitPlayer.kickPlayer(message);
-        }
+  @Override
+  public void executeKickPlayer(UUID player, String message) {
+    Player bukkitPlayer = Bukkit.getPlayer(player);
+    if (bukkitPlayer != null) {
+      bukkitPlayer.kickPlayer(message);
     }
+  }
 
-    @Override
-    public void executePlaySound(UUID player, String sound, float f1, float f2) {
-        Player bukkitPlayer = Bukkit.getPlayer(player);
-        if (bukkitPlayer != null) {
-            bukkitPlayer.playSound(bukkitPlayer.getLocation(), sound, f1, f2);
-        }
+  @Override
+  public void executePlaySound(UUID player, String sound, float f1, float f2) {
+    Player bukkitPlayer = Bukkit.getPlayer(player);
+    if (bukkitPlayer != null) {
+      bukkitPlayer.playSound(bukkitPlayer.getLocation(), sound, f1, f2);
     }
+  }
 
-    @Override
-    public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
-        Player bukkitPlayer = Bukkit.getPlayer(player);
-        if (bukkitPlayer != null) {
-            bukkitPlayer.sendTitle(title, subTitle, fadeIn, stay, fadeOut);
-        }
+  @Override
+  public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
+    Player bukkitPlayer = Bukkit.getPlayer(player);
+    if (bukkitPlayer != null) {
+      bukkitPlayer.sendTitle(title, subTitle, fadeIn, stay, fadeOut);
     }
+  }
 
-    @Override
-    public void executePlayEffect(UUID player, String entityEffect) {
-        Player bukkitPlayer = Bukkit.getPlayer(player);
-        EntityEffect effect = EnumUtil.findEnumFieldByName(EntityEffect.class, entityEffect).orElse(null);
-        if (bukkitPlayer != null && effect != null) {
-            bukkitPlayer.playEffect(effect);
-        }
+  @Override
+  public void executePlayEffect(UUID player, String entityEffect) {
+    Player bukkitPlayer = Bukkit.getPlayer(player);
+    EntityEffect effect = EnumUtil.findEnumFieldByName(EntityEffect.class, entityEffect).orElse(null);
+    if (bukkitPlayer != null && effect != null) {
+      bukkitPlayer.playEffect(effect);
     }
+  }
 
-    @Override
-    public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
-        Player bukkitPlayer = Bukkit.getPlayer(player);
-        World bukkitWorld = Bukkit.getWorld(world);
-        if (bukkitPlayer != null && bukkitWorld != null) {
-            bukkitPlayer.teleport(new Location(bukkitWorld, x, y, z, yaw, pitch));
-        }
+  @Override
+  public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
+    Player bukkitPlayer = Bukkit.getPlayer(player);
+    World bukkitWorld = Bukkit.getWorld(world);
+    if (bukkitPlayer != null && bukkitWorld != null) {
+      bukkitPlayer.teleport(new Location(bukkitWorld, x, y, z, yaw, pitch));
     }
+  }
 
-    @Override
-    public void executeConnect(UUID player, String server) {
-    }
+  @Override
+  public void executeConnect(UUID player, String server) {
+  }
 }

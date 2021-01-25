@@ -34,41 +34,41 @@ import java.util.concurrent.CompletableFuture;
 
 public class SpongeSubjectReference implements SubjectReference {
 
-    private final PermissionService service;
-    private final String collection;
-    private final String id;
-    private Subject cache;
+  private final PermissionService service;
+  private final String collection;
+  private final String id;
+  private Subject cache;
 
-    public SpongeSubjectReference(
-        @NotNull PermissionService service,
-        @NotNull String collection,
-        @NotNull String id
-    ) {
-        this.collection = collection;
-        this.id = id;
-        this.service = service;
+  public SpongeSubjectReference(
+    @NotNull PermissionService service,
+    @NotNull String collection,
+    @NotNull String id
+  ) {
+    this.collection = collection;
+    this.id = id;
+    this.service = service;
+  }
+
+  @Override
+  @NotNull
+  public String getCollectionIdentifier() {
+    return this.collection;
+  }
+
+  @Override
+  @NotNull
+  public String getSubjectIdentifier() {
+    return this.id;
+  }
+
+  @Override
+  @NotNull
+  public CompletableFuture<Subject> resolve() {
+    if (this.cache == null) {
+      SubjectCollection subjectCollection = this.service.getCollection(this.collection).orElseThrow(() -> new IllegalArgumentException("Collection not loaded"));
+      this.cache = subjectCollection.loadSubject(this.id).join();
     }
 
-    @Override
-    @NotNull
-    public String getCollectionIdentifier() {
-        return this.collection;
-    }
-
-    @Override
-    @NotNull
-    public String getSubjectIdentifier() {
-        return this.id;
-    }
-
-    @Override
-    @NotNull
-    public CompletableFuture<Subject> resolve() {
-        if (this.cache == null) {
-            SubjectCollection subjectCollection = this.service.getCollection(this.collection).orElseThrow(() -> new IllegalArgumentException("Collection not loaded"));
-            this.cache = subjectCollection.loadSubject(this.id).join();
-        }
-
-        return CompletableFuture.completedFuture(this.cache);
-    }
+    return CompletableFuture.completedFuture(this.cache);
+  }
 }

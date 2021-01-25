@@ -34,17 +34,17 @@ import systems.reformcloud.reformcloud2.shared.process.AbstractProcessBuilder;
 
 final class DefaultNodeProcessBuilder extends AbstractProcessBuilder {
 
-    @NotNull
-    @Override
-    public Task<ProcessWrapper> prepare() {
-        if (super.processGroupName != null && super.processGroup == null) {
-            super.processGroup = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(super.processGroupName).orElse(null);
-        }
-
-        Conditions.nonNull(super.processGroup, "Unable to create process with no group defined to prepare from");
-        return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).createProcess(
-            super.processGroup, super.node, super.displayName, super.messageOfTheDay, super.template, super.inclusions,
-            super.extra, super.initialState, super.processUniqueId, super.memory, super.id, super.maxPlayers, super.targetProcessFactory
-        );
+  @NotNull
+  @Override
+  public Task<ProcessWrapper> prepare() {
+    if (super.processGroupName != null && super.processGroup == null) {
+      super.processGroup = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(super.processGroupName).orElse(null);
     }
+
+    Conditions.nonNull(super.processGroup, "Unable to create process with no group defined to prepare from");
+    return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).createProcess(
+      super.processGroup, super.node, super.displayName, super.messageOfTheDay, super.template, super.inclusions,
+      super.extra, super.initialState, super.processUniqueId, super.memory, super.id, super.maxPlayers, super.targetProcessFactory
+    );
+  }
 }

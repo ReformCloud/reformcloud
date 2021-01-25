@@ -31,15 +31,15 @@ import systems.reformcloud.reformcloud2.executor.api.http.websocket.response.Res
 
 public class DefaultResponseSocketFrameFactory extends ResponseSocketFrameFactory {
 
-    private DefaultResponseSocketFrameFactory() {
-    }
+  private DefaultResponseSocketFrameFactory() {
+  }
 
-    public static void init() {
-        ResponseSocketFrameFactory.DEFAULT.set(new DefaultResponseSocketFrameFactory());
-    }
+  public static void init() {
+    ResponseSocketFrameFactory.DEFAULT.set(new DefaultResponseSocketFrameFactory());
+  }
 
-    @Override
-    public @NotNull ResponseFrameHolder<?> forFrame(@NotNull SocketFrame<?> socketFrame) {
-        return new DefaultResponseFrameHolder(socketFrame);
-    }
+  @Override
+  public @NotNull ResponseFrameHolder<?> forFrame(@NotNull SocketFrame<?> socketFrame) {
+    return new DefaultResponseFrameHolder(socketFrame);
+  }
 }

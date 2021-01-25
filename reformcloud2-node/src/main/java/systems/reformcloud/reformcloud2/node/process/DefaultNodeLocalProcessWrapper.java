@@ -28,33 +28,34 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Version;
-import systems.reformcloud.reformcloud2.node.template.TemplateBackendManager;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.inclusion.Inclusion;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.version.VersionType;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Versions;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryManager;
-import systems.reformcloud.reformcloud2.executor.api.process.Player;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessInclusion;
-import systems.reformcloud.reformcloud2.shared.StringUtil;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.node.event.process.LocalProcessPrePrepareEvent;
 import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreen;
 import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreenController;
+import systems.reformcloud.reformcloud2.node.template.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.protocol.api.NodeToApiRequestProcessInformationUpdate;
 import systems.reformcloud.reformcloud2.protocol.api.NodeToApiRequestProcessInformationUpdateResult;
 import systems.reformcloud.reformcloud2.shared.Constants;
+import systems.reformcloud.reformcloud2.shared.StringUtil;
 import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 import systems.reformcloud.reformcloud2.shared.platform.Platform;
+import systems.reformcloud.reformcloud2.shared.process.DefaultProcessRuntimeInformation;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -67,258 +68,262 @@ import java.util.stream.Collectors;
 
 public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrapper {
 
-    private static final String LIB_PATH = Path.of("").toAbsolutePath().toString();
-    private static final String[] DEFAULT_SHUTDOWN_COMMANDS = new String[]{"end", "stop"};
+  private static final String LIB_PATH = Paths.get("").toAbsolutePath().toString();
+  private static final String[] DEFAULT_SHUTDOWN_COMMANDS = new String[]{"end", "stop"};
 
-    private final Path path;
-    private final boolean firstStart;
-    private final ProcessScreen processScreen;
-    private final Lock lock = new ReentrantLock();
-    private final String connectionKey = StringUtil.generateRandomString(512);
+  private final Path path;
+  private final int memory;
+  private final boolean firstStart;
+  private final ProcessScreen processScreen;
+  private final Lock lock = new ReentrantLock();
+  private final String connectionKey = StringUtil.generateRandomString(512);
 
-    private ProcessState runtimeState = ProcessState.CREATED;
-    private Process process;
+  private ProcessState runtimeState = ProcessState.CREATED;
+  private Process process;
 
-    public DefaultNodeLocalProcessWrapper(ProcessInformation processInformation) {
-        super(processInformation);
+  public DefaultNodeLocalProcessWrapper(ProcessInformation processInformation) {
+    super(processInformation);
 
-        this.path = processInformation.getProcessGroup().isStaticProcess()
-            ? Path.of("reformcloud/static", processInformation.getProcessDetail().getName())
-            : Path.of("reformcloud/temp", processInformation.getProcessDetail().getName() + "-" + processInformation.getProcessDetail().getProcessUniqueID());
-        this.firstStart = Files.notExists(this.path);
-        this.processScreen = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProcessScreenController.class).createScreen(this);
+    this.path = processInformation.getProcessGroup().createsStaticProcesses()
+      ? Paths.get("reformcloud/static", processInformation.getName())
+      : Paths.get("reformcloud/temp", processInformation.getName() + "-" + processInformation.getId().getUniqueId());
+    this.firstStart = Files.notExists(this.path);
+    this.memory = MemoryCalculator.calcMemory(processInformation.getProcessGroup().getName(), processInformation.getPrimaryTemplate());
+    this.processScreen = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProcessScreenController.class).createScreen(this);
 
-        IOUtils.createDirectory(this.path);
+    IOUtils.createDirectory(this.path);
 
-        processInformation.getNetworkInfo().setHost(NodeExecutor.getInstance().getNodeConfig().getStartHost());
-        this.prepare();
-        this.setRuntimeState(ProcessState.PREPARED);
+    processInformation.getHost().setHost(NodeExecutor.getInstance().getNodeConfig().getStartHost().getHostAddress());
+    this.prepare();
+    this.setRuntimeState(ProcessState.PREPARED);
+  }
+
+  @NotNull
+  @Override
+  public Optional<ProcessInformation> requestProcessInformationUpdate() {
+    NetworkChannel channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
+      .getChannel(this.processInformation.getName())
+      .orElse(null);
+    if (channel == null) {
+      return Optional.empty();
     }
 
-    @NotNull
-    @Override
-    public Optional<ProcessInformation> requestProcessInformationUpdate() {
-        NetworkChannel channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
-            .getChannel(this.processInformation.getProcessDetail().getName())
-            .orElse(null);
-        if (channel == null) {
-            return Optional.empty();
-        }
-
-        Packet result = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class)
-            .sendPacketQuery(channel, new NodeToApiRequestProcessInformationUpdate())
-            .getUninterruptedly(TimeUnit.SECONDS, 5);
-        if (!(result instanceof NodeToApiRequestProcessInformationUpdateResult)) {
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(((NodeToApiRequestProcessInformationUpdateResult) result).getProcessInformation());
+    Packet result = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class)
+      .sendPacketQuery(channel, new NodeToApiRequestProcessInformationUpdate())
+      .getUninterruptedly(TimeUnit.SECONDS, 5);
+    if (!(result instanceof NodeToApiRequestProcessInformationUpdateResult)) {
+      return Optional.empty();
     }
 
-    @NotNull
-    @Override
-    public Optional<String> uploadLog() {
-        return ProcessUtil.uploadLog(this.getLastLogLines());
+    return Optional.ofNullable(((NodeToApiRequestProcessInformationUpdateResult) result).getProcessInformation());
+  }
+
+  @NotNull
+  @Override
+  public Optional<String> uploadLog() {
+    return ProcessUtil.uploadLog(this.getLastLogLines());
+  }
+
+  @NotNull
+  @Override
+  public @UnmodifiableView Queue<String> getLastLogLines() {
+    return this.processScreen.getCachedLogLines();
+  }
+
+  @Override
+  public void sendCommand(@NotNull String commandLine) {
+    if (this.isAlive()) {
+      try {
+        this.process.getOutputStream().write((commandLine + "\n").getBytes());
+        this.process.getOutputStream().flush();
+      } catch (final IOException ex) {
+        ex.printStackTrace();
+      }
+    }
+  }
+
+  @Override
+  public void setRuntimeState(@NotNull ProcessState state) {
+    if (state.isRuntimeState() && this.runtimeState != state) {
+      if (this.callRuntimeStateUpdate(state)) {
+        this.runtimeState = state;
+      } else {
+        return;
+      }
     }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Queue<String> getLastLogLines() {
-        return this.processScreen.getCachedLogLines();
+    this.processInformation.setCurrentState(state);
+    ExecutorAPI.getInstance().getProcessProvider().updateProcessInformation(this.processInformation);
+  }
+
+  @Override
+  public void copy(@NotNull String templateGroup, @NotNull String templateName, @NotNull String templateBackend) {
+    TemplateBackendManager.get(templateBackend).ifPresent(
+      backend -> backend.deployTemplate(templateGroup, templateName, this.path)
+    );
+  }
+
+  private boolean callRuntimeStateUpdate(@NotNull ProcessState runtimeState) {
+    try {
+      this.lock.lock();
+
+      switch (runtimeState) {
+        case STARTED:
+          return this.start();
+        case RESTARTING:
+          this.restart();
+          break;
+        case PAUSED:
+          this.stop(false);
+          break;
+        case STOPPED:
+          this.stop(true);
+          return false;
+        default:
+          throw new IllegalStateException("Illegal runtime state: " + runtimeState);
+      }
+    } finally {
+      this.lock.unlock();
     }
 
-    @Override
-    public void sendCommand(@NotNull String commandLine) {
-        if (this.isAlive()) {
-            try {
-                this.process.getOutputStream().write((commandLine + "\n").getBytes());
-                this.process.getOutputStream().flush();
-            } catch (final IOException ex) {
-                ex.printStackTrace();
-            }
-        }
+    return true;
+  }
+
+  private void prepare() {
+    try {
+      this.lock.lock();
+
+      ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new LocalProcessPrePrepareEvent(this.processInformation));
+      EnvironmentBuilder.constructEnvFor(this, this.firstStart, this.connectionKey);
+    } finally {
+      this.lock.unlock();
+    }
+  }
+
+  private boolean start() {
+    if (!NodeExecutor.getInstance().canStartProcesses(this.memory)) {
+      NodeExecutor.getInstance().getTaskScheduler().queue(() -> this.setRuntimeState(ProcessState.STARTED), 20 * 5);
+      return false;
     }
 
-    @Override
-    public void setRuntimeState(@NotNull ProcessState state) {
-        if (state.isRuntimeState() && this.runtimeState != state) {
-            if (this.callRuntimeStateUpdate(state)) {
-                this.runtimeState = state;
-            } else {
-                return;
-            }
-        }
+    NodeExecutor.getInstance().getCurrentNodeInformation().addUsedMemory(this.memory);
+    List<String> command = new ArrayList<>(Arrays.asList(
+      this.processInformation.getProcessGroup().getStartupConfiguration().getJvmCommand(),
 
-        this.processInformation.getProcessDetail().setProcessState(state);
-        ExecutorAPI.getInstance().getProcessProvider().updateProcessInformation(this.processInformation);
+      "-DIReallyKnowWhatIAmDoingISwear=true",
+      "-Djline.terminal=jline.UnsupportedTerminal",
+      "-Dreformcloud.runner.version=" + System.getProperty("reformcloud.runner.version"),
+      "-Dreformcloud.executor.type=3",
+      "-Dreformcloud.lib.path=" + LIB_PATH,
+      "-Dreformcloud.process.path=" + Paths.get("reformcloud/files", Versions.formatVersion(
+        this.processInformation.getPrimaryTemplate().getVersion()
+      )).toAbsolutePath().toString()
+    ));
+    this.processInformation.getPrimaryTemplate().getRuntimeConfiguration().getSystemProperties().forEach(
+      (key, value) -> command.add(String.format("-D%s=%s", key, value))
+    );
+
+    command.addAll(this.processInformation.getPrimaryTemplate().getRuntimeConfiguration().getJvmOptions());
+    command.addAll(Arrays.asList(
+      "-Xms" + this.processInformation.getPrimaryTemplate().getRuntimeConfiguration().getInitialJvmMemoryAllocation() + "M",
+      "-Xmx" + this.memory + "M",
+      "-cp", Constants.DEV_NULL_PATH,
+      "-javaagent:runner.jar",
+      "systems.reformcloud.reformcloud2.runner.RunnerExecutor"
+    ));
+    command.addAll(this.processInformation.getPrimaryTemplate().getRuntimeConfiguration().getProcessParameters());
+
+    if (this.processInformation.getPrimaryTemplate().getVersion().getVersionType() == VersionType.JAVA_SERVER) {
+      command.add("nogui"); // Spigot server
+    } else if (this.processInformation.getPrimaryTemplate().getVersion().getVersionType() == VersionType.POCKET_SERVER) {
+      command.add("disable-ansi"); // Nukkit server
     }
 
-    @Override
-    public void copy(@NotNull String templateGroup, @NotNull String templateName, @NotNull String templateBackend) {
-        TemplateBackendManager.get(templateBackend).ifPresent(
-            backend -> backend.deployTemplate(templateGroup, templateName, this.path)
+    try {
+      this.process = new ProcessBuilder()
+        .command(command)
+        .directory(this.path.toFile())
+        .redirectErrorStream(true)
+        .start();
+    } catch (Throwable throwable) {
+      if (throwable instanceof IOException) { // low level - but the best way :(
+        NodeExecutor.getInstance().getTaskScheduler().queue(() -> this.setRuntimeState(ProcessState.STARTED), 20 * 5);
+        return false;
+      }
+
+      throwable.printStackTrace();
+      return false;
+    }
+
+    return true;
+  }
+
+  private void restart() {
+    this.stop(false);
+    this.start();
+  }
+
+  private void stop(boolean finalStop) {
+    if (Files.notExists(this.path)) {
+      return;
+    }
+
+    if (this.isStarted()) {
+      Platform.closeProcess(this.process, true, TimeUnit.SECONDS.toMillis(15), this.getShutdownCommands());
+      this.process = null;
+    }
+
+    if (finalStop) {
+      if (this.processInformation.getPrimaryTemplate().isAutoCopyOnClose()) {
+        TemplateBackendManager.getOrDefault(this.processInformation.getPrimaryTemplate().getBackend()).deployTemplate(
+          this.processInformation.getProcessGroup().getName(),
+          this.processInformation.getPrimaryTemplate().getName(),
+          this.path,
+          this.processInformation.getPrimaryTemplate().getPathInclusions().stream().map(Inclusion::getKey).collect(Collectors.toList())
         );
+      }
+
+      if (!this.processInformation.getProcessGroup().createsStaticProcesses()) {
+        IOUtils.deleteDirectorySilently(this.path);
+      }
+
+      ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessUnregister(this.processInformation);
+    } else {
+      this.processInformation.getPlayers().clear();
+
+      this.processInformation.setRuntimeInformation(DefaultProcessRuntimeInformation.EMPTY);
+      ExecutorAPI.getInstance().getProcessProvider().updateProcessInformation(this.processInformation);
     }
 
-    private boolean callRuntimeStateUpdate(@NotNull ProcessState runtimeState) {
-        try {
-            this.lock.lock();
+    NodeExecutor.getInstance().getCurrentNodeInformation().removeUsedMemory(this.memory);
+  }
 
-            switch (runtimeState) {
-                case STARTED:
-                    return this.start();
-                case RESTARTING:
-                    this.restart();
-                    break;
-                case PAUSED:
-                    this.stop(false);
-                    break;
-                case STOPPED:
-                    this.stop(true);
-                    return false;
-                default:
-                    throw new IllegalStateException("Illegal runtime state: " + runtimeState);
-            }
-        } finally {
-            this.lock.unlock();
-        }
+  private @NotNull String[] getShutdownCommands() {
+    String[] shutdownCommands = this.processInformation.getPrimaryTemplate().getRuntimeConfiguration().getShutdownCommands().toArray(new String[0]);
+    return MoreCollections.concat(shutdownCommands, DEFAULT_SHUTDOWN_COMMANDS);
+  }
 
-        return true;
-    }
+  protected Path getPath() {
+    return this.path;
+  }
 
-    private void prepare() {
-        try {
-            this.lock.lock();
+  public String getConnectionKey() {
+    return this.connectionKey;
+  }
 
-            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new LocalProcessPrePrepareEvent(this.processInformation));
-            EnvironmentBuilder.constructEnvFor(this, this.firstStart, this.connectionKey);
-        } finally {
-            this.lock.unlock();
-        }
-    }
+  public boolean isAlive() {
+    return this.process != null && this.process.isAlive();
+  }
 
-    private boolean start() {
-        if (!NodeExecutor.getInstance().canStartProcesses(this.processInformation.getProcessDetail().getMaxMemory())) {
-            NodeExecutor.getInstance().getTaskScheduler().queue(() -> this.setRuntimeState(ProcessState.STARTED), 20 * 5);
-            return false;
-        }
+  public boolean isStarted() {
+    return this.process != null;
+  }
 
-        NodeExecutor.getInstance().getCurrentNodeInformation().addUsedMemory(this.processInformation.getProcessDetail().getMaxMemory());
-        List<String> command = new ArrayList<>(Arrays.asList(
-            this.processInformation.getProcessGroup().getStartupConfiguration().getJvmCommand(),
+  public int getMemory() {
+    return this.memory;
+  }
 
-            "-DIReallyKnowWhatIAmDoingISwear=true",
-            "-Djline.terminal=jline.UnsupportedTerminal",
-            "-Dreformcloud.runner.version=" + System.getProperty("reformcloud.runner.version"),
-            "-Dreformcloud.executor.type=3",
-            "-Dreformcloud.lib.path=" + LIB_PATH,
-            "-Dreformcloud.process.path=" + Path.of("reformcloud/files", Version.format(
-                this.processInformation.getProcessDetail().getTemplate().getVersion()
-            )).toAbsolutePath().toString()
-        ));
-        this.processInformation.getProcessDetail().getTemplate().getRuntimeConfiguration().getSystemProperties().forEach(
-            (key, value) -> command.add(String.format("-D%s=%s", key, value))
-        );
-
-        command.addAll(this.processInformation.getProcessDetail().getTemplate().getRuntimeConfiguration().getJvmOptions());
-        command.addAll(Arrays.asList(
-            "-Xmx" + this.processInformation.getProcessDetail().getMaxMemory() + "M",
-            "-cp", Constants.DEV_NULL_PATH,
-            "-javaagent:runner.jar",
-            "systems.reformcloud.reformcloud2.runner.RunnerExecutor"
-        ));
-        command.addAll(this.processInformation.getProcessDetail().getTemplate().getRuntimeConfiguration().getProcessParameters());
-
-        if (this.processInformation.getProcessDetail().getTemplate().getVersion().getId() == 1) {
-            command.add("nogui"); // Spigot server
-        } else if (this.processInformation.getProcessDetail().getTemplate().getVersion().getId() == 3) {
-            command.add("disable-ansi"); // Nukkit server
-        }
-
-        try {
-            this.process = new ProcessBuilder()
-                .command(command)
-                .directory(this.path.toFile())
-                .redirectErrorStream(true)
-                .start();
-        } catch (Throwable throwable) {
-            if (throwable instanceof IOException) { // low level - but the best way :(
-                NodeExecutor.getInstance().getTaskScheduler().queue(() -> this.setRuntimeState(ProcessState.STARTED), 20 * 5);
-                return false;
-            }
-
-            throwable.printStackTrace();
-            return false;
-        }
-
-        return true;
-    }
-
-    private void restart() {
-        this.stop(false);
-        this.start();
-    }
-
-    private void stop(boolean finalStop) {
-        if (Files.notExists(this.path)) {
-            return;
-        }
-
-        if (this.isStarted()) {
-            Platform.closeProcess(this.process, true, TimeUnit.SECONDS.toMillis(15), this.getShutdownCommands());
-            this.process = null;
-        }
-
-        if (finalStop) {
-            if (this.processInformation.getProcessDetail().getTemplate().isAutoReleaseOnClose()) {
-                TemplateBackendManager.getOrDefault(this.processInformation.getProcessDetail().getTemplate().getBackend()).deployTemplate(
-                    this.processInformation.getProcessGroup().getName(),
-                    this.processInformation.getProcessDetail().getTemplate().getName(),
-                    this.path,
-                    this.processInformation.getPreInclusions().stream().map(ProcessInclusion::getName).collect(Collectors.toList())
-                );
-            }
-
-            if (!this.processInformation.getProcessGroup().isStaticProcess()) {
-                IOUtils.deleteDirectorySilently(this.path);
-            }
-
-            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessUnregister(this.processInformation);
-        } else {
-            this.processInformation.getNetworkInfo().setConnected(false);
-            for (Player onlinePlayer : this.processInformation.getProcessPlayerManager().getOnlinePlayers()) {
-                this.processInformation.getProcessPlayerManager().onLogout(onlinePlayer.getUniqueID());
-            }
-
-            this.processInformation.getProcessDetail().setProcessRuntimeInformation(ProcessRuntimeInformation.empty());
-            ExecutorAPI.getInstance().getProcessProvider().updateProcessInformation(this.processInformation);
-        }
-
-        NodeExecutor.getInstance().getCurrentNodeInformation().removeUsedMemory(this.processInformation.getProcessDetail().getMaxMemory());
-    }
-
-    private @NotNull String[] getShutdownCommands() {
-        String[] shutdownCommands = this.processInformation.getProcessDetail().getTemplate().getRuntimeConfiguration().getShutdownCommands().toArray(new String[0]);
-        return Streams.concat(shutdownCommands, DEFAULT_SHUTDOWN_COMMANDS);
-    }
-
-    protected Path getPath() {
-        return this.path;
-    }
-
-    public String getConnectionKey() {
-        return this.connectionKey;
-    }
-
-    public boolean isAlive() {
-        return this.process != null && this.process.isAlive();
-    }
-
-    public boolean isStarted() {
-        return this.process != null;
-    }
-
-    public @NotNull Optional<Process> getProcess() {
-        return Optional.ofNullable(this.process);
-    }
+  public @NotNull Optional<Process> getProcess() {
+    return Optional.ofNullable(this.process);
+  }
 }

@@ -28,9 +28,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
-import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessInclusion;
@@ -42,69 +42,69 @@ import java.util.UUID;
 
 public interface ClusterManager {
 
-    @NotNull
-    Task<ProcessWrapper> createProcess(@NotNull DefaultProcessGroup processGroup, @Nullable String node, @Nullable String displayName,
-                                       @Nullable String messageOfTheDay, @Nullable DefaultTemplate template, @NotNull Collection<ProcessInclusion> inclusions,
-                                       @NotNull JsonConfiguration jsonConfiguration, @NotNull ProcessState initialState,
-                                       @NotNull UUID uniqueId, int memory, int id, int maxPlayers, @Nullable String targetProcessFactory);
+  @NotNull
+  Task<ProcessWrapper> createProcess(@NotNull ProcessGroup processGroup, @Nullable String node, @Nullable String displayName,
+                                     @Nullable String messageOfTheDay, @Nullable Template template, @NotNull Collection<ProcessInclusion> inclusions,
+                                     @NotNull JsonConfiguration jsonConfiguration, @NotNull ProcessState initialState,
+                                     @NotNull UUID uniqueId, int memory, int id, int maxPlayers, @Nullable String targetProcessFactory);
 
-    void handleNodeConnect(@NotNull DefaultNodeInformation nodeInformation);
+  void handleNodeConnect(@NotNull NodeInformation nodeInformation);
 
-    void handleNodeUpdate(@NotNull DefaultNodeInformation nodeInformation);
+  void handleNodeUpdate(@NotNull NodeInformation nodeInformation);
 
-    void publishNodeUpdate(@NotNull DefaultNodeInformation nodeInformation);
+  void publishNodeUpdate(@NotNull NodeInformation nodeInformation);
 
-    void handleNodeDisconnect(@NotNull String name);
+  void handleNodeDisconnect(@NotNull String name);
 
-    void handleProcessRegister(@NotNull ProcessInformation processInformation);
+  void handleProcessRegister(@NotNull ProcessInformation processInformation);
 
-    void publishProcessRegister(@NotNull ProcessInformation processInformation);
+  void publishProcessRegister(@NotNull ProcessInformation processInformation);
 
-    void handleProcessUpdate(@NotNull ProcessInformation processInformation);
+  void handleProcessUpdate(@NotNull ProcessInformation processInformation);
 
-    void publishProcessUpdate(@NotNull ProcessInformation processInformation);
+  void publishProcessUpdate(@NotNull ProcessInformation processInformation);
 
-    void handleProcessUnregister(@NotNull String name);
+  void handleProcessUnregister(@NotNull String name);
 
-    void publishProcessUnregister(@NotNull ProcessInformation processInformation);
+  void publishProcessUnregister(@NotNull ProcessInformation processInformation);
 
-    void handleProcessSet(@NotNull Collection<ProcessInformation> processInformation);
+  void handleProcessSet(@NotNull Collection<ProcessInformation> processInformation);
 
-    void publishProcessSet(@NotNull Collection<ProcessInformation> processInformation);
+  void publishProcessSet(@NotNull Collection<ProcessInformation> processInformation);
 
-    void handleProcessGroupCreate(@NotNull DefaultProcessGroup processGroup);
+  void handleProcessGroupCreate(@NotNull ProcessGroup processGroup);
 
-    void publishProcessGroupCreate(@NotNull DefaultProcessGroup processGroup);
+  void publishProcessGroupCreate(@NotNull ProcessGroup processGroup);
 
-    void handleProcessGroupUpdate(@NotNull DefaultProcessGroup processGroup);
+  void handleProcessGroupUpdate(@NotNull ProcessGroup processGroup);
 
-    void publishProcessGroupUpdate(@NotNull DefaultProcessGroup processGroup);
+  void publishProcessGroupUpdate(@NotNull ProcessGroup processGroup);
 
-    void handleProcessGroupDelete(@NotNull DefaultProcessGroup processGroup);
+  void handleProcessGroupDelete(@NotNull ProcessGroup processGroup);
 
-    void publishProcessGroupDelete(@NotNull DefaultProcessGroup processGroup);
+  void publishProcessGroupDelete(@NotNull ProcessGroup processGroup);
 
-    void handleProcessGroupSet(@NotNull Collection<DefaultProcessGroup> processGroups);
+  void handleProcessGroupSet(@NotNull Collection<ProcessGroup> processGroups);
 
-    void publishProcessGroupSet(@NotNull Collection<DefaultProcessGroup> processGroups);
+  void publishProcessGroupSet(@NotNull Collection<ProcessGroup> processGroups);
 
-    void handleMainGroupCreate(@NotNull MainGroup mainGroup);
+  void handleMainGroupCreate(@NotNull MainGroup mainGroup);
 
-    void publishMainGroupCreate(@NotNull MainGroup mainGroup);
+  void publishMainGroupCreate(@NotNull MainGroup mainGroup);
 
-    void handleMainGroupUpdate(@NotNull MainGroup mainGroup);
+  void handleMainGroupUpdate(@NotNull MainGroup mainGroup);
 
-    void publishMainGroupUpdate(@NotNull MainGroup mainGroup);
+  void publishMainGroupUpdate(@NotNull MainGroup mainGroup);
 
-    void handleMainGroupDelete(@NotNull MainGroup mainGroup);
+  void handleMainGroupDelete(@NotNull MainGroup mainGroup);
 
-    void publishMainGroupDelete(@NotNull MainGroup mainGroup);
+  void publishMainGroupDelete(@NotNull MainGroup mainGroup);
 
-    void handleMainGroupSet(@NotNull Collection<MainGroup> mainGroups);
+  void handleMainGroupSet(@NotNull Collection<MainGroup> mainGroups);
 
-    void publishMainGroupSet(@NotNull Collection<MainGroup> mainGroups);
+  void publishMainGroupSet(@NotNull Collection<MainGroup> mainGroups);
 
-    boolean isHeadNode();
+  boolean isHeadNode();
 
-    @NotNull DefaultNodeInformation getHeadNode();
+  @NotNull NodeInformation getHeadNode();
 }

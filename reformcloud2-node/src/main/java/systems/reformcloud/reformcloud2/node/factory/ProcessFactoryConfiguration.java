@@ -27,12 +27,14 @@ package systems.reformcloud.reformcloud2.node.factory;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
-import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessInclusion;
+import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroup;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -40,123 +42,123 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ProcessFactoryConfiguration implements SerializableObject {
 
-    protected String node;
-    protected String displayName;
-    protected String messageOfTheDay;
+  protected String node;
+  protected String displayName;
+  protected String messageOfTheDay;
 
-    protected DefaultProcessGroup processGroup;
-    protected DefaultTemplate template;
-    protected Collection<ProcessInclusion> inclusions;
-    protected JsonConfiguration extra;
-    protected ProcessState initialState;
-    protected UUID processUniqueId;
+  protected ProcessGroup processGroup;
+  protected Template template;
+  protected Collection<ProcessInclusion> inclusions;
+  protected JsonConfiguration extra;
+  protected ProcessState initialState;
+  protected UUID processUniqueId;
 
-    protected int memory;
-    protected int id;
-    protected int maxPlayers;
+  protected int memory;
+  protected int id;
+  protected int maxPlayers;
 
-    public ProcessFactoryConfiguration() {
-    }
+  public ProcessFactoryConfiguration() {
+  }
 
-    public ProcessFactoryConfiguration(String node, String displayName, String messageOfTheDay, DefaultProcessGroup processGroup, DefaultTemplate template,
-                                       Collection<ProcessInclusion> inclusions, JsonConfiguration extra, ProcessState initialState,
-                                       UUID processUniqueId, int memory, int id, int maxPlayers) {
-        this.node = node;
-        this.displayName = displayName;
-        this.messageOfTheDay = messageOfTheDay;
-        this.processGroup = processGroup;
-        this.template = template;
-        this.inclusions = new CopyOnWriteArrayList<>(inclusions);
-        this.extra = new JsonConfiguration();
-        this.extra = extra;
-        this.initialState = initialState;
-        this.processUniqueId = processUniqueId;
-        this.memory = memory;
-        this.id = id;
-        this.maxPlayers = maxPlayers;
-    }
+  public ProcessFactoryConfiguration(String node, String displayName, String messageOfTheDay, ProcessGroup processGroup, Template template,
+                                     Collection<ProcessInclusion> inclusions, JsonConfiguration extra, ProcessState initialState,
+                                     UUID processUniqueId, int memory, int id, int maxPlayers) {
+    this.node = node;
+    this.displayName = displayName;
+    this.messageOfTheDay = messageOfTheDay;
+    this.processGroup = processGroup;
+    this.template = template;
+    this.inclusions = new CopyOnWriteArrayList<>(inclusions);
+    this.extra = JsonConfiguration.newJsonConfiguration();
+    this.extra = extra;
+    this.initialState = initialState;
+    this.processUniqueId = processUniqueId;
+    this.memory = memory;
+    this.id = id;
+    this.maxPlayers = maxPlayers;
+  }
 
-    public String getNode() {
-        return this.node;
-    }
+  public String getNode() {
+    return this.node;
+  }
 
-    public String getDisplayName() {
-        return this.displayName;
-    }
+  public String getDisplayName() {
+    return this.displayName;
+  }
 
-    public String getMessageOfTheDay() {
-        return this.messageOfTheDay;
-    }
+  public String getMessageOfTheDay() {
+    return this.messageOfTheDay;
+  }
 
-    public DefaultProcessGroup getProcessGroup() {
-        return this.processGroup;
-    }
+  public ProcessGroup getProcessGroup() {
+    return this.processGroup;
+  }
 
-    public DefaultTemplate getTemplate() {
-        return this.template;
-    }
+  public Template getTemplate() {
+    return this.template;
+  }
 
-    public Collection<ProcessInclusion> getInclusions() {
-        return this.inclusions;
-    }
+  public Collection<ProcessInclusion> getInclusions() {
+    return this.inclusions;
+  }
 
-    public JsonConfiguration getExtra() {
-        return this.extra;
-    }
+  public JsonConfiguration getExtra() {
+    return this.extra;
+  }
 
-    public ProcessState getInitialState() {
-        return this.initialState;
-    }
+  public ProcessState getInitialState() {
+    return this.initialState;
+  }
 
-    public UUID getProcessUniqueId() {
-        return this.processUniqueId;
-    }
+  public UUID getProcessUniqueId() {
+    return this.processUniqueId;
+  }
 
-    public int getMemory() {
-        return this.memory;
-    }
+  public int getMemory() {
+    return this.memory;
+  }
 
-    public int getId() {
-        return this.id;
-    }
+  public int getId() {
+    return this.id;
+  }
 
-    public int getMaxPlayers() {
-        return this.maxPlayers;
-    }
+  public int getMaxPlayers() {
+    return this.maxPlayers;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.node);
-        buffer.writeString(this.displayName);
-        buffer.writeString(this.messageOfTheDay);
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.node);
+    buffer.writeString(this.displayName);
+    buffer.writeString(this.messageOfTheDay);
 
-        buffer.writeObject(this.processGroup);
-        buffer.writeObject(this.template);
-        buffer.writeObjects(this.inclusions);
-        buffer.writeArray(this.extra.toPrettyBytes());
-        buffer.writeInt(this.initialState.ordinal());
-        buffer.writeUniqueId(this.processUniqueId);
+    buffer.writeObject(this.processGroup);
+    buffer.writeObject(this.template);
+    buffer.writeObjects(this.inclusions);
+    buffer.writeArray(this.extra.toPrettyBytes());
+    buffer.writeInt(this.initialState.ordinal());
+    buffer.writeUniqueId(this.processUniqueId);
 
-        buffer.writeInt(this.memory);
-        buffer.writeInt(this.id);
-        buffer.writeInt(this.maxPlayers);
-    }
+    buffer.writeInt(this.memory);
+    buffer.writeInt(this.id);
+    buffer.writeInt(this.maxPlayers);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.node = buffer.readString();
-        this.displayName = buffer.readString();
-        this.messageOfTheDay = buffer.readString();
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.node = buffer.readString();
+    this.displayName = buffer.readString();
+    this.messageOfTheDay = buffer.readString();
 
-        this.processGroup = buffer.readObject(DefaultProcessGroup.class);
-        this.template = buffer.readObject(DefaultTemplate.class);
-        this.inclusions = new CopyOnWriteArrayList<>(buffer.readObjects(ProcessInclusion.class));
-        this.extra = new JsonConfiguration(buffer.readArray());
-        this.initialState = EnumUtil.findEnumFieldByIndex(ProcessState.class, buffer.readInt()).orElse(null);
-        this.processUniqueId = buffer.readUniqueId();
+    this.processGroup = buffer.readObject(DefaultProcessGroup.class);
+    this.template = buffer.readObject(DefaultTemplate.class);
+    this.inclusions = new CopyOnWriteArrayList<>(buffer.readObjects(ProcessInclusion.class));
+    this.extra = JsonConfiguration.newJsonConfiguration(buffer.readArray());
+    this.initialState = EnumUtil.findEnumFieldByIndex(ProcessState.class, buffer.readInt()).orElse(null);
+    this.processUniqueId = buffer.readUniqueId();
 
-        this.memory = buffer.readInt();
-        this.id = buffer.readInt();
-        this.maxPlayers = buffer.readInt();
-    }
+    this.memory = buffer.readInt();
+    this.id = buffer.readInt();
+    this.maxPlayers = buffer.readInt();
+  }
 }

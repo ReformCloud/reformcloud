@@ -22,29 +22,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.application.loader;
+package systems.reformcloud.reformcloud2.node.template.installers;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Version;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.version.VersionInstaller;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Versions;
+import systems.reformcloud.reformcloud2.shared.io.DownloadHelper;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-public final class AppClassLoader extends URLClassLoader {
+public class DownloadingVersionInstaller implements VersionInstaller {
 
-    static {
-        ClassLoader.registerAsParallelCapable();
+  @Override
+  public boolean installVersion(@NotNull Version version) {
+    final Path targetPath = Paths.get("reformcloud/files", Versions.formatVersion(version));
+    if (Files.notExists(targetPath)) {
+      DownloadHelper.download(version.getDownloadUrl(), targetPath);
     }
+    return true;
+  }
 
-    public AppClassLoader(@NotNull URL[] urls, @NotNull ClassLoader parent) {
-        super(urls, parent);
-    }
-
-    @Override
-    public void close() {
-        try {
-            super.close();
-        } catch (final IOException ignored) {
-        }
-    }
+  @Override
+  public String getName() {
+    return VersionInstaller.DOWNLOADING;
+  }
 }

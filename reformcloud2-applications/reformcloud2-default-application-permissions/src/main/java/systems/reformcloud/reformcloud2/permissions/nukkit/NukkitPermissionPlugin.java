@@ -31,13 +31,13 @@ import systems.reformcloud.reformcloud2.permissions.util.PermissionPluginUtil;
 
 public class NukkitPermissionPlugin extends PluginBase {
 
-    @Override
-    public void onEnable() {
-        PermissionPluginUtil.awaitConnection(() -> Server.getInstance().getPluginManager().registerEvents(new NukkitPermissionListener(), this));
-    }
+  @Override
+  public void onEnable() {
+    PermissionPluginUtil.awaitConnection(() -> Server.getInstance().getPluginManager().registerEvents(new NukkitPermissionListener(), this));
+  }
 
-    @Override
-    public void onDisable() {
-        Server.getInstance().getScheduler().cancelTask(this);
-    }
+  @Override
+  public void onDisable() {
+    Server.getInstance().getScheduler().cancelTask(this);
+  }
 }

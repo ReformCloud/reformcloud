@@ -30,38 +30,38 @@ import systems.reformcloud.reformcloud2.executor.api.http.websocket.response.Res
 
 public class DefaultResponseFrameHolder implements ResponseFrameHolder<DefaultResponseFrameHolder> {
 
-    private final SocketFrame<?> response;
-    private boolean lastHandler;
-    private boolean closeAfterSent;
+  private final SocketFrame<?> response;
+  private boolean lastHandler;
+  private boolean closeAfterSent;
 
-    public DefaultResponseFrameHolder(SocketFrame<?> response) {
-        this.response = response;
-    }
+  public DefaultResponseFrameHolder(SocketFrame<?> response) {
+    this.response = response;
+  }
 
-    @Override
-    public @NotNull SocketFrame<?> response() {
-        return this.response;
-    }
+  @Override
+  public @NotNull SocketFrame<?> response() {
+    return this.response;
+  }
 
-    @Override
-    public boolean lastHandler() {
-        return this.lastHandler;
-    }
+  @Override
+  public boolean lastHandler() {
+    return this.lastHandler;
+  }
 
-    @Override
-    public @NotNull DefaultResponseFrameHolder lastHandler(boolean lastHandler) {
-        this.lastHandler = lastHandler;
-        return this;
-    }
+  @Override
+  public @NotNull DefaultResponseFrameHolder lastHandler(boolean lastHandler) {
+    this.lastHandler = lastHandler;
+    return this;
+  }
 
-    @Override
-    public boolean closeAfterSent() {
-        return this.closeAfterSent;
-    }
+  @Override
+  public boolean closeAfterSent() {
+    return this.closeAfterSent;
+  }
 
-    @Override
-    public @NotNull DefaultResponseFrameHolder closeAfterSent(boolean close) {
-        this.closeAfterSent = close;
-        return this;
-    }
+  @Override
+  public @NotNull DefaultResponseFrameHolder closeAfterSent(boolean close) {
+    this.closeAfterSent = close;
+    return this;
+  }
 }

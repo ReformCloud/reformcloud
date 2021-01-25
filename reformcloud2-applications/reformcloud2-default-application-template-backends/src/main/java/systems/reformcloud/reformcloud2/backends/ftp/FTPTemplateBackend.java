@@ -35,7 +35,7 @@ import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.task.defaults.DefaultTask;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
 import systems.reformcloud.reformcloud2.node.template.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 
@@ -54,294 +54,294 @@ import java.util.concurrent.TimeUnit;
 
 public final class FTPTemplateBackend implements TemplateBackend {
 
-    private static final Executor EXECUTOR = Executors.newCachedThreadPool();
-    private static final BlockingDeque<Runnable> TASKS = new LinkedBlockingDeque<>();
-    private final FTPClient ftpClient;
-    private final FTPConfig config;
+  private static final Executor EXECUTOR = Executors.newCachedThreadPool();
+  private static final BlockingDeque<Runnable> TASKS = new LinkedBlockingDeque<>();
+  private final FTPClient ftpClient;
+  private final FTPConfig config;
 
-    private FTPTemplateBackend(FTPConfig ftpConfig) {
-        this.config = ftpConfig;
-        this.ftpClient = ftpConfig.isSslEnabled() ? new FTPSClient() : new FTPClient();
-        this.open(ftpConfig);
+  private FTPTemplateBackend(FTPConfig ftpConfig) {
+    this.config = ftpConfig;
+    this.ftpClient = ftpConfig.isSslEnabled() ? new FTPSClient() : new FTPClient();
+    this.open(ftpConfig);
 
-        EXECUTOR.execute(() -> {
-            while (!Thread.interrupted()) {
-                try {
-                    Runnable runnable = TASKS.poll(20, TimeUnit.SECONDS);
-                    boolean available = this.ftpClient.isAvailable();
-
-                    if (runnable == null) {
-                        if (!available) {
-                            continue;
-                        }
-
-                        try {
-                            this.ftpClient.disconnect();
-                        } catch (final Throwable ignored) {
-                        }
-
-                        continue;
-                    }
-
-                    if (!available) {
-                        this.open(this.config);
-                    }
-
-                    runnable.run();
-                } catch (final InterruptedException ignored) {
-                }
-            }
-        });
-    }
-
-    public static void load(Path configPath) {
-        if (Files.notExists(configPath)) {
-            new JsonConfiguration().add("config", new FTPConfig(
-                false, false, "127.0.0.1", 21, "rc", "password", "rc/templates"
-            )).write(configPath);
-        }
-
-        FTPConfig config = JsonConfiguration.read(configPath).get("config", new TypeToken<>() {
-        });
-        if (config == null || !config.isEnabled()) {
-            return;
-        }
-
-        TemplateBackendManager.registerBackend(new FTPTemplateBackend(config));
-    }
-
-    public static void unload() {
-        TemplateBackendManager.unregisterBackend("FTP");
-    }
-
-    private static Task<Void> future(@NotNull Runnable runnable) {
-        Task<Void> completableFuture = new DefaultTask<>();
-        Runnable newRunnable = () -> {
-            runnable.run();
-            completableFuture.complete(null);
-        };
-        TASKS.offerLast(newRunnable);
-        return completableFuture;
-    }
-
-    @Override
-    public boolean existsTemplate(@NotNull String group, @NotNull String template) {
-        if (this.ftpClient == null) {
-            return false;
-        }
-
+    EXECUTOR.execute(() -> {
+      while (!Thread.interrupted()) {
         try {
-            return this.ftpClient.listFiles(group + "/" + template).length > 0;
-        } catch (final IOException ex) {
-            return false;
-        }
-    }
+          Runnable runnable = TASKS.poll(20, TimeUnit.SECONDS);
+          boolean available = this.ftpClient.isAvailable();
 
-    @Override
-    public void createTemplate(@NotNull String group, @NotNull String template) {
-        if (this.ftpClient == null) {
-            return;
-        }
+          if (runnable == null) {
+            if (!available) {
+              continue;
+            }
 
-        future(() -> {
             try {
-                this.makeDirectory(group + "/" + template);
-            } catch (final IOException ex) {
-                ex.printStackTrace();
+              this.ftpClient.disconnect();
+            } catch (final Throwable ignored) {
             }
-        });
+
+            continue;
+          }
+
+          if (!available) {
+            this.open(this.config);
+          }
+
+          runnable.run();
+        } catch (final InterruptedException ignored) {
+        }
+      }
+    });
+  }
+
+  public static void load(Path configPath) {
+    if (Files.notExists(configPath)) {
+      new JsonConfiguration().add("config", new FTPConfig(
+        false, false, "127.0.0.1", 21, "rc", "password", "rc/templates"
+      )).write(configPath);
     }
 
-    @NotNull
-    @Override
-    public Task<Void> loadTemplate(@NotNull String group, @NotNull String template, @NotNull Path target) {
-        if (this.ftpClient == null) {
-            return Task.completedTask(null);
+    FTPConfig config = JsonConfiguration.read(configPath).get("config", new TypeToken<>() {
+    });
+    if (config == null || !config.isEnabled()) {
+      return;
+    }
+
+    TemplateBackendManager.registerBackend(new FTPTemplateBackend(config));
+  }
+
+  public static void unload() {
+    TemplateBackendManager.unregisterBackend("FTP");
+  }
+
+  private static Task<Void> future(@NotNull Runnable runnable) {
+    Task<Void> completableFuture = new DefaultTask<>();
+    Runnable newRunnable = () -> {
+      runnable.run();
+      completableFuture.complete(null);
+    };
+    TASKS.offerLast(newRunnable);
+    return completableFuture;
+  }
+
+  @Override
+  public boolean existsTemplate(@NotNull String group, @NotNull String template) {
+    if (this.ftpClient == null) {
+      return false;
+    }
+
+    try {
+      return this.ftpClient.listFiles(group + "/" + template).length > 0;
+    } catch (final IOException ex) {
+      return false;
+    }
+  }
+
+  @Override
+  public void createTemplate(@NotNull String group, @NotNull String template) {
+    if (this.ftpClient == null) {
+      return;
+    }
+
+    future(() -> {
+      try {
+        this.makeDirectory(group + "/" + template);
+      } catch (final IOException ex) {
+        ex.printStackTrace();
+      }
+    });
+  }
+
+  @NotNull
+  @Override
+  public Task<Void> loadTemplate(@NotNull String group, @NotNull String template, @NotNull Path target) {
+    if (this.ftpClient == null) {
+      return Task.completedTask(null);
+    }
+
+    return future(() -> {
+      try {
+        FTPFile[] files = this.ftpClient.listFiles(group + "/" + template);
+        if (files == null || files.length == 0) {
+          return;
         }
 
-        return future(() -> {
-            try {
-                FTPFile[] files = this.ftpClient.listFiles(group + "/" + template);
-                if (files == null || files.length == 0) {
-                    return;
-                }
+        for (FTPFile file : files) {
+          this.loadFiles(file, group + "/" + template + "/" + file.getName(), Path.of(target.toString(), file.getName()));
+        }
+      } catch (final IOException ex) {
+        ex.printStackTrace();
+      }
+    });
+  }
 
-                for (FTPFile file : files) {
-                    this.loadFiles(file, group + "/" + template + "/" + file.getName(), Path.of(target.toString(), file.getName()));
-                }
-            } catch (final IOException ex) {
-                ex.printStackTrace();
-            }
-        });
+  private void loadFiles(FTPFile file, String path, Path target) throws IOException {
+    if (file.isDirectory()) {
+      FTPFile[] files = this.ftpClient.listFiles(path);
+      if (files == null || files.length == 0) {
+        return;
+      }
+
+      for (FTPFile ftpFile : files) {
+        this.loadFiles(ftpFile, path + "/" + ftpFile.getName(), Path.of(target.toString(), ftpFile.getName()));
+      }
+    } else if (file.isFile()) {
+      IOUtils.createDirectory(target.getParent());
+      if (Files.notExists(target)) {
+        Files.createFile(target);
+      }
+
+      try (OutputStream outputStream = Files.newOutputStream(target)) {
+        this.ftpClient.retrieveFile(path, outputStream);
+      }
     }
 
-    private void loadFiles(FTPFile file, String path, Path target) throws IOException {
-        if (file.isDirectory()) {
-            FTPFile[] files = this.ftpClient.listFiles(path);
-            if (files == null || files.length == 0) {
-                return;
-            }
+    this.ftpClient.changeWorkingDirectory(this.config.getBaseDirectory());
+  }
 
-            for (FTPFile ftpFile : files) {
-                this.loadFiles(ftpFile, path + "/" + ftpFile.getName(), Path.of(target.toString(), ftpFile.getName()));
-            }
-        } else if (file.isFile()) {
-            IOUtils.createDirectory(target.getParent());
-            if (Files.notExists(target)) {
-                Files.createFile(target);
-            }
+  @NotNull
+  @Override
+  public Task<Void> loadGlobalTemplates(@NotNull ProcessGroup group, @NotNull Path target) {
+    if (this.ftpClient == null) {
+      return Task.completedTask(null);
+    }
 
-            try (OutputStream outputStream = Files.newOutputStream(target)) {
-                this.ftpClient.retrieveFile(path, outputStream);
-            }
+    return future(() ->
+      MoreCollections.allOf(group.getTemplates(), e -> e.getBackend().equals(this.getName())
+        && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target))
+    );
+  }
+
+  @NotNull
+  @Override
+  public Task<Void> loadPath(@NotNull String path, @NotNull Path target) {
+    if (this.ftpClient == null) {
+      return Task.completedTask(null);
+    }
+
+    return future(() -> {
+      try {
+        FTPFile[] files = this.ftpClient.listFiles(path);
+        if (files == null || files.length == 0) {
+          this.makeDirectory(path);
+          return;
         }
 
-        this.ftpClient.changeWorkingDirectory(this.config.getBaseDirectory());
+        for (FTPFile file : files) {
+          this.loadFiles(file, path + "/" + file.getName(), Path.of(target.toString(), file.getName()));
+        }
+      } catch (final IOException ex) {
+        ex.printStackTrace();
+      }
+    });
+  }
+
+  @Override
+  public void deployTemplate(@NotNull String group, @NotNull String template, @NotNull Path current, @NotNull Collection<String> collection) {
+    if (this.ftpClient == null) {
+      return;
     }
 
-    @NotNull
-    @Override
-    public Task<Void> loadGlobalTemplates(@NotNull ProcessGroup group, @NotNull Path target) {
-        if (this.ftpClient == null) {
-            return Task.completedTask(null);
+    future(() -> {
+      try (DirectoryStream<Path> stream = Files.newDirectoryStream(current, path -> !MoreCollections.hasMatch(collection, path::endsWith))) {
+        for (Path path : stream) {
+          this.writeFile(group + "/" + template, path, collection);
+        }
+      } catch (IOException exception) {
+        exception.printStackTrace();
+      }
+    });
+  }
+
+  private void writeFile(String path, Path local, Collection<String> collection) throws IOException {
+    String remotePath = path + "/" + local.getFileName().toString();
+    if (Files.isDirectory(local)) {
+      this.makeDirectory(remotePath);
+      try (DirectoryStream<Path> stream = Files.newDirectoryStream(local, p -> !MoreCollections.hasMatch(collection, p::endsWith))) {
+        for (Path file : stream) {
+          this.writeFile(remotePath, file, collection);
+        }
+      }
+    } else {
+      try (InputStream inputStream = Files.newInputStream(local)) {
+        this.ftpClient.storeFile(remotePath, inputStream);
+      }
+    }
+
+    this.ftpClient.changeWorkingDirectory("/" + this.config.getBaseDirectory());
+  }
+
+  private void makeDirectory(String path) throws IOException {
+    for (String s : path.split("/")) {
+      if (!this.ftpClient.changeWorkingDirectory(s)) {
+        this.ftpClient.makeDirectory(s);
+      }
+
+      this.ftpClient.changeWorkingDirectory(s);
+    }
+
+    this.ftpClient.changeWorkingDirectory(this.config.getBaseDirectory());
+  }
+
+  @Override
+  public void deleteTemplate(@NotNull String group, @NotNull String template) {
+    if (this.ftpClient == null) {
+      return;
+    }
+
+    TASKS.offerLast(() -> {
+      try {
+        FTPFile[] files = this.ftpClient.mlistDir(group + "/" + template);
+        if (files == null || files.length == 0) {
+          return;
         }
 
-        return future(() ->
-            Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(this.getName())
-                && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target))
-        );
-    }
-
-    @NotNull
-    @Override
-    public Task<Void> loadPath(@NotNull String path, @NotNull Path target) {
-        if (this.ftpClient == null) {
-            return Task.completedTask(null);
+        for (FTPFile file : files) {
+          this.deleteAll(group + "/" + template, file);
         }
+      } catch (final IOException ex) {
+        ex.printStackTrace();
+      }
+    });
+  }
 
-        return future(() -> {
-            try {
-                FTPFile[] files = this.ftpClient.listFiles(path);
-                if (files == null || files.length == 0) {
-                    this.makeDirectory(path);
-                    return;
-                }
+  private void deleteAll(String path, FTPFile file) throws IOException {
+    String filePath = path + "/" + file.getName();
 
-                for (FTPFile file : files) {
-                    this.loadFiles(file, path + "/" + file.getName(), Path.of(target.toString(), file.getName()));
-                }
-            } catch (final IOException ex) {
-                ex.printStackTrace();
-            }
-        });
+    if (file.isDirectory()) {
+      FTPFile[] files = this.ftpClient.listFiles(filePath);
+      if (files == null || files.length == 0) {
+        return;
+      }
+
+      for (FTPFile ftpFile : files) {
+        this.deleteAll(filePath, ftpFile);
+      }
+    } else {
+      this.ftpClient.deleteFile(filePath);
     }
+  }
 
-    @Override
-    public void deployTemplate(@NotNull String group, @NotNull String template, @NotNull Path current, @NotNull Collection<String> collection) {
-        if (this.ftpClient == null) {
-            return;
-        }
+  private void open(FTPConfig ftpConfig) {
+    try {
+      this.ftpClient.setAutodetectUTF8(true);
 
-        future(() -> {
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(current, path -> !Streams.hasMatch(collection, path::endsWith))) {
-                for (Path path : stream) {
-                    this.writeFile(group + "/" + template, path, collection);
-                }
-            } catch (IOException exception) {
-                exception.printStackTrace();
-            }
-        });
+      this.ftpClient.connect(ftpConfig.getHost(), ftpConfig.getPort());
+      this.ftpClient.login(ftpConfig.getUser(), ftpConfig.getPassword());
+
+      this.ftpClient.sendNoOp();
+      this.ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+      this.ftpClient.setControlKeepAliveTimeout(60);
+
+      this.makeDirectory(ftpConfig.getBaseDirectory());
+    } catch (final IOException ex) {
+      ex.printStackTrace();
     }
+  }
 
-    private void writeFile(String path, Path local, Collection<String> collection) throws IOException {
-        String remotePath = path + "/" + local.getFileName().toString();
-        if (Files.isDirectory(local)) {
-            this.makeDirectory(remotePath);
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(local, p -> !Streams.hasMatch(collection, p::endsWith))) {
-                for (Path file : stream) {
-                    this.writeFile(remotePath, file, collection);
-                }
-            }
-        } else {
-            try (InputStream inputStream = Files.newInputStream(local)) {
-                this.ftpClient.storeFile(remotePath, inputStream);
-            }
-        }
-
-        this.ftpClient.changeWorkingDirectory("/" + this.config.getBaseDirectory());
-    }
-
-    private void makeDirectory(String path) throws IOException {
-        for (String s : path.split("/")) {
-            if (!this.ftpClient.changeWorkingDirectory(s)) {
-                this.ftpClient.makeDirectory(s);
-            }
-
-            this.ftpClient.changeWorkingDirectory(s);
-        }
-
-        this.ftpClient.changeWorkingDirectory(this.config.getBaseDirectory());
-    }
-
-    @Override
-    public void deleteTemplate(@NotNull String group, @NotNull String template) {
-        if (this.ftpClient == null) {
-            return;
-        }
-
-        TASKS.offerLast(() -> {
-            try {
-                FTPFile[] files = this.ftpClient.mlistDir(group + "/" + template);
-                if (files == null || files.length == 0) {
-                    return;
-                }
-
-                for (FTPFile file : files) {
-                    this.deleteAll(group + "/" + template, file);
-                }
-            } catch (final IOException ex) {
-                ex.printStackTrace();
-            }
-        });
-    }
-
-    private void deleteAll(String path, FTPFile file) throws IOException {
-        String filePath = path + "/" + file.getName();
-
-        if (file.isDirectory()) {
-            FTPFile[] files = this.ftpClient.listFiles(filePath);
-            if (files == null || files.length == 0) {
-                return;
-            }
-
-            for (FTPFile ftpFile : files) {
-                this.deleteAll(filePath, ftpFile);
-            }
-        } else {
-            this.ftpClient.deleteFile(filePath);
-        }
-    }
-
-    private void open(FTPConfig ftpConfig) {
-        try {
-            this.ftpClient.setAutodetectUTF8(true);
-
-            this.ftpClient.connect(ftpConfig.getHost(), ftpConfig.getPort());
-            this.ftpClient.login(ftpConfig.getUser(), ftpConfig.getPassword());
-
-            this.ftpClient.sendNoOp();
-            this.ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-            this.ftpClient.setControlKeepAliveTimeout(60);
-
-            this.makeDirectory(ftpConfig.getBaseDirectory());
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    @NotNull
-    @Override
-    public String getName() {
-        return "FTP";
-    }
+  @NotNull
+  @Override
+  public String getName() {
+    return "FTP";
+  }
 }

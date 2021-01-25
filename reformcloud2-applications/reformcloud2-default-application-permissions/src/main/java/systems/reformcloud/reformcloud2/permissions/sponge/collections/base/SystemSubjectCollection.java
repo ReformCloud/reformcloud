@@ -36,25 +36,25 @@ import java.util.concurrent.CompletableFuture;
 
 public class SystemSubjectCollection extends DefaultSubjectCollection {
 
-    public SystemSubjectCollection(String type, PermissionService service) {
-        super(type, service);
-    }
+  public SystemSubjectCollection(String type, PermissionService service) {
+    super(type, service);
+  }
 
-    @NotNull
-    @Override
-    protected Subject load(String id) {
-        return new SystemSubject(id, this.service, this);
-    }
+  @NotNull
+  @Override
+  protected Subject load(String id) {
+    return new SystemSubject(id, this.service, this);
+  }
 
-    @Override
-    @NotNull
-    public CompletableFuture<Boolean> hasSubject(@NotNull String identifier) {
-        return CompletableFuture.completedFuture(true);
-    }
+  @Override
+  @NotNull
+  public CompletableFuture<Boolean> hasSubject(@NotNull String identifier) {
+    return CompletableFuture.completedFuture(true);
+  }
 
-    @Override
-    @NotNull
-    public Collection<Subject> getLoadedSubjects() {
-        return new ArrayList<>();
-    }
+  @Override
+  @NotNull
+  public Collection<Subject> getLoadedSubjects() {
+    return new ArrayList<>();
+  }
 }

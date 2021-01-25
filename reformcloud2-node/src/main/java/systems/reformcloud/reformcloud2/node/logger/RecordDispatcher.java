@@ -32,32 +32,32 @@ import java.util.logging.LogRecord;
 
 public class RecordDispatcher extends Thread {
 
-    private final CloudLogger logger;
-    private final BlockingQueue<LogRecord> queue = new LinkedBlockingQueue<>();
+  private final CloudLogger logger;
+  private final BlockingQueue<LogRecord> queue = new LinkedBlockingQueue<>();
 
-    public RecordDispatcher(CloudLogger logger) {
-        super("Cloud logging thread");
-        this.logger = logger;
+  public RecordDispatcher(CloudLogger logger) {
+    super("Cloud logging thread");
+    this.logger = logger;
+  }
+
+  @Override
+  public void run() {
+    while (!super.isInterrupted()) {
+      try {
+        this.logger.flushRecord(this.queue.take());
+      } catch (InterruptedException ignored) {
+        break;
+      }
     }
 
-    @Override
-    public void run() {
-        while (!super.isInterrupted()) {
-            try {
-                this.logger.flushRecord(this.queue.take());
-            } catch (InterruptedException ignored) {
-                break;
-            }
-        }
-
-        for (LogRecord logRecord : this.queue) {
-            this.logger.flushRecord(logRecord);
-        }
+    for (LogRecord logRecord : this.queue) {
+      this.logger.flushRecord(logRecord);
     }
+  }
 
-    protected void queue(@NotNull LogRecord record) {
-        if (!super.isInterrupted()) {
-            this.queue.add(record);
-        }
+  protected void queue(@NotNull LogRecord record) {
+    if (!super.isInterrupted()) {
+      this.queue.add(record);
     }
+  }
 }

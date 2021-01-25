@@ -28,28 +28,29 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
+import systems.reformcloud.reformcloud2.shared.group.DefaultMainGroup;
 import systems.reformcloud.reformcloud2.shared.group.DefaultMainGroupBuilder;
 
 public class NodeMainGroupBuilder extends DefaultMainGroupBuilder {
 
-    private final DefaultNodeMainGroupProvider provider;
+  private final DefaultNodeMainGroupProvider provider;
 
-    NodeMainGroupBuilder(DefaultNodeMainGroupProvider provider) {
-        this.provider = provider;
-    }
+  NodeMainGroupBuilder(DefaultNodeMainGroupProvider provider) {
+    this.provider = provider;
+  }
 
-    @NotNull
-    @Override
-    public Task<MainGroup> create() {
-        Conditions.nonNull(super.name, "Unable to create main group with no name provided");
-        return Task.supply(() -> {
-            if (this.provider.getMainGroup(super.name).isPresent()) {
-                return null;
-            }
+  @NotNull
+  @Override
+  public Task<MainGroup> create() {
+    Conditions.nonNull(super.name, "Unable to create main group with no name provided");
+    return Task.supply(() -> {
+      if (this.provider.getMainGroup(super.name).isPresent()) {
+        return null;
+      }
 
-            MainGroup mainGroup = new MainGroup(super.name, super.subGroups);
-            this.provider.addGroup(mainGroup);
-            return mainGroup;
-        });
-    }
+      MainGroup mainGroup = new DefaultMainGroup(super.subGroups, super.name);
+      this.provider.addGroup(mainGroup);
+      return mainGroup;
+    });
+  }
 }

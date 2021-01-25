@@ -31,15 +31,15 @@ import systems.reformcloud.reformcloud2.permissions.sponge.subject.base.group.Gr
 
 public abstract class AbstractGroupSubject extends AbstractSpongeSubject {
 
-    private final SubjectData subjectData;
+  private final SubjectData subjectData;
 
-    public AbstractGroupSubject(@NotNull String group) {
-        this.subjectData = new GroupSubjectData(group);
-    }
+  public AbstractGroupSubject(@NotNull String group) {
+    this.subjectData = new GroupSubjectData(group);
+  }
 
-    @Override
-    @NotNull
-    public SubjectData getSubjectData() {
-        return this.subjectData;
-    }
+  @Override
+  @NotNull
+  public SubjectData getSubjectData() {
+    return this.subjectData;
+  }
 }

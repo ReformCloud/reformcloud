@@ -40,56 +40,56 @@ import java.util.concurrent.CompletableFuture;
 
 public class SpongePermissionDescription implements PermissionDescription {
 
-    private final PermissionService service;
-    private final String id;
-    private final PluginContainer owner;
-    private final Text description;
+  private final PermissionService service;
+  private final String id;
+  private final PluginContainer owner;
+  private final Text description;
 
-    SpongePermissionDescription(
-        @NotNull PermissionService service,
-        @NotNull String id,
-        @Nullable PluginContainer owner,
-        @Nullable Text description
-    ) {
-        this.service = service;
-        this.id = id;
-        this.owner = owner;
-        this.description = description;
-    }
+  SpongePermissionDescription(
+    @NotNull PermissionService service,
+    @NotNull String id,
+    @Nullable PluginContainer owner,
+    @Nullable Text description
+  ) {
+    this.service = service;
+    this.id = id;
+    this.owner = owner;
+    this.description = description;
+  }
 
-    @Override
-    @NotNull
-    public String getId() {
-        return this.id;
-    }
+  @Override
+  @NotNull
+  public String getId() {
+    return this.id;
+  }
 
-    @Override
-    @NotNull
-    public Optional<Text> getDescription() {
-        return Optional.ofNullable(this.description);
-    }
+  @Override
+  @NotNull
+  public Optional<Text> getDescription() {
+    return Optional.ofNullable(this.description);
+  }
 
-    @Override
-    @NotNull
-    public Optional<PluginContainer> getOwner() {
-        return Optional.ofNullable(this.owner);
-    }
+  @Override
+  @NotNull
+  public Optional<PluginContainer> getOwner() {
+    return Optional.ofNullable(this.owner);
+  }
 
-    @Override
-    @NotNull
-    public CompletableFuture<Map<SubjectReference, Boolean>> findAssignedSubjects(@NotNull String collectionIdentifier) {
-        return this.service.loadCollection(collectionIdentifier).thenCompose(e -> {
-            if (e == null) {
-                return CompletableFuture.completedFuture(new HashMap<>());
-            }
+  @Override
+  @NotNull
+  public CompletableFuture<Map<SubjectReference, Boolean>> findAssignedSubjects(@NotNull String collectionIdentifier) {
+    return this.service.loadCollection(collectionIdentifier).thenCompose(e -> {
+      if (e == null) {
+        return CompletableFuture.completedFuture(new HashMap<>());
+      }
 
-            return e.getAllWithPermission(this.getId());
-        });
-    }
+      return e.getAllWithPermission(this.getId());
+    });
+  }
 
-    @Override
-    @NotNull
-    public Map<Subject, Boolean> getAssignedSubjects(@NotNull String collectionIdentifier) {
-        return this.service.getCollection(collectionIdentifier).map(e -> e.getLoadedWithPermission(this.getId())).orElseGet(HashMap::new);
-    }
+  @Override
+  @NotNull
+  public Map<Subject, Boolean> getAssignedSubjects(@NotNull String collectionIdentifier) {
+    return this.service.getCollection(collectionIdentifier).map(e -> e.getLoadedWithPermission(this.getId())).orElseGet(HashMap::new);
+  }
 }

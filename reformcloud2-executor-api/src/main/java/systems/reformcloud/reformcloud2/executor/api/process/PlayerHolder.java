@@ -37,7 +37,6 @@ public interface PlayerHolder extends SerializableObject, Cloneable {
     int getOnlineCount();
 
     @NotNull
-    @Unmodifiable
     Collection<Player> getPlayers();
 
     @NotNull

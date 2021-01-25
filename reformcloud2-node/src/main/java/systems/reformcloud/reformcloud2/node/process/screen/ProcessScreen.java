@@ -33,15 +33,15 @@ import java.util.Queue;
 
 public interface ProcessScreen {
 
-    @NotNull ProcessInformation getTargetProcess();
+  @NotNull ProcessInformation getTargetProcess();
 
-    @NotNull Queue<String> getCachedLogLines();
+  @NotNull Queue<String> getCachedLogLines();
 
-    @NotNull @UnmodifiableView Collection<String> getListeningNodes();
+  @NotNull @UnmodifiableView Collection<String> getListeningNodes();
 
-    void addListeningNode(@NotNull String name);
+  void addListeningNode(@NotNull String name);
 
-    void removeListeningNode(@NotNull String name);
+  void removeListeningNode(@NotNull String name);
 
-    void tick();
+  void tick();
 }

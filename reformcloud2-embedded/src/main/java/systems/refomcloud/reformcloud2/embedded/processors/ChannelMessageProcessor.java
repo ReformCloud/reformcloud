@@ -34,9 +34,9 @@ import systems.reformcloud.reformcloud2.protocol.shared.PacketChannelMessage;
 
 public class ChannelMessageProcessor implements PacketProcessor<PacketChannelMessage> {
 
-    @Override
-    public void process(@NotNull NetworkChannel channel, @NotNull PacketChannelMessage packet) {
-        ExecutorAPI.getInstance().getServiceRegistry().getProvider(EventManager.class)
-            .ifPresent(eventManager -> eventManager.callEvent(new ChannelMessageReceiveEvent(packet.getChannel(), packet.getData())));
-    }
+  @Override
+  public void process(@NotNull NetworkChannel channel, @NotNull PacketChannelMessage packet) {
+    ExecutorAPI.getInstance().getServiceRegistry().getProvider(EventManager.class)
+      .ifPresent(eventManager -> eventManager.callEvent(new ChannelMessageReceiveEvent(packet.getChannel(), packet.getData())));
+  }
 }

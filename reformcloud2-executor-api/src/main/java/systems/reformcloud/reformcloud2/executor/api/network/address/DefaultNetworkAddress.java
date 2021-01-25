@@ -24,6 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.network.address;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
@@ -43,7 +44,8 @@ public class DefaultNetworkAddress implements NetworkAddress {
     protected DefaultNetworkAddress() {
     }
 
-    protected DefaultNetworkAddress(String host, int port) {
+    @ApiStatus.Internal
+    public DefaultNetworkAddress(String host, int port) {
         this.host = host;
         this.port = port;
     }

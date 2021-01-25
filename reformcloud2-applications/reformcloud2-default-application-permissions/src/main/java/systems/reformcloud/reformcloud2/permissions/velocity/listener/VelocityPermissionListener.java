@@ -34,19 +34,19 @@ import systems.reformcloud.reformcloud2.permissions.velocity.permission.DefaultP
 
 public class VelocityPermissionListener {
 
-    @Subscribe
-    public void handle(final @NotNull LoginEvent event) {
-        PermissionManagement.getInstance().loadUser(event.getPlayer().getUniqueId(), event.getPlayer().getUsername());
-        PermissionManagement.getInstance().assignDefaultGroups(event.getPlayer().getUniqueId());
-    }
+  @Subscribe
+  public void handle(final @NotNull LoginEvent event) {
+    PermissionManagement.getInstance().loadUser(event.getPlayer().getUniqueId(), event.getPlayer().getUsername());
+    PermissionManagement.getInstance().assignDefaultGroups(event.getPlayer().getUniqueId());
+  }
 
-    @Subscribe
-    public void handle(final @NotNull PermissionsSetupEvent event) {
-        event.setProvider(DefaultPermissionProvider.INSTANCE);
-    }
+  @Subscribe
+  public void handle(final @NotNull PermissionsSetupEvent event) {
+    event.setProvider(DefaultPermissionProvider.INSTANCE);
+  }
 
-    @Subscribe
-    public void handle(final @NotNull DisconnectEvent event) {
-        PermissionManagement.getInstance().handleDisconnect(event.getPlayer().getUniqueId());
-    }
+  @Subscribe
+  public void handle(final @NotNull DisconnectEvent event) {
+    PermissionManagement.getInstance().handleDisconnect(event.getPlayer().getUniqueId());
+  }
 }

@@ -30,8 +30,8 @@ import systems.reformcloud.reformcloud2.protocol.shared.PacketConnectPlayerToSer
 
 public class PacketConnectPlayerToServerProcessor extends PlayerApiToNodePacketProcessor<PacketConnectPlayerToServer> {
 
-    @Override
-    public void process(@NotNull NetworkChannel channel, @NotNull PacketConnectPlayerToServer packet) {
-        this.getPlayerExecutor().executeConnect(packet.getUniqueId(), packet.getServer());
-    }
+  @Override
+  public void process(@NotNull NetworkChannel channel, @NotNull PacketConnectPlayerToServer packet) {
+    this.getPlayerExecutor().executeConnect(packet.getUniqueId(), packet.getServer());
+  }
 }

@@ -36,151 +36,151 @@ import java.util.Set;
 
 public class DefaultHeaders implements Headers {
 
-    private final HttpHeaders headers;
+  private final HttpHeaders headers;
 
-    public DefaultHeaders(HttpHeaders headers) {
-        this.headers = headers;
+  public DefaultHeaders(HttpHeaders headers) {
+    this.headers = headers;
+  }
+
+  @Override
+  public @NotNull Optional<String> get(@NotNull String name) {
+    return Optional.ofNullable(this.headers.get(name));
+  }
+
+  @Override
+  public @NotNull String get(@NotNull String name, @NotNull String defaultValue) {
+    return this.headers.get(name, defaultValue);
+  }
+
+  @Override
+  public @NotNull Optional<Integer> getInt(@NotNull String name) {
+    return Optional.ofNullable(this.headers.getInt(name));
+  }
+
+  @Override
+  public int getInt(@NotNull String name, int defaultValue) {
+    return this.headers.getInt(name, defaultValue);
+  }
+
+  @Override
+  public @NotNull Optional<Short> getShort(@NotNull String name) {
+    return Optional.ofNullable(this.headers.getShort(name));
+  }
+
+  @Override
+  public short getShort(@NotNull String name, short defaultValue) {
+    return this.headers.getShort(name, defaultValue);
+  }
+
+  @Override
+  public @NotNull Optional<Long> getTimeMillis(@NotNull String name) {
+    return Optional.ofNullable(this.headers.getTimeMillis(name));
+  }
+
+  @Override
+  public long getTimeMillis(@NotNull String name, long defaultValue) {
+    return this.headers.getTimeMillis(name, defaultValue);
+  }
+
+  @Override
+  public @NotNull List<String> getAll(@NotNull String name) {
+    return this.headers.getAll(name);
+  }
+
+  @Override
+  public @NotNull List<Map.Entry<String, String>> entries() {
+    return this.headers.entries();
+  }
+
+  @Override
+  public boolean contains(@NotNull String name) {
+    return this.headers.contains(name);
+  }
+
+  @Override
+  public boolean isEmpty() {
+    return this.headers.isEmpty();
+  }
+
+  @Override
+  public int size() {
+    return this.headers.size();
+  }
+
+  @Override
+  public @NotNull Set<String> names() {
+    return this.headers.names();
+  }
+
+  @Override
+  public @NotNull Headers add(@NotNull Headers headers) {
+    for (Map.Entry<String, String> entry : headers) {
+      this.add(entry.getKey(), entry.getValue());
     }
 
-    @Override
-    public @NotNull Optional<String> get(@NotNull String name) {
-        return Optional.ofNullable(this.headers.get(name));
+    return this;
+  }
+
+  @Override
+  public @NotNull Headers add(@NotNull String name, @NotNull Object value) {
+    this.headers.add(name, value);
+    return this;
+  }
+
+  @Override
+  public @NotNull Headers addInt(@NotNull String name, int value) {
+    this.headers.addInt(name, value);
+    return this;
+  }
+
+  @Override
+  public @NotNull Headers addShort(@NotNull String name, short value) {
+    this.headers.addShort(name, value);
+    return this;
+  }
+
+  @Override
+  public @NotNull Headers setAll(@NotNull Headers headers) {
+    for (Map.Entry<String, String> entry : headers) {
+      this.set(entry.getKey(), entry.getValue());
     }
 
-    @Override
-    public @NotNull String get(@NotNull String name, @NotNull String defaultValue) {
-        return this.headers.get(name, defaultValue);
-    }
+    return this;
+  }
 
-    @Override
-    public @NotNull Optional<Integer> getInt(@NotNull String name) {
-        return Optional.ofNullable(this.headers.getInt(name));
-    }
+  @Override
+  public @NotNull Headers set(@NotNull String name, @NotNull Object value) {
+    this.headers.set(name, value);
+    return this;
+  }
 
-    @Override
-    public int getInt(@NotNull String name, int defaultValue) {
-        return this.headers.getInt(name, defaultValue);
-    }
+  @Override
+  public @NotNull Headers setInt(@NotNull String name, int value) {
+    this.headers.setInt(name, value);
+    return this;
+  }
 
-    @Override
-    public @NotNull Optional<Short> getShort(@NotNull String name) {
-        return Optional.ofNullable(this.headers.getShort(name));
-    }
+  @Override
+  public @NotNull Headers setShort(@NotNull String name, short value) {
+    this.headers.setShort(name, value);
+    return this;
+  }
 
-    @Override
-    public short getShort(@NotNull String name, short defaultValue) {
-        return this.headers.getShort(name, defaultValue);
-    }
+  @Override
+  public @NotNull Headers remove(@NotNull String name) {
+    this.headers.remove(name);
+    return this;
+  }
 
-    @Override
-    public @NotNull Optional<Long> getTimeMillis(@NotNull String name) {
-        return Optional.ofNullable(this.headers.getTimeMillis(name));
-    }
+  @Override
+  public @NotNull Headers clear() {
+    this.headers.clear();
+    return this;
+  }
 
-    @Override
-    public long getTimeMillis(@NotNull String name, long defaultValue) {
-        return this.headers.getTimeMillis(name, defaultValue);
-    }
-
-    @Override
-    public @NotNull List<String> getAll(@NotNull String name) {
-        return this.headers.getAll(name);
-    }
-
-    @Override
-    public @NotNull List<Map.Entry<String, String>> entries() {
-        return this.headers.entries();
-    }
-
-    @Override
-    public boolean contains(@NotNull String name) {
-        return this.headers.contains(name);
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return this.headers.isEmpty();
-    }
-
-    @Override
-    public int size() {
-        return this.headers.size();
-    }
-
-    @Override
-    public @NotNull Set<String> names() {
-        return this.headers.names();
-    }
-
-    @Override
-    public @NotNull Headers add(@NotNull Headers headers) {
-        for (Map.Entry<String, String> entry : headers) {
-            this.add(entry.getKey(), entry.getValue());
-        }
-
-        return this;
-    }
-
-    @Override
-    public @NotNull Headers add(@NotNull String name, @NotNull Object value) {
-        this.headers.add(name, value);
-        return this;
-    }
-
-    @Override
-    public @NotNull Headers addInt(@NotNull String name, int value) {
-        this.headers.addInt(name, value);
-        return this;
-    }
-
-    @Override
-    public @NotNull Headers addShort(@NotNull String name, short value) {
-        this.headers.addShort(name, value);
-        return this;
-    }
-
-    @Override
-    public @NotNull Headers setAll(@NotNull Headers headers) {
-        for (Map.Entry<String, String> entry : headers) {
-            this.set(entry.getKey(), entry.getValue());
-        }
-
-        return this;
-    }
-
-    @Override
-    public @NotNull Headers set(@NotNull String name, @NotNull Object value) {
-        this.headers.set(name, value);
-        return this;
-    }
-
-    @Override
-    public @NotNull Headers setInt(@NotNull String name, int value) {
-        this.headers.setInt(name, value);
-        return this;
-    }
-
-    @Override
-    public @NotNull Headers setShort(@NotNull String name, short value) {
-        this.headers.setShort(name, value);
-        return this;
-    }
-
-    @Override
-    public @NotNull Headers remove(@NotNull String name) {
-        this.headers.remove(name);
-        return this;
-    }
-
-    @Override
-    public @NotNull Headers clear() {
-        this.headers.clear();
-        return this;
-    }
-
-    @NotNull
-    @Override
-    public Iterator<Map.Entry<String, String>> iterator() {
-        return this.headers.iteratorAsString();
-    }
+  @NotNull
+  @Override
+  public Iterator<Map.Entry<String, String>> iterator() {
+    return this.headers.iteratorAsString();
+  }
 }

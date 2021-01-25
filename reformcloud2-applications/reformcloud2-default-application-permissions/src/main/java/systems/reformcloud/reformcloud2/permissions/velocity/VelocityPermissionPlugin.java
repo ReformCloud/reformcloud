@@ -34,25 +34,25 @@ import systems.reformcloud.reformcloud2.permissions.util.PermissionPluginUtil;
 import systems.reformcloud.reformcloud2.permissions.velocity.listener.VelocityPermissionListener;
 
 @Plugin(
-    id = "reformcloud_2_perms",
-    name = "VelocityPermissionPlugin",
-    version = "2",
-    description = "The reformcloud permission plugin",
-    url = "https://reformcloud.systems",
-    authors = {"derklaro"},
-    dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
+  id = "reformcloud_2_perms",
+  name = "VelocityPermissionPlugin",
+  version = "2",
+  description = "The reformcloud permission plugin",
+  url = "https://reformcloud.systems",
+  authors = {"derklaro"},
+  dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
 )
 public class VelocityPermissionPlugin {
 
-    private final ProxyServer proxy;
+  private final ProxyServer proxy;
 
-    @Inject
-    public VelocityPermissionPlugin(ProxyServer proxyServer) {
-        this.proxy = proxyServer;
-    }
+  @Inject
+  public VelocityPermissionPlugin(ProxyServer proxyServer) {
+    this.proxy = proxyServer;
+  }
 
-    @Subscribe
-    public void handleInit(ProxyInitializeEvent event) {
-        PermissionPluginUtil.awaitConnection(() -> this.proxy.getEventManager().register(this, new VelocityPermissionListener()));
-    }
+  @Subscribe
+  public void handleInit(ProxyInitializeEvent event) {
+    PermissionPluginUtil.awaitConnection(() -> this.proxy.getEventManager().register(this, new VelocityPermissionListener()));
+  }
 }

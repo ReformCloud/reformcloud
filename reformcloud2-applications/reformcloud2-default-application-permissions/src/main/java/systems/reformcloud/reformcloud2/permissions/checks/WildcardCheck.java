@@ -36,53 +36,53 @@ import java.util.Collection;
 
 public final class WildcardCheck {
 
-    private WildcardCheck() {
-        throw new UnsupportedOperationException();
+  private WildcardCheck() {
+    throw new UnsupportedOperationException();
+  }
+
+  public static Boolean hasWildcardPermission(@NotNull PermissionGroup permissionGroup, @NotNull String perm) {
+    Boolean hasPermission = hasPermission(permissionGroup.getPermissionNodes(), perm);
+    if (hasPermission != null) {
+      return hasPermission;
     }
 
-    public static Boolean hasWildcardPermission(@NotNull PermissionGroup permissionGroup, @NotNull String perm) {
-        Boolean hasPermission = hasPermission(permissionGroup.getPermissionNodes(), perm);
-        if (hasPermission != null) {
-            return hasPermission;
-        }
-
-        final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-        final Collection<PermissionNode> currentGroupPerms = permissionGroup.getPerGroupPermissions().get(current.getProcessGroup().getName());
-        if (currentGroupPerms == null || currentGroupPerms.isEmpty()) {
-            return null;
-        }
-
-        return hasPermission(currentGroupPerms, perm);
+    final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
+    final Collection<PermissionNode> currentGroupPerms = permissionGroup.getPerGroupPermissions().get(current.getProcessGroup().getName());
+    if (currentGroupPerms == null || currentGroupPerms.isEmpty()) {
+      return null;
     }
 
-    @Nullable
-    public static Boolean hasWildcardPermission(@NotNull PermissionUser permissionUser, @NotNull String perm) {
-        Boolean hasPermission = hasPermission(permissionUser.getPermissionNodes(), perm);
-        if (hasPermission != null) {
-            return hasPermission;
-        }
+    return hasPermission(currentGroupPerms, perm);
+  }
 
-        final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-        final Collection<PermissionNode> currentGroupPerms = permissionUser.getPerGroupPermissions().get(current.getProcessGroup().getName());
-        if (currentGroupPerms == null || currentGroupPerms.isEmpty()) {
-            return null;
-        }
-
-        return hasPermission(currentGroupPerms, perm);
+  @Nullable
+  public static Boolean hasWildcardPermission(@NotNull PermissionUser permissionUser, @NotNull String perm) {
+    Boolean hasPermission = hasPermission(permissionUser.getPermissionNodes(), perm);
+    if (hasPermission != null) {
+      return hasPermission;
     }
 
-    @Nullable
-    private static Boolean hasPermission(@NotNull Collection<PermissionNode> permissionNodes, @NotNull String permission) {
-        for (PermissionNode permissionNode : permissionNodes) {
-            final String actual = permissionNode.getActualPermission();
-            if (actual.length() > 1
-                && actual.endsWith("*")
-                && permission.startsWith(actual.substring(0, actual.length() - 1))
-                && permissionNode.isValid()) {
-                return permissionNode.isSet();
-            }
-        }
-
-        return null;
+    final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
+    final Collection<PermissionNode> currentGroupPerms = permissionUser.getPerGroupPermissions().get(current.getProcessGroup().getName());
+    if (currentGroupPerms == null || currentGroupPerms.isEmpty()) {
+      return null;
     }
+
+    return hasPermission(currentGroupPerms, perm);
+  }
+
+  @Nullable
+  private static Boolean hasPermission(@NotNull Collection<PermissionNode> permissionNodes, @NotNull String permission) {
+    for (PermissionNode permissionNode : permissionNodes) {
+      final String actual = permissionNode.getActualPermission();
+      if (actual.length() > 1
+        && actual.endsWith("*")
+        && permission.startsWith(actual.substring(0, actual.length() - 1))
+        && permissionNode.isValid()) {
+        return permissionNode.isSet();
+      }
+    }
+
+    return null;
+  }
 }

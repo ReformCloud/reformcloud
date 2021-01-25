@@ -32,18 +32,18 @@ import java.util.Objects;
 
 public class PermissionManagerSetupEvent extends Event {
 
-    private PermissionManagement permissionManagement;
+  private PermissionManagement permissionManagement;
 
-    public PermissionManagerSetupEvent(@NotNull PermissionManagement permissionManagement) {
-        this.permissionManagement = Objects.requireNonNull(permissionManagement);
-    }
+  public PermissionManagerSetupEvent(@NotNull PermissionManagement permissionManagement) {
+    this.permissionManagement = Objects.requireNonNull(permissionManagement);
+  }
 
-    @NotNull
-    public PermissionManagement getPermissionManagement() {
-        return this.permissionManagement;
-    }
+  @NotNull
+  public PermissionManagement getPermissionManagement() {
+    return this.permissionManagement;
+  }
 
-    public void setPermissionManagement(@NotNull PermissionManagement permissionManagement) {
-        this.permissionManagement = Objects.requireNonNull(permissionManagement);
-    }
+  public void setPermissionManagement(@NotNull PermissionManagement permissionManagement) {
+    this.permissionManagement = Objects.requireNonNull(permissionManagement);
+  }
 }

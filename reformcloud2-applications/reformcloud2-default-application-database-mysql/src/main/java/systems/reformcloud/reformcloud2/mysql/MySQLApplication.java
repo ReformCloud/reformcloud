@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.mysql;
 
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
+import systems.reformcloud.reformcloud2.executor.api.application.Application;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.provider.DatabaseProvider;
 import systems.reformcloud.reformcloud2.mysql.config.MySQLDatabaseConfig;
@@ -36,35 +36,35 @@ import java.nio.file.Path;
 
 public class MySQLApplication extends Application {
 
-    private DatabaseProvider previous;
+  private DatabaseProvider previous;
 
-    @Override
-    public void onLoad() {
-        ExecutorAPI.getInstance().getDependencyLoader().load(
-            DependencyFileLoader.collectDependenciesFromFile(MySQLApplication.class.getClassLoader().getResourceAsStream("dependencies.txt"))
-        );
+  @Override
+  public void onLoad() {
+    ExecutorAPI.getInstance().getDependencyLoader().load(
+      DependencyFileLoader.collectDependenciesFromFile(MySQLApplication.class.getClassLoader().getResourceAsStream("dependencies.txt"))
+    );
 
-        this.previous = ExecutorAPI.getInstance().getDatabaseProvider();
-        Path configPath = this.getDataDirectory().resolve("config.json");
-        if (Files.notExists(configPath)) {
-            new JsonConfiguration().add("config", new MySQLDatabaseConfig("127.0.0.1", 3306, "cloud", "cloud", "")).write(configPath);
-        }
-
-        MySQLDatabaseConfig config = JsonConfiguration.read(configPath).get("config", MySQLDatabaseConfig.class);
-        if (config == null) {
-            System.err.println("Unable to load configuration for mysql module");
-            return;
-        }
-
-        ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, new MySQLDatabaseProvider(config), false, true);
+    this.previous = ExecutorAPI.getInstance().getDatabaseProvider();
+    Path configPath = this.getDataDirectory().resolve("config.json");
+    if (Files.notExists(configPath)) {
+      new JsonConfiguration().add("config", new MySQLDatabaseConfig("127.0.0.1", 3306, "cloud", "cloud", "")).write(configPath);
     }
 
-    @Override
-    public void onDisable() {
-        DatabaseProvider providerUnchecked = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(DatabaseProvider.class);
-        if (providerUnchecked instanceof MySQLDatabaseProvider) {
-            ((MySQLDatabaseProvider) providerUnchecked).close();
-            ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, this.previous, false, true);
-        }
+    MySQLDatabaseConfig config = JsonConfiguration.read(configPath).get("config", MySQLDatabaseConfig.class);
+    if (config == null) {
+      System.err.println("Unable to load configuration for mysql module");
+      return;
     }
+
+    ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, new MySQLDatabaseProvider(config), false, true);
+  }
+
+  @Override
+  public void onDisable() {
+    DatabaseProvider providerUnchecked = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(DatabaseProvider.class);
+    if (providerUnchecked instanceof MySQLDatabaseProvider) {
+      ((MySQLDatabaseProvider) providerUnchecked).close();
+      ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, this.previous, false, true);
+    }
+  }
 }

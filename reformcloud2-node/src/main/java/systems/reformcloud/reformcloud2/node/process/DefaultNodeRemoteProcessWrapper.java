@@ -52,89 +52,89 @@ import java.util.concurrent.TimeUnit;
 
 public class DefaultNodeRemoteProcessWrapper implements ProcessWrapper {
 
-    protected ProcessInformation processInformation;
+  protected ProcessInformation processInformation;
 
-    public DefaultNodeRemoteProcessWrapper(ProcessInformation processInformation) {
-        this.processInformation = processInformation;
+  public DefaultNodeRemoteProcessWrapper(ProcessInformation processInformation) {
+    this.processInformation = processInformation;
+  }
+
+  @NotNull
+  @Override
+  public ProcessInformation getProcessInformation() {
+    return this.processInformation;
+  }
+
+  protected void setProcessInformation(@NotNull ProcessInformation information) {
+    this.processInformation = information;
+  }
+
+  @NotNull
+  @Override
+  public Optional<ProcessInformation> requestProcessInformationUpdate() {
+    Packet result = this.sendQueryToProcessNode(new NodeToNodeRequestProcessUpdate(this.processInformation.getId().getUniqueId()));
+    if (!(result instanceof NodeToNodeRequestProcessUpdateResult)) {
+      return Optional.empty();
     }
 
-    @NotNull
-    @Override
-    public ProcessInformation getProcessInformation() {
-        return this.processInformation;
+    return Optional.ofNullable(((NodeToNodeRequestProcessUpdateResult) result).getProcessInformation());
+  }
+
+  @NotNull
+  @Override
+  public Optional<String> uploadLog() {
+    Packet result = this.sendQueryToProcessNode(new NodeToNodeUploadProcessLog(this.processInformation.getId().getUniqueId()));
+    if (!(result instanceof NodeToNodeUploadProcessLogResult)) {
+      return Optional.empty();
     }
 
-    protected void setProcessInformation(@NotNull ProcessInformation information) {
-        this.processInformation = information;
+    return Optional.ofNullable(((NodeToNodeUploadProcessLogResult) result).getLogUrl());
+  }
+
+  @NotNull
+  @Override
+  public @UnmodifiableView Queue<String> getLastLogLines() {
+    Packet result = this.sendQueryToProcessNode(new NodeToNodeGetLastLogLines(this.processInformation.getId().getUniqueId()));
+    if (!(result instanceof NodeToNodeGetLastLogLinesResult)) {
+      return Constants.EMPTY_STRING_QUEUE;
     }
 
-    @NotNull
-    @Override
-    public Optional<ProcessInformation> requestProcessInformationUpdate() {
-        Packet result = this.sendQueryToProcessNode(new NodeToNodeRequestProcessUpdate(this.processInformation.getProcessDetail().getProcessUniqueID()));
-        if (!(result instanceof NodeToNodeRequestProcessUpdateResult)) {
-            return Optional.empty();
-        }
+    return ((NodeToNodeGetLastLogLinesResult) result).getLastLogLines();
+  }
 
-        return Optional.ofNullable(((NodeToNodeRequestProcessUpdateResult) result).getProcessInformation());
+  @Override
+  public void sendCommand(@NotNull String commandLine) {
+    this.sendPacketToProcessNode(new NodeToNodeSendProcessCommand(this.processInformation.getId().getUniqueId(), commandLine));
+  }
+
+  @Override
+  public void setRuntimeState(@NotNull ProcessState state) {
+    this.sendPacketToProcessNode(new NodeToNodeSetProcessRuntimeState(this.processInformation.getId().getUniqueId(), state));
+  }
+
+  @Override
+  public void copy(@NotNull String templateGroup, @NotNull String templateName, @NotNull String templateBackend) {
+    this.sendPacketToProcessNode(new NodeToNodeCopyProcessToTemplate(
+      this.processInformation.getId().getUniqueId(), templateGroup, templateName, templateBackend
+    ));
+  }
+
+  private void sendPacketToProcessNode(@NotNull Packet packet) {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getChannel(
+      this.processInformation.getId().getNodeName()
+    ).ifPresent(channel -> channel.sendPacket(packet));
+  }
+
+  private @Nullable Packet sendQueryToProcessNode(@NotNull Packet packet) {
+    NetworkChannel networkChannel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getChannel(
+      this.processInformation.getId().getNodeName()
+    ).orElse(null);
+    if (networkChannel == null) {
+      return null;
     }
 
-    @NotNull
-    @Override
-    public Optional<String> uploadLog() {
-        Packet result = this.sendQueryToProcessNode(new NodeToNodeUploadProcessLog(this.processInformation.getProcessDetail().getProcessUniqueID()));
-        if (!(result instanceof NodeToNodeUploadProcessLogResult)) {
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(((NodeToNodeUploadProcessLogResult) result).getLogUrl());
-    }
-
-    @NotNull
-    @Override
-    public @UnmodifiableView Queue<String> getLastLogLines() {
-        Packet result = this.sendQueryToProcessNode(new NodeToNodeGetLastLogLines(this.processInformation.getProcessDetail().getProcessUniqueID()));
-        if (!(result instanceof NodeToNodeGetLastLogLinesResult)) {
-            return Constants.EMPTY_STRING_QUEUE;
-        }
-
-        return ((NodeToNodeGetLastLogLinesResult) result).getLastLogLines();
-    }
-
-    @Override
-    public void sendCommand(@NotNull String commandLine) {
-        this.sendPacketToProcessNode(new NodeToNodeSendProcessCommand(this.processInformation.getProcessDetail().getProcessUniqueID(), commandLine));
-    }
-
-    @Override
-    public void setRuntimeState(@NotNull ProcessState state) {
-        this.sendPacketToProcessNode(new NodeToNodeSetProcessRuntimeState(this.processInformation.getProcessDetail().getProcessUniqueID(), state));
-    }
-
-    @Override
-    public void copy(@NotNull String templateGroup, @NotNull String templateName, @NotNull String templateBackend) {
-        this.sendPacketToProcessNode(new NodeToNodeCopyProcessToTemplate(
-            this.processInformation.getProcessDetail().getProcessUniqueID(), templateGroup, templateName, templateBackend
-        ));
-    }
-
-    private void sendPacketToProcessNode(@NotNull Packet packet) {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getChannel(
-            this.processInformation.getProcessDetail().getParentName()
-        ).ifPresent(channel -> channel.sendPacket(packet));
-    }
-
-    private @Nullable Packet sendQueryToProcessNode(@NotNull Packet packet) {
-        NetworkChannel networkChannel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getChannel(
-            this.processInformation.getProcessDetail().getParentName()
-        ).orElse(null);
-        if (networkChannel == null) {
-            return null;
-        }
-
-        return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class).sendPacketQuery(
-            networkChannel,
-            packet
-        ).getUninterruptedly(TimeUnit.SECONDS, 5);
-    }
+    return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class).sendPacketQuery(
+      networkChannel,
+      packet
+    ).getUninterruptedly(TimeUnit.SECONDS, 5);
+  }
 }

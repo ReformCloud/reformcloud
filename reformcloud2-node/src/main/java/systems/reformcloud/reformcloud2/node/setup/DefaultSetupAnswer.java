@@ -26,6 +26,7 @@ package systems.reformcloud.reformcloud2.node.setup;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
 import systems.reformcloud.reformcloud2.shared.parser.Parsers;
 
 import java.util.Set;
@@ -33,43 +34,43 @@ import java.util.function.Function;
 
 public class DefaultSetupAnswer implements SetupAnswer {
 
-    private static final Set<String> NO_ANSWERS = Set.of("false", "no");
-    private static final Set<String> YES_ANSWERS = Set.of("true", "yes");
+  private static final Set<String> NO_ANSWERS = MoreCollections.set("false", "no");
+  private static final Set<String> YES_ANSWERS = MoreCollections.set("true", "yes");
 
-    private final String originalAnswer;
+  private final String originalAnswer;
 
-    public DefaultSetupAnswer(String originalAnswer) {
-        this.originalAnswer = originalAnswer;
+  public DefaultSetupAnswer(String originalAnswer) {
+    this.originalAnswer = originalAnswer;
+  }
+
+  @Override
+  public @NotNull String getOriginalAnswer() {
+    return this.originalAnswer;
+  }
+
+  @Override
+  public @Nullable Integer getAsInt() {
+    return Parsers.INT.parse(this.originalAnswer);
+  }
+
+  @Override
+  public @Nullable Long getAsLong() {
+    return Parsers.LONG.parse(this.originalAnswer);
+  }
+
+  @Override
+  public @Nullable Boolean getAsBoolean() {
+    if (YES_ANSWERS.contains(this.originalAnswer.toLowerCase())) {
+      return true;
+    } else if (NO_ANSWERS.contains(this.originalAnswer.toLowerCase())) {
+      return false;
+    } else {
+      return null;
     }
+  }
 
-    @Override
-    public @NotNull String getOriginalAnswer() {
-        return this.originalAnswer;
-    }
-
-    @Override
-    public @Nullable Integer getAsInt() {
-        return Parsers.INT.parse(this.originalAnswer);
-    }
-
-    @Override
-    public @Nullable Long getAsLong() {
-        return Parsers.LONG.parse(this.originalAnswer);
-    }
-
-    @Override
-    public @Nullable Boolean getAsBoolean() {
-        if (YES_ANSWERS.contains(this.originalAnswer.toLowerCase())) {
-            return true;
-        } else if (NO_ANSWERS.contains(this.originalAnswer.toLowerCase())) {
-            return false;
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public <T> @Nullable T getAsObject(@NotNull Function<String, T> mapper) {
-        return mapper.apply(this.originalAnswer);
-    }
+  @Override
+  public <T> @Nullable T getAsObject(@NotNull Function<String, T> mapper) {
+    return mapper.apply(this.originalAnswer);
+  }
 }

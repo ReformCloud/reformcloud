@@ -34,13 +34,13 @@ import systems.reformcloud.reformcloud2.permissions.bukkit.BukkitUtil;
 
 public class BukkitPermissionListener implements Listener {
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void handle(final PlayerLoginEvent event) {
-        BukkitUtil.injectPlayer(event.getPlayer());
-    }
+  @EventHandler(priority = EventPriority.LOWEST)
+  public void handle(final PlayerLoginEvent event) {
+    BukkitUtil.injectPlayer(event.getPlayer());
+  }
 
-    @EventHandler
-    public void handle(final PlayerQuitEvent event) {
-        PermissionManagement.getInstance().handleDisconnect(event.getPlayer().getUniqueId());
-    }
+  @EventHandler
+  public void handle(final PlayerQuitEvent event) {
+    PermissionManagement.getInstance().handleDisconnect(event.getPlayer().getUniqueId());
+  }
 }

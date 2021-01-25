@@ -29,10 +29,10 @@ import org.jetbrains.annotations.Nullable;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
+import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.signs.application.packets.PacketCreateSign;
 import systems.reformcloud.reformcloud2.signs.application.packets.PacketDeleteBulkSigns;
 import systems.reformcloud.reformcloud2.signs.application.packets.PacketDeleteSign;
@@ -224,7 +224,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
 
     @Override
     public void handleInternalSignDelete(@NotNull CloudSign cloudSign) {
-        CloudSign other = Streams.filter(this.signs, e -> e.equals(cloudSign));
+        CloudSign other = MoreCollections.filter(this.signs, e -> e.equals(cloudSign));
 
         this.signs.remove(cloudSign);
         this.setSignLines(cloudSign, EMPTY_SIGN);
@@ -422,7 +422,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
     }
 
     private @Nullable CloudSign getFreeSignForGroup(@NotNull DefaultProcessGroup processGroup) {
-        return Streams.filter(this.signs, e -> e.getCurrentTarget() == null && e.getGroup().equals(processGroup.getName()));
+        return MoreCollections.filter(this.signs, e -> e.getCurrentTarget() == null && e.getGroup().equals(processGroup.getName()));
     }
 
     private boolean isProcessAssigned(@NotNull ProcessInformation process) {

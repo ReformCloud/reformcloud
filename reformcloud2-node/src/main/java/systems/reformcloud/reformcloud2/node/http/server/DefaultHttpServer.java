@@ -46,67 +46,67 @@ import java.util.concurrent.ConcurrentHashMap;
 @SuppressWarnings("deprecation")
 public class DefaultHttpServer implements HttpServer {
 
-    private final Map<Integer, ChannelFuture> boundServers = new ConcurrentHashMap<>();
-    private final HttpListenerRegistry listenerRegistry = new DefaultHttpListenerRegistry();
+  private final Map<Integer, ChannelFuture> boundServers = new ConcurrentHashMap<>();
+  private final HttpListenerRegistry listenerRegistry = new DefaultHttpListenerRegistry();
 
-    private final EventLoopGroup bossGroup = TransportType.BEST_TYPE.getEventLoopGroup(EventLoopGroupType.BOSS);
-    private final EventLoopGroup workerGroup = TransportType.BEST_TYPE.getEventLoopGroup(EventLoopGroupType.WORKER);
+  private final EventLoopGroup bossGroup = TransportType.BEST_TYPE.getEventLoopGroup(EventLoopGroupType.BOSS);
+  private final EventLoopGroup workerGroup = TransportType.BEST_TYPE.getEventLoopGroup(EventLoopGroupType.WORKER);
 
-    public DefaultHttpServer() {
-        DefaultSocketFrameFactory.init();
-        DefaultHttpServerResponseFactory.init();
-        DefaultResponseSocketFrameFactory.init();
+  public DefaultHttpServer() {
+    DefaultSocketFrameFactory.init();
+    DefaultHttpServerResponseFactory.init();
+    DefaultResponseSocketFrameFactory.init();
+  }
+
+  @Override
+  public boolean bind(@NotNull String host, int port) {
+    if (this.boundServers.containsKey(port)) {
+      return false;
     }
 
-    @Override
-    public boolean bind(@NotNull String host, int port) {
-        if (this.boundServers.containsKey(port)) {
-            return false;
-        }
+    try {
+      this.boundServers.put(port, new ServerBootstrap()
+        .group(this.bossGroup, this.workerGroup)
+        .channelFactory(TransportType.BEST_TYPE.getServerSocketChannelFactory())
 
-        try {
-            this.boundServers.put(port, new ServerBootstrap()
-                .group(this.bossGroup, this.workerGroup)
-                .channelFactory(TransportType.BEST_TYPE.getServerSocketChannelFactory())
+        .childOption(ChannelOption.TCP_NODELAY, true)
+        .childOption(ChannelOption.IP_TOS, 24)
+        .childOption(ChannelOption.AUTO_READ, true)
+        .childOption(ChannelOption.ALLOCATOR, ByteBufAllocator.DEFAULT)
 
-                .childOption(ChannelOption.TCP_NODELAY, true)
-                .childOption(ChannelOption.IP_TOS, 24)
-                .childOption(ChannelOption.AUTO_READ, true)
-                .childOption(ChannelOption.ALLOCATOR, ByteBufAllocator.DEFAULT)
+        .childHandler(new DefaultHttpServerChannelInitializer(this.listenerRegistry))
 
-                .childHandler(new DefaultHttpServerChannelInitializer(this.listenerRegistry))
+        .bind(host, port)
 
-                .bind(host, port)
+        .addListener(ChannelFutureListener.CLOSE_ON_FAILURE)
+        .addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE)
 
-                .addListener(ChannelFutureListener.CLOSE_ON_FAILURE)
-                .addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE)
-
-                .sync()
-                .channel()
-                .closeFuture());
-            return true;
-        } catch (InterruptedException exception) {
-            return false;
-        }
+        .sync()
+        .channel()
+        .closeFuture());
+      return true;
+    } catch (InterruptedException exception) {
+      return false;
     }
+  }
 
-    @Override
-    public @NotNull HttpListenerRegistry getListenerRegistry() {
-        return this.listenerRegistry;
-    }
+  @Override
+  public @NotNull HttpListenerRegistry getListenerRegistry() {
+    return this.listenerRegistry;
+  }
 
-    @Override
-    public void close(int port) {
-        ChannelFuture future = this.boundServers.remove(port);
-        if (future != null) {
-            future.cancel(true);
-        }
+  @Override
+  public void close(int port) {
+    ChannelFuture future = this.boundServers.remove(port);
+    if (future != null) {
+      future.cancel(true);
     }
+  }
 
-    @Override
-    public void closeAll() {
-        for (Integer integer : this.boundServers.keySet()) {
-            this.close(integer);
-        }
+  @Override
+  public void closeAll() {
+    for (Integer integer : this.boundServers.keySet()) {
+      this.close(integer);
     }
+  }
 }

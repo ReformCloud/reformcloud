@@ -26,10 +26,10 @@ package systems.reformcloud.reformcloud2.proxy.application.updater;
 
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationRemoteUpdate;
-import systems.reformcloud.reformcloud2.executor.api.application.updater.basic.BasicApplicationRemoteUpdate;
-import systems.reformcloud.reformcloud2.executor.api.application.updater.basic.DefaultApplicationUpdateRepository;
-import systems.reformcloud.reformcloud2.shared.io.DownloadHelper;
+import systems.reformcloud.reformcloud2.executor.api.application.updater.BasicApplicationRemoteUpdate;
+import systems.reformcloud.reformcloud2.executor.api.application.updater.DefaultApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.proxy.application.ProxyApplication;
+import systems.reformcloud.reformcloud2.shared.io.DownloadHelper;
 
 import java.io.IOException;
 import java.util.Properties;

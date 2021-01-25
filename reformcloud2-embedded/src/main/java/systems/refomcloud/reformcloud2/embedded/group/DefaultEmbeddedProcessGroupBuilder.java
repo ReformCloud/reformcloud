@@ -26,12 +26,13 @@ package systems.refomcloud.reformcloud2.embedded.group;
 
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeCreateProcessGroup;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeCreateProcessGroupResult;
 import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroupBuilder;
+import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroup;
 
 import java.util.Optional;
 
@@ -39,12 +40,12 @@ class DefaultEmbeddedProcessGroupBuilder extends DefaultProcessGroupBuilder {
 
     @NotNull
     @Override
-    public Task<DefaultProcessGroup> createPermanently() {
+    public Task<ProcessGroup> createPermanently() {
         return Task.supply(() -> {
             Optional<Packet> packet = Embedded.getInstance().sendSyncQuery(new ApiToNodeCreateProcessGroup(
                 super.name, super.staticGroup, super.lobby, super.showId, super.templates, super.playerAccessConfiguration, super.startupConfiguration
             ));
-            if (packet.isEmpty() || !(packet.get() instanceof ApiToNodeCreateProcessGroupResult)) {
+            if (!packet.isPresent() || !(packet.get() instanceof ApiToNodeCreateProcessGroupResult)) {
                 return null;
             }
 

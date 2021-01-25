@@ -22,66 +22,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.application;
+package systems.reformcloud.reformcloud2.executor.api.utility;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
 
-import java.io.File;
-import java.util.jar.JarEntry;
+import java.util.Arrays;
 
-/**
- * Represents a config of an application
- *
- * @see LoadedApplication#getApplicationConfig()
- */
-public interface ApplicationConfig extends Nameable {
+public final class MoreObjects {
 
-    /**
-     * @return The version of the application
-     */
-    @NotNull
-    String getVersion();
+  private MoreObjects() {
+    throw new UnsupportedOperationException();
+  }
 
-    /**
-     * @return The author of the application
-     */
-    @NotNull
-    String getAuthor();
+  @NotNull
+  @SafeVarargs
+  public static <T> T firstNotNull(T... ts) {
+    for (T t : ts) {
+      if (t != null) {
+        return t;
+      }
+    }
+    throw new IllegalStateException("No non-null object in " + Arrays.toString(ts));
+  }
 
-    /**
-     * @return The main class of the application
-     */
-    @NotNull
-    String getMainClassName();
-
-    /**
-     * @return The description of the application
-     */
-    @NotNull
-    String getDescription();
-
-    /**
-     * @return The website of an application
-     */
-    @NotNull
-    String getWebsite();
-
-    /**
-     * @return The api version which the application is using
-     */
-    @NotNull
-    String getImplementedVersion();
-
-    /**
-     * @return The file from which the application is loaded
-     */
-    @NotNull
-    File getApplicationFile();
-
-    /**
-     * @return The {@link JarEntry} from which the application config is loaded
-     */
-    @NotNull
-    JarEntry getApplicationConfigJarEntry();
+  public static void ensureAllNotNull(Object... objects) {
+    for (Object object : objects) {
+      if (object == null) {
+        throw new IllegalStateException("At least one index in " + Arrays.toString(objects) + " is null");
+      }
+    }
+  }
 }

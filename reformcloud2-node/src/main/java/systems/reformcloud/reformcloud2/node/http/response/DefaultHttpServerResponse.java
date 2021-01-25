@@ -35,32 +35,32 @@ import systems.reformcloud.reformcloud2.node.http.cookie.DefaultCookieHolder;
 
 public abstract class DefaultHttpServerResponse<T extends HttpServerResponse<T>> extends DefaultCookieHolder<T> implements HttpServerResponse<T>, InstanceHolder<T> {
 
-    protected HttpStatusCode httpStatusCode = HttpStatusCode.OK;
-    protected byte[] result = new byte[0];
+  protected HttpStatusCode httpStatusCode = HttpStatusCode.OK;
+  protected byte[] result = new byte[0];
 
-    protected DefaultHttpServerResponse(HttpVersion httpVersion, Headers headers, DecodeResult decodeResult) {
-        super(httpVersion, headers, decodeResult);
-    }
+  protected DefaultHttpServerResponse(HttpVersion httpVersion, Headers headers, DecodeResult decodeResult) {
+    super(httpVersion, headers, decodeResult);
+  }
 
-    @Override
-    public @NotNull HttpStatusCode status() {
-        return this.httpStatusCode;
-    }
+  @Override
+  public @NotNull HttpStatusCode status() {
+    return this.httpStatusCode;
+  }
 
-    @Override
-    public @NotNull T status(@NotNull HttpStatusCode httpStatusCode) {
-        this.httpStatusCode = httpStatusCode;
-        return this.self();
-    }
+  @Override
+  public @NotNull T status(@NotNull HttpStatusCode httpStatusCode) {
+    this.httpStatusCode = httpStatusCode;
+    return this.self();
+  }
 
-    @Override
-    public @NotNull T body(byte[] response) {
-        this.result = response;
-        return this.self();
-    }
+  @Override
+  public @NotNull T body(byte[] response) {
+    this.result = response;
+    return this.self();
+  }
 
-    @Override
-    public @NotNull byte[] body() {
-        return this.result;
-    }
+  @Override
+  public byte[] body() {
+    return this.result;
+  }
 }

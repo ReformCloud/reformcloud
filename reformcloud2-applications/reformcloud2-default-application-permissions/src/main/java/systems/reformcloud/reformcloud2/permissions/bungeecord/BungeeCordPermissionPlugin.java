@@ -31,13 +31,13 @@ import systems.reformcloud.reformcloud2.permissions.util.PermissionPluginUtil;
 
 public class BungeeCordPermissionPlugin extends Plugin {
 
-    @Override
-    public void onEnable() {
-        PermissionPluginUtil.awaitConnection(() -> ProxyServer.getInstance().getPluginManager().registerListener(this, new BungeeCordPermissionListener()));
-    }
+  @Override
+  public void onEnable() {
+    PermissionPluginUtil.awaitConnection(() -> ProxyServer.getInstance().getPluginManager().registerListener(this, new BungeeCordPermissionListener()));
+  }
 
-    @Override
-    public void onDisable() {
-        ProxyServer.getInstance().getScheduler().cancel(this);
-    }
+  @Override
+  public void onDisable() {
+    ProxyServer.getInstance().getScheduler().cancel(this);
+  }
 }

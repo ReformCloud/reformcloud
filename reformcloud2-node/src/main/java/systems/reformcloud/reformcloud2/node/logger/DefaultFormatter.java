@@ -36,50 +36,50 @@ import java.util.logging.LogRecord;
 
 public class DefaultFormatter extends Formatter {
 
-    private static final DateFormat FORMAT = new SimpleDateFormat(System.getProperty("systems.reformcloud.log-date-format", "dd.MM.yyyy kk:mm:ss"));
-    private final boolean coloured;
+  private static final DateFormat FORMAT = new SimpleDateFormat(System.getProperty("systems.reformcloud.log-date-format", "dd.MM.yyyy kk:mm:ss"));
+  private final boolean coloured;
 
-    DefaultFormatter(boolean coloured) {
-        this.coloured = coloured;
+  DefaultFormatter(boolean coloured) {
+    this.coloured = coloured;
+  }
+
+  @Override
+  public String format(LogRecord record) {
+    StringBuilder stringBuilder = new StringBuilder();
+
+    stringBuilder.append(FORMAT.format(record.getMillis()));
+    stringBuilder.append(" [");
+    this.appendLevel(stringBuilder, record.getLevel());
+    stringBuilder.append("] ");
+    stringBuilder.append(ConsoleColour.stripColor('&', super.formatMessage(record)));
+    stringBuilder.append('\n');
+
+    if (record.getThrown() != null) {
+      StringWriter stringWriter = new StringWriter();
+      record.getThrown().printStackTrace(new PrintWriter(stringWriter));
+      stringBuilder.append(stringWriter);
     }
 
-    @Override
-    public String format(LogRecord record) {
-        StringBuilder stringBuilder = new StringBuilder();
+    return stringBuilder.toString();
+  }
 
-        stringBuilder.append(FORMAT.format(record.getMillis()));
-        stringBuilder.append(" [");
-        this.appendLevel(stringBuilder, record.getLevel());
-        stringBuilder.append("] ");
-        stringBuilder.append(ConsoleColour.stripColor('&', super.formatMessage(record)));
-        stringBuilder.append('\n');
-
-        if (record.getThrown() != null) {
-            StringWriter stringWriter = new StringWriter();
-            record.getThrown().printStackTrace(new PrintWriter(stringWriter));
-            stringBuilder.append(stringWriter);
-        }
-
-        return stringBuilder.toString();
+  private void appendLevel(@NotNull StringBuilder stringBuilder, @NotNull Level level) {
+    if (!this.coloured) {
+      stringBuilder.append(level.getLocalizedName());
+      return;
     }
 
-    private void appendLevel(@NotNull StringBuilder stringBuilder, @NotNull Level level) {
-        if (!this.coloured) {
-            stringBuilder.append(level.getLocalizedName());
-            return;
-        }
-
-        ConsoleColour consoleColour;
-        if (level == Level.INFO) {
-            consoleColour = ConsoleColour.GREEN;
-        } else if (level == Level.WARNING) {
-            consoleColour = ConsoleColour.YELLOW;
-        } else if (level == Level.SEVERE) {
-            consoleColour = ConsoleColour.RED;
-        } else {
-            consoleColour = ConsoleColour.AQUA;
-        }
-
-        stringBuilder.append(consoleColour).append(level.getLocalizedName()).append(ConsoleColour.RESET);
+    ConsoleColour consoleColour;
+    if (level == Level.INFO) {
+      consoleColour = ConsoleColour.GREEN;
+    } else if (level == Level.WARNING) {
+      consoleColour = ConsoleColour.YELLOW;
+    } else if (level == Level.SEVERE) {
+      consoleColour = ConsoleColour.RED;
+    } else {
+      consoleColour = ConsoleColour.AQUA;
     }
+
+    stringBuilder.append(consoleColour).append(level.getLocalizedName()).append(ConsoleColour.RESET);
+  }
 }

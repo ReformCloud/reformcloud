@@ -25,65 +25,65 @@
 package systems.reformcloud.reformcloud2.permissions.nodes;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 
 public class PermissionNode implements SerializableObject {
 
-    private long addTime;
-    private long timeout;
-    private boolean set;
-    private String actualPermission;
+  private long addTime;
+  private long timeout;
+  private boolean set;
+  private String actualPermission;
 
-    public PermissionNode() {
-    }
+  public PermissionNode() {
+  }
 
-    public PermissionNode(long addTime, long timeout, boolean set, @NotNull String actualPermission) {
-        this.addTime = addTime;
-        this.timeout = timeout;
-        this.set = set;
-        this.actualPermission = actualPermission;
-    }
+  public PermissionNode(long addTime, long timeout, boolean set, @NotNull String actualPermission) {
+    this.addTime = addTime;
+    this.timeout = timeout;
+    this.set = set;
+    this.actualPermission = actualPermission;
+  }
 
-    @NotNull
-    public static PermissionNode createNode(@NotNull String permission, long timeout, boolean positive) {
-        return new PermissionNode(System.currentTimeMillis(), timeout, positive, permission);
-    }
+  @NotNull
+  public static PermissionNode createNode(@NotNull String permission, long timeout, boolean positive) {
+    return new PermissionNode(System.currentTimeMillis(), timeout, positive, permission);
+  }
 
-    public long getAddTime() {
-        return this.addTime;
-    }
+  public long getAddTime() {
+    return this.addTime;
+  }
 
-    public long getTimeout() {
-        return this.timeout;
-    }
+  public long getTimeout() {
+    return this.timeout;
+  }
 
-    public boolean isSet() {
-        return this.set && (this.timeout == -1 || this.timeout > System.currentTimeMillis());
-    }
+  public boolean isSet() {
+    return this.set && (this.timeout == -1 || this.timeout > System.currentTimeMillis());
+  }
 
-    public boolean isValid() {
-        return this.timeout == -1 || this.timeout > System.currentTimeMillis();
-    }
+  public boolean isValid() {
+    return this.timeout == -1 || this.timeout > System.currentTimeMillis();
+  }
 
-    @NotNull
-    public String getActualPermission() {
-        return this.actualPermission;
-    }
+  @NotNull
+  public String getActualPermission() {
+    return this.actualPermission;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeLong(this.addTime);
-        buffer.writeLong(this.timeout);
-        buffer.writeBoolean(this.set);
-        buffer.writeString(this.actualPermission);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeLong(this.addTime);
+    buffer.writeLong(this.timeout);
+    buffer.writeBoolean(this.set);
+    buffer.writeString(this.actualPermission);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.addTime = buffer.readLong();
-        this.timeout = buffer.readLong();
-        this.set = buffer.readBoolean();
-        this.actualPermission = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.addTime = buffer.readLong();
+    this.timeout = buffer.readLong();
+    this.set = buffer.readBoolean();
+    this.actualPermission = buffer.readString();
+  }
 }

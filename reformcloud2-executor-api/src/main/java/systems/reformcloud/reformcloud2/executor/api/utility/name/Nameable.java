@@ -24,8 +24,6 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.utility.name;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * Represents every object which can have a special name
  *
@@ -33,9 +31,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface Nameable {
 
-    /**
-     * @return The name of the current instance
-     */
-    @NotNull
-    String getName();
+  /**
+   * @return The name of the current instance
+   */
+  String getName();
 }

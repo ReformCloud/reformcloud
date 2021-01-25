@@ -30,22 +30,21 @@ import org.jetbrains.annotations.NotNull;
 
 public final class BinaryUtils {
 
-    private BinaryUtils() {
-        throw new UnsupportedOperationException();
-    }
+  private BinaryUtils() {
+    throw new UnsupportedOperationException();
+  }
 
-    @NotNull
-    public static byte[] binaryArrayFromByteBuf(@NotNull ByteBufHolder holder) {
-        return binaryArrayFromByteBuf(holder.content());
-    }
+  public static byte[] binaryArrayFromByteBuf(@NotNull ByteBufHolder holder) {
+    return binaryArrayFromByteBuf(holder.content());
+  }
 
-    public static byte[] binaryArrayFromByteBuf(@NotNull ByteBuf holder) {
-        if (holder.hasArray()) {
-            return holder.array();
-        } else {
-            byte[] body = new byte[holder.readableBytes()];
-            holder.getBytes(holder.readerIndex(), body);
-            return body;
-        }
+  public static byte[] binaryArrayFromByteBuf(@NotNull ByteBuf holder) {
+    if (holder.hasArray()) {
+      return holder.array();
+    } else {
+      byte[] body = new byte[holder.readableBytes()];
+      holder.getBytes(holder.readerIndex(), body);
+      return body;
     }
+  }
 }

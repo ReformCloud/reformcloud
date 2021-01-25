@@ -46,93 +46,93 @@ import java.util.Optional;
 
 public class DefaultHttpRequestSource implements HttpRequestSource {
 
-    protected final Channel channel;
-    protected final HttpRequest request;
+  protected final Channel channel;
+  protected final HttpRequest request;
 
-    public DefaultHttpRequestSource(Channel channel, HttpRequest request) {
-        this.channel = channel;
-        this.request = request;
-    }
+  public DefaultHttpRequestSource(Channel channel, HttpRequest request) {
+    this.channel = channel;
+    this.request = request;
+  }
 
-    @Override
-    public @NotNull String id() {
-        return this.channel.id().asLongText();
-    }
+  @Override
+  public @NotNull String id() {
+    return this.channel.id().asLongText();
+  }
 
-    @Override
-    public boolean isOpen() {
-        return this.channel.isOpen();
-    }
+  @Override
+  public boolean isOpen() {
+    return this.channel.isOpen();
+  }
 
-    @Override
-    public boolean isActive() {
-        return this.channel.isActive();
-    }
+  @Override
+  public boolean isActive() {
+    return this.channel.isActive();
+  }
 
-    @Override
-    public boolean isWritable() {
-        return this.channel.isWritable();
-    }
+  @Override
+  public boolean isWritable() {
+    return this.channel.isWritable();
+  }
 
-    @Override
-    public long bytesBeforeUnwritable() {
-        return this.channel.bytesBeforeUnwritable();
-    }
+  @Override
+  public long bytesBeforeUnwritable() {
+    return this.channel.bytesBeforeUnwritable();
+  }
 
-    @Override
-    public long bytesBeforeWritable() {
-        return this.channel.bytesBeforeWritable();
-    }
+  @Override
+  public long bytesBeforeWritable() {
+    return this.channel.bytesBeforeWritable();
+  }
 
-    @Override
-    public @NotNull SocketAddress serverAddress() {
-        return this.channel.localAddress();
-    }
+  @Override
+  public @NotNull SocketAddress serverAddress() {
+    return this.channel.localAddress();
+  }
 
-    @Override
-    public @NotNull SocketAddress clientAddress() {
-        return this.channel.remoteAddress();
-    }
+  @Override
+  public @NotNull SocketAddress clientAddress() {
+    return this.channel.remoteAddress();
+  }
 
-    @Override
-    public @NotNull Optional<SocketFrameSource> upgrade() {
-        WebSocketServerHandshaker handshaker = new WebSocketServerHandshakerFactory(
-            this.request.uri(),
-            null,
-            true,
-            Short.MAX_VALUE,
-            false
-        ).newHandshaker(this.request);
-        if (handshaker == null) {
-            // we don't know which version the client uses to send an unsupported version response back. (we cannot upgrade)
-            WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(this.channel);
-            return Optional.empty();
-        } else {
-            // we can handshake with the client so we remove our request header first as netty
-            // will add a new one to decode the handshake response of the client.
-            this.channel.pipeline().remove(ServerConstants.HTTP_HANDLER);
-            try {
-                // send the handshake request to the client
-                handshaker.handshake(this.channel, this.request);
-            } catch (WebSocketHandshakeException exception) {
-                this.channel.writeAndFlush(new DefaultFullHttpResponse(
-                    this.request.protocolVersion(),
-                    HttpResponseStatus.OK,
-                    Unpooled.wrappedBuffer(("Unable to upgrade connection: " + exception.getMessage()).getBytes(StandardCharsets.UTF_8))
-                ));
-                return Optional.empty();
-            }
-            // Now create the upgraded socket frame source
-            SocketFrameSource socketFrameSource = new DefaultSocketFrameSource(this.channel, new DefaultSocketFrameListenerRegistry());
-            // Switch the endpoint handler to the websocket handler
-            this.channel.pipeline().addLast(ServerConstants.WEB_SOCKET_HANDLER, new WebSocketFrameHandler(socketFrameSource));
-            // all done, bring the user the new socket frame source
-            return Optional.of(socketFrameSource);
-        }
+  @Override
+  public @NotNull Optional<SocketFrameSource> upgrade() {
+    WebSocketServerHandshaker handshaker = new WebSocketServerHandshakerFactory(
+      this.request.uri(),
+      null,
+      true,
+      Short.MAX_VALUE,
+      false
+    ).newHandshaker(this.request);
+    if (handshaker == null) {
+      // we don't know which version the client uses to send an unsupported version response back. (we cannot upgrade)
+      WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(this.channel);
+      return Optional.empty();
+    } else {
+      // we can handshake with the client so we remove our request header first as netty
+      // will add a new one to decode the handshake response of the client.
+      this.channel.pipeline().remove(ServerConstants.HTTP_HANDLER);
+      try {
+        // send the handshake request to the client
+        handshaker.handshake(this.channel, this.request);
+      } catch (WebSocketHandshakeException exception) {
+        this.channel.writeAndFlush(new DefaultFullHttpResponse(
+          this.request.protocolVersion(),
+          HttpResponseStatus.OK,
+          Unpooled.wrappedBuffer(("Unable to upgrade connection: " + exception.getMessage()).getBytes(StandardCharsets.UTF_8))
+        ));
+        return Optional.empty();
+      }
+      // Now create the upgraded socket frame source
+      SocketFrameSource socketFrameSource = new DefaultSocketFrameSource(this.channel, new DefaultSocketFrameListenerRegistry());
+      // Switch the endpoint handler to the websocket handler
+      this.channel.pipeline().addLast(ServerConstants.WEB_SOCKET_HANDLER, new WebSocketFrameHandler(socketFrameSource));
+      // all done, bring the user the new socket frame source
+      return Optional.of(socketFrameSource);
     }
+  }
 
-    @Override
-    public void close() {
-        this.channel.close();
-    }
+  @Override
+  public void close() {
+    this.channel.close();
+  }
 }

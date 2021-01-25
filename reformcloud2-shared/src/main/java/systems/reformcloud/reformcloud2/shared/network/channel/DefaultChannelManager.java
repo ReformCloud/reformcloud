@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -50,7 +50,7 @@ public class DefaultChannelManager implements ChannelManager {
     @NotNull
     @Override
     public @UnmodifiableView Collection<NetworkChannel> getNetworkChannels(@NotNull String remoteAddress) {
-        return Streams.allOf(this.channels.values(), channel -> channel.getRemoteAddress().getHost().equals(remoteAddress));
+        return MoreCollections.allOf(this.channels.values(), channel -> channel.getRemoteAddress().getHost().equals(remoteAddress));
     }
 
     @NotNull

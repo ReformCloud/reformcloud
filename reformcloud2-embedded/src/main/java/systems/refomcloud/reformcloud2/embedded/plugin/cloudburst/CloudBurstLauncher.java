@@ -33,30 +33,30 @@ import org.cloudburstmc.server.plugin.Plugin;
 import systems.refomcloud.reformcloud2.embedded.plugin.cloudburst.event.PlayerListenerHandler;
 
 @Plugin(
-    id = "reformcloud_2_api_executor",
-    name = "ReformCloud2CloudBurstExecutor",
-    version = "2",
-    description = "The reformcloud executor api",
-    authors = {
-        "derklaro",
-        "ReformCloud-Team"
-    },
-    url = "https://reformcloud.systems"
+  id = "reformcloud_2_api_executor",
+  name = "ReformCloud2CloudBurstExecutor",
+  version = "2",
+  description = "The reformcloud executor api",
+  authors = {
+    "derklaro",
+    "ReformCloud-Team"
+  },
+  url = "https://reformcloud.systems"
 )
 public final class CloudBurstLauncher {
 
-    @Inject
-    public CloudBurstLauncher() {
-    }
+  @Inject
+  public CloudBurstLauncher() {
+  }
 
-    @Listener
-    public void handle(ServerStartEvent event) {
-        new CloudBurstExecutor(this);
-        Server.getInstance().getEventManager().registerListeners(this, new PlayerListenerHandler());
-    }
+  @Listener
+  public void handle(ServerStartEvent event) {
+    new CloudBurstExecutor(this);
+    Server.getInstance().getEventManager().registerListeners(this, new PlayerListenerHandler());
+  }
 
-    @Listener
-    public void handle(ServerShutdownEvent event) {
-        Server.getInstance().getScheduler().cancelTask(this);
-    }
+  @Listener
+  public void handle(ServerShutdownEvent event) {
+    Server.getInstance().getScheduler().cancelTask(this);
+  }
 }

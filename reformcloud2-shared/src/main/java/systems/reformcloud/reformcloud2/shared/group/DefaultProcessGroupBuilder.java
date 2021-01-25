@@ -30,7 +30,6 @@ import systems.reformcloud.reformcloud2.executor.api.builder.ProcessGroupBuilder
 import systems.reformcloud.reformcloud2.executor.api.groups.process.player.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.process.startup.StartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
 
 import java.util.ArrayList;
 import java.util.Arrays;

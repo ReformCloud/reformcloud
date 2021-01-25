@@ -32,6 +32,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -40,89 +41,89 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public final class TranslationHolder {
 
-    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
-    private static final AtomicReference<String> IN_USE_LANGUAGE_CODE = new AtomicReference<>();
-    private static final Map<String, LanguageFileHolder> LOADED_LANGUAGES = new ConcurrentHashMap<>();
+  private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+  private static final AtomicReference<String> IN_USE_LANGUAGE_CODE = new AtomicReference<>();
+  private static final Map<String, LanguageFileHolder> LOADED_LANGUAGES = new ConcurrentHashMap<>();
 
-    public static boolean registerLanguageFileHolder(@NotNull LanguageFileHolder holder) {
-        return LOADED_LANGUAGES.putIfAbsent(holder.getName(), holder) == null;
+  public static void registerLanguageFileHolder(@NotNull LanguageFileHolder holder) {
+    LOADED_LANGUAGES.putIfAbsent(holder.getName(), holder);
+  }
+
+  @NotNull
+  public static Optional<LanguageFileHolder> unregisterLanguageFileHolder(@NotNull String name) {
+    return Optional.ofNullable(LOADED_LANGUAGES.remove(name));
+  }
+
+  @NotNull
+  public static String translate(@NotNull String key, @NonNls Object... replacements) {
+    return translateDef(key, "<message '" + key + "' missing>", replacements);
+  }
+
+  @NotNull
+  public static String getEnabledLanguage() {
+    String result = IN_USE_LANGUAGE_CODE.get();
+    if (result == null) {
+      detectAndLoadFiles();
+      result = IN_USE_LANGUAGE_CODE.get();
+    }
+    return result;
+  }
+
+  public static void setEnabledLanguage(@NotNull String languageCode) {
+    if (LOADED_LANGUAGES.containsKey(languageCode)) {
+      IN_USE_LANGUAGE_CODE.set(languageCode);
+    } else {
+      throw new IllegalStateException("For language code \"" + languageCode + "\" are no messages present");
+    }
+  }
+
+  @NotNull
+  @Unmodifiable
+  public static Map<String, LanguageFileHolder> getLoadedLanguages() {
+    return Collections.unmodifiableMap(LOADED_LANGUAGES);
+  }
+
+  @NotNull
+  public static String translateDef(@NotNull String key, @NotNull String def, @NonNls Object... replacements) {
+    String languageCode = IN_USE_LANGUAGE_CODE.get();
+    if (languageCode == null) {
+      detectAndLoadFiles();
+      languageCode = IN_USE_LANGUAGE_CODE.get();
     }
 
-    @NotNull
-    public static Optional<LanguageFileHolder> unregisterLanguageFileHolder(@NotNull String name) {
-        return Optional.ofNullable(LOADED_LANGUAGES.remove(name));
+    final LanguageFileHolder holder = LOADED_LANGUAGES.get(languageCode);
+    if (holder == null) {
+      throw new IllegalStateException("Enabled language code \"" + languageCode + "\" has no translations present");
     }
 
-    @NotNull
-    public static String translate(@NotNull String key, @NonNls Object... replacements) {
-        return translate(key, "<message '" + key + "' missing>", replacements);
+    return MessageFormat.format(holder.getTranslation(key).orElse(def), getArgs(replacements));
+  }
+
+  @NotNull
+  @Contract(pure = true)
+  private static Object[] getArgs(@NonNls Object... replacements) {
+    if (replacements.length > 0) {
+      final Object[] result = new Object[replacements.length];
+      for (int i = 0; i < replacements.length; i++) {
+        result[i] = replacements[i].toString();
+      }
+      return result;
     }
+    return EMPTY_OBJECT_ARRAY;
+  }
 
-    @NotNull
-    public static String getEnabledLanguage() {
-        String result = IN_USE_LANGUAGE_CODE.get();
-        if (result == null) {
-            detectAndLoadFiles();
-            result = IN_USE_LANGUAGE_CODE.get();
-        }
-        return result;
+  private static void detectAndLoadFiles() {
+    final String languageToUse = System.getProperty("systems.reformcloud.language-code", "en");
+    try (InputStream stream = TranslationHolder.class.getClassLoader().getResourceAsStream("languages/" + languageToUse)) {
+      if (stream == null) {
+        throw new IllegalStateException("Invalid language code \"" + languageToUse + "\" specified");
+      }
+      Properties properties = new Properties();
+      properties.load(stream);
+      registerLanguageFileHolder(LanguageFileHolder.properties(languageToUse, properties));
+      IN_USE_LANGUAGE_CODE.set(languageToUse);
+    } catch (IOException exception) {
+      throw new RuntimeException("Unable to load language file \"" + languageToUse + "\"", exception);
     }
-
-    public static void setEnabledLanguage(@NotNull String languageCode) {
-        if (LOADED_LANGUAGES.containsKey(languageCode)) {
-            IN_USE_LANGUAGE_CODE.set(languageCode);
-        } else {
-            throw new IllegalStateException("For language code \"" + languageCode + "\" are no messages present");
-        }
-    }
-
-    @NotNull
-    @Unmodifiable
-    public static Map<String, LanguageFileHolder> getLoadedLanguages() {
-        return Map.copyOf(LOADED_LANGUAGES);
-    }
-
-    @NotNull
-    public static String translate(@NotNull String key, @NotNull String def, @NonNls Object... replacements) {
-        String languageCode = IN_USE_LANGUAGE_CODE.get();
-        if (languageCode == null) {
-            detectAndLoadFiles();
-            languageCode = IN_USE_LANGUAGE_CODE.get();
-        }
-
-        final LanguageFileHolder holder = LOADED_LANGUAGES.get(languageCode);
-        if (holder == null) {
-            throw new IllegalStateException("Enabled language code \"" + languageCode + "\" has no translations present");
-        }
-
-        return MessageFormat.format(holder.getTranslation(key).orElse(def), getArgs(replacements));
-    }
-
-    @NotNull
-    @Contract(pure = true)
-    private static Object[] getArgs(@NonNls Object... replacements) {
-        if (replacements.length > 0) {
-            final Object[] result = new Object[replacements.length];
-            for (int i = 0; i < replacements.length; i++) {
-                result[i] = replacements[i].toString();
-            }
-            return result;
-        }
-        return EMPTY_OBJECT_ARRAY;
-    }
-
-    private static void detectAndLoadFiles() {
-        final String languageToUse = System.getProperty("systems.reformcloud.language-code", "en");
-        try (InputStream stream = TranslationHolder.class.getClassLoader().getResourceAsStream("languages/" + languageToUse)) {
-            if (stream == null) {
-                throw new IllegalStateException("Invalid language code \"" + languageToUse + "\" specified");
-            }
-            Properties properties = new Properties();
-            properties.load(stream);
-            registerLanguageFileHolder(LanguageFileHolder.properties(languageToUse, properties));
-            IN_USE_LANGUAGE_CODE.set(languageToUse);
-        } catch (IOException exception) {
-            throw new RuntimeException("Unable to load language file \"" + languageToUse + "\"", exception);
-        }
-    }
+  }
 }

@@ -28,10 +28,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandManager;
-import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
+import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.shared.command.sources.CachedCommandSender;
 import systems.reformcloud.reformcloud2.shared.command.sources.ConsoleCommandSender;
+import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,24 +40,24 @@ import java.util.Optional;
 
 public class LocalNodeProcessWrapper extends DefaultNodeProcessWrapper {
 
-    LocalNodeProcessWrapper(@NotNull DefaultNodeInformation nodeInformation) {
-        super(nodeInformation);
-    }
+  LocalNodeProcessWrapper(@NotNull DefaultNodeInformation nodeInformation) {
+    super(nodeInformation);
+  }
 
-    @Override
-    public @NotNull Optional<DefaultNodeInformation> requestNodeInformationUpdate() {
-        return Optional.of(super.nodeInformation = NodeExecutor.getInstance().updateCurrentNodeInformation());
-    }
+  @Override
+  public @NotNull Optional<NodeInformation> requestNodeInformationUpdate() {
+    return Optional.of(super.nodeInformation = NodeExecutor.getInstance().updateCurrentNodeInformation());
+  }
 
-    @Override
-    public @NotNull @UnmodifiableView Collection<String> sendCommandLine(@NotNull String commandLine) {
-        Collection<String> lines = new ArrayList<>();
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class).process(commandLine, new CachedCommandSender(lines));
-        return lines;
-    }
+  @Override
+  public @NotNull @UnmodifiableView Collection<String> sendCommandLine(@NotNull String commandLine) {
+    Collection<String> lines = new ArrayList<>();
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class).process(commandLine, new CachedCommandSender(lines));
+    return lines;
+  }
 
-    @Override
-    public @NotNull @UnmodifiableView Collection<String> tabCompleteCommandLine(@NotNull String commandLine) {
-        return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class).suggest(commandLine, ConsoleCommandSender.INSTANCE);
-    }
+  @Override
+  public @NotNull @UnmodifiableView Collection<String> tabCompleteCommandLine(@NotNull String commandLine) {
+    return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class).suggest(commandLine, ConsoleCommandSender.INSTANCE);
+  }
 }

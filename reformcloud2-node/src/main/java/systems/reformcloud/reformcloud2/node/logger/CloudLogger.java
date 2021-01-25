@@ -28,13 +28,14 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jline.reader.LineReader;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
-import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.event.logger.LogRecordProcessEvent;
+import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -42,64 +43,64 @@ import java.util.logging.Logger;
 
 public class CloudLogger extends Logger {
 
-    private final RecordDispatcher dispatcher = new RecordDispatcher(this);
+  private final RecordDispatcher dispatcher = new RecordDispatcher(this);
 
-    public CloudLogger(@NotNull LineReader lineReader) {
-        super("CloudLogger", null);
-        super.setLevel(Level.ALL);
+  public CloudLogger(@NotNull LineReader lineReader) {
+    super("CloudLogger", null);
+    super.setLevel(Level.ALL);
 
-        try {
-            String logFile = System.getProperty("systems.reformcloud.console-log-file", "logs/cloud.log");
-            IOUtils.createDirectory(Path.of(logFile).getParent());
+    try {
+      String logFile = System.getProperty("systems.reformcloud.console-log-file", "logs/cloud.log");
+      IOUtils.createDirectory(Paths.get(logFile).getParent());
 
-            FileHandler fileHandler = new FileHandler(logFile, 1 << 24, 8, true);
-            fileHandler.setFormatter(new DefaultFormatter(false));
-            fileHandler.setEncoding(StandardCharsets.UTF_8.name());
-            super.addHandler(fileHandler);
+      FileHandler fileHandler = new FileHandler(logFile, 1 << 24, 8, true);
+      fileHandler.setFormatter(new DefaultFormatter(false));
+      fileHandler.setEncoding(StandardCharsets.UTF_8.name());
+      super.addHandler(fileHandler);
 
-            ColouredWriter colouredWriter = new ColouredWriter(lineReader);
-            colouredWriter.setLevel(Level.parse(System.getProperty("systems.reformcloud.console-log-level", "ALL")));
-            colouredWriter.setFormatter(new DefaultFormatter(true));
-            colouredWriter.setEncoding(StandardCharsets.UTF_8.name());
-            super.addHandler(colouredWriter);
-        } catch (IOException exception) {
-            System.err.println("Unable to prepare logger!");
-            exception.printStackTrace();
-        }
-
-        System.setOut(new PrintStream(new LoggingOutputStream(this, Level.INFO), true));
-        System.setErr(new PrintStream(new LoggingOutputStream(this, Level.SEVERE), true));
-
-        this.dispatcher.start();
+      ColouredWriter colouredWriter = new ColouredWriter(lineReader);
+      colouredWriter.setLevel(Level.parse(System.getProperty("systems.reformcloud.console-log-level", "ALL")));
+      colouredWriter.setFormatter(new DefaultFormatter(true));
+      colouredWriter.setEncoding(StandardCharsets.UTF_8.name());
+      super.addHandler(colouredWriter);
+    } catch (IOException exception) {
+      System.err.println("Unable to prepare logger!");
+      exception.printStackTrace();
     }
 
-    @Override
-    public void log(LogRecord record) {
-        this.dispatcher.queue(record);
-    }
+    System.setOut(new PrintStream(new LoggingOutputStream(this, Level.INFO), true));
+    System.setErr(new PrintStream(new LoggingOutputStream(this, Level.SEVERE), true));
 
-    protected void flushRecord(@NotNull LogRecord record) {
-        if (this.preProcessRecord(record)) {
-            super.log(record);
-        }
-    }
+    this.dispatcher.start();
+  }
 
-    public void close() throws InterruptedException {
-        this.dispatcher.interrupt();
-        this.dispatcher.join();
-    }
+  @Override
+  public void log(LogRecord record) {
+    this.dispatcher.queue(record);
+  }
 
-    /**
-     * Pre process the given log record and checks if the provided record should be logged
-     * into the console or not.
-     *
-     * @param logRecord The log record to check
-     * @return {@code true} if the record should be printed, {@code false} otherwise
-     */
-    @ApiStatus.AvailableSince("2.11.0-SNAPSHOT-SNAPSHOT")
-    protected boolean preProcessRecord(@NotNull LogRecord logRecord) {
-        return !NodeExecutor.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class)
-            .callEvent(new LogRecordProcessEvent(logRecord))
-            .isCanceled();
+  protected void flushRecord(@NotNull LogRecord record) {
+    if (this.preProcessRecord(record)) {
+      super.log(record);
     }
+  }
+
+  public void close() throws InterruptedException {
+    this.dispatcher.interrupt();
+    this.dispatcher.join();
+  }
+
+  /**
+   * Pre process the given log record and checks if the provided record should be logged
+   * into the console or not.
+   *
+   * @param logRecord The log record to check
+   * @return {@code true} if the record should be printed, {@code false} otherwise
+   */
+  @ApiStatus.AvailableSince("2.11.0-SNAPSHOT-SNAPSHOT")
+  protected boolean preProcessRecord(@NotNull LogRecord logRecord) {
+    return !NodeExecutor.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class)
+      .callEvent(new LogRecordProcessEvent(logRecord))
+      .isCanceled();
+  }
 }

@@ -40,31 +40,31 @@ import java.util.UUID;
 
 public final class VaultUtil {
 
-    private VaultUtil() {
-        throw new UnsupportedOperationException();
+  private VaultUtil() {
+    throw new UnsupportedOperationException();
+  }
+
+  @NotNull
+  public static Optional<PermissionUser> getUserFromName(@NotNull String name) {
+    Player player = Bukkit.getPlayer(name);
+    if (player != null) {
+      return PermissionManagement.getInstance().getExistingUser(player.getUniqueId());
     }
 
-    @NotNull
-    public static Optional<PermissionUser> getUserFromName(@NotNull String name) {
-        Player player = Bukkit.getPlayer(name);
-        if (player != null) {
-            return PermissionManagement.getInstance().getExistingUser(player.getUniqueId());
-        }
-
-        UUID uniqueID = UUIDFetcher.getUUIDFromName(name);
-        if (uniqueID != null) {
-            return PermissionManagement.getInstance().getExistingUser(uniqueID);
-        }
-
-        return Optional.empty();
+    UUID uniqueID = UUIDFetcher.getUUIDFromName(name);
+    if (uniqueID != null) {
+      return PermissionManagement.getInstance().getExistingUser(uniqueID);
     }
 
-    public static void tryInvoke(@NotNull Plugin plugin) {
-        Permission permission = new PermissionVaultPermissionImplementation();
+    return Optional.empty();
+  }
 
-        Bukkit.getServicesManager().register(Permission.class, permission, plugin, ServicePriority.Highest);
-        Bukkit.getServicesManager().register(Chat.class, new PermissionVaultChatImplementation(permission), plugin, ServicePriority.Highest);
+  public static void tryInvoke(@NotNull Plugin plugin) {
+    Permission permission = new PermissionVaultPermissionImplementation();
 
-        plugin.getLogger().info("Successfully hooked into vault");
-    }
+    Bukkit.getServicesManager().register(Permission.class, permission, plugin, ServicePriority.Highest);
+    Bukkit.getServicesManager().register(Chat.class, new PermissionVaultChatImplementation(permission), plugin, ServicePriority.Highest);
+
+    plugin.getLogger().info("Successfully hooked into vault");
+  }
 }

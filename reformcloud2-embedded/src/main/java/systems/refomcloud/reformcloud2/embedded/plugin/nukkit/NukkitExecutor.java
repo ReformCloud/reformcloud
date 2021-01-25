@@ -35,38 +35,38 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 
 public final class NukkitExecutor extends Embedded {
 
-    private static NukkitExecutor instance;
-    private final Plugin plugin;
+  private static NukkitExecutor instance;
+  private final Plugin plugin;
 
-    NukkitExecutor(Plugin plugin) {
-        super.type = ExecutorType.API;
-        PlayerAPIExecutor.setInstance(new NukkitPlayerAPIExecutor());
+  NukkitExecutor(Plugin plugin) {
+    super.type = ExecutorType.API;
+    PlayerAPIExecutor.setInstance(new NukkitPlayerAPIExecutor());
 
-        instance = this;
-        this.plugin = plugin;
+    instance = this;
+    this.plugin = plugin;
 
-        this.fixInvalidPlayers();
-    }
+    this.fixInvalidPlayers();
+  }
 
-    @NotNull
-    public static NukkitExecutor getInstance() {
-        return instance;
-    }
+  @NotNull
+  public static NukkitExecutor getInstance() {
+    return instance;
+  }
 
-    @Override
-    protected int getMaxPlayersOfEnvironment() {
-        return Server.getInstance().getMaxPlayers();
-    }
+  @Override
+  protected int getMaxPlayersOfEnvironment() {
+    return Server.getInstance().getMaxPlayers();
+  }
 
-    @NotNull
-    public Plugin getPlugin() {
-        return this.plugin;
-    }
+  @NotNull
+  public Plugin getPlugin() {
+    return this.plugin;
+  }
 
-    private void fixInvalidPlayers() {
-        SharedInvalidPlayerFixer.start(
-            uuid -> Server.getInstance().getPlayer(uuid).isPresent(),
-            () -> Server.getInstance().getOnlinePlayers().size()
-        );
-    }
+  private void fixInvalidPlayers() {
+    SharedInvalidPlayerFixer.start(
+      uuid -> Server.getInstance().getPlayer(uuid).isPresent(),
+      () -> Server.getInstance().getOnlinePlayers().size()
+    );
+  }
 }

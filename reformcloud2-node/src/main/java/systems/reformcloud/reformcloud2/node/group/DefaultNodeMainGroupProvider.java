@@ -29,12 +29,14 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.builder.MainGroupBuilder;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.executor.api.provider.MainGroupProvider;
 import systems.reformcloud.reformcloud2.executor.api.registry.io.FileRegistry;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
+import systems.reformcloud.reformcloud2.shared.group.DefaultMainGroup;
 import systems.reformcloud.reformcloud2.shared.registry.io.DefaultFileRegistry;
 
 import java.util.Collection;
@@ -43,97 +45,97 @@ import java.util.Optional;
 
 public class DefaultNodeMainGroupProvider implements MainGroupProvider {
 
-    private final Collection<MainGroup> mainGroups;
-    private final FileRegistry fileRegistry;
+  private final Collection<MainGroup> mainGroups;
+  private final FileRegistry fileRegistry;
 
-    public DefaultNodeMainGroupProvider(@NotNull String registryFolder) {
-        this.fileRegistry = new DefaultFileRegistry(registryFolder);
-        this.mainGroups = this.fileRegistry.readKeys(
-            e -> e.get("key", MainGroup.TYPE),
-            path -> System.err.println(TranslationHolder.translate("startup-unable-to-read-file",
-                "Main-Group", path.toAbsolutePath().toString()))
-        );
+  public DefaultNodeMainGroupProvider(@NotNull String registryFolder) {
+    this.fileRegistry = new DefaultFileRegistry(registryFolder, JsonConfiguration.DEFAULT_ADAPTER);
+    this.mainGroups = this.fileRegistry.readKeys(
+      e -> e.get("key", DefaultMainGroup.class),
+      path -> System.err.println(TranslationHolder.translateDef("startup-unable-to-read-file",
+        "Main-Group", path.toAbsolutePath().toString()))
+    );
+  }
+
+  @NotNull
+  @Override
+  public Optional<MainGroup> getMainGroup(@NotNull String name) {
+    return Optional.ofNullable(MoreCollections.filter(this.mainGroups, e -> e.getName().equals(name)));
+  }
+
+  @Override
+  public void deleteMainGroup(@NotNull String name) {
+    MainGroup mainGroup = this.deleteMainGroup0(name);
+    if (mainGroup == null) {
+      return;
     }
 
-    @NotNull
-    @Override
-    public Optional<MainGroup> getMainGroup(@NotNull String name) {
-        return Optional.ofNullable(Streams.filter(this.mainGroups, e -> e.getName().equals(name)));
-    }
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishMainGroupDelete(mainGroup);
+  }
 
-    @Override
-    public void deleteMainGroup(@NotNull String name) {
-        MainGroup mainGroup = this.deleteMainGroup0(name);
-        if (mainGroup == null) {
-            return;
-        }
+  @Override
+  public void updateMainGroup(@NotNull MainGroup mainGroup) {
+    this.updateMainGroup0(mainGroup);
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishMainGroupUpdate(mainGroup);
+  }
 
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishMainGroupDelete(mainGroup);
-    }
+  @NotNull
+  @Override
+  public @UnmodifiableView Collection<MainGroup> getMainGroups() {
+    return Collections.unmodifiableCollection(this.mainGroups);
+  }
 
-    @Override
-    public void updateMainGroup(@NotNull MainGroup mainGroup) {
-        this.updateMainGroup0(mainGroup);
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishMainGroupUpdate(mainGroup);
-    }
+  @Override
+  public long getMainGroupCount() {
+    return this.mainGroups.size();
+  }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Collection<MainGroup> getMainGroups() {
-        return Collections.unmodifiableCollection(this.mainGroups);
-    }
+  @NotNull
+  @Override
+  public @UnmodifiableView Collection<String> getMainGroupNames() {
+    return MoreCollections.map(this.mainGroups, MainGroup::getName);
+  }
 
-    @Override
-    public long getMainGroupCount() {
-        return this.mainGroups.size();
-    }
+  @NotNull
+  @Override
+  public MainGroupBuilder createMainGroup(@NotNull String name) {
+    return new NodeMainGroupBuilder(this).name(name);
+  }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Collection<String> getMainGroupNames() {
-        return Streams.map(this.mainGroups, MainGroup::getName);
-    }
+  public void addGroup(@NotNull MainGroup mainGroup) {
+    this.addGroup0(mainGroup);
+    ExecutorAPI.getInstance().getServiceRegistry().getProvider(ClusterManager.class).ifPresent(e -> e.publishMainGroupCreate(mainGroup));
+  }
 
-    @NotNull
-    @Override
-    public MainGroupBuilder createMainGroup(@NotNull String name) {
-        return new NodeMainGroupBuilder(this).name(name);
-    }
+  public void addGroup0(@NotNull MainGroup mainGroup) {
+    this.mainGroups.add(mainGroup);
+    this.fileRegistry.createKey(mainGroup.getName(), mainGroup);
+  }
 
-    public void addGroup(@NotNull MainGroup mainGroup) {
-        this.addGroup0(mainGroup);
-        ExecutorAPI.getInstance().getServiceRegistry().getProvider(ClusterManager.class).ifPresent(e -> e.publishMainGroupCreate(mainGroup));
-    }
+  public @Nullable MainGroup deleteMainGroup0(@NotNull String name) {
+    Optional<MainGroup> mainGroup = this.getMainGroup(name);
+    mainGroup.ifPresent(group -> {
+      this.fileRegistry.deleteKey(group.getName());
+      this.mainGroups.remove(group);
+    });
+    return mainGroup.orElse(null);
+  }
 
-    public void addGroup0(@NotNull MainGroup mainGroup) {
-        this.mainGroups.add(mainGroup);
-        this.fileRegistry.createKey(mainGroup.getName(), mainGroup);
-    }
+  public void updateMainGroup0(@NotNull MainGroup mainGroup) {
+    this.getMainGroup(mainGroup.getName()).ifPresent(group -> {
+      this.mainGroups.remove(group);
+      this.mainGroups.add(mainGroup);
 
-    public @Nullable MainGroup deleteMainGroup0(@NotNull String name) {
-        Optional<MainGroup> mainGroup = this.getMainGroup(name);
-        mainGroup.ifPresent(group -> {
-            this.fileRegistry.deleteKey(group.getName());
-            this.mainGroups.remove(group);
-        });
-        return mainGroup.orElse(null);
-    }
+      this.fileRegistry.updateKey(mainGroup.getName(), mainGroup);
+    });
+  }
 
-    public void updateMainGroup0(@NotNull MainGroup mainGroup) {
-        this.getMainGroup(mainGroup.getName()).ifPresent(group -> {
-            this.mainGroups.remove(group);
-            this.mainGroups.add(mainGroup);
-
-            this.fileRegistry.updateKey(mainGroup.getName(), mainGroup);
-        });
-    }
-
-    public void reload() {
-        this.mainGroups.clear();
-        this.mainGroups.addAll(this.fileRegistry.readKeys(
-            e -> e.get("key", MainGroup.TYPE),
-            path -> System.err.println(TranslationHolder.translate("startup-unable-to-read-file",
-                "Main-Group", path.toAbsolutePath().toString()))
-        ));
-    }
+  public void reload() {
+    this.mainGroups.clear();
+    this.mainGroups.addAll(this.fileRegistry.readKeys(
+      e -> e.get("key", DefaultMainGroup.class),
+      path -> System.err.println(TranslationHolder.translateDef("startup-unable-to-read-file",
+        "Main-Group", path.toAbsolutePath().toString()))
+    ));
+  }
 }

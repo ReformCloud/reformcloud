@@ -32,37 +32,37 @@ import systems.reformcloud.reformcloud2.executor.api.http.reponse.ListeningHttpS
 
 public class DefaultListeningHttpServerResponse extends DefaultHttpServerResponse<DefaultListeningHttpServerResponse> implements ListeningHttpServerResponse<DefaultListeningHttpServerResponse> {
 
-    protected boolean lastHandler;
-    protected boolean closeAfterSent;
+  protected boolean lastHandler;
+  protected boolean closeAfterSent;
 
-    protected DefaultListeningHttpServerResponse(HttpVersion httpVersion, Headers headers, DecodeResult decodeResult) {
-        super(httpVersion, headers, decodeResult);
-    }
+  protected DefaultListeningHttpServerResponse(HttpVersion httpVersion, Headers headers, DecodeResult decodeResult) {
+    super(httpVersion, headers, decodeResult);
+  }
 
-    @Override
-    public boolean lastHandler() {
-        return this.lastHandler;
-    }
+  @Override
+  public boolean lastHandler() {
+    return this.lastHandler;
+  }
 
-    @Override
-    public @NotNull DefaultListeningHttpServerResponse lastHandler(boolean lastHandler) {
-        this.lastHandler = lastHandler;
-        return this.self();
-    }
+  @Override
+  public @NotNull DefaultListeningHttpServerResponse lastHandler(boolean lastHandler) {
+    this.lastHandler = lastHandler;
+    return this.self();
+  }
 
-    @Override
-    public boolean closeAfterSent() {
-        return this.closeAfterSent;
-    }
+  @Override
+  public boolean closeAfterSent() {
+    return this.closeAfterSent;
+  }
 
-    @Override
-    public @NotNull DefaultListeningHttpServerResponse closeAfterSent(boolean close) {
-        this.closeAfterSent = close;
-        return this.self();
-    }
+  @Override
+  public @NotNull DefaultListeningHttpServerResponse closeAfterSent(boolean close) {
+    this.closeAfterSent = close;
+    return this.self();
+  }
 
-    @Override
-    public @NotNull DefaultListeningHttpServerResponse self() {
-        return this;
-    }
+  @Override
+  public @NotNull DefaultListeningHttpServerResponse self() {
+    return this;
+  }
 }

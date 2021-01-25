@@ -32,38 +32,38 @@ import systems.reformcloud.reformcloud2.permissions.sponge.subject.impl.Abstract
 
 public class GroupSubject extends AbstractGroupSubject {
 
-    private final PermissionService service;
-    private final SubjectCollection source;
-    private final String group;
+  private final PermissionService service;
+  private final SubjectCollection source;
+  private final String group;
 
-    public GroupSubject(@NotNull String group, @NotNull PermissionService service, @NotNull SubjectCollection source) {
-        super(group);
-        this.service = service;
-        this.source = source;
-        this.group = group;
-    }
+  public GroupSubject(@NotNull String group, @NotNull PermissionService service, @NotNull SubjectCollection source) {
+    super(group);
+    this.service = service;
+    this.source = source;
+    this.group = group;
+  }
 
-    @Override
-    protected PermissionService service() {
-        return this.service;
-    }
+  @Override
+  protected PermissionService service() {
+    return this.service;
+  }
 
-    @Override
-    protected boolean has(String permission) {
-        return PermissionManagement.getInstance().getPermissionGroup(this.group)
-            .map(group -> PermissionManagement.getInstance().hasPermission(group, permission.toLowerCase()))
-            .orElse(Boolean.FALSE);
-    }
+  @Override
+  protected boolean has(String permission) {
+    return PermissionManagement.getInstance().getPermissionGroup(this.group)
+      .map(group -> PermissionManagement.getInstance().hasPermission(group, permission.toLowerCase()))
+      .orElse(Boolean.FALSE);
+  }
 
-    @Override
-    @NotNull
-    public SubjectCollection getContainingCollection() {
-        return this.source;
-    }
+  @Override
+  @NotNull
+  public SubjectCollection getContainingCollection() {
+    return this.source;
+  }
 
-    @Override
-    @NotNull
-    public String getIdentifier() {
-        return this.group;
-    }
+  @Override
+  @NotNull
+  public String getIdentifier() {
+    return this.group;
+  }
 }

@@ -40,35 +40,35 @@ import java.util.concurrent.Future;
 
 public class DefaultSocketFrameSource extends DefaultHttpRequestSource implements SocketFrameSource {
 
-    protected final SocketFrameListenerRegistry registry;
+  protected final SocketFrameListenerRegistry registry;
 
-    public DefaultSocketFrameSource(Channel channel, SocketFrameListenerRegistry registry) {
-        super(channel, null);
-        this.registry = registry;
-    }
+  public DefaultSocketFrameSource(Channel channel, SocketFrameListenerRegistry registry) {
+    super(channel, null);
+    this.registry = registry;
+  }
 
-    @Override
-    public @NotNull Future<Void> sendFrame(@NotNull SocketFrame<?> socketFrame) {
-        return this.channel.writeAndFlush(WebSocketFrameHandler.toNetty(socketFrame));
-    }
+  @Override
+  public @NotNull Future<Void> sendFrame(@NotNull SocketFrame<?> socketFrame) {
+    return this.channel.writeAndFlush(WebSocketFrameHandler.toNetty(socketFrame));
+  }
 
-    @Override
-    public @NotNull SocketFrameListenerRegistry listenerRegistry() {
-        return this.registry;
-    }
+  @Override
+  public @NotNull SocketFrameListenerRegistry listenerRegistry() {
+    return this.registry;
+  }
 
-    @Override
-    public void close(int statusCode, @NotNull String statusText) {
-        this.channel.writeAndFlush(new CloseWebSocketFrame(statusCode, statusText)).addListener(ChannelFutureListener.CLOSE);
-    }
+  @Override
+  public void close(int statusCode, @NotNull String statusText) {
+    this.channel.writeAndFlush(new CloseWebSocketFrame(statusCode, statusText)).addListener(ChannelFutureListener.CLOSE);
+  }
 
-    @Override
-    public void close() {
-        this.close(CloseSocketFrame.CloseStatus.NORMAL_CLOSE.code(), "bye");
-    }
+  @Override
+  public void close() {
+    this.close(CloseSocketFrame.CloseStatus.NORMAL_CLOSE.code(), "bye");
+  }
 
-    @Override
-    public @NotNull Optional<SocketFrameSource> upgrade() {
-        return Optional.of(this);
-    }
+  @Override
+  public @NotNull Optional<SocketFrameSource> upgrade() {
+    return Optional.of(this);
+  }
 }

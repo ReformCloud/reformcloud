@@ -32,13 +32,13 @@ import systems.reformcloud.reformcloud2.permissions.cloudburst.CloudBurstUtil;
 
 public class CloudBurstPermissionListener {
 
-    @Listener
-    public void handle(final PlayerLoginEvent event) {
-        CloudBurstUtil.inject(event.getPlayer());
-    }
+  @Listener
+  public void handle(final PlayerLoginEvent event) {
+    CloudBurstUtil.inject(event.getPlayer());
+  }
 
-    @Listener
-    public void handle(final PlayerQuitEvent event) {
-        PermissionManagement.getInstance().handleDisconnect(event.getPlayer().getServerId());
-    }
+  @Listener
+  public void handle(final PlayerQuitEvent event) {
+    PermissionManagement.getInstance().handleDisconnect(event.getPlayer().getServerId());
+  }
 }

@@ -48,6 +48,7 @@ import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUpdateEvent;
 import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 import systems.reformcloud.reformcloud2.executor.api.groups.messages.IngameMessages;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.player.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.client.NetworkClient;
@@ -81,6 +82,7 @@ import systems.reformcloud.reformcloud2.shared.network.channel.DefaultChannelMan
 import systems.reformcloud.reformcloud2.shared.network.client.DefaultNetworkClient;
 import systems.reformcloud.reformcloud2.shared.network.packet.DefaultPacketProvider;
 import systems.reformcloud.reformcloud2.shared.network.packet.DefaultQueryManager;
+import systems.reformcloud.reformcloud2.shared.platform.Platform;
 import systems.reformcloud.reformcloud2.shared.registry.service.DefaultServiceRegistry;
 
 import java.util.Optional;
@@ -96,197 +98,208 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public abstract class Embedded extends ExecutorAPI {
 
-    protected final ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
-    protected final NetworkClient networkClient = new DefaultNetworkClient();
-    protected final EmbeddedConfig config = new EmbeddedConfig();
+  protected final ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
+  protected final NetworkClient networkClient = new DefaultNetworkClient();
+  protected final EmbeddedConfig config = new EmbeddedConfig();
 
-    private final DatabaseProvider databaseProvider = new DefaultEmbeddedDatabaseProvider();
-    private final ChannelMessageProvider channelMessageProvider = new DefaultEmbeddedChannelMessageProvider();
-    private final NodeInformationProvider nodeInformationProvider = new DefaultEmbeddedNodeInformationProvider();
-    private final PlayerProvider playerProvider = new DefaultEmbeddedPlayerProvider();
-    private final MainGroupProvider mainGroupProvider = new DefaultEmbeddedMainGroupProvider();
-    private final ProcessGroupProvider processGroupProvider = new DefaultEmbeddedProcessGroupProvider();
-    private final ProcessProvider processProvider = new DefaultEmbeddedProcessProvider();
-    private final DependencyLoader dependencyLoader = new DefaultDependencyLoader();
+  private final DatabaseProvider databaseProvider = new DefaultEmbeddedDatabaseProvider();
+  private final ChannelMessageProvider channelMessageProvider = new DefaultEmbeddedChannelMessageProvider();
+  private final NodeInformationProvider nodeInformationProvider = new DefaultEmbeddedNodeInformationProvider();
+  private final PlayerProvider playerProvider = new DefaultEmbeddedPlayerProvider();
+  private final MainGroupProvider mainGroupProvider = new DefaultEmbeddedMainGroupProvider();
+  private final ProcessGroupProvider processGroupProvider = new DefaultEmbeddedProcessGroupProvider();
+  private final ProcessProvider processProvider = new DefaultEmbeddedProcessProvider();
+  private final DependencyLoader dependencyLoader = new DefaultDependencyLoader();
 
-    protected ProcessInformation processInformation;
-    protected IngameMessages ingameMessages = new IngameMessages();
+  protected int maxPlayers;
+  protected ProcessInformation processInformation;
+  protected IngameMessages ingameMessages = new IngameMessages();
 
-    protected Embedded() {
-        ExecutorAPI.setInstance(this);
+  protected Embedded() {
+    ExecutorAPI.setInstance(this);
 
-        this.serviceRegistry.setProvider(EventManager.class, new DefaultEventManager(), false, true);
-        this.serviceRegistry.setProvider(ChannelManager.class, new DefaultChannelManager(), true);
-        this.serviceRegistry.setProvider(PacketProvider.class, new DefaultPacketProvider(), false, true);
-        this.serviceRegistry.setProvider(QueryManager.class, new DefaultQueryManager(), false, true);
+    this.serviceRegistry.setProvider(EventManager.class, new DefaultEventManager(), false, true);
+    this.serviceRegistry.setProvider(ChannelManager.class, new DefaultChannelManager(), true);
+    this.serviceRegistry.setProvider(PacketProvider.class, new DefaultPacketProvider(), false, true);
+    this.serviceRegistry.setProvider(QueryManager.class, new DefaultQueryManager(), false, true);
 
-        this.serviceRegistry.getProviderUnchecked(EventManager.class).registerListener(new CurrentProcessUpdateEventListener());
-        this.processInformation = this.config.getProcessInformation();
+    this.serviceRegistry.getProviderUnchecked(EventManager.class).registerListener(new CurrentProcessUpdateEventListener());
+    this.processInformation = this.config.getProcessInformation();
 
-        Lock lock = new ReentrantLock();
-        try {
-            lock.lock();
-            Condition condition = lock.newCondition();
+    Lock lock = new ReentrantLock();
+    try {
+      lock.lock();
+      Condition condition = lock.newCondition();
 
-            this.networkClient.connect(
-                this.config.getConnectionHost(),
-                this.config.getConnectionPort(),
-                () -> new EmbeddedChannelListener(lock, condition)
-            );
+      this.networkClient.connect(
+        this.config.getConnectionHost(),
+        this.config.getConnectionPort(),
+        () -> new EmbeddedChannelListener(lock, condition)
+      );
 
-            try {
-                if (!condition.await(30, TimeUnit.SECONDS)) {
-                    System.exit(-1);
-                }
-            } catch (InterruptedException exception) {
-                throw new RuntimeException(exception);
-            }
-
-            if (this.serviceRegistry.getProviderUnchecked(ChannelManager.class).getFirstChannel().isEmpty()) {
-                System.exit(-1);
-            }
-        } finally {
-            lock.unlock();
+      try {
+        if (!condition.await(30, TimeUnit.SECONDS)) {
+          System.exit(-1);
         }
+      } catch (InterruptedException exception) {
+        throw new RuntimeException(exception);
+      }
 
-        this.sendSyncQuery(new ApiToNodeGetIngameMessages()).ifPresent(result -> {
-            if (result instanceof ApiToNodeGetIngameMessagesResult) {
-                this.ingameMessages = ((ApiToNodeGetIngameMessagesResult) result).getMessages();
-            }
-        });
-
-        this.processInformation.getProcessDetail().setProcessState(this.processInformation.getProcessDetail().getInitialState());
-        this.processInformation.getNetworkInfo().setConnected(true);
-
-        if (this.processInformation.getProcessDetail().getMaxPlayers() < 0) {
-            this.processInformation.updateMaxPlayers(this.getMaxPlayersOfEnvironment());
-        }
-
-        PacketProcessorManager.getInstance()
-            .registerProcessor(new ChannelMessageProcessor(), PacketChannelMessage.class)
-            .registerProcessor(new PacketConnectPlayerToServerProcessor(), PacketConnectPlayerToServer.class)
-            .registerProcessor(new PacketDisconnectPlayerProcessor(), PacketDisconnectPlayer.class)
-            .registerProcessor(new PacketPlayEffectToPlayerProcessor(), PacketPlayEffectToPlayer.class)
-            .registerProcessor(new PacketPlaySoundToPlayerProcessor(), PacketPlaySoundToPlayer.class)
-            .registerProcessor(new PacketSendPlayerMessageProcessor(), PacketSendPlayerMessage.class)
-            .registerProcessor(new PacketSendPlayerTitleProcessor(), PacketSendPlayerTitle.class)
-            .registerProcessor(new PacketSetPlayerLocationProcessor(), PacketSetPlayerLocation.class);
-
-        Runtime.getRuntime().addShutdownHook(new Thread(this.networkClient::disconnect));
-        this.updateCurrentProcessInformation();
+      if (!this.serviceRegistry.getProviderUnchecked(ChannelManager.class).getFirstChannel().isPresent()) {
+        System.exit(-1);
+      }
+    } finally {
+      lock.unlock();
     }
 
-    @NotNull
-    public static Embedded getInstance() {
-        return (Embedded) ExecutorAPI.getInstance();
+    this.sendSyncQuery(new ApiToNodeGetIngameMessages()).ifPresent(result -> {
+      if (result instanceof ApiToNodeGetIngameMessagesResult) {
+        this.ingameMessages = ((ApiToNodeGetIngameMessagesResult) result).getMessages();
+      }
+    });
+
+    this.updateMaxPlayers();
+    this.processInformation.setCurrentState(this.processInformation.getInitialState());
+
+    PacketProcessorManager.getInstance()
+      .registerProcessor(new ChannelMessageProcessor(), PacketChannelMessage.class)
+      .registerProcessor(new PacketConnectPlayerToServerProcessor(), PacketConnectPlayerToServer.class)
+      .registerProcessor(new PacketDisconnectPlayerProcessor(), PacketDisconnectPlayer.class)
+      .registerProcessor(new PacketPlayEffectToPlayerProcessor(), PacketPlayEffectToPlayer.class)
+      .registerProcessor(new PacketPlaySoundToPlayerProcessor(), PacketPlaySoundToPlayer.class)
+      .registerProcessor(new PacketSendPlayerMessageProcessor(), PacketSendPlayerMessage.class)
+      .registerProcessor(new PacketSendPlayerTitleProcessor(), PacketSendPlayerTitle.class)
+      .registerProcessor(new PacketSetPlayerLocationProcessor(), PacketSetPlayerLocation.class);
+
+    Runtime.getRuntime().addShutdownHook(new Thread(this.networkClient::closeSync));
+    this.updateCurrentProcessInformation();
+  }
+
+  @NotNull
+  public static Embedded getInstance() {
+    return (Embedded) ExecutorAPI.getInstance();
+  }
+
+  @NotNull
+  @Override
+  public ChannelMessageProvider getChannelMessageProvider() {
+    return this.channelMessageProvider;
+  }
+
+  @NotNull
+  @Override
+  public DatabaseProvider getDatabaseProvider() {
+    return this.databaseProvider;
+  }
+
+  @NotNull
+  @Override
+  public MainGroupProvider getMainGroupProvider() {
+    return this.mainGroupProvider;
+  }
+
+  @NotNull
+  @Override
+  public NodeInformationProvider getNodeInformationProvider() {
+    return this.nodeInformationProvider;
+  }
+
+  @NotNull
+  @Override
+  public PlayerProvider getPlayerProvider() {
+    return this.playerProvider;
+  }
+
+  @NotNull
+  @Override
+  public ProcessGroupProvider getProcessGroupProvider() {
+    return this.processGroupProvider;
+  }
+
+  @NotNull
+  @Override
+  public ProcessProvider getProcessProvider() {
+    return this.processProvider;
+  }
+
+  @NotNull
+  @Override
+  public ServiceRegistry getServiceRegistry() {
+    return this.serviceRegistry;
+  }
+
+  @NotNull
+  @Override
+  public DependencyLoader getDependencyLoader() {
+    return this.dependencyLoader;
+  }
+
+  @Override
+  public boolean isReady() {
+    return this.serviceRegistry.getProviderUnchecked(ChannelManager.class).getFirstChannel().isPresent();
+  }
+
+  @NotNull
+  public ProcessInformation getCurrentProcessInformation() {
+    return this.processInformation;
+  }
+
+  @NotNull
+  public EmbeddedConfig getConfig() {
+    return this.config;
+  }
+
+  @NotNull
+  public IngameMessages getIngameMessages() {
+    return this.ingameMessages;
+  }
+
+  public void sendPacket(@NotNull Packet packet) {
+    this.serviceRegistry.getProviderUnchecked(ChannelManager.class).getFirstChannel().ifPresent(e -> e.sendPacket(packet));
+  }
+
+  @NotNull
+  public Task<Packet> sendQuery(@NotNull Packet packet) {
+    Optional<NetworkChannel> channel = this.serviceRegistry.getProviderUnchecked(ChannelManager.class).getFirstChannel();
+    return channel
+      .map(networkChannel -> this.serviceRegistry.getProviderUnchecked(QueryManager.class).sendPacketQuery(networkChannel, packet))
+      .orElseGet(() -> Task.completedTask(null));
+  }
+
+  @NotNull
+  public Optional<Packet> sendSyncQuery(@NotNull Packet packet) {
+    Packet result = this.sendQuery(packet).getUninterruptedly(TimeUnit.SECONDS, 5);
+    return Optional.ofNullable(result);
+  }
+
+  public void updateCurrentProcessInformation() {
+    this.processInformation.setRuntimeInformation(Platform.createProcessRuntimeInformation());
+    this.processProvider.updateProcessInformation(this.processInformation);
+  }
+
+  protected void updateMaxPlayers() {
+    final PlayerAccessConfiguration configuration = this.processInformation.getProcessGroup().getPlayerAccessConfiguration();
+    if (configuration.isUsePlayerLimit() && configuration.getMaxPlayers() >= 0) {
+      this.maxPlayers = configuration.getMaxPlayers();
+    } else {
+      this.maxPlayers = this.getMaxPlayersOfEnvironment();
     }
+  }
 
-    @NotNull
-    @Override
-    public ChannelMessageProvider getChannelMessageProvider() {
-        return this.channelMessageProvider;
+  public int getMaxPlayers() {
+    return this.maxPlayers;
+  }
+
+  protected abstract int getMaxPlayersOfEnvironment();
+
+  public final class CurrentProcessUpdateEventListener {
+
+    @Listener
+    public void handle(@NotNull ProcessUpdateEvent event) {
+      if (Embedded.this.processInformation.getId().getUniqueId().equals(event.getProcessInformation().getId().getUniqueId())) {
+        Embedded.this.processInformation = event.getProcessInformation();
+        Embedded.this.updateMaxPlayers();
+      }
     }
-
-    @NotNull
-    @Override
-    public DatabaseProvider getDatabaseProvider() {
-        return this.databaseProvider;
-    }
-
-    @NotNull
-    @Override
-    public MainGroupProvider getMainGroupProvider() {
-        return this.mainGroupProvider;
-    }
-
-    @NotNull
-    @Override
-    public NodeInformationProvider getNodeInformationProvider() {
-        return this.nodeInformationProvider;
-    }
-
-    @NotNull
-    @Override
-    public PlayerProvider getPlayerProvider() {
-        return this.playerProvider;
-    }
-
-    @NotNull
-    @Override
-    public ProcessGroupProvider getProcessGroupProvider() {
-        return this.processGroupProvider;
-    }
-
-    @NotNull
-    @Override
-    public ProcessProvider getProcessProvider() {
-        return this.processProvider;
-    }
-
-    @NotNull
-    @Override
-    public ServiceRegistry getServiceRegistry() {
-        return this.serviceRegistry;
-    }
-
-    @NotNull
-    @Override
-    public DependencyLoader getDependencyLoader() {
-        return this.dependencyLoader;
-    }
-
-    @Override
-    public boolean isReady() {
-        return this.serviceRegistry.getProviderUnchecked(ChannelManager.class).getFirstChannel().isPresent();
-    }
-
-    @NotNull
-    public ProcessInformation getCurrentProcessInformation() {
-        return this.processInformation;
-    }
-
-    @NotNull
-    public EmbeddedConfig getConfig() {
-        return this.config;
-    }
-
-    @NotNull
-    public IngameMessages getIngameMessages() {
-        return this.ingameMessages;
-    }
-
-    public void sendPacket(@NotNull Packet packet) {
-        this.serviceRegistry.getProviderUnchecked(ChannelManager.class).getFirstChannel().ifPresent(e -> e.sendPacket(packet));
-    }
-
-    @NotNull
-    public Task<Packet> sendQuery(@NotNull Packet packet) {
-        Optional<NetworkChannel> channel = this.serviceRegistry.getProviderUnchecked(ChannelManager.class).getFirstChannel();
-        return channel
-            .map(networkChannel -> this.serviceRegistry.getProviderUnchecked(QueryManager.class).sendPacketQuery(networkChannel, packet))
-            .orElseGet(() -> Task.completedTask(null));
-    }
-
-    @NotNull
-    public Optional<Packet> sendSyncQuery(@NotNull Packet packet) {
-        Packet result = this.sendQuery(packet).getUninterruptedly(TimeUnit.SECONDS, 5);
-        return Optional.ofNullable(result);
-    }
-
-    public void updateCurrentProcessInformation() {
-        this.processInformation.updateRuntimeInformation();
-        this.processProvider.updateProcessInformation(this.processInformation);
-    }
-
-    protected abstract int getMaxPlayersOfEnvironment();
-
-    public final class CurrentProcessUpdateEventListener {
-
-        @Listener
-        public void handle(@NotNull ProcessUpdateEvent event) {
-            if (Embedded.this.processInformation.getProcessDetail().getProcessUniqueID().equals(event.getProcessInformation().getProcessDetail().getProcessUniqueID())) {
-                Embedded.this.processInformation = event.getProcessInformation();
-            }
-        }
-    }
+  }
 }

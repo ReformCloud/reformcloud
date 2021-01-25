@@ -39,7 +39,7 @@ import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessInclusion;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroup;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,111 +48,111 @@ import java.util.concurrent.TimeUnit;
 
 public class ApiToNodePrepareProcess extends ProtocolPacket {
 
-    private String processGroupName;
-    private String node;
-    private String displayName;
-    private String messageOfTheDay;
-    private String targetProcessFactory;
-    private ProcessGroup processGroup;
-    private Template template;
-    private Collection<ProcessInclusion> inclusions = new ArrayList<>();
-    private JsonConfiguration extra = JsonConfiguration.newJsonConfiguration();
-    private ProcessState initialState = ProcessState.READY;
-    private UUID processUniqueId = UUID.randomUUID();
-    private int memory = -1;
-    private int id = -1;
-    private int maxPlayers = -1;
+  private String processGroupName;
+  private String node;
+  private String displayName;
+  private String messageOfTheDay;
+  private String targetProcessFactory;
+  private ProcessGroup processGroup;
+  private Template template;
+  private Collection<ProcessInclusion> inclusions = new ArrayList<>();
+  private JsonConfiguration extra = JsonConfiguration.newJsonConfiguration();
+  private ProcessState initialState = ProcessState.READY;
+  private UUID processUniqueId = UUID.randomUUID();
+  private int memory = -1;
+  private int id = -1;
+  private int maxPlayers = -1;
 
-    public ApiToNodePrepareProcess() {
+  public ApiToNodePrepareProcess() {
+  }
+
+  public ApiToNodePrepareProcess(String processGroupName, String node, String displayName, String messageOfTheDay, String targetProcessFactory, ProcessGroup processGroup, Template template,
+                                 Collection<ProcessInclusion> inclusions, JsonConfiguration extra, ProcessState initialState, UUID processUniqueId, int memory, int id, int maxPlayers) {
+    this.processGroupName = processGroupName;
+    this.node = node;
+    this.displayName = displayName;
+    this.messageOfTheDay = messageOfTheDay;
+    this.targetProcessFactory = targetProcessFactory;
+    this.processGroup = processGroup;
+    this.template = template;
+    this.inclusions = inclusions;
+    this.extra = extra;
+    this.initialState = initialState;
+    this.processUniqueId = processUniqueId;
+    this.memory = memory;
+    this.id = id;
+    this.maxPlayers = maxPlayers;
+  }
+
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 70;
+  }
+
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ProcessWrapper result = ProcessInformation.builder(this.processGroupName)
+      .node(this.node)
+      .displayName(this.displayName)
+      .messageOfTheDay(this.messageOfTheDay)
+      .targetProcessFactory(this.targetProcessFactory)
+
+      .group(this.processGroup)
+      .template(this.template)
+      .inclusions(this.inclusions)
+      .extra(this.extra)
+      .initialState(this.initialState)
+      .uniqueId(this.processUniqueId)
+
+      .memory(this.memory)
+      .id(this.id)
+      .maxPlayers(this.maxPlayers)
+      .prepare()
+      .getUninterruptedly(TimeUnit.SECONDS, 15);
+    if (result != null) {
+      channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetProcessInformationResult(result.getProcessInformation()));
+    } else {
+      channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetProcessInformationResult());
     }
+  }
 
-    public ApiToNodePrepareProcess(String processGroupName, String node, String displayName, String messageOfTheDay, String targetProcessFactory, ProcessGroup processGroup, Template template,
-                                   Collection<ProcessInclusion> inclusions, JsonConfiguration extra, ProcessState initialState, UUID processUniqueId, int memory, int id, int maxPlayers) {
-        this.processGroupName = processGroupName;
-        this.node = node;
-        this.displayName = displayName;
-        this.messageOfTheDay = messageOfTheDay;
-        this.targetProcessFactory = targetProcessFactory;
-        this.processGroup = processGroup;
-        this.template = template;
-        this.inclusions = inclusions;
-        this.extra = extra;
-        this.initialState = initialState;
-        this.processUniqueId = processUniqueId;
-        this.memory = memory;
-        this.id = id;
-        this.maxPlayers = maxPlayers;
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.processGroupName);
+    buffer.writeString(this.node);
+    buffer.writeString(this.displayName);
+    buffer.writeString(this.messageOfTheDay);
+    buffer.writeString(this.targetProcessFactory);
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 70;
-    }
+    buffer.writeObject(this.processGroup);
+    buffer.writeObject(this.template);
+    buffer.writeObjects(this.inclusions);
+    buffer.writeString(this.extra.toString());
+    buffer.writeInt(this.initialState.ordinal());
+    buffer.writeUniqueId(this.processUniqueId);
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ProcessWrapper result = ProcessInformation.builder(this.processGroupName)
-            .node(this.node)
-            .displayName(this.displayName)
-            .messageOfTheDay(this.messageOfTheDay)
-            .targetProcessFactory(this.targetProcessFactory)
+    buffer.writeInt(this.memory);
+    buffer.writeInt(this.id);
+    buffer.writeInt(this.maxPlayers);
+  }
 
-            .group(this.processGroup)
-            .template(this.template)
-            .inclusions(this.inclusions)
-            .extra(this.extra)
-            .initialState(this.initialState)
-            .uniqueId(this.processUniqueId)
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.processGroupName = buffer.readString();
+    this.node = buffer.readString();
+    this.displayName = buffer.readString();
+    this.messageOfTheDay = buffer.readString();
+    this.targetProcessFactory = buffer.readString();
 
-            .memory(this.memory)
-            .id(this.id)
-            .maxPlayers(this.maxPlayers)
-            .prepare()
-            .getUninterruptedly(TimeUnit.SECONDS, 15);
-        if (result != null) {
-            channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetProcessInformationResult(result.getProcessInformation()));
-        } else {
-            channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetProcessInformationResult());
-        }
-    }
+    this.processGroup = buffer.readObject(DefaultProcessGroup.class);
+    this.template = buffer.readObject(DefaultTemplate.class);
+    this.inclusions = buffer.readObjects(ProcessInclusion.class);
+    this.extra = JsonConfiguration.newJsonConfiguration(buffer.readString());
+    this.initialState = EnumUtil.findEnumFieldByIndex(ProcessState.class, buffer.readInt()).orElse(null);
+    this.processUniqueId = buffer.readUniqueId();
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.processGroupName);
-        buffer.writeString(this.node);
-        buffer.writeString(this.displayName);
-        buffer.writeString(this.messageOfTheDay);
-        buffer.writeString(this.targetProcessFactory);
-
-        buffer.writeObject(this.processGroup);
-        buffer.writeObject(this.template);
-        buffer.writeObjects(this.inclusions);
-        buffer.writeString(this.extra.toString());
-        buffer.writeInt(this.initialState.ordinal());
-        buffer.writeUniqueId(this.processUniqueId);
-
-        buffer.writeInt(this.memory);
-        buffer.writeInt(this.id);
-        buffer.writeInt(this.maxPlayers);
-    }
-
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.processGroupName = buffer.readString();
-        this.node = buffer.readString();
-        this.displayName = buffer.readString();
-        this.messageOfTheDay = buffer.readString();
-        this.targetProcessFactory = buffer.readString();
-
-        this.processGroup = buffer.readObject(DefaultProcessGroup.class);
-        this.template = buffer.readObject(DefaultTemplate.class);
-        this.inclusions = buffer.readObjects(ProcessInclusion.class);
-        this.extra = JsonConfiguration.newJsonConfiguration(buffer.readString());
-        this.initialState = EnumUtil.findEnumFieldByIndex(ProcessState.class, buffer.readInt()).orElse(null);
-        this.processUniqueId = buffer.readUniqueId();
-
-        this.memory = buffer.readInt();
-        this.id = buffer.readInt();
-        this.maxPlayers = buffer.readInt();
-    }
+    this.memory = buffer.readInt();
+    this.id = buffer.readInt();
+    this.maxPlayers = buffer.readInt();
+  }
 }

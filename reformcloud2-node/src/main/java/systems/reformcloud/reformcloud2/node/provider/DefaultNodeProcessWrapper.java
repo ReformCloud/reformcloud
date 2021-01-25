@@ -31,7 +31,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChan
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryManager;
-import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
+import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.NodeProcessWrapper;
 import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeProcessCommand;
 import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeProcessCommandResult;
@@ -47,73 +47,73 @@ import java.util.concurrent.TimeUnit;
 
 public class DefaultNodeProcessWrapper implements NodeProcessWrapper {
 
-    protected DefaultNodeInformation nodeInformation;
+  protected NodeInformation nodeInformation;
 
-    protected DefaultNodeProcessWrapper(@NotNull DefaultNodeInformation nodeInformation) {
-        this.nodeInformation = nodeInformation;
+  protected DefaultNodeProcessWrapper(@NotNull NodeInformation nodeInformation) {
+    this.nodeInformation = nodeInformation;
+  }
+
+  @NotNull
+  @Override
+  public NodeInformation getNodeInformation() {
+    return this.nodeInformation;
+  }
+
+  @NotNull
+  @Override
+  public Optional<NodeInformation> requestNodeInformationUpdate() {
+    Optional<NetworkChannel> channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getChannel(this.nodeInformation.getName());
+    if (!channel.isPresent()) {
+      return Optional.empty();
     }
 
-    @NotNull
-    @Override
-    public DefaultNodeInformation getNodeInformation() {
-        return this.nodeInformation;
+    Packet packet = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class)
+      .sendPacketQuery(channel.get(), new NodeToNodeRequestNodeInformationUpdate())
+      .getUninterruptedly(TimeUnit.SECONDS, 5);
+    if (!(packet instanceof NodeToNodeRequestNodeInformationUpdateResult)) {
+      return Optional.empty();
     }
 
-    @NotNull
-    @Override
-    public Optional<DefaultNodeInformation> requestNodeInformationUpdate() {
-        Optional<NetworkChannel> channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getChannel(this.nodeInformation.getName());
-        if (channel.isEmpty()) {
-            return Optional.empty();
-        }
+    return Optional.of(this.nodeInformation = ((NodeToNodeRequestNodeInformationUpdateResult) packet).getNodeInformation());
+  }
 
-        Packet packet = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class)
-            .sendPacketQuery(channel.get(), new NodeToNodeRequestNodeInformationUpdate())
-            .getUninterruptedly(TimeUnit.SECONDS, 5);
-        if (!(packet instanceof NodeToNodeRequestNodeInformationUpdateResult)) {
-            return Optional.empty();
-        }
-
-        return Optional.of(this.nodeInformation = ((NodeToNodeRequestNodeInformationUpdateResult) packet).getNodeInformation());
+  @NotNull
+  @Override
+  public @UnmodifiableView Collection<String> sendCommandLine(@NotNull String commandLine) {
+    Optional<NetworkChannel> channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getChannel(this.nodeInformation.getName());
+    if (!channel.isPresent()) {
+      return Collections.emptyList();
     }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Collection<String> sendCommandLine(@NotNull String commandLine) {
-        Optional<NetworkChannel> channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getChannel(this.nodeInformation.getName());
-        if (channel.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        Packet packet = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class)
-            .sendPacketQuery(channel.get(), new NodeToNodeProcessCommand(commandLine))
-            .getUninterruptedly(TimeUnit.SECONDS, 5);
-        if (!(packet instanceof NodeToNodeProcessCommandResult)) {
-            return Collections.emptyList();
-        }
-
-        return ((NodeToNodeProcessCommandResult) packet).getResult();
+    Packet packet = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class)
+      .sendPacketQuery(channel.get(), new NodeToNodeProcessCommand(commandLine))
+      .getUninterruptedly(TimeUnit.SECONDS, 5);
+    if (!(packet instanceof NodeToNodeProcessCommandResult)) {
+      return Collections.emptyList();
     }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Collection<String> tabCompleteCommandLine(@NotNull String commandLine) {
-        Optional<NetworkChannel> channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getChannel(this.nodeInformation.getName());
-        if (channel.isEmpty()) {
-            return Collections.emptyList();
-        }
+    return ((NodeToNodeProcessCommandResult) packet).getResult();
+  }
 
-        Packet packet = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class)
-            .sendPacketQuery(channel.get(), new NodeToNodeTabCompleteCommand(commandLine))
-            .getUninterruptedly(TimeUnit.SECONDS, 5);
-        if (!(packet instanceof NodeToNodeTabCompleteCommandResult)) {
-            return Collections.emptyList();
-        }
-
-        return ((NodeToNodeTabCompleteCommandResult) packet).getResult();
+  @NotNull
+  @Override
+  public @UnmodifiableView Collection<String> tabCompleteCommandLine(@NotNull String commandLine) {
+    Optional<NetworkChannel> channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getChannel(this.nodeInformation.getName());
+    if (!channel.isPresent()) {
+      return Collections.emptyList();
     }
 
-    public void updateNodeInformation(@NotNull DefaultNodeInformation nodeInformation) {
-        this.nodeInformation = nodeInformation;
+    Packet packet = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class)
+      .sendPacketQuery(channel.get(), new NodeToNodeTabCompleteCommand(commandLine))
+      .getUninterruptedly(TimeUnit.SECONDS, 5);
+    if (!(packet instanceof NodeToNodeTabCompleteCommandResult)) {
+      return Collections.emptyList();
     }
+
+    return ((NodeToNodeTabCompleteCommandResult) packet).getResult();
+  }
+
+  public void updateNodeInformation(@NotNull NodeInformation nodeInformation) {
+    this.nodeInformation = nodeInformation;
+  }
 }

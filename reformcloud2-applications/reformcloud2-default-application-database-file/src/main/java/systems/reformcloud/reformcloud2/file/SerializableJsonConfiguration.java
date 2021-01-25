@@ -32,17 +32,17 @@ import java.io.File;
 
 public class SerializableJsonConfiguration extends JsonConfiguration implements FileWriter {
 
-    public SerializableJsonConfiguration(File file) {
-        super(file);
-    }
+  public SerializableJsonConfiguration(File file) {
+    super(file);
+  }
 
-    public SerializableJsonConfiguration(JsonConfiguration configuration) {
-        super(configuration.getJsonObject());
-    }
+  public SerializableJsonConfiguration(JsonConfiguration configuration) {
+    super(configuration.getJsonObject());
+  }
 
-    @NotNull
-    @Override
-    public String toWriteableString() {
-        return super.toPrettyString();
-    }
+  @NotNull
+  @Override
+  public String toWriteableString() {
+    return super.toPrettyString();
+  }
 }

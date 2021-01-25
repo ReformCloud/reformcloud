@@ -34,27 +34,27 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultProcessScreenController implements ProcessScreenController {
 
-    private final Map<UUID, ProcessScreen> processScreens = new ConcurrentHashMap<>();
+  private final Map<UUID, ProcessScreen> processScreens = new ConcurrentHashMap<>();
 
-    @Override
-    public @NotNull ProcessScreen createScreen(@NotNull DefaultNodeLocalProcessWrapper wrapper) {
-        ProcessScreen screen = new DefaultProcessScreen(wrapper);
-        this.processScreens.put(wrapper.getProcessInformation().getProcessDetail().getProcessUniqueID(), screen);
-        return screen;
-    }
+  @Override
+  public @NotNull ProcessScreen createScreen(@NotNull DefaultNodeLocalProcessWrapper wrapper) {
+    ProcessScreen screen = new DefaultProcessScreen(wrapper);
+    this.processScreens.put(wrapper.getProcessInformation().getId().getUniqueId(), screen);
+    return screen;
+  }
 
-    @Override
-    public @NotNull Optional<ProcessScreen> getScreen(@NotNull UUID processUniqueId) {
-        return Optional.ofNullable(this.processScreens.get(processUniqueId));
-    }
+  @Override
+  public @NotNull Optional<ProcessScreen> getScreen(@NotNull UUID processUniqueId) {
+    return Optional.ofNullable(this.processScreens.get(processUniqueId));
+  }
 
-    @Override
-    public void unregisterScreen(@NotNull UUID processUniqueId) {
-        this.processScreens.remove(processUniqueId);
-    }
+  @Override
+  public void unregisterScreen(@NotNull UUID processUniqueId) {
+    this.processScreens.remove(processUniqueId);
+  }
 
-    @Override
-    public void tick() {
-        this.processScreens.values().forEach(ProcessScreen::tick);
-    }
+  @Override
+  public void tick() {
+    this.processScreens.values().forEach(ProcessScreen::tick);
+  }
 }

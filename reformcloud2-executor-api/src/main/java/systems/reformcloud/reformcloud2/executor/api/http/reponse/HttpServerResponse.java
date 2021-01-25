@@ -59,7 +59,6 @@ public interface HttpServerResponse<T extends HttpServerResponse<T>> extends Coo
      *
      * @return the response body sent to the client.
      */
-    @NotNull
     byte[] body();
 
     /**

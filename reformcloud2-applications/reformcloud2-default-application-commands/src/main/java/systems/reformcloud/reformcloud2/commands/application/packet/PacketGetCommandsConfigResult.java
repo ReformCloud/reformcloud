@@ -32,31 +32,31 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryR
 
 public class PacketGetCommandsConfigResult extends QueryResultPacket {
 
-    private CommandsConfig commandsConfig;
+  private CommandsConfig commandsConfig;
 
-    public PacketGetCommandsConfigResult() {
-    }
+  public PacketGetCommandsConfigResult() {
+  }
 
-    public PacketGetCommandsConfigResult(CommandsConfig commandsConfig) {
-        this.commandsConfig = commandsConfig;
-    }
+  public PacketGetCommandsConfigResult(CommandsConfig commandsConfig) {
+    this.commandsConfig = commandsConfig;
+  }
 
-    public CommandsConfig getCommandsConfig() {
-        return this.commandsConfig;
-    }
+  public CommandsConfig getCommandsConfig() {
+    return this.commandsConfig;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.RESERVED_EXTRA_BUS + 2;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.RESERVED_EXTRA_BUS + 2;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.commandsConfig);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.commandsConfig);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.commandsConfig = buffer.readObject(CommandsConfig.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.commandsConfig = buffer.readObject(CommandsConfig.class);
+  }
 }

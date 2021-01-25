@@ -42,82 +42,82 @@ import java.util.stream.Collectors;
 
 public class DefaultPermissible extends PermissibleBase {
 
-    private final UUID uuid;
+  private final UUID uuid;
 
-    public DefaultPermissible(Player player) {
-        super(player);
-        this.uuid = player.getUniqueId();
+  public DefaultPermissible(Player player) {
+    super(player);
+    this.uuid = player.getUniqueId();
+  }
+
+  @Override
+  public boolean isOp() {
+    return false;
+  }
+
+  @Override
+  public void setOp(boolean value) {
+  }
+
+  @Override
+  public boolean isPermissionSet(String name) {
+    return this.hasPermission(name);
+  }
+
+  @Override
+  public boolean isPermissionSet(Permission perm) {
+    return this.hasPermission(perm.getName());
+  }
+
+  @Override
+  public boolean hasPermission(String name) {
+    if (name.equalsIgnoreCase(Server.BROADCAST_CHANNEL_USERS) || name.equalsIgnoreCase(Server.BROADCAST_CHANNEL_ADMINISTRATIVE)) {
+      return true;
     }
 
-    @Override
-    public boolean isOp() {
-        return false;
-    }
+    return this.has(name);
+  }
 
-    @Override
-    public void setOp(boolean value) {
-    }
+  @Override
+  public boolean hasPermission(Permission perm) {
+    return this.hasPermission(perm.getName());
+  }
 
-    @Override
-    public boolean isPermissionSet(String name) {
-        return this.hasPermission(name);
-    }
+  @Override
+  public PermissionAttachment addAttachment(Plugin plugin, String name, Boolean value) {
+    return new PermissionAttachment(plugin, this);
+  }
 
-    @Override
-    public boolean isPermissionSet(Permission perm) {
-        return this.hasPermission(perm.getName());
-    }
+  @Override
+  public PermissionAttachment addAttachment(Plugin plugin) {
+    return new PermissionAttachment(plugin, this);
+  }
 
-    @Override
-    public boolean hasPermission(String name) {
-        if (name.equalsIgnoreCase(Server.BROADCAST_CHANNEL_USERS) || name.equalsIgnoreCase(Server.BROADCAST_CHANNEL_ADMINISTRATIVE)) {
-            return true;
-        }
+  @Override
+  public void removeAttachment(PermissionAttachment attachment) {
+  }
 
-        return this.has(name);
-    }
+  @Override
+  public void recalculatePermissions() {
+  }
 
-    @Override
-    public boolean hasPermission(Permission perm) {
-        return this.hasPermission(perm.getName());
-    }
+  @Override
+  public synchronized void clearPermissions() {
+  }
 
-    @Override
-    public PermissionAttachment addAttachment(Plugin plugin, String name, Boolean value) {
-        return new PermissionAttachment(plugin, this);
-    }
+  @Override
+  public Map<String, PermissionAttachmentInfo> getEffectivePermissions() {
+    return PermissionPluginUtil.collectPermissionsOfUser(PermissionManagement.getInstance().loadUser(this.uuid))
+      .stream()
+      .collect(Collectors.toMap(PermissionNode::getActualPermission, node -> new PermissionAttachmentInfo(this, node.getActualPermission(), null, node.isSet())));
+  }
 
-    @Override
-    public PermissionAttachment addAttachment(Plugin plugin) {
-        return new PermissionAttachment(plugin, this);
-    }
+  @Override
+  public PermissionAttachment addAttachment(Plugin plugin, String name) {
+    return new PermissionAttachment(plugin, this);
+  }
 
-    @Override
-    public void removeAttachment(PermissionAttachment attachment) {
-    }
-
-    @Override
-    public void recalculatePermissions() {
-    }
-
-    @Override
-    public synchronized void clearPermissions() {
-    }
-
-    @Override
-    public Map<String, PermissionAttachmentInfo> getEffectivePermissions() {
-        return PermissionPluginUtil.collectPermissionsOfUser(PermissionManagement.getInstance().loadUser(this.uuid))
-            .stream()
-            .collect(Collectors.toMap(PermissionNode::getActualPermission, node -> new PermissionAttachmentInfo(this, node.getActualPermission(), null, node.isSet())));
-    }
-
-    @Override
-    public PermissionAttachment addAttachment(Plugin plugin, String name) {
-        return new PermissionAttachment(plugin, this);
-    }
-
-    private boolean has(String name) {
-        final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(this.uuid);
-        return permissionUser.hasPermission(name);
-    }
+  private boolean has(String name) {
+    final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(this.uuid);
+    return permissionUser.hasPermission(name);
+  }
 }

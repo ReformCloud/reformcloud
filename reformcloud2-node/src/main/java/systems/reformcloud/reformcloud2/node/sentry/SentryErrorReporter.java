@@ -30,46 +30,46 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.shared.platform.Platform;
 
-/* package */ final class SentryErrorReporter {
+final class SentryErrorReporter {
 
-    private static final String SENTRY_DSN = System.getProperty(
-        "systems.reformcloud.sentry-log-dsn",
-        "https://f9ac673179f7438ab441e3bd61a32a90@o440889.ingest.sentry.io/5416465?async=false"
-    );
+  private static final String SENTRY_DSN = System.getProperty(
+    "systems.reformcloud.sentry-log-dsn",
+    "https://f9ac673179f7438ab441e3bd61a32a90@o440889.ingest.sentry.io/5416465?async=false"
+  );
 
-    protected static void init(@NotNull NodeExecutor nodeExecutor) {
-        Sentry.init(options -> {
-            options.setDsn(SENTRY_DSN);
-            options.addEventProcessor((event, hint) -> nodeExecutor.getNodeConfig().isSendAnonymousErrorReports() ? SentryErrorReporter.appendExtraInformation(event) : null);
-        });
+  protected static void init(@NotNull NodeExecutor nodeExecutor) {
+    Sentry.init(options -> {
+      options.setDsn(SENTRY_DSN);
+      options.addEventProcessor((event, hint) -> nodeExecutor.getNodeConfig().isSendAnonymousErrorReports() ? SentryErrorReporter.appendExtraInformation(event) : null);
+    });
+  }
+
+  @NotNull
+  private static SentryEvent appendExtraInformation(@NotNull SentryEvent event) {
+    event.setRelease(System.getProperty("reformcloud.runner.version", "unsupported"));
+    event.setTag("java_version", System.getProperty("java.vm.name") + " (" + System.getProperty("java.runtime.version") + ")");
+
+    event.setExtra("system.process_memory_free", formatBytes(Runtime.getRuntime().freeMemory()));
+    event.setExtra("system.process_memory_total", formatBytes(Runtime.getRuntime().totalMemory()));
+    event.setExtra("system.user_name", System.getProperty("user.name"));
+    event.setExtra("system.user_dir", System.getProperty("user.dir"));
+    event.setExtra("system.os", System.getProperty("os.name") + " (Version: " + System.getProperty("os.version") + " Arch: " + System.getProperty("os.arch") + ")");
+    event.setExtra("system.cpu", Runtime.getRuntime().availableProcessors());
+    event.setExtra("system.memory", formatBytes(Platform.getTotalSystemMemory()));
+    event.setExtra("system.current_thread", Thread.currentThread().getName());
+
+    return event;
+  }
+
+  /* Thanks stackoverflow */
+  @NotNull
+  private static String formatBytes(long bytes) {
+    if (bytes < 1024) {
+      return bytes + " B";
     }
 
-    @NotNull
-    private static SentryEvent appendExtraInformation(@NotNull SentryEvent event) {
-        event.setRelease(System.getProperty("reformcloud.runner.version", "unsupported"));
-        event.setTag("java_version", System.getProperty("java.vm.name") + " (" + System.getProperty("java.runtime.version") + ")");
-
-        event.setExtra("system.process_memory_free", formatBytes(Runtime.getRuntime().freeMemory()));
-        event.setExtra("system.process_memory_total", formatBytes(Runtime.getRuntime().totalMemory()));
-        event.setExtra("system.user_name", System.getProperty("user.name"));
-        event.setExtra("system.user_dir", System.getProperty("user.dir"));
-        event.setExtra("system.os", System.getProperty("os.name") + " (Version: " + System.getProperty("os.version") + " Arch: " + System.getProperty("os.arch") + ")");
-        event.setExtra("system.cpu", Runtime.getRuntime().availableProcessors());
-        event.setExtra("system.memory", formatBytes(Platform.getTotalSystemMemory()));
-        event.setExtra("system.current_thread", Thread.currentThread().getName());
-
-        return event;
-    }
-
-    /* Thanks stackoverflow */
-    @NotNull
-    private static String formatBytes(long bytes) {
-        if (bytes < 1024) {
-            return bytes + " B";
-        }
-
-        int exp = (int) (Math.log(bytes) / Math.log(1024));
-        char pre = "KMGTPE".charAt(exp - 1);
-        return String.format("%.1f %siB", bytes / Math.pow(1024, exp), pre);
-    }
+    int exp = (int) (Math.log(bytes) / Math.log(1024));
+    char pre = "KMGTPE".charAt(exp - 1);
+    return String.format("%.1f %siB", bytes / Math.pow(1024, exp), pre);
+  }
 }

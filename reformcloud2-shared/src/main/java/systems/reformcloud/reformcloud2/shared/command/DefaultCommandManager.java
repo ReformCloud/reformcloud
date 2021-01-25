@@ -31,7 +31,7 @@ import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandContainer;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,8 +74,8 @@ public class DefaultCommandManager implements CommandManager {
 
     @Override
     public void unregisterCommand(@NotNull String... aliases) {
-        Collection<String> toUnregister = Streams.toLowerCase(Arrays.asList(aliases));
-        this.commands.removeIf(command -> Streams.hasMatch(command.getAliases(), toUnregister::contains));
+        Collection<String> toUnregister = MoreCollections.toLowerCase(Arrays.asList(aliases));
+        this.commands.removeIf(command -> MoreCollections.hasMatch(command.getAliases(), toUnregister::contains));
     }
 
     @NotNull

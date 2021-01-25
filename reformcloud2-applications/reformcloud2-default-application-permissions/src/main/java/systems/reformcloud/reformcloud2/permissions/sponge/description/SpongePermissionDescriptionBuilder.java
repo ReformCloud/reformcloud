@@ -34,44 +34,44 @@ import systems.reformcloud.reformcloud2.permissions.sponge.service.SpongePermiss
 
 public class SpongePermissionDescriptionBuilder implements PermissionDescription.Builder {
 
-    private final PermissionService service;
-    private final PluginContainer pluginContainer;
-    private String id;
+  private final PermissionService service;
+  private final PluginContainer pluginContainer;
+  private String id;
 
-    private Text description;
+  private Text description;
 
-    public SpongePermissionDescriptionBuilder(@NotNull PermissionService service, @Nullable PluginContainer plugin) {
-        this.service = service;
-        this.pluginContainer = plugin;
-    }
+  public SpongePermissionDescriptionBuilder(@NotNull PermissionService service, @Nullable PluginContainer plugin) {
+    this.service = service;
+    this.pluginContainer = plugin;
+  }
 
-    @Override
-    @NotNull
-    public PermissionDescription.Builder id(@NotNull String permissionId) {
-        this.id = permissionId;
-        return this;
-    }
+  @Override
+  @NotNull
+  public PermissionDescription.Builder id(@NotNull String permissionId) {
+    this.id = permissionId;
+    return this;
+  }
 
-    @Override
-    @NotNull
-    public PermissionDescription.Builder description(@Nullable Text description) {
-        this.description = description;
-        return this;
-    }
+  @Override
+  @NotNull
+  public PermissionDescription.Builder description(@Nullable Text description) {
+    this.description = description;
+    return this;
+  }
 
-    @Override
-    @NotNull
-    public PermissionDescription.Builder assign(@Nullable String role, boolean value) {
-        return this;
-    }
+  @Override
+  @NotNull
+  public PermissionDescription.Builder assign(@Nullable String role, boolean value) {
+    return this;
+  }
 
-    @Override
-    @NotNull
-    public PermissionDescription register() throws IllegalStateException {
-        PermissionDescription permissionDescription = new SpongePermissionDescription(
-            this.service, this.id, this.pluginContainer, this.description
-        );
-        SpongePermissionService.DESCRIPTIONS.put(permissionDescription.getId(), permissionDescription);
-        return permissionDescription;
-    }
+  @Override
+  @NotNull
+  public PermissionDescription register() throws IllegalStateException {
+    PermissionDescription permissionDescription = new SpongePermissionDescription(
+      this.service, this.id, this.pluginContainer, this.description
+    );
+    SpongePermissionService.DESCRIPTIONS.put(permissionDescription.getId(), permissionDescription);
+    return permissionDescription;
+  }
 }

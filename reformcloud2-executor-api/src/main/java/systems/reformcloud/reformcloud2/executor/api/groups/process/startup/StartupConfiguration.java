@@ -48,10 +48,10 @@ public interface StartupConfiguration extends SerializableObject, Cloneable {
         return new DefaultStartupConfiguration(maximumProcessAmount, alwaysOnlineProcessAmount, alwaysPreparedProcessAmount, jvmCommand, startupConfiguration, startingNodes);
     }
 
-    @Range(from = 0, to = Integer.MAX_VALUE)
+    @Range(from = -1, to = Integer.MAX_VALUE)
     int getMaximumProcessAmount();
 
-    void setMaximumProcessAmount(@Range(from = 0, to = Integer.MAX_VALUE) int maximumProcessAmount);
+    void setMaximumProcessAmount(@Range(from = -1, to = Integer.MAX_VALUE) int maximumProcessAmount);
 
     @Range(from = 0, to = Integer.MAX_VALUE)
     int getAlwaysOnlineProcessAmount();

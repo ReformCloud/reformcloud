@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.node.config;
 
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.shared.network.SimpleNetworkAddress;
+import systems.reformcloud.reformcloud2.executor.api.network.address.DefaultNetworkAddress;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -35,83 +35,83 @@ import java.util.UUID;
 
 public class NodeConfig {
 
-    protected static final Path PATH = Path.of(System.getProperty("systems.reformcloud.node-config-path", "reformcloud/config.json"));
+  protected static final Path PATH = Path.of(System.getProperty("systems.reformcloud.node-config-path", "reformcloud/config.json"));
 
-    private final String name;
-    private final UUID uniqueID;
-    private final long maxMemory;
-    private final String startHost;
-    private final double maxSystemCpuUsage;
-    private final List<SimpleNetworkAddress> networkListeners;
-    private final List<SimpleNetworkAddress> httpNetworkListeners;
-    private final List<SimpleNetworkAddress> clusterNodes;
+  private final String name;
+  private final UUID uniqueID;
+  private final long maxMemory;
+  private final String startHost;
+  private final double maxSystemCpuUsage;
+  private final List<DefaultNetworkAddress> networkListeners;
+  private final List<DefaultNetworkAddress> httpNetworkListeners;
+  private final List<DefaultNetworkAddress> clusterNodes;
 
-    private boolean sendAnonymousErrorReports = true;
-    private transient InetAddress inetStartHost;
+  private boolean sendAnonymousErrorReports = true;
+  private transient InetAddress inetStartHost;
 
-    public NodeConfig(String name, UUID uniqueID, long maxMemory, String startHost,
-                      List<SimpleNetworkAddress> networkListeners, List<SimpleNetworkAddress> httpNetworkListeners,
-                      List<SimpleNetworkAddress> clusterNodes) {
-        this.name = name;
-        this.uniqueID = uniqueID;
-        this.maxMemory = maxMemory;
-        this.startHost = startHost;
-        this.networkListeners = networkListeners;
-        this.httpNetworkListeners = httpNetworkListeners;
-        this.clusterNodes = clusterNodes;
-        this.maxSystemCpuUsage = 90D;
+  public NodeConfig(String name, UUID uniqueID, long maxMemory, String startHost,
+                    List<DefaultNetworkAddress> networkListeners, List<DefaultNetworkAddress> httpNetworkListeners,
+                    List<DefaultNetworkAddress> clusterNodes) {
+    this.name = name;
+    this.uniqueID = uniqueID;
+    this.maxMemory = maxMemory;
+    this.startHost = startHost;
+    this.networkListeners = networkListeners;
+    this.httpNetworkListeners = httpNetworkListeners;
+    this.clusterNodes = clusterNodes;
+    this.maxSystemCpuUsage = 90D;
+  }
+
+  public String getName() {
+    return this.name;
+  }
+
+  public UUID getUniqueID() {
+    return this.uniqueID;
+  }
+
+  public long getMaxMemory() {
+    return this.maxMemory < 512 ? 512 : this.maxMemory;
+  }
+
+  public InetAddress getStartHost() {
+    if (this.inetStartHost != null) {
+      return this.inetStartHost;
     }
 
-    public String getName() {
-        return this.name;
+    try {
+      return this.inetStartHost = InetAddress.getByName(this.startHost);
+    } catch (UnknownHostException exception) {
+      System.err.printf("Unable to resolve ip address %s! Falling back to loopback address. %n", this.startHost);
+      return this.inetStartHost = InetAddress.getLoopbackAddress();
     }
+  }
 
-    public UUID getUniqueID() {
-        return this.uniqueID;
-    }
+  public double getMaxSystemCpuUsage() {
+    return this.maxSystemCpuUsage == 0 ? 90D : this.maxSystemCpuUsage;
+  }
 
-    public long getMaxMemory() {
-        return this.maxMemory < 512 ? 512 : this.maxMemory;
-    }
+  public List<DefaultNetworkAddress> getNetworkListeners() {
+    return this.networkListeners;
+  }
 
-    public InetAddress getStartHost() {
-        if (this.inetStartHost != null) {
-            return this.inetStartHost;
-        }
+  public List<DefaultNetworkAddress> getHttpNetworkListeners() {
+    return this.httpNetworkListeners;
+  }
 
-        try {
-            return this.inetStartHost = InetAddress.getByName(this.startHost);
-        } catch (UnknownHostException exception) {
-            System.err.printf("Unable to resolve ip address %s! Falling back to loopback address. %n", this.startHost);
-            return this.inetStartHost = InetAddress.getLoopbackAddress();
-        }
-    }
+  public List<DefaultNetworkAddress> getClusterNodes() {
+    return this.clusterNodes;
+  }
 
-    public double getMaxSystemCpuUsage() {
-        return this.maxSystemCpuUsage == 0 ? 90D : this.maxSystemCpuUsage;
-    }
+  public boolean isSendAnonymousErrorReports() {
+    return this.sendAnonymousErrorReports;
+  }
 
-    public List<SimpleNetworkAddress> getNetworkListeners() {
-        return this.networkListeners;
-    }
+  public void setSendAnonymousErrorReports(boolean sendAnonymousErrorReports) {
+    this.sendAnonymousErrorReports = sendAnonymousErrorReports;
+  }
 
-    public List<SimpleNetworkAddress> getHttpNetworkListeners() {
-        return this.httpNetworkListeners;
-    }
-
-    public List<SimpleNetworkAddress> getClusterNodes() {
-        return this.clusterNodes;
-    }
-
-    public boolean isSendAnonymousErrorReports() {
-        return this.sendAnonymousErrorReports;
-    }
-
-    public void setSendAnonymousErrorReports(boolean sendAnonymousErrorReports) {
-        this.sendAnonymousErrorReports = sendAnonymousErrorReports;
-    }
-
-    public void save() {
-        new JsonConfiguration().add("config", this).write(PATH);
-    }
+  public void save() {
+    JsonConfiguration.newJsonConfiguration().add("config", this).write(PATH);
+  }
 }

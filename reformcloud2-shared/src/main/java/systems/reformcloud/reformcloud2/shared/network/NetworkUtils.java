@@ -39,63 +39,63 @@ import java.util.Enumeration;
 
 public final class NetworkUtils {
 
-    private NetworkUtils() {
-        throw new UnsupportedOperationException();
-    }
+  private NetworkUtils() {
+    throw new UnsupportedOperationException();
+  }
 
-    @NotNull
-    public static Collection<String> getAllAvailableIpAddresses() {
-        Collection<String> result = new ArrayList<>();
+  @NotNull
+  public static Collection<String> getAllAvailableIpAddresses() {
+    Collection<String> result = new ArrayList<>();
 
-        try {
-            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-            while (networkInterfaces.hasMoreElements()) {
-                Enumeration<InetAddress> inetAddresses = networkInterfaces.nextElement().getInetAddresses();
-                while (inetAddresses.hasMoreElements()) {
-                    String address = inetAddresses.nextElement().getHostAddress();
-                    int location = address.indexOf('%');
-                    if (location != -1) {
-                        // % is used if java can detect which internet adapter the address is from
-                        // It can look like: 0:0:0:0:0:0:0:0%eth2
-                        // We decently remove the information about the internet adapter
-                        address = address.substring(0, location);
-                    }
+    try {
+      Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+      while (networkInterfaces.hasMoreElements()) {
+        Enumeration<InetAddress> inetAddresses = networkInterfaces.nextElement().getInetAddresses();
+        while (inetAddresses.hasMoreElements()) {
+          String address = inetAddresses.nextElement().getHostAddress();
+          int location = address.indexOf('%');
+          if (location != -1) {
+            // % is used if java can detect which internet adapter the address is from
+            // It can look like: 0:0:0:0:0:0:0:0%eth2
+            // We decently remove the information about the internet adapter
+            address = address.substring(0, location);
+          }
 
-                    if (!result.contains(address)) {
-                        result.add(address);
-                    }
-                }
-            }
-        } catch (Throwable ignored) {
+          if (!result.contains(address)) {
+            result.add(address);
+          }
         }
-
-        return result;
+      }
+    } catch (Throwable ignored) {
     }
 
-    @Nullable
-    public static String validateAndGetIpAddress(@NotNull String hostInput) {
-        try {
-            return InetAddress.getByName(hostInput).getHostAddress();
-        } catch (UnknownHostException | ArrayIndexOutOfBoundsException exception) {
-            return null;
-        }
+    return result;
+  }
+
+  @Nullable
+  public static String validateAndGetIpAddress(@NotNull String hostInput) {
+    try {
+      return InetAddress.getByName(hostInput).getHostAddress();
+    } catch (UnknownHostException | ArrayIndexOutOfBoundsException exception) {
+      return null;
+    }
+  }
+
+  public static int checkAndReplacePortIfInUse(int startPort) {
+    startPort = Math.max(startPort, 0);
+    while (isPortInUse(startPort) && startPort < 65536) {
+      startPort++;
     }
 
-    public static int checkAndReplacePortIfInUse(int startPort) {
-        startPort = Math.max(startPort, 0);
-        while (isPortInUse(startPort) && startPort < 65536) {
-            startPort++;
-        }
+    return Math.min(startPort, 65535);
+  }
 
-        return Math.min(startPort, 65535);
+  private static boolean isPortInUse(int port) {
+    try (ServerSocket serverSocket = new ServerSocket()) {
+      serverSocket.bind(new InetSocketAddress(port));
+      return false;
+    } catch (IOException exception) {
+      return true;
     }
-
-    private static boolean isPortInUse(int port) {
-        try (ServerSocket serverSocket = new ServerSocket()) {
-            serverSocket.bind(new InetSocketAddress(port));
-            return false;
-        } catch (IOException exception) {
-            return true;
-        }
-    }
+  }
 }

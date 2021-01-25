@@ -40,48 +40,47 @@ import systems.reformcloud.reformcloud2.shared.collect.Entry2;
 
 public final class PlayerListenerHandler implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGH)
-    public void handle(final @NotNull PlayerLoginEvent event) {
-        if (!Embedded.getInstance().isReady()) {
-            event.setResult(PlayerLoginEvent.Result.KICK_WHITELIST);
-            event.setKickMessage(SpigotExecutor.getInstance().getIngameMessages().format(
-                SpigotExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
-            ));
-            return;
-        }
-
-        Entry2<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
-            event.getPlayer()::hasPermission,
-            SpigotExecutor.getInstance().getIngameMessages(),
-            null,
-            event.getPlayer().getUniqueId(),
-            event.getPlayer().getName()
-        );
-        if (!checked.getFirst() && checked.getSecond() != null) {
-            event.setKickMessage(checked.getSecond());
-            event.setResult(PlayerLoginEvent.Result.KICK_WHITELIST);
-        } else {
-            event.setResult(PlayerLoginEvent.Result.ALLOWED);
-        }
+  @EventHandler(priority = EventPriority.HIGH)
+  public void handle(final @NotNull PlayerLoginEvent event) {
+    if (!Embedded.getInstance().isReady()) {
+      event.setResult(PlayerLoginEvent.Result.KICK_WHITELIST);
+      event.setKickMessage(SpigotExecutor.getInstance().getIngameMessages().format(
+        SpigotExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
+      ));
+      return;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void handle(final @NotNull PlayerQuitEvent event) {
-        ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-        if (!current.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(event.getPlayer().getUniqueId())) {
-            return;
-        }
-
-        Bukkit.getScheduler().runTask(SpigotExecutor.getInstance().getPlugin(), () -> {
-            if (Bukkit.getOnlinePlayers().size() < current.getProcessDetail().getMaxPlayers()
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
-                current.getProcessDetail().setProcessState(ProcessState.READY);
-            }
-
-            current.updateRuntimeInformation();
-            current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
-            Embedded.getInstance().updateCurrentProcessInformation();
-        });
+    Entry2<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
+      event.getPlayer()::hasPermission,
+      SpigotExecutor.getInstance().getIngameMessages(),
+      null,
+      event.getPlayer().getUniqueId(),
+      event.getPlayer().getName()
+    );
+    if (!checked.getFirst() && checked.getSecond() != null) {
+      event.setKickMessage(checked.getSecond());
+      event.setResult(PlayerLoginEvent.Result.KICK_WHITELIST);
+    } else {
+      event.setResult(PlayerLoginEvent.Result.ALLOWED);
     }
+  }
+
+  @EventHandler(priority = EventPriority.LOWEST)
+  public void handle(final @NotNull PlayerQuitEvent event) {
+    ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
+    if (!current.getPlayerByUniqueId(event.getPlayer().getUniqueId()).isPresent()) {
+      return;
+    }
+
+    Bukkit.getScheduler().runTask(SpigotExecutor.getInstance().getPlugin(), () -> {
+      if (Bukkit.getOnlinePlayers().size() < Embedded.getInstance().getMaxPlayers()
+        && !current.getCurrentState().equals(ProcessState.READY)
+        && !current.getCurrentState().equals(ProcessState.INVISIBLE)) {
+        current.setCurrentState(ProcessState.READY);
+      }
+
+      current.getPlayers().removeIf(player -> player.getUniqueID().equals(event.getPlayer().getUniqueId()));
+      Embedded.getInstance().updateCurrentProcessInformation();
+    });
+  }
 }

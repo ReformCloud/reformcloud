@@ -34,38 +34,38 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class DefaultSetup implements Setup {
 
-    private final Queue<SetupQuestion> questions = new ConcurrentLinkedQueue<>();
+  private final Queue<SetupQuestion> questions = new ConcurrentLinkedQueue<>();
 
-    @Override
-    public @NotNull Setup addQuestion(@NotNull SetupQuestion setupQuestion) {
-        this.questions.add(setupQuestion);
-        return this;
-    }
+  @Override
+  public @NotNull Setup addQuestion(@NotNull SetupQuestion setupQuestion) {
+    this.questions.add(setupQuestion);
+    return this;
+  }
 
-    @Override
-    public @NotNull @UnmodifiableView Collection<SetupQuestion> getQuestions() {
-        return this.questions;
-    }
+  @Override
+  public @NotNull @UnmodifiableView Collection<SetupQuestion> getQuestions() {
+    return this.questions;
+  }
 
-    @Override
-    public void runSetup() {
-        SetupQuestion question;
-        while ((question = this.questions.poll()) != null) {
-            this.handleQuestion(question);
-        }
+  @Override
+  public void runSetup() {
+    SetupQuestion question;
+    while ((question = this.questions.poll()) != null) {
+      this.handleQuestion(question);
     }
+  }
 
-    @Override
-    public void clear() {
-        this.questions.clear();
-    }
+  @Override
+  public void clear() {
+    this.questions.clear();
+  }
 
-    private void handleQuestion(@NotNull SetupQuestion question) {
-        System.out.println(question.getOriginalQuestion());
-        String answer = NodeExecutor.getInstance().getConsole().readString().getUninterruptedly();
-        while (!question.getAnswerHandler().apply(new DefaultSetupAnswer(answer))) {
-            System.err.println(question.getInvalidInputMessage());
-            answer = NodeExecutor.getInstance().getConsole().readString().getUninterruptedly();
-        }
+  private void handleQuestion(@NotNull SetupQuestion question) {
+    System.out.println(question.getOriginalQuestion());
+    String answer = NodeExecutor.getInstance().getConsole().readString().getUninterruptedly();
+    while (!question.getAnswerHandler().apply(new DefaultSetupAnswer(answer))) {
+      System.err.println(question.getInvalidInputMessage());
+      answer = NodeExecutor.getInstance().getConsole().readString().getUninterruptedly();
     }
+  }
 }

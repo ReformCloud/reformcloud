@@ -35,6 +35,7 @@ import org.cloudburstmc.server.utils.TextFormat;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+
 @Plugin(
     id = "reformcloud_2_chat",
     name = "CloudBurstChatPlugin",

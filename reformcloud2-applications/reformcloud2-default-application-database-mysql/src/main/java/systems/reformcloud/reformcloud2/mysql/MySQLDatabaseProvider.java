@@ -39,59 +39,59 @@ import java.sql.SQLException;
 
 public class MySQLDatabaseProvider extends AbstractSQLDatabaseProvider {
 
-    private static final String CONNECT_ARGUMENTS = "jdbc:mysql://%s:%d/%s?serverTimezone=UTC";
-    private final HikariDataSource hikariDataSource;
+  private static final String CONNECT_ARGUMENTS = "jdbc:mysql://%s:%d/%s?serverTimezone=UTC";
+  private final HikariDataSource hikariDataSource;
 
-    public MySQLDatabaseProvider(@NotNull MySQLDatabaseConfig config) {
-        HikariConfig hikariConfig = new HikariConfig();
+  public MySQLDatabaseProvider(@NotNull MySQLDatabaseConfig config) {
+    HikariConfig hikariConfig = new HikariConfig();
 
-        hikariConfig.setJdbcUrl(String.format(CONNECT_ARGUMENTS, config.getHost(), config.getPort(), config.getDatabase()));
-        hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        hikariConfig.setUsername(config.getUserName());
-        hikariConfig.setPassword(config.getPassword());
+    hikariConfig.setJdbcUrl(String.format(CONNECT_ARGUMENTS, config.getHost(), config.getPort(), config.getDatabase()));
+    hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
+    hikariConfig.setUsername(config.getUserName());
+    hikariConfig.setPassword(config.getPassword());
 
-        hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
-        hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
-        hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        hikariConfig.addDataSourceProperty("useServerPrepStmts", "true");
-        hikariConfig.addDataSourceProperty("useLocalSessionState", "true");
-        hikariConfig.addDataSourceProperty("rewriteBatchedStatements", "true");
-        hikariConfig.addDataSourceProperty("cacheResultSetMetadata", "true");
-        hikariConfig.addDataSourceProperty("cacheServerConfiguration", "true");
-        hikariConfig.addDataSourceProperty("elideSetAutoCommits", "true");
-        hikariConfig.addDataSourceProperty("maintainTimeStats", "false");
+    hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
+    hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
+    hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+    hikariConfig.addDataSourceProperty("useServerPrepStmts", "true");
+    hikariConfig.addDataSourceProperty("useLocalSessionState", "true");
+    hikariConfig.addDataSourceProperty("rewriteBatchedStatements", "true");
+    hikariConfig.addDataSourceProperty("cacheResultSetMetadata", "true");
+    hikariConfig.addDataSourceProperty("cacheServerConfiguration", "true");
+    hikariConfig.addDataSourceProperty("elideSetAutoCommits", "true");
+    hikariConfig.addDataSourceProperty("maintainTimeStats", "false");
 
-        this.hikariDataSource = new HikariDataSource(hikariConfig);
+    this.hikariDataSource = new HikariDataSource(hikariConfig);
+  }
+
+  public void close() {
+    this.hikariDataSource.close();
+  }
+
+  @Override
+  public void executeUpdate(@NotNull String query, @NonNls Object... objects) {
+    try (Connection connection = this.hikariDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+      this.appendObjectsToPreparedStatement(preparedStatement, objects);
+      preparedStatement.executeUpdate();
+    } catch (SQLException exception) {
+      exception.printStackTrace();
     }
+  }
 
-    public void close() {
-        this.hikariDataSource.close();
-    }
-
-    @Override
-    public void executeUpdate(@NotNull String query, @NonNls Object... objects) {
-        try (Connection connection = this.hikariDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            this.appendObjectsToPreparedStatement(preparedStatement, objects);
-            preparedStatement.executeUpdate();
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-        }
-    }
-
-    @Override
-    @NotNull
-    public <T> T executeQuery(@NotNull String query, @NotNull SQLFunction<ResultSet, T> function, @NotNull T defaultValue, @NonNls Object... objects) {
-        try (Connection connection = this.hikariDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            this.appendObjectsToPreparedStatement(preparedStatement, objects);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return function.apply(resultSet);
-            } catch (Throwable throwable) {
-                return defaultValue;
-            }
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-        }
-
+  @Override
+  @NotNull
+  public <T> T executeQuery(@NotNull String query, @NotNull SQLFunction<ResultSet, T> function, @NotNull T defaultValue, @NonNls Object... objects) {
+    try (Connection connection = this.hikariDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+      this.appendObjectsToPreparedStatement(preparedStatement, objects);
+      try (ResultSet resultSet = preparedStatement.executeQuery()) {
+        return function.apply(resultSet);
+      } catch (Throwable throwable) {
         return defaultValue;
+      }
+    } catch (SQLException exception) {
+      exception.printStackTrace();
     }
+
+    return defaultValue;
+  }
 }

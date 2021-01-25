@@ -26,11 +26,11 @@ package systems.reformcloud.reformcloud2.node.runnables;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
@@ -40,61 +40,61 @@ import java.util.Optional;
 
 public class AutoStartRunnable implements Runnable {
 
-    private static void startPreparedOfGroup(@NotNull Collection<ProcessInformation> processes, @NotNull DefaultProcessGroup processGroup) {
-        ProcessInformation prepared = Streams.filter(processes, e -> e.getProcessDetail().getProcessState() == ProcessState.PREPARED);
-        if (prepared != null) {
-            Optional<ProcessWrapper> processWrapper = ExecutorAPI.getInstance().getProcessProvider()
-                .getProcessByUniqueId(prepared.getProcessDetail().getProcessUniqueID());
-            if (processWrapper.isPresent()) {
-                processWrapper.get().setRuntimeState(ProcessState.STARTED);
-                System.out.println(TranslationHolder.translate("process-start-process", processGroup.getName()));
-            } else {
-                ProcessWrapper wrapper = ExecutorAPI.getInstance().getProcessProvider().createProcess()
-                    .group(processGroup)
-                    .prepare()
-                    .getNow(null);
-                if (wrapper != null) {
-                    wrapper.setRuntimeState(ProcessState.STARTED);
-                    System.out.println(TranslationHolder.translate("process-start-process", processGroup.getName()));
-                }
-            }
-        } else {
-            ProcessWrapper wrapper = ExecutorAPI.getInstance().getProcessProvider().createProcess()
-                .group(processGroup)
-                .prepare()
-                .getNow(null);
-            if (wrapper != null) {
-                wrapper.setRuntimeState(ProcessState.STARTED);
-                System.out.println(TranslationHolder.translate("process-start-process", processGroup.getName()));
-            }
+  private static void startPreparedOfGroup(@NotNull Collection<ProcessInformation> processes, @NotNull ProcessGroup processGroup) {
+    ProcessInformation prepared = MoreCollections.filter(processes, e -> e.getCurrentState() == ProcessState.PREPARED);
+    if (prepared != null) {
+      Optional<ProcessWrapper> processWrapper = ExecutorAPI.getInstance().getProcessProvider()
+        .getProcessByUniqueId(prepared.getId().getUniqueId());
+      if (processWrapper.isPresent()) {
+        processWrapper.get().setRuntimeState(ProcessState.STARTED);
+        System.out.println(TranslationHolder.translateDef("process-start-process", processGroup.getName()));
+      } else {
+        ProcessWrapper wrapper = ExecutorAPI.getInstance().getProcessProvider().createProcess()
+          .group(processGroup)
+          .prepare()
+          .getNow(null);
+        if (wrapper != null) {
+          wrapper.setRuntimeState(ProcessState.STARTED);
+          System.out.println(TranslationHolder.translateDef("process-start-process", processGroup.getName()));
         }
+      }
+    } else {
+      ProcessWrapper wrapper = ExecutorAPI.getInstance().getProcessProvider().createProcess()
+        .group(processGroup)
+        .prepare()
+        .getNow(null);
+      if (wrapper != null) {
+        wrapper.setRuntimeState(ProcessState.STARTED);
+        System.out.println(TranslationHolder.translateDef("process-start-process", processGroup.getName()));
+      }
+    }
+  }
+
+  @Override
+  public void run() {
+    if (!NodeExecutor.getInstance().isReady()
+      || !ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).isHeadNode()) {
+      return;
     }
 
-    @Override
-    public void run() {
-        if (!NodeExecutor.getInstance().isReady()
-            || !ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).isHeadNode()) {
-            return;
-        }
+    for (ProcessGroup processGroup : ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()) {
+      if (processGroup.getTemplates().isEmpty()) {
+        continue;
+      }
 
-        for (DefaultProcessGroup processGroup : ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()) {
-            if (processGroup.getTemplates().isEmpty()) {
-                continue;
-            }
+      Collection<ProcessInformation> processes = ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(processGroup.getName());
+      int runningProcesses = MoreCollections.allOf(processes, e -> e.getCurrentState().isStartedOrOnline()).size();
+      if (processGroup.getStartupConfiguration().getAlwaysOnlineProcessAmount() > runningProcesses
+        && (processGroup.getStartupConfiguration().getMaximumProcessAmount() == -1
+        || processGroup.getStartupConfiguration().getMaximumProcessAmount() > runningProcesses)) {
+        startPreparedOfGroup(processes, processGroup);
+      }
 
-            Collection<ProcessInformation> processes = ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(processGroup.getName());
-            int runningProcesses = Streams.allOf(processes, e -> e.getProcessDetail().getProcessState().isStartedOrOnline()).size();
-            if (processGroup.getStartupConfiguration().getMinOnlineProcesses() > runningProcesses
-                && (processGroup.getStartupConfiguration().getMaxOnlineProcesses() == -1
-                || processGroup.getStartupConfiguration().getMaxOnlineProcesses() > runningProcesses)) {
-                startPreparedOfGroup(processes, processGroup);
-            }
-
-            int prepared = Streams.allOf(processes, e -> e.getProcessDetail().getProcessState() == ProcessState.PREPARED).size();
-            if (processGroup.getStartupConfiguration().getAlwaysPreparedProcesses() > prepared) {
-                ExecutorAPI.getInstance().getProcessProvider().createProcess().group(processGroup).prepare();
-                System.out.println(TranslationHolder.translate("process-preparing-new-process", processGroup.getName()));
-            }
-        }
+      int prepared = MoreCollections.allOf(processes, e -> e.getCurrentState() == ProcessState.PREPARED).size();
+      if (processGroup.getStartupConfiguration().getAlwaysPreparedProcessAmount() > prepared) {
+        ExecutorAPI.getInstance().getProcessProvider().createProcess().group(processGroup).prepare();
+        System.out.println(TranslationHolder.translateDef("process-preparing-new-process", processGroup.getName()));
+      }
     }
+  }
 }

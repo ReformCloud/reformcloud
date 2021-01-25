@@ -24,7 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.node.event.application;
 
-import systems.reformcloud.reformcloud2.executor.api.application.ApplicationConfig;
+import systems.reformcloud.reformcloud2.executor.api.application.config.ApplicationConfig;
 import systems.reformcloud.reformcloud2.executor.api.event.Event;
 
 public class ApplicationLoaderDetectedApplicationEvent extends Event {

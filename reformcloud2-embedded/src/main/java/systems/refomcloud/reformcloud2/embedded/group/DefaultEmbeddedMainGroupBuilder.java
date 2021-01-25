@@ -42,7 +42,7 @@ class DefaultEmbeddedMainGroupBuilder extends DefaultMainGroupBuilder {
     public Task<MainGroup> create() {
         return Task.supply(() -> {
             Optional<Packet> result = Embedded.getInstance().sendSyncQuery(new ApiToNodeCreateMainGroup(super.name, super.subGroups));
-            if (result.isEmpty() || !(result.get() instanceof ApiToNodeCreateMainGroupResult)) {
+            if (!result.isPresent() || !(result.get() instanceof ApiToNodeCreateMainGroupResult)) {
                 return null;
             }
 

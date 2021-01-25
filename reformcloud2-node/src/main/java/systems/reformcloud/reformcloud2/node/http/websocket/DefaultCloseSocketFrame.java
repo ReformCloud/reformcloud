@@ -34,52 +34,51 @@ import java.nio.charset.StandardCharsets;
 
 public class DefaultCloseSocketFrame extends DefaultSocketFrame<DefaultCloseSocketFrame> implements CloseSocketFrame<DefaultCloseSocketFrame> {
 
-    private int statusCode;
-    private String statusText;
+  private int statusCode;
+  private String statusText;
 
-    public DefaultCloseSocketFrame(int rsv, boolean finalFragment, int statusCode, String statusText) {
-        super(rsv, finalFragment, newData(statusCode, statusText));
-        this.statusCode = statusCode;
-        this.statusText = statusText;
+  public DefaultCloseSocketFrame(int rsv, boolean finalFragment, int statusCode, String statusText) {
+    super(rsv, finalFragment, newData(statusCode, statusText));
+    this.statusCode = statusCode;
+    this.statusText = statusText;
+  }
+
+  private static byte[] newData(int statusCode, @NotNull String reasonText) {
+    ByteBuf binaryData = Unpooled.buffer(2 + reasonText.length()).writeShort(statusCode);
+    if (!reasonText.isEmpty()) {
+      binaryData.writeCharSequence(reasonText, StandardCharsets.UTF_8);
     }
 
-    @NotNull
-    private static byte[] newData(int statusCode, @NotNull String reasonText) {
-        ByteBuf binaryData = Unpooled.buffer(2 + reasonText.length()).writeShort(statusCode);
-        if (!reasonText.isEmpty()) {
-            binaryData.writeCharSequence(reasonText, StandardCharsets.UTF_8);
-        }
+    binaryData.readerIndex(0);
+    return BinaryUtils.binaryArrayFromByteBuf(binaryData);
+  }
 
-        binaryData.readerIndex(0);
-        return BinaryUtils.binaryArrayFromByteBuf(binaryData);
-    }
+  @Override
+  public int statusCode() {
+    return this.statusCode;
+  }
 
-    @Override
-    public int statusCode() {
-        return this.statusCode;
-    }
+  @Override
+  public @NotNull DefaultCloseSocketFrame statusCode(int statusCode) {
+    this.statusCode = statusCode;
+    super.content(newData(this.statusCode, this.statusText));
+    return this;
+  }
 
-    @Override
-    public @NotNull DefaultCloseSocketFrame statusCode(int statusCode) {
-        this.statusCode = statusCode;
-        super.content(newData(this.statusCode, this.statusText));
-        return this;
-    }
+  @Override
+  public @NotNull String reasonText() {
+    return this.statusText;
+  }
 
-    @Override
-    public @NotNull String reasonText() {
-        return this.statusText;
-    }
+  @Override
+  public @NotNull DefaultCloseSocketFrame reasonText(@NotNull String reasonText) {
+    this.statusText = reasonText;
+    super.content(newData(this.statusCode, this.statusText));
+    return this;
+  }
 
-    @Override
-    public @NotNull DefaultCloseSocketFrame reasonText(@NotNull String reasonText) {
-        this.statusText = reasonText;
-        super.content(newData(this.statusCode, this.statusText));
-        return this;
-    }
-
-    @Override
-    public @NotNull DefaultCloseSocketFrame self() {
-        return this;
-    }
+  @Override
+  public @NotNull DefaultCloseSocketFrame self() {
+    return this;
+  }
 }

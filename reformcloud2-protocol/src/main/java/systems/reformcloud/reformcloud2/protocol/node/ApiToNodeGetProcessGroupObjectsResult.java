@@ -29,7 +29,7 @@ import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroup;
 
 import java.util.Collection;
 

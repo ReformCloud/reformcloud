@@ -41,27 +41,27 @@ import java.util.stream.Collectors;
 
 public class SpongeSubjectData extends AbstractSpongeSubjectData {
 
-    private final UUID uniqueID;
+  private final UUID uniqueID;
 
-    public SpongeSubjectData(@NotNull UUID user) {
-        this.uniqueID = user;
-    }
+  public SpongeSubjectData(@NotNull UUID user) {
+    this.uniqueID = user;
+  }
 
-    @Override
-    @NotNull
-    public Map<Set<Context>, Map<String, Boolean>> getAllPermissions() {
-        return Collections.singletonMap(SubjectData.GLOBAL_CONTEXT, this.getPermissions());
-    }
+  @Override
+  @NotNull
+  public Map<Set<Context>, Map<String, Boolean>> getAllPermissions() {
+    return Collections.singletonMap(SubjectData.GLOBAL_CONTEXT, this.getPermissions());
+  }
 
-    @Override
-    @NotNull
-    public Map<String, Boolean> getPermissions(@Nullable Set<Context> contexts) {
-        return this.getPermissions();
-    }
+  @Override
+  @NotNull
+  public Map<String, Boolean> getPermissions(@Nullable Set<Context> contexts) {
+    return this.getPermissions();
+  }
 
-    private Map<String, Boolean> getPermissions() {
-        return PermissionPluginUtil.collectPermissionsOfUser(PermissionManagement.getInstance().loadUser(this.uniqueID))
-            .stream()
-            .collect(Collectors.toMap(PermissionNode::getActualPermission, PermissionNode::isSet));
-    }
+  private Map<String, Boolean> getPermissions() {
+    return PermissionPluginUtil.collectPermissionsOfUser(PermissionManagement.getInstance().loadUser(this.uniqueID))
+      .stream()
+      .collect(Collectors.toMap(PermissionNode::getActualPermission, PermissionNode::isSet));
+  }
 }

@@ -31,48 +31,47 @@ import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
 import systems.reformcloud.reformcloud2.shared.collect.Entry2;
 
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
 public class ApiToNodeGetCurrentPlayerProcessUniqueIdsResult extends QueryResultPacket {
 
-    private Map.Entry<UUID, UUID> result;
+  private Entry2<UUID, UUID> result;
 
-    public ApiToNodeGetCurrentPlayerProcessUniqueIdsResult() {
+  public ApiToNodeGetCurrentPlayerProcessUniqueIdsResult() {
+  }
+
+  public ApiToNodeGetCurrentPlayerProcessUniqueIdsResult(Entry2<UUID, UUID> result) {
+    this.result = result;
+  }
+
+  @Nullable
+  public Entry2<UUID, UUID> getResult() {
+    return this.result;
+  }
+
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 48;
+  }
+
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeBoolean(this.result == null);
+    if (this.result == null) {
+      return;
     }
 
-    public ApiToNodeGetCurrentPlayerProcessUniqueIdsResult(Map.Entry<UUID, UUID> result) {
-        this.result = result;
+    buffer.writeUniqueId(this.result.getKey());
+    buffer.writeUniqueId(this.result.getKey());
+  }
+
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    if (buffer.readBoolean()) {
+      return;
     }
 
-    @Nullable
-    public Map.Entry<UUID, UUID> getResult() {
-        return this.result;
-    }
-
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 48;
-    }
-
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeBoolean(this.result == null);
-        if (this.result == null) {
-            return;
-        }
-
-        buffer.writeUniqueId(this.result.getKey());
-        buffer.writeUniqueId(this.result.getKey());
-    }
-
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        if (buffer.readBoolean()) {
-            return;
-        }
-
-        this.result = new Entry2<>(Objects.requireNonNull(buffer.readUniqueId()), buffer.readUniqueId());
-    }
+    this.result = new Entry2<>(Objects.requireNonNull(buffer.readUniqueId()), buffer.readUniqueId());
+  }
 }

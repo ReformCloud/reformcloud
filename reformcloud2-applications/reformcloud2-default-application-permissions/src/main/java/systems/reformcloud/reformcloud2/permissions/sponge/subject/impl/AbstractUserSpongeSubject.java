@@ -33,15 +33,15 @@ import java.util.UUID;
 
 public abstract class AbstractUserSpongeSubject extends AbstractSpongeSubject {
 
-    private final SubjectData userSubjectData;
+  private final SubjectData userSubjectData;
 
-    public AbstractUserSpongeSubject(@NotNull UUID user) {
-        this.userSubjectData = new SpongeSubjectData(user);
-    }
+  public AbstractUserSpongeSubject(@NotNull UUID user) {
+    this.userSubjectData = new SpongeSubjectData(user);
+  }
 
-    @Override
-    @NotNull
-    public SubjectData getSubjectData() {
-        return this.userSubjectData;
-    }
+  @Override
+  @NotNull
+  public SubjectData getSubjectData() {
+    return this.userSubjectData;
+  }
 }

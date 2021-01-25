@@ -47,88 +47,92 @@ import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.shared.collect.Entry2;
 
+import java.util.Optional;
+
 public final class PlayerListenerHandler implements Listener {
 
-    @EventHandler
-    public void handle(final @NotNull ServerConnectEvent event) {
-        event.getPlayer().setReconnectServer(null);
-        if (event.getPlayer().getServer() == null) {
-            SharedPlayerFallbackFilter.filterFallback(
-                event.getPlayer().getUniqueId(),
-                this.getServerController().getCachedLobbyServers(),
-                event.getPlayer()::hasPermission,
-                BungeeFallbackExtraFilter.INSTANCE,
-                null
-            ).ifPresentOrElse(info -> event.setTarget(ProxyServer.getInstance().getServerInfo(info.getProcessDetail().getName())), () -> {
-                event.getPlayer().disconnect(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getIngameMessages().format(
-                    Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
-                )));
-                event.setCancelled(true);
-            });
-        }
+  @EventHandler
+  public void handle(final @NotNull ServerConnectEvent event) {
+    event.getPlayer().setReconnectServer(null);
+    if (event.getPlayer().getServer() == null) {
+      final Optional<ProcessInformation> fallback = SharedPlayerFallbackFilter.filterFallback(
+        event.getPlayer().getUniqueId(),
+        this.getServerController().getCachedLobbyServers(),
+        event.getPlayer()::hasPermission,
+        BungeeFallbackExtraFilter.INSTANCE,
+        null
+      );
+      if (fallback.isPresent()) {
+        event.setTarget(ProxyServer.getInstance().getServerInfo(fallback.get().getName()));
+      } else {
+        event.getPlayer().disconnect(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getIngameMessages().format(
+          Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
+        )));
+        event.setCancelled(true);
+      }
+    }
+  }
+
+  @EventHandler(priority = EventPriority.HIGH)
+  public void handle(final LoginEvent event) {
+    if (!Embedded.getInstance().isReady()) {
+      event.setCancelReason(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getIngameMessages().format(
+        BungeeExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
+      )));
+      event.setCancelled(true);
+      return;
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
-    public void handle(final LoginEvent event) {
-        if (!Embedded.getInstance().isReady()) {
-            event.setCancelReason(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getIngameMessages().format(
-                BungeeExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
-            )));
-            event.setCancelled(true);
-            return;
-        }
+    Entry2<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
+      perm -> new EmptyProxiedPlayer(event.getConnection()).hasPermission(perm),
+      BungeeExecutor.getInstance().getIngameMessages(),
+      this.getServerController().getCachedProxies(),
+      event.getConnection().getUniqueId(),
+      event.getConnection().getName()
+    );
+    if (!checked.getFirst() && checked.getSecond() != null) {
+      event.setCancelReason(TextComponent.fromLegacyText(checked.getSecond()));
+      event.setCancelled(true);
+    }
+  }
 
-        Entry2<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
-            perm -> new EmptyProxiedPlayer(event.getConnection()).hasPermission(perm),
-            BungeeExecutor.getInstance().getIngameMessages(),
-            this.getServerController().getCachedProxies(),
-            event.getConnection().getUniqueId(),
-            event.getConnection().getName()
-        );
-        if (!checked.getFirst() && checked.getSecond() != null) {
-            event.setCancelReason(TextComponent.fromLegacyText(checked.getSecond()));
-            event.setCancelled(true);
-        }
+  @EventHandler(priority = EventPriority.LOWEST)
+  public void handle(final @NotNull ServerKickEvent event) {
+    final Optional<ProcessInformation> fallback = SharedPlayerFallbackFilter.filterFallback(
+      event.getPlayer().getUniqueId(),
+      this.getServerController().getCachedLobbyServers(),
+      event.getPlayer()::hasPermission,
+      BungeeFallbackExtraFilter.INSTANCE,
+      event.getKickedFrom() == null ? null : event.getKickedFrom().getName()
+    );
+    if (fallback.isPresent()) {
+      ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(fallback.get().getName());
+      if (serverInfo != null) {
+        event.setCancelServer(serverInfo);
+        event.setCancelled(true);
+        return;
+      }
+    }
+    event.getPlayer().disconnect(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getIngameMessages().format(
+      BungeeExecutor.getInstance().getIngameMessages().getNoHubServerAvailable()
+    )));
+  }
+
+  @EventHandler(priority = EventPriority.LOWEST)
+  public void handle(final PlayerDisconnectEvent event) {
+    final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
+
+    if (ProxyServer.getInstance().getOnlineCount() < Embedded.getInstance().getMaxPlayers()
+      && !current.getCurrentState().equals(ProcessState.READY)
+      && !current.getCurrentState().equals(ProcessState.INVISIBLE)) {
+      current.setCurrentState(ProcessState.READY);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void handle(final @NotNull ServerKickEvent event) {
-        SharedPlayerFallbackFilter.filterFallback(
-            event.getPlayer().getUniqueId(),
-            this.getServerController().getCachedLobbyServers(),
-            event.getPlayer()::hasPermission,
-            BungeeFallbackExtraFilter.INSTANCE,
-            event.getKickedFrom() == null ? null : event.getKickedFrom().getName()
-        ).ifPresentOrElse(processInformation -> {
-            ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(processInformation.getProcessDetail().getName());
-            if (serverInfo != null) {
-                event.setCancelServer(serverInfo);
-                event.setCancelled(true);
-                return;
-            }
+    current.getPlayers().removeIf(player -> player.getUniqueID().equals(event.getPlayer().getUniqueId()));
+    Embedded.getInstance().updateCurrentProcessInformation();
+  }
 
-            event.getPlayer().disconnect(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getIngameMessages().format(
-                BungeeExecutor.getInstance().getIngameMessages().getNoHubServerAvailable()
-            )));
-        }, () -> event.getPlayer().disconnect(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getIngameMessages().format(
-            BungeeExecutor.getInstance().getIngameMessages().getNoHubServerAvailable()
-        ))));
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void handle(final PlayerDisconnectEvent event) {
-        ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-        if (ProxyServer.getInstance().getOnlineCount() < current.getProcessDetail().getMaxPlayers()
-            && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-            && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
-            current.getProcessDetail().setProcessState(ProcessState.READY);
-        }
-
-        current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
-        Embedded.getInstance().updateCurrentProcessInformation();
-    }
-
-    private @NotNull ProxyServerController getServerController() {
-        return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class);
-    }
+  private @NotNull ProxyServerController getServerController() {
+    return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class);
+  }
 }

@@ -22,42 +22,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.tick;
+package systems.reformcloud.reformcloud2.node.template.installers;
 
-public final class TickAverageCounter {
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Version;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.version.VersionInstaller;
+import systems.reformcloud.reformcloud2.shared.io.DownloadHelper;
+import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 
-    private final int size;
-    private final double[] samples;
-    private final long[] times;
-    private long time;
-    private double total;
-    private int index = 0;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Locale;
 
-    TickAverageCounter(int size) {
-        this.size = size;
-        this.time = size * CloudTickWorker.SEC_IN_NANO;
-        this.total = CloudTickWorker.TPS * CloudTickWorker.SEC_IN_NANO * size;
-        this.samples = new double[size];
-        this.times = new long[size];
-        for (int i = 0; i < size; i++) {
-            this.samples[i] = CloudTickWorker.TPS;
-            this.times[i] = CloudTickWorker.SEC_IN_NANO;
-        }
+public class SpongeVersionInstaller implements VersionInstaller {
+
+  @Override
+  public boolean installVersion(@NotNull Version version) {
+    final Path targetPath = Paths.get("reformcloud/files", version.getName().toLowerCase(Locale.ROOT));
+    if (Files.notExists(targetPath)) {
+      final Path tempDownloadPath = Paths.get("reformcloud/files", "temp_" + version.getName().toLowerCase(Locale.ROOT));
+
+      DownloadHelper.download(version.getDownloadUrl(), tempDownloadPath);
+      IOUtils.unZip(tempDownloadPath, targetPath);
+      IOUtils.deleteFile(tempDownloadPath);
     }
+    return true;
+  }
 
-    public void add(double x, long t) {
-        this.time -= this.times[this.index];
-        this.total -= this.samples[this.index] * this.times[this.index];
-        this.samples[this.index] = x;
-        this.times[this.index] = t;
-        this.time += t;
-        this.total += x * t;
-        if (++this.index == this.size) {
-            this.index = 0;
-        }
-    }
-
-    public double getAverage() {
-        return this.total / this.time;
-    }
+  @Override
+  public String getName() {
+    return VersionInstaller.SPONGE;
+  }
 }

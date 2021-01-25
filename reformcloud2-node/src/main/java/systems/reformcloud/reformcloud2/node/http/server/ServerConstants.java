@@ -26,13 +26,13 @@ package systems.reformcloud.reformcloud2.node.http.server;
 
 public final class ServerConstants {
 
-    public static final String HTTP_SERVER_CODEC = "http-server-coded";
-    public static final String HTTP_OBJECT_AGGREGATOR = "http-object-aggregator";
-    public static final String HTTP_CORS_HANDLER = "http-cors-handler";
-    public static final String HTTP_HANDLER = "http-handler";
-    public static final String WEB_SOCKET_HANDLER = "web-socket-handler";
+  public static final String HTTP_SERVER_CODEC = "http-server-coded";
+  public static final String HTTP_OBJECT_AGGREGATOR = "http-object-aggregator";
+  public static final String HTTP_CORS_HANDLER = "http-cors-handler";
+  public static final String HTTP_HANDLER = "http-handler";
+  public static final String WEB_SOCKET_HANDLER = "web-socket-handler";
 
-    private ServerConstants() {
-        throw new UnsupportedOperationException();
-    }
+  private ServerConstants() {
+    throw new UnsupportedOperationException();
+  }
 }

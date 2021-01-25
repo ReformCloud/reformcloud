@@ -30,29 +30,36 @@ import systems.reformcloud.reformcloud2.shared.network.client.DefaultNetworkClie
 
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
 public final class NodeNetworkClient extends DefaultNetworkClient {
 
-    public static final Collection<String> CONNECTIONS = new CopyOnWriteArrayList<>();
+  public static final Collection<String> CONNECTIONS = new CopyOnWriteArrayList<>();
 
-    @Override
-    public boolean connect(@NotNull String host, int port, @NotNull Supplier<ChannelListener> supplier) {
-        if (CONNECTIONS.stream().anyMatch(host::equals)) {
-            return false;
-        }
-
-        if (super.connect(host, port, supplier)) {
-            CONNECTIONS.add(host);
-            return true;
-        }
-
-        return false;
+  @Override
+  public boolean connect(@NotNull String host, int port, @NotNull Supplier<ChannelListener> supplier) {
+    if (CONNECTIONS.stream().anyMatch(host::equals)) {
+      return false;
     }
 
-    @Override
-    public void disconnect() {
-        CONNECTIONS.clear();
-        super.disconnect();
+    if (super.connect(host, port, supplier)) {
+      CONNECTIONS.add(host);
+      return true;
     }
+
+    return false;
+  }
+
+  @Override
+  public @NotNull Future<Void> close() {
+    CONNECTIONS.clear();
+    return super.close();
+  }
+
+  @Override
+  public void closeSync() {
+    CONNECTIONS.clear();
+    super.closeSync();
+  }
 }

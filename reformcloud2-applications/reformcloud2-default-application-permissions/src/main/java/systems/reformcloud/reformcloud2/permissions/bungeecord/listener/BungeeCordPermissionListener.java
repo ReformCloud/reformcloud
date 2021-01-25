@@ -36,26 +36,26 @@ import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 
 public class BungeeCordPermissionListener implements Listener {
 
-    @EventHandler
-    public void handle(final @NotNull LoginEvent event) {
-        // Push user into name to unique ID DB
-        PermissionManagement.getInstance().loadUser(event.getConnection().getUniqueId(), event.getConnection().getName());
-        PermissionManagement.getInstance().assignDefaultGroups(event.getConnection().getUniqueId());
+  @EventHandler
+  public void handle(final @NotNull LoginEvent event) {
+    // Push user into name to unique ID DB
+    PermissionManagement.getInstance().loadUser(event.getConnection().getUniqueId(), event.getConnection().getName());
+    PermissionManagement.getInstance().assignDefaultGroups(event.getConnection().getUniqueId());
+  }
+
+  @EventHandler
+  public void handle(final @NotNull PermissionCheckEvent event) {
+    if (!(event.getSender() instanceof ProxiedPlayer)) {
+      return;
     }
 
-    @EventHandler
-    public void handle(final @NotNull PermissionCheckEvent event) {
-        if (!(event.getSender() instanceof ProxiedPlayer)) {
-            return;
-        }
+    ProxiedPlayer player = (ProxiedPlayer) event.getSender();
+    PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(player.getUniqueId());
+    event.setHasPermission(permissionUser.hasPermission(event.getPermission()));
+  }
 
-        ProxiedPlayer player = (ProxiedPlayer) event.getSender();
-        PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(player.getUniqueId());
-        event.setHasPermission(permissionUser.hasPermission(event.getPermission()));
-    }
-
-    @EventHandler
-    public void handle(final PlayerDisconnectEvent event) {
-        PermissionManagement.getInstance().handleDisconnect(event.getPlayer().getUniqueId());
-    }
+  @EventHandler
+  public void handle(final PlayerDisconnectEvent event) {
+    PermissionManagement.getInstance().handleDisconnect(event.getPlayer().getUniqueId());
+  }
 }

@@ -30,11 +30,19 @@ import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.epoll.EpollSocketChannel;
+import io.netty.channel.kqueue.KQueue;
+import io.netty.channel.kqueue.KQueueEventLoopGroup;
+import io.netty.channel.kqueue.KQueueServerSocketChannel;
+import io.netty.channel.kqueue.KQueueSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.incubator.channel.uring.IOUring;
+import io.netty.incubator.channel.uring.IOUringEventLoopGroup;
+import io.netty.incubator.channel.uring.IOUringServerSocketChannel;
+import io.netty.incubator.channel.uring.IOUringSocketChannel;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.shared.network.concurrent.FastThreadLocalThreadFactory;
 
@@ -46,6 +54,10 @@ public enum TransportType {
 
     EPOLL("Epoll", Epoll.isAvailable(), EpollServerSocketChannel::new,
         EpollSocketChannel::new, (type, typeName) -> new EpollEventLoopGroup(Math.min(4, Runtime.getRuntime().availableProcessors() * 2), newThreadFactory(typeName, type))),
+    KQUEUE("KQueue", KQueue.isAvailable(), KQueueServerSocketChannel::new,
+        KQueueSocketChannel::new, (type, typeName) -> new KQueueEventLoopGroup(Math.min(4, Runtime.getRuntime().availableProcessors() * 2), newThreadFactory(typeName, type))),
+    IO_URING("IO_Uring", IOUring.isAvailable(), IOUringServerSocketChannel::new,
+        IOUringSocketChannel::new, (type, typeName) -> new IOUringEventLoopGroup(Math.min(4, Runtime.getRuntime().availableProcessors() * 2), newThreadFactory(typeName, type))),
     NIO("Nio", true, NioServerSocketChannel::new,
         NioSocketChannel::new, (type, typeName) -> new NioEventLoopGroup(Math.min(4, Runtime.getRuntime().availableProcessors() * 2), newThreadFactory(typeName, type)));
 

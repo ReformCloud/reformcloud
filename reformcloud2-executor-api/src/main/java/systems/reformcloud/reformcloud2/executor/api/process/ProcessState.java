@@ -27,21 +27,13 @@ package systems.reformcloud.reformcloud2.executor.api.process;
 public enum ProcessState {
 
     CREATED,
-
     PREPARED,
-
     STARTED,
-
     READY,
-
     FULL,
-
     INVISIBLE,
-
     RESTARTING,
-
     PAUSED,
-
     STOPPED;
 
     public boolean isStartedOrOnline() {

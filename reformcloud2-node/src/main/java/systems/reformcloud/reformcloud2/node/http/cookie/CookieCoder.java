@@ -38,33 +38,33 @@ import java.util.stream.Collectors;
 
 public final class CookieCoder {
 
-    private CookieCoder() {
-        throw new UnsupportedOperationException();
-    }
+  private CookieCoder() {
+    throw new UnsupportedOperationException();
+  }
 
-    @NotNull
-    public static Set<HttpCookie> decode(@NotNull String header) {
-        return ServerCookieDecoder.LAX.decode(header).stream().map(cookie -> HttpCookie.cookie(cookie.name(), cookie.value())
-            .httpOnly(cookie.isHttpOnly())
-            .domain(cookie.domain())
-            .maxAge(cookie.maxAge())
-            .path(cookie.path())
-            .secure(cookie.isSecure())
-            .wrap(cookie.wrap())
-        ).collect(Collectors.toSet());
-    }
+  @NotNull
+  public static Set<HttpCookie> decode(@NotNull String header) {
+    return ServerCookieDecoder.LAX.decode(header).stream().map(cookie -> HttpCookie.cookie(cookie.name(), cookie.value())
+      .httpOnly(cookie.isHttpOnly())
+      .domain(cookie.domain())
+      .maxAge(cookie.maxAge())
+      .path(cookie.path())
+      .secure(cookie.isSecure())
+      .wrap(cookie.wrap())
+    ).collect(Collectors.toSet());
+  }
 
-    @NotNull
-    public static List<String> encode(@NotNull Collection<HttpCookie> cookies) {
-        return ServerCookieEncoder.LAX.encode(cookies.stream().map(cookie -> {
-            Cookie nettyCookie = new DefaultCookie(cookie.name(), cookie.value());
-            nettyCookie.setDomain(cookie.domain());
-            nettyCookie.setHttpOnly(cookie.httpOnly());
-            nettyCookie.setMaxAge(cookie.maxAge());
-            nettyCookie.setPath(cookie.path());
-            nettyCookie.setWrap(cookie.wrap());
-            nettyCookie.setSecure(cookie.secure());
-            return nettyCookie;
-        }).collect(Collectors.toList()));
-    }
+  @NotNull
+  public static List<String> encode(@NotNull Collection<HttpCookie> cookies) {
+    return ServerCookieEncoder.LAX.encode(cookies.stream().map(cookie -> {
+      Cookie nettyCookie = new DefaultCookie(cookie.name(), cookie.value());
+      nettyCookie.setDomain(cookie.domain());
+      nettyCookie.setHttpOnly(cookie.httpOnly());
+      nettyCookie.setMaxAge(cookie.maxAge());
+      nettyCookie.setPath(cookie.path());
+      nettyCookie.setWrap(cookie.wrap());
+      nettyCookie.setSecure(cookie.secure());
+      return nettyCookie;
+    }).collect(Collectors.toList()));
+  }
 }

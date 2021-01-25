@@ -36,78 +36,78 @@ import java.util.Collection;
 
 public final class GeneralCheck {
 
-    private GeneralCheck() {
-        throw new UnsupportedOperationException();
+  private GeneralCheck() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Nullable
+  public static Boolean hasPermission(@NotNull PermissionGroup permissionGroup, @NotNull String perm) {
+    Boolean hasPermission = has(permissionGroup, "*");
+    if (hasPermission != null) {
+      return hasPermission;
     }
 
-    @Nullable
-    public static Boolean hasPermission(@NotNull PermissionGroup permissionGroup, @NotNull String perm) {
-        Boolean hasPermission = has(permissionGroup, "*");
-        if (hasPermission != null) {
-            return hasPermission;
-        }
+    return has(permissionGroup, perm);
+  }
 
-        return has(permissionGroup, perm);
+  @Nullable
+  public static Boolean hasPermission(@NotNull PermissionUser permissionUser, @NotNull String perm) {
+    Boolean star = has(permissionUser, "*");
+    if (star != null && star) {
+      return true;
     }
 
-    @Nullable
-    public static Boolean hasPermission(@NotNull PermissionUser permissionUser, @NotNull String perm) {
-        Boolean star = has(permissionUser, "*");
-        if (star != null && star) {
-            return true;
-        }
+    return has(permissionUser, perm);
+  }
 
-        return has(permissionUser, perm);
+  @Nullable
+  private static Boolean has(@NotNull PermissionUser permissionUser, @NotNull String perm) {
+    if (permissionUser.getPermissionNodes().stream().anyMatch(e -> e.getActualPermission().equalsIgnoreCase(perm) && e.isSet())) {
+      return true;
     }
 
-    @Nullable
-    private static Boolean has(@NotNull PermissionUser permissionUser, @NotNull String perm) {
-        if (permissionUser.getPermissionNodes().stream().anyMatch(e -> e.getActualPermission().equalsIgnoreCase(perm) && e.isSet())) {
-            return true;
-        }
-
-        final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-        if (!permissionUser.getPerGroupPermissions().containsKey(current.getProcessGroup().getName())) {
-            return null;
-        }
-
-        final Collection<PermissionNode> currentGroupPerms = permissionUser.getPerGroupPermissions().get(current.getProcessGroup().getName());
-        if (currentGroupPerms.isEmpty()) {
-            return null;
-        }
-
-        for (PermissionNode currentGroupPerm : currentGroupPerms) {
-            if (currentGroupPerm.getActualPermission().equalsIgnoreCase(perm)) {
-                return currentGroupPerm.isSet();
-            }
-        }
-
-        return null;
+    final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
+    if (!permissionUser.getPerGroupPermissions().containsKey(current.getProcessGroup().getName())) {
+      return null;
     }
 
-    @Nullable
-    private static Boolean has(@NotNull PermissionGroup permissionGroup, @NotNull String perm) {
-        if (permissionGroup.getPermissionNodes().stream().anyMatch(e -> e.getActualPermission().equalsIgnoreCase(perm) && e.isSet())) {
-            return true;
-        }
-
-        final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-        if (!permissionGroup.getPerGroupPermissions().containsKey(current.getProcessGroup().getName())) {
-            return null;
-        }
-
-        final Collection<PermissionNode> currentGroupPerms = permissionGroup.getPerGroupPermissions()
-            .get(current.getProcessGroup().getName());
-        if (currentGroupPerms.isEmpty()) {
-            return null;
-        }
-
-        for (PermissionNode currentGroupPerm : currentGroupPerms) {
-            if (currentGroupPerm.getActualPermission().equalsIgnoreCase(perm)) {
-                return currentGroupPerm.isSet();
-            }
-        }
-
-        return null;
+    final Collection<PermissionNode> currentGroupPerms = permissionUser.getPerGroupPermissions().get(current.getProcessGroup().getName());
+    if (currentGroupPerms.isEmpty()) {
+      return null;
     }
+
+    for (PermissionNode currentGroupPerm : currentGroupPerms) {
+      if (currentGroupPerm.getActualPermission().equalsIgnoreCase(perm)) {
+        return currentGroupPerm.isSet();
+      }
+    }
+
+    return null;
+  }
+
+  @Nullable
+  private static Boolean has(@NotNull PermissionGroup permissionGroup, @NotNull String perm) {
+    if (permissionGroup.getPermissionNodes().stream().anyMatch(e -> e.getActualPermission().equalsIgnoreCase(perm) && e.isSet())) {
+      return true;
+    }
+
+    final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
+    if (!permissionGroup.getPerGroupPermissions().containsKey(current.getProcessGroup().getName())) {
+      return null;
+    }
+
+    final Collection<PermissionNode> currentGroupPerms = permissionGroup.getPerGroupPermissions()
+      .get(current.getProcessGroup().getName());
+    if (currentGroupPerms.isEmpty()) {
+      return null;
+    }
+
+    for (PermissionNode currentGroupPerm : currentGroupPerms) {
+      if (currentGroupPerm.getActualPermission().equalsIgnoreCase(perm)) {
+        return currentGroupPerm.isSet();
+      }
+    }
+
+    return null;
+  }
 }

@@ -26,45 +26,45 @@ package systems.reformcloud.reformcloud2.permissions.application.updater;
 
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationRemoteUpdate;
-import systems.reformcloud.reformcloud2.executor.api.application.updater.basic.BasicApplicationRemoteUpdate;
-import systems.reformcloud.reformcloud2.executor.api.application.updater.basic.DefaultApplicationUpdateRepository;
-import systems.reformcloud.reformcloud2.shared.io.DownloadHelper;
+import systems.reformcloud.reformcloud2.executor.api.application.updater.BasicApplicationRemoteUpdate;
+import systems.reformcloud.reformcloud2.executor.api.application.updater.DefaultApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.permissions.application.ReformCloudApplication;
+import systems.reformcloud.reformcloud2.shared.io.DownloadHelper;
 
 import java.io.IOException;
 import java.util.Properties;
 
 public class PermissionsAddonUpdater extends DefaultApplicationUpdateRepository {
 
-    private String newVersion;
+  private String newVersion;
 
-    @Override
-    public void fetchOrigin() {
-        DownloadHelper.connect("https://internal.reformcloud.systems/version.properties", inputStream -> {
-            try {
-                Properties properties = new Properties();
-                properties.load(inputStream);
+  @Override
+  public void fetchOrigin() {
+    DownloadHelper.connect("https://internal.reformcloud.systems/version.properties", inputStream -> {
+      try {
+        Properties properties = new Properties();
+        properties.load(inputStream);
 
-                this.newVersion = properties.getProperty("version");
-            } catch (final IOException ex) {
-                ex.printStackTrace();
-            }
-        });
+        this.newVersion = properties.getProperty("version");
+      } catch (final IOException ex) {
+        ex.printStackTrace();
+      }
+    });
+  }
+
+  @Override
+  public boolean isNewVersionAvailable() {
+    return !ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion().equals(this.newVersion);
+  }
+
+  @Nullable
+  @Override
+  public ApplicationRemoteUpdate getUpdate() {
+    if (!this.isNewVersionAvailable()) {
+      return null;
     }
 
-    @Override
-    public boolean isNewVersionAvailable() {
-        return !ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion().equals(this.newVersion);
-    }
-
-    @Nullable
-    @Override
-    public ApplicationRemoteUpdate getUpdate() {
-        if (!this.isNewVersionAvailable()) {
-            return null;
-        }
-
-        return new BasicApplicationRemoteUpdate(this.newVersion,
-            "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-permissions-" + this.newVersion + ".jar");
-    }
+    return new BasicApplicationRemoteUpdate(this.newVersion,
+      "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-permissions-" + this.newVersion + ".jar");
+  }
 }

@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.node.application;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.application.ApplicationConfig;
+import systems.reformcloud.reformcloud2.executor.api.application.config.ApplicationConfig;
 import systems.reformcloud.reformcloud2.executor.api.application.ApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.application.ApplicationStatus;
 import systems.reformcloud.reformcloud2.executor.api.application.LoadedApplication;

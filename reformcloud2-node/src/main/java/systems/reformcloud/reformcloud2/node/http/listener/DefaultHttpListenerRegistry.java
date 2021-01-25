@@ -43,64 +43,64 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DefaultHttpListenerRegistry implements HttpListenerRegistry {
 
-    private static final Comparator<HttpListenerRegistryEntry> PRIORITY_COMPARATOR = Comparator.comparingInt(HttpListenerRegistryEntry::priority);
-    private final Map<String, List<HttpListenerRegistryEntry>> listeners = new ConcurrentHashMap<>();
+  private static final Comparator<HttpListenerRegistryEntry> PRIORITY_COMPARATOR = Comparator.comparingInt(HttpListenerRegistryEntry::priority);
+  private final Map<String, List<HttpListenerRegistryEntry>> listeners = new ConcurrentHashMap<>();
 
-    @Override
-    public @NotNull HttpListenerRegistry registerListeners(@NotNull String path, @NotNull HttpListener... httpListeners) {
-        try {
-            for (HttpListener httpListener : httpListeners) {
-                Method handle = httpListener.getClass().getDeclaredMethod("handleRequest", HttpRequest.class);
+  @Override
+  public @NotNull HttpListenerRegistry registerListeners(@NotNull String path, @NotNull HttpListener... httpListeners) {
+    try {
+      for (HttpListener httpListener : httpListeners) {
+        Method handle = httpListener.getClass().getDeclaredMethod("handleRequest", HttpRequest.class);
 
-                Priority priority = handle.getAnnotation(Priority.class);
-                int handlerPriority = priority == null ? 0 : priority.value();
+        Priority priority = handle.getAnnotation(Priority.class);
+        int handlerPriority = priority == null ? 0 : priority.value();
 
-                RequestMethods requestMethods = handle.getAnnotation(RequestMethods.class);
-                RequestMethod[] methods = requestMethods == null ? new RequestMethod[]{RequestMethod.GET} : requestMethods.value();
+        RequestMethods requestMethods = handle.getAnnotation(RequestMethods.class);
+        RequestMethod[] methods = requestMethods == null ? new RequestMethod[]{RequestMethod.GET} : requestMethods.value();
 
-                HttpListenerRegistryEntry entry = new DefaultHttpListenerRegistryEntry(httpListener, methods, handlerPriority);
-                if (!this.listeners.containsKey(path)) {
-                    this.listeners.put(path, new CopyOnWriteArrayList<>());
-                }
-
-                this.listeners.get(path).add(entry);
-            }
-        } catch (NoSuchMethodException exception) {
-            throw new RuntimeException(exception);
+        HttpListenerRegistryEntry entry = new DefaultHttpListenerRegistryEntry(httpListener, methods, handlerPriority);
+        if (!this.listeners.containsKey(path)) {
+          this.listeners.put(path, new CopyOnWriteArrayList<>());
         }
 
-        if (this.listeners.containsKey(path)) {
-            // if the listeners array was empty no listeners were registered
-            this.listeners.get(path).sort(PRIORITY_COMPARATOR);
-        }
-
-        return this;
+        this.listeners.get(path).add(entry);
+      }
+    } catch (NoSuchMethodException exception) {
+      throw new RuntimeException(exception);
     }
 
-    @Override
-    public @NotNull HttpListenerRegistry unregisterListeners(@NotNull HttpListener... httpListener) {
-        for (List<HttpListenerRegistryEntry> value : this.listeners.values()) {
-            for (HttpListener listener : httpListener) {
-                value.removeIf(entry -> entry.getListener().equals(listener));
-            }
-        }
-
-        return this;
+    if (this.listeners.containsKey(path)) {
+      // if the listeners array was empty no listeners were registered
+      this.listeners.get(path).sort(PRIORITY_COMPARATOR);
     }
 
-    @Override
-    public @NotNull HttpListenerRegistry unregisterListeners(@NotNull String path) {
-        this.listeners.remove(path);
-        return this;
+    return this;
+  }
+
+  @Override
+  public @NotNull HttpListenerRegistry unregisterListeners(@NotNull HttpListener... httpListener) {
+    for (List<HttpListenerRegistryEntry> value : this.listeners.values()) {
+      for (HttpListener listener : httpListener) {
+        value.removeIf(entry -> entry.getListener().equals(listener));
+      }
     }
 
-    @Override
-    public @NotNull HttpListenerRegistry clearListeners() {
-        this.listeners.clear();
-        return this;
-    }
+    return this;
+  }
 
-    @Override public @NotNull @UnmodifiableView Map<String, List<HttpListenerRegistryEntry>> getListeners() {
-        return this.listeners;
-    }
+  @Override
+  public @NotNull HttpListenerRegistry unregisterListeners(@NotNull String path) {
+    this.listeners.remove(path);
+    return this;
+  }
+
+  @Override
+  public @NotNull HttpListenerRegistry clearListeners() {
+    this.listeners.clear();
+    return this;
+  }
+
+  @Override public @NotNull @UnmodifiableView Map<String, List<HttpListenerRegistryEntry>> getListeners() {
+    return this.listeners;
+  }
 }

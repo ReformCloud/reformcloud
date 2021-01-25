@@ -24,13 +24,12 @@
  */
 package systems.refomcloud.reformcloud2.embedded.network;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.shared.SharedChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
@@ -42,73 +41,75 @@ import java.util.concurrent.locks.Lock;
 
 public class EmbeddedChannelListener extends SharedChannelListener {
 
-    private final Lock lock;
-    private final Condition condition;
-    private boolean wasActive = false;
+  private final Lock lock;
+  private final Condition condition;
+  private boolean wasActive = false;
 
-    public EmbeddedChannelListener(Lock lock, Condition condition) {
-        PacketRegister.preAuth();
+  public EmbeddedChannelListener(Lock lock, Condition condition) {
+    PacketRegister.preAuth();
 
-        this.lock = lock;
-        this.condition = condition;
+    this.lock = lock;
+    this.condition = condition;
+  }
+
+  @Override
+  public boolean shouldHandle(@NotNull Packet packet) {
+    return super.networkChannel.getName() != null || packet.getId() == PacketIds.AUTH_BUS + 1;
+  }
+
+  @Override
+  public void channelActive(@NotNull NetworkChannel context) {
+    synchronized (this) {
+      if (!this.wasActive) {
+        this.wasActive = true;
+      } else {
+        return;
+      }
     }
 
-    @Override
-    public boolean shouldHandle(@NotNull Packet packet) {
-        return super.networkChannel.isAuthenticated() || packet.getId() == PacketIds.AUTH_BUS_END;
+    context.sendPacket(new PacketAuthBegin(
+      Embedded.getInstance().getConfig().getConnectionKey(),
+      2,
+      JsonConfiguration.newJsonConfiguration().add("pid", Embedded.getInstance().getCurrentProcessInformation().getId().getUniqueId())
+    ));
+  }
+
+  @Override
+  public void channelInactive(@NotNull NetworkChannel channel) {
+    if (channel.isOpen() && channel.isWritable()) {
+      return;
     }
 
-    @Override
-    public void channelActive(@NotNull ChannelHandlerContext context) {
-        synchronized (this) {
-            if (!this.wasActive) {
-                this.wasActive = true;
-            } else {
-                return;
-            }
-        }
+    super.networkChannel.close();
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).unregisterChannel(super.networkChannel);
+    System.exit(0);
+  }
 
-        context.writeAndFlush(new PacketAuthBegin(
-            Embedded.getInstance().getConfig().getConnectionKey(),
-            2,
-            new JsonConfiguration().add("pid", Embedded.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID())
-        ), context.voidPromise());
+  @Override
+  public void channelWriteAbilityChanged(@NotNull NetworkChannel channel) {
+  }
+
+  @Override
+  public void handle(@NotNull Packet input) {
+    if (input.getId() == PacketIds.AUTH_BUS + 1) {
+      if (!(input instanceof PacketAuthSuccess)) {
+        return;
+      }
+
+      super.networkChannel.setName("Controller");
+      ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).registerChannel(super.networkChannel);
+      PacketRegister.postAuth();
+
+      try {
+        this.lock.lock();
+        this.condition.signalAll();
+      } finally {
+        this.lock.unlock();
+      }
+
+      return;
     }
 
-    @Override
-    public void channelInactive(@NotNull ChannelHandlerContext context) {
-        Channel channel = context.channel();
-        if (channel.isOpen() && channel.isWritable()) {
-            return;
-        }
-
-        super.networkChannel.close();
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).unregisterChannel(super.networkChannel);
-        System.exit(0);
-    }
-
-    @Override
-    public void handle(@NotNull Packet input) {
-        if (input.getId() == PacketIds.AUTH_BUS_END) {
-            if (!(input instanceof PacketAuthSuccess)) {
-                return;
-            }
-
-            super.networkChannel.setName("Controller");
-            super.networkChannel.setAuthenticated(true);
-            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).registerChannel(super.networkChannel);
-            PacketRegister.postAuth();
-
-            try {
-                this.lock.lock();
-                this.condition.signalAll();
-            } finally {
-                this.lock.unlock();
-            }
-
-            return;
-        }
-
-        super.handle(input);
-    }
+    super.handle(input);
+  }
 }

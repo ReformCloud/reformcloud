@@ -26,37 +26,37 @@ package systems.reformcloud.reformcloud2.mysql.config;
 
 public class MySQLDatabaseConfig {
 
-    private final String host;
-    private final int port;
-    private final String database;
-    private final String userName;
-    private final String password;
+  private final String host;
+  private final int port;
+  private final String database;
+  private final String userName;
+  private final String password;
 
-    public MySQLDatabaseConfig(String host, int port, String database, String userName, String password) {
-        this.host = host;
-        this.port = port;
-        this.database = database;
-        this.userName = userName;
-        this.password = password;
-    }
+  public MySQLDatabaseConfig(String host, int port, String database, String userName, String password) {
+    this.host = host;
+    this.port = port;
+    this.database = database;
+    this.userName = userName;
+    this.password = password;
+  }
 
-    public String getHost() {
-        return this.host;
-    }
+  public String getHost() {
+    return this.host;
+  }
 
-    public int getPort() {
-        return this.port;
-    }
+  public int getPort() {
+    return this.port;
+  }
 
-    public String getDatabase() {
-        return this.database;
-    }
+  public String getDatabase() {
+    return this.database;
+  }
 
-    public String getUserName() {
-        return this.userName;
-    }
+  public String getUserName() {
+    return this.userName;
+  }
 
-    public String getPassword() {
-        return this.password;
-    }
+  public String getPassword() {
+    return this.password;
+  }
 }

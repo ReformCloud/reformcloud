@@ -77,13 +77,12 @@ public class DefaultProtocolBuffer implements ProtocolBuffer {
     }
 
     @Override
-    public void writeArray(@NotNull byte[] bytes) {
+    public void writeArray(byte[] bytes) {
         this.writeVarInt(bytes.length);
         this.writeBytes(bytes);
     }
 
     @Override
-    @NotNull
     public byte[] readArray() {
         byte[] bytes = new byte[this.readVarInt()];
         this.readBytes(bytes);
@@ -91,7 +90,6 @@ public class DefaultProtocolBuffer implements ProtocolBuffer {
     }
 
     @Override
-    @NotNull
     public byte[] toByteArray() {
         byte[] bytes = new byte[this.readableBytes()];
         this.readBytes(bytes);
@@ -162,14 +160,13 @@ public class DefaultProtocolBuffer implements ProtocolBuffer {
     }
 
     @Override
-    public void writeLongArray(@NotNull long[] longs) {
+    public void writeLongArray(long[] longs) {
         this.writeVarInt(longs.length);
         for (long aLong : longs) {
             this.writeLong(aLong);
         }
     }
 
-    @NotNull
     @Override
     public long[] readLongArray() {
         int size = this.readVarInt();

@@ -2,248 +2,248 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <groupId>systems.reformcloud.reformcloud2</groupId>
-    <artifactId>reformcloud2</artifactId>
-    <packaging>pom</packaging>
-    <version>2.11.0-SNAPSHOT</version>
+  <groupId>systems.reformcloud.reformcloud2</groupId>
+  <artifactId>reformcloud2</artifactId>
+  <packaging>pom</packaging>
+  <version>2.11.0-SNAPSHOT</version>
 
-    <licenses>
-        <license>
-            <name>MIT License</name>
-            <url>https://opensource.org/licenses/MIT</url>
-        </license>
-    </licenses>
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>https://opensource.org/licenses/MIT</url>
+    </license>
+  </licenses>
 
-    <developers>
-        <developer>
-            <name>Pasqual K.</name>
-            <email>info@reformcloud.systems</email>
-            <organization>reformcloudproject</organization>
-            <organizationUrl>https://reformcloud.systems</organizationUrl>
-        </developer>
-    </developers>
+  <developers>
+    <developer>
+      <name>Pasqual K.</name>
+      <email>info@reformcloud.systems</email>
+      <organization>reformcloudproject</organization>
+      <organizationUrl>https://reformcloud.systems</organizationUrl>
+    </developer>
+  </developers>
 
-    <contributors>
-        <contributor>
-            <name>Lukas B.</name>
-            <email>info@reformcloud.systems</email>
-            <organization>reformcloudproject</organization>
-            <organizationUrl>https://reformcloud.systems</organizationUrl>
-        </contributor>
-    </contributors>
+  <contributors>
+    <contributor>
+      <name>Lukas B.</name>
+      <email>info@reformcloud.systems</email>
+      <organization>reformcloudproject</organization>
+      <organizationUrl>https://reformcloud.systems</organizationUrl>
+    </contributor>
+  </contributors>
 
-    <scm>
-        <connection>scm:git:git://github.com/ReformCloud/reformcloud2.git</connection>
-        <developerConnection>scm:git:ssh://github.com/ReformCloud/reformcloud2.git
-        </developerConnection>
-        <url>https://github.com/ReformCloud/reformcloud2</url>
-    </scm>
+  <scm>
+    <connection>scm:git:git://github.com/ReformCloud/reformcloud2.git</connection>
+    <developerConnection>scm:git:ssh://github.com/ReformCloud/reformcloud2.git
+    </developerConnection>
+    <url>https://github.com/ReformCloud/reformcloud2</url>
+  </scm>
 
-    <issueManagement>
-        <url>https://github.com/ReformCloud/reformcloud2/issues</url>
-        <system>GitHub Issues</system>
-    </issueManagement>
+  <issueManagement>
+    <url>https://github.com/ReformCloud/reformcloud2/issues</url>
+    <system>GitHub Issues</system>
+  </issueManagement>
 
-    <name>reformcloud2-root</name>
-    <description>A simple server management system for minecraft java/bedrock proxies and servers
-    </description>
-    <url>https://reformcloud.systems/</url>
+  <name>reformcloud2-root</name>
+  <description>A simple server management system for minecraft java/bedrock proxies and servers
+  </description>
+  <url>https://reformcloud.systems/</url>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
 
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
 
-    <!-- do not change the module order to prevent issues while building the project -->
-    <modules>
-        <module>reformcloud2-executor-api</module>
-        <module>reformcloud2-protocol</module>
-        <module>reformcloud2-shared</module>
-        <module>reformcloud2-embedded</module>
-        <module>reformcloud2-node</module>
-        <module>reformcloud2-applications</module>
-        <module>reformcloud2-plugins</module>
-        <module>reformcloud2-examples</module>
-        <module>reformcloud2-runner</module>
-    </modules>
+  <!-- do not change the module order to prevent issues while building the project -->
+  <modules>
+    <module>reformcloud2-executor-api</module>
+    <module>reformcloud2-protocol</module>
+    <module>reformcloud2-shared</module>
+    <module>reformcloud2-embedded</module>
+    <module>reformcloud2-node</module>
+    <module>reformcloud2-applications</module>
+    <module>reformcloud2-plugins</module>
+    <module>reformcloud2-examples</module>
+    <module>reformcloud2-runner</module>
+  </modules>
 
-    <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
+  <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.targetEncoding>UTF-8</project.build.targetEncoding>
-    </properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.build.targetEncoding>UTF-8</project.build.targetEncoding>
+  </properties>
 
-    <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.jetbrains/annotations -->
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>20.1.0</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-    </dependencies>
+  <dependencies>
+    <!-- https://mvnrepository.com/artifact/org.jetbrains/annotations -->
+    <dependency>
+      <groupId>org.jetbrains</groupId>
+      <artifactId>annotations</artifactId>
+      <version>20.1.0</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+  </dependencies>
 
-    <build>
-        <defaultGoal>clean install</defaultGoal>
+  <build>
+    <defaultGoal>clean install</defaultGoal>
 
+    <plugins>
+      <plugin>
+        <groupId>net.md-5</groupId>
+        <artifactId>scriptus</artifactId>
+        <version>0.4.1</version>
+        <configuration>
+          <format>%s</format>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>initialize</phase>
+            <goals>
+              <goal>describe</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.1.1</version>
+        <configuration>
+          <configLocation>checkstyle.xml</configLocation>
+          <encoding>UTF-8</encoding>
+          <consoleOutput>true</consoleOutput>
+          <failsOnError>true</failsOnError>
+          <linkXRef>false</linkXRef>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>com.puppycrawl.tools</groupId>
+            <artifactId>checkstyle</artifactId>
+            <version>8.39</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>validate</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.22.2</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-surefire-provider</artifactId>
+            <version>1.3.2</version>
+          </dependency>
+          <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.7.0</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>deploy</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+
+      <properties>
+        <gpg.executable>gpg</gpg.executable>
+      </properties>
+
+      <build>
         <plugins>
-            <plugin>
-                <groupId>net.md-5</groupId>
-                <artifactId>scriptus</artifactId>
-                <version>0.4.1</version>
-                <configuration>
-                    <format>%s</format>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>describe</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.2.1</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
-                </configuration>
-            </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.2.0</version>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.1.1</version>
-                <configuration>
-                    <configLocation>checkstyle.xml</configLocation>
-                    <encoding>UTF-8</encoding>
-                    <consoleOutput>true</consoleOutput>
-                    <failsOnError>true</failsOnError>
-                    <linkXRef>false</linkXRef>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.puppycrawl.tools</groupId>
-                        <artifactId>checkstyle</artifactId>
-                        <version>8.37</version>
-                    </dependency>
-                </dependencies>
-                <executions>
-                    <execution>
-                        <id>validate</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
 
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.junit.platform</groupId>
-                        <artifactId>junit-platform-surefire-provider</artifactId>
-                        <version>1.3.2</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.junit.jupiter</groupId>
-                        <artifactId>junit-jupiter-engine</artifactId>
-                        <version>5.7.0</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>1.6.8</version>
+            <extensions>true</extensions>
+            <configuration>
+              <serverId>ossrh</serverId>
+              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+              <autoReleaseAfterClose>true</autoReleaseAfterClose>
+            </configuration>
+          </plugin>
         </plugins>
-    </build>
-
-    <profiles>
-        <profile>
-            <id>deploy</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-
-            <properties>
-                <gpg.executable>gpg</gpg.executable>
-            </properties>
-
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>3.2.1</version>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.2.0</version>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.8</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+      </build>
+    </profile>
+  </profiles>
 </project>

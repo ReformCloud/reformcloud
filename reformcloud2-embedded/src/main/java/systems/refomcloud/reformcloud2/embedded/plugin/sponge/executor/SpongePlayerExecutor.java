@@ -40,70 +40,70 @@ import java.util.UUID;
 
 public class SpongePlayerExecutor extends PlayerAPIExecutor {
 
-    @Override
-    public void executeSendMessage(UUID player, String message) {
-        Sponge.getServer().getPlayer(player).ifPresent(val -> val.sendMessage(Text.of(message)));
-    }
+  @Override
+  public void executeSendMessage(UUID player, String message) {
+    Sponge.getServer().getPlayer(player).ifPresent(val -> val.sendMessage(Text.of(message)));
+  }
 
-    @Override
-    public void executeKickPlayer(UUID player, String message) {
-        Sponge.getServer().getPlayer(player).ifPresent(val -> val.kick(Text.of(message)));
-    }
+  @Override
+  public void executeKickPlayer(UUID player, String message) {
+    Sponge.getServer().getPlayer(player).ifPresent(val -> val.kick(Text.of(message)));
+  }
 
-    @Override
-    public void executePlaySound(UUID player, String sound, float f1, float f2) {
-        Sponge.getServer().getPlayer(player).ifPresent(val -> {
-            try {
-                Field field = SoundTypes.class.getDeclaredField(sound);
-                field.setAccessible(true);
+  @Override
+  public void executePlaySound(UUID player, String sound, float f1, float f2) {
+    Sponge.getServer().getPlayer(player).ifPresent(val -> {
+      try {
+        Field field = SoundTypes.class.getDeclaredField(sound);
+        field.setAccessible(true);
 
-                val.getWorld().playSound((SoundType) field.get(null), val.getPosition(), f1, f2);
-            } catch (final NoSuchFieldException exception) {
-                System.err.println("Unable to play sound " + sound + " is does not exist?");
-            } catch (final IllegalAccessException exception) {
-                exception.printStackTrace();
-            }
-        });
-    }
+        val.getWorld().playSound((SoundType) field.get(null), val.getPosition(), f1, f2);
+      } catch (final NoSuchFieldException exception) {
+        System.err.println("Unable to play sound " + sound + " is does not exist?");
+      } catch (final IllegalAccessException exception) {
+        exception.printStackTrace();
+      }
+    });
+  }
 
-    @Override
-    public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
-        Sponge.getServer().getPlayer(player).ifPresent(val -> {
-            Title spongeTitle = Title
-                .builder()
-                .title(Text.of(title))
-                .subtitle(Text.of(subTitle))
-                .fadeIn(fadeIn)
-                .stay(stay)
-                .fadeOut(fadeOut)
-                .build();
-            val.sendTitle(spongeTitle);
-        });
-    }
+  @Override
+  public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
+    Sponge.getServer().getPlayer(player).ifPresent(val -> {
+      Title spongeTitle = Title
+        .builder()
+        .title(Text.of(title))
+        .subtitle(Text.of(subTitle))
+        .fadeIn(fadeIn)
+        .stay(stay)
+        .fadeOut(fadeOut)
+        .build();
+      val.sendTitle(spongeTitle);
+    });
+  }
 
-    @Override
-    public void executePlayEffect(UUID player, String entityEffect) {
-        Sponge.getServer().getPlayer(player).ifPresent(val -> {
-            try {
-                Field field = ParticleTypes.class.getDeclaredField(entityEffect);
-                field.setAccessible(true);
+  @Override
+  public void executePlayEffect(UUID player, String entityEffect) {
+    Sponge.getServer().getPlayer(player).ifPresent(val -> {
+      try {
+        Field field = ParticleTypes.class.getDeclaredField(entityEffect);
+        field.setAccessible(true);
 
-                ParticleEffect effect = ParticleEffect.builder().type((ParticleType) field.get(null)).build();
-                val.spawnParticles(effect, val.getPosition());
-            } catch (final NoSuchFieldException exception) {
-                System.err.println("Unable to play effect " + entityEffect + " is does not exist?");
-            } catch (final IllegalAccessException exception) {
-                exception.printStackTrace();
-            }
-        });
-    }
+        ParticleEffect effect = ParticleEffect.builder().type((ParticleType) field.get(null)).build();
+        val.spawnParticles(effect, val.getPosition());
+      } catch (final NoSuchFieldException exception) {
+        System.err.println("Unable to play effect " + entityEffect + " is does not exist?");
+      } catch (final IllegalAccessException exception) {
+        exception.printStackTrace();
+      }
+    });
+  }
 
-    @Override
-    public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
-        Sponge.getServer().getPlayer(player).ifPresent(val -> Sponge.getServer().getWorld(world).ifPresent(w -> val.setLocation(new Location<>(w, x, y, z))));
-    }
+  @Override
+  public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
+    Sponge.getServer().getPlayer(player).ifPresent(val -> Sponge.getServer().getWorld(world).ifPresent(w -> val.setLocation(new Location<>(w, x, y, z))));
+  }
 
-    @Override
-    public void executeConnect(UUID player, String server) {
-    }
+  @Override
+  public void executeConnect(UUID player, String server) {
+  }
 }

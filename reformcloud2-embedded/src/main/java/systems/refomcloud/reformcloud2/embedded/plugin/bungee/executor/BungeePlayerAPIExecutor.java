@@ -34,54 +34,54 @@ import java.util.UUID;
 
 public class BungeePlayerAPIExecutor extends PlayerAPIExecutor {
 
-    @Override
-    public void executeSendMessage(UUID player, String message) {
-        ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(player);
-        if (proxiedPlayer != null) {
-            proxiedPlayer.sendMessage(TextComponent.fromLegacyText(message));
-        }
+  @Override
+  public void executeSendMessage(UUID player, String message) {
+    ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(player);
+    if (proxiedPlayer != null) {
+      proxiedPlayer.sendMessage(TextComponent.fromLegacyText(message));
     }
+  }
 
-    @Override
-    public void executeKickPlayer(UUID player, String message) {
-        ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(player);
-        if (proxiedPlayer != null) {
-            proxiedPlayer.disconnect(TextComponent.fromLegacyText(message));
-        }
+  @Override
+  public void executeKickPlayer(UUID player, String message) {
+    ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(player);
+    if (proxiedPlayer != null) {
+      proxiedPlayer.disconnect(TextComponent.fromLegacyText(message));
     }
+  }
 
-    @Override
-    public void executePlaySound(UUID player, String sound, float f1, float f2) {
-    }
+  @Override
+  public void executePlaySound(UUID player, String sound, float f1, float f2) {
+  }
 
-    @Override
-    public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
-        ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(player);
-        if (proxiedPlayer != null) {
-            ProxyServer.getInstance().createTitle()
-                .title(TextComponent.fromLegacyText(title))
-                .subTitle(TextComponent.fromLegacyText(subTitle))
-                .fadeIn(fadeIn)
-                .stay(stay)
-                .fadeOut(fadeOut)
-                .send(proxiedPlayer);
-        }
+  @Override
+  public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
+    ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(player);
+    if (proxiedPlayer != null) {
+      ProxyServer.getInstance().createTitle()
+        .title(TextComponent.fromLegacyText(title))
+        .subTitle(TextComponent.fromLegacyText(subTitle))
+        .fadeIn(fadeIn)
+        .stay(stay)
+        .fadeOut(fadeOut)
+        .send(proxiedPlayer);
     }
+  }
 
-    @Override
-    public void executePlayEffect(UUID player, String entityEffect) {
-    }
+  @Override
+  public void executePlayEffect(UUID player, String entityEffect) {
+  }
 
-    @Override
-    public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
-    }
+  @Override
+  public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
+  }
 
-    @Override
-    public void executeConnect(UUID player, String server) {
-        ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(player);
-        ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(server);
-        if (proxiedPlayer != null && serverInfo != null) {
-            proxiedPlayer.connect(serverInfo);
-        }
+  @Override
+  public void executeConnect(UUID player, String server) {
+    ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(player);
+    ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(server);
+    if (proxiedPlayer != null && serverInfo != null) {
+      proxiedPlayer.connect(serverInfo);
     }
+  }
 }

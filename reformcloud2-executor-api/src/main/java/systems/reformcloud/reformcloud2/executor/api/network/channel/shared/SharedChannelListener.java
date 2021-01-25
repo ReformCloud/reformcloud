@@ -36,23 +36,23 @@ import java.util.Optional;
 
 public abstract class SharedChannelListener implements ChannelListener {
 
-    protected NetworkChannel networkChannel;
+  protected NetworkChannel networkChannel;
 
-    @Override
-    public void handle(@NotNull Packet input) {
-        if (input.getQueryUniqueID() != null) {
-            Optional<Task<Packet>> waitingQuery = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class).getWaitingQuery(input.getQueryUniqueID());
-            if (waitingQuery.isPresent()) {
-                waitingQuery.get().complete(input);
-                return;
-            }
-        }
-
-        try {
-            input.handlePacketReceive(this, this.networkChannel);
-        } catch (final Throwable throwable) {
-            System.err.println("Error while handling packet " + input.getId() + "@" + input.getClass().getName());
-            throwable.printStackTrace();
-        }
+  @Override
+  public void handle(@NotNull Packet input) {
+    if (input.getQueryUniqueID() != null) {
+      Optional<Task<Packet>> waitingQuery = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class).getWaitingQuery(input.getQueryUniqueID());
+      if (waitingQuery.isPresent()) {
+        waitingQuery.get().complete(input);
+        return;
+      }
     }
+
+    try {
+      input.handlePacketReceive(this, this.networkChannel);
+    } catch (final Throwable throwable) {
+      System.err.println("Error while handling packet " + input.getId() + "@" + input.getClass().getName());
+      throwable.printStackTrace();
+    }
+  }
 }

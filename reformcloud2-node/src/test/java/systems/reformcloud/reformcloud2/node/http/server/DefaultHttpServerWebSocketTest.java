@@ -71,121 +71,121 @@ import java.util.concurrent.atomic.AtomicInteger;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class DefaultHttpServerWebSocketTest {
 
-    private static final String CLIENT_HI_MESSAGE = "Hi";
-    private static final String SERVER_HI_RESPONSE = "Morning";
-    private static final String SERVER_GOODBYE_MESSAGE = "ByeBye";
-    private static final String CLIENT_CLOSE_REQUEST_TEXT = "Ok Bye!";
-    private static final int HTTP_PORT = NetworkUtils.checkAndReplacePortIfInUse(2000);
-    private static final int SERVER_CLOSE_REASON_CODE = CloseSocketFrame.CloseStatus.SERVICE_RESTART.code();
+  private static final String CLIENT_HI_MESSAGE = "Hi";
+  private static final String SERVER_HI_RESPONSE = "Morning";
+  private static final String SERVER_GOODBYE_MESSAGE = "ByeBye";
+  private static final String CLIENT_CLOSE_REQUEST_TEXT = "Ok Bye!";
+  private static final int HTTP_PORT = NetworkUtils.checkAndReplacePortIfInUse(2000);
+  private static final int SERVER_CLOSE_REASON_CODE = CloseSocketFrame.CloseStatus.SERVICE_RESTART.code();
 
-    private final HttpServer httpServer = new DefaultHttpServer();
+  private final HttpServer httpServer = new DefaultHttpServer();
 
-    @Test
-    @Order(1)
-    void testRegisterListener() {
-        Assertions.assertTrue(this.httpServer.bind("127.0.0.1", HTTP_PORT));
-        this.httpServer.getListenerRegistry().registerListeners("/to/websocket", new HttpListener() {
-            @Override
-            @RequestMethods(RequestMethod.GET)
-            public @NotNull ListeningHttpServerResponse<?> handleRequest(@NotNull HttpRequest<?> request) {
-                SocketFrameSource socketFrameSource = request.source().upgrade().orElse(null);
-                Assertions.assertNotNull(socketFrameSource);
+  @Test
+  @Order(1)
+  void testRegisterListener() {
+    Assertions.assertTrue(this.httpServer.bind("127.0.0.1", HTTP_PORT));
+    this.httpServer.getListenerRegistry().registerListeners("/to/websocket", new HttpListener() {
+      @Override
+      @RequestMethods(RequestMethod.GET)
+      public @NotNull ListeningHttpServerResponse<?> handleRequest(@NotNull HttpRequest<?> request) {
+        SocketFrameSource socketFrameSource = request.source().upgrade().orElse(null);
+        Assertions.assertNotNull(socketFrameSource);
 
-                socketFrameSource.listenerRegistry().registerListeners(new SocketFrameListener() {
-                    @Override
-                    @FrameTypes(SocketFrameType.TEXT)
-                    public @Nullable ResponseFrameHolder<?> handleFrame(@NotNull RequestFrameHolder frame) {
-                        Assertions.assertTrue(frame.request() instanceof TextSocketFrame);
-                        if (((TextSocketFrame<?>) frame.request()).text().equals(CLIENT_HI_MESSAGE)) {
-                            return ResponseFrameHolder.response(SocketFrame.textFrame(SERVER_HI_RESPONSE));
-                        }
-
-                        return null;
-                    }
-                }, new SocketFrameListener() {
-                    @Override
-                    @FrameTypes(SocketFrameType.TEXT)
-                    public @Nullable ResponseFrameHolder<?> handleFrame(@NotNull RequestFrameHolder frame) {
-                        Assertions.assertTrue(frame.request() instanceof TextSocketFrame);
-                        if (((TextSocketFrame<?>) frame.request()).text().equals(CLIENT_CLOSE_REQUEST_TEXT)) {
-                            return ResponseFrameHolder.response(SocketFrame.closeFrame(SERVER_CLOSE_REASON_CODE, SERVER_GOODBYE_MESSAGE))
-                                .lastHandler(true)
-                                .closeAfterSent(true);
-                        }
-
-                        return null;
-                    }
-                });
-
-                Assertions.assertEquals(2, socketFrameSource.listenerRegistry().getListeners().size());
-                return ListeningHttpServerResponse.response(request);
+        socketFrameSource.listenerRegistry().registerListeners(new SocketFrameListener() {
+          @Override
+          @FrameTypes(SocketFrameType.TEXT)
+          public @Nullable ResponseFrameHolder<?> handleFrame(@NotNull RequestFrameHolder frame) {
+            Assertions.assertTrue(frame.request() instanceof TextSocketFrame);
+            if (((TextSocketFrame<?>) frame.request()).text().equals(CLIENT_HI_MESSAGE)) {
+              return ResponseFrameHolder.response(SocketFrame.textFrame(SERVER_HI_RESPONSE));
             }
+
+            return null;
+          }
+        }, new SocketFrameListener() {
+          @Override
+          @FrameTypes(SocketFrameType.TEXT)
+          public @Nullable ResponseFrameHolder<?> handleFrame(@NotNull RequestFrameHolder frame) {
+            Assertions.assertTrue(frame.request() instanceof TextSocketFrame);
+            if (((TextSocketFrame<?>) frame.request()).text().equals(CLIENT_CLOSE_REQUEST_TEXT)) {
+              return ResponseFrameHolder.response(SocketFrame.closeFrame(SERVER_CLOSE_REASON_CODE, SERVER_GOODBYE_MESSAGE))
+                .lastHandler(true)
+                .closeAfterSent(true);
+            }
+
+            return null;
+          }
         });
-        Assertions.assertEquals(1, this.httpServer.getListenerRegistry().getListeners().size());
-        Assertions.assertEquals(1, this.httpServer.getListenerRegistry().getListeners().get("/to/websocket").size());
+
+        Assertions.assertEquals(2, socketFrameSource.listenerRegistry().getListeners().size());
+        return ListeningHttpServerResponse.response(request);
+      }
+    });
+    Assertions.assertEquals(1, this.httpServer.getListenerRegistry().getListeners().size());
+    Assertions.assertEquals(1, this.httpServer.getListenerRegistry().getListeners().get("/to/websocket").size());
+  }
+
+  @Test
+  @Order(2)
+  @Timeout(10)
+  void testHandlePostRequest() throws IOException {
+    HttpURLConnection connection = (HttpURLConnection) new URL("http://127.0.0.1:" + HTTP_PORT + "/to/websocket").openConnection();
+    connection.setRequestMethod("POST");
+    connection.setDoInput(true);
+    connection.connect();
+    // Check if the request was discarded because it's only handling get requests
+    Assertions.assertEquals(HttpStatusCode.NOT_FOUND.code(), connection.getResponseCode());
+  }
+
+  @Test
+  @Order(3)
+  @Timeout(10)
+  void testUpgradeConnection() throws IOException, InterruptedException, DeploymentException {
+    Session session = ContainerProvider.getWebSocketContainer().connectToServer(
+      ClientHandler.class,
+      URI.create("ws://127.0.0.1:" + HTTP_PORT + "/to/websocket")
+    );
+    while (session.isOpen()) {
+      Thread.sleep(50);
     }
 
-    @Test
-    @Order(2)
-    @Timeout(10)
-    void testHandlePostRequest() throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL("http://127.0.0.1:" + HTTP_PORT + "/to/websocket").openConnection();
-        connection.setRequestMethod("POST");
-        connection.setDoInput(true);
-        connection.connect();
-        // Check if the request was discarded because it's only handling get requests
-        Assertions.assertEquals(HttpStatusCode.NOT_FOUND.code(), connection.getResponseCode());
+    Assertions.assertEquals(3, ClientHandler.STATE.get());
+  }
+
+  @AfterAll
+  void closeHttpServer() {
+    this.httpServer.closeAll();
+  }
+
+  @ClientEndpoint
+  public static final class ClientHandler {
+
+    private static final AtomicInteger STATE = new AtomicInteger();
+    private final AtomicBoolean expectingServerHiResponse = new AtomicBoolean();
+    private final AtomicBoolean expectingServerCloseConnection = new AtomicBoolean();
+
+    @OnOpen
+    public void onOpen(@NotNull Session session) {
+      Assertions.assertFalse(this.expectingServerHiResponse.getAndSet(true));
+      session.getAsyncRemote().sendText(CLIENT_HI_MESSAGE);
+      STATE.incrementAndGet();
     }
 
-    @Test
-    @Order(3)
-    @Timeout(10)
-    void testUpgradeConnection() throws IOException, InterruptedException, DeploymentException {
-        Session session = ContainerProvider.getWebSocketContainer().connectToServer(
-            ClientHandler.class,
-            URI.create("ws://127.0.0.1:" + HTTP_PORT + "/to/websocket")
-        );
-        while (session.isOpen()) {
-            Thread.sleep(50);
-        }
-
-        Assertions.assertEquals(3, ClientHandler.STATE.get());
+    @OnMessage
+    public void onMessage(@NotNull Session session, String message) {
+      Assertions.assertTrue(this.expectingServerHiResponse.getAndSet(false));
+      Assertions.assertEquals(SERVER_HI_RESPONSE, message);
+      Assertions.assertFalse(this.expectingServerCloseConnection.getAndSet(true));
+      session.getAsyncRemote().sendText(CLIENT_CLOSE_REQUEST_TEXT);
+      STATE.incrementAndGet();
     }
 
-    @AfterAll
-    void closeHttpServer() {
-        this.httpServer.closeAll();
+    @OnClose
+    public void onClose(@NotNull CloseReason closeReason) {
+      Assertions.assertTrue(this.expectingServerCloseConnection.getAndSet(false));
+      Assertions.assertEquals(SERVER_CLOSE_REASON_CODE, closeReason.getCloseCode().getCode());
+      Assertions.assertEquals(SERVER_GOODBYE_MESSAGE, closeReason.getReasonPhrase().trim());
+      STATE.incrementAndGet();
     }
-
-    @ClientEndpoint
-    public static final class ClientHandler {
-
-        private static final AtomicInteger STATE = new AtomicInteger();
-        private final AtomicBoolean expectingServerHiResponse = new AtomicBoolean();
-        private final AtomicBoolean expectingServerCloseConnection = new AtomicBoolean();
-
-        @OnOpen
-        public void onOpen(@NotNull Session session) {
-            Assertions.assertFalse(this.expectingServerHiResponse.getAndSet(true));
-            session.getAsyncRemote().sendText(CLIENT_HI_MESSAGE);
-            STATE.incrementAndGet();
-        }
-
-        @OnMessage
-        public void onMessage(@NotNull Session session, String message) {
-            Assertions.assertTrue(this.expectingServerHiResponse.getAndSet(false));
-            Assertions.assertEquals(SERVER_HI_RESPONSE, message);
-            Assertions.assertFalse(this.expectingServerCloseConnection.getAndSet(true));
-            session.getAsyncRemote().sendText(CLIENT_CLOSE_REQUEST_TEXT);
-            STATE.incrementAndGet();
-        }
-
-        @OnClose
-        public void onClose(@NotNull CloseReason closeReason) {
-            Assertions.assertTrue(this.expectingServerCloseConnection.getAndSet(false));
-            Assertions.assertEquals(SERVER_CLOSE_REASON_CODE, closeReason.getCloseCode().getCode());
-            Assertions.assertEquals(SERVER_GOODBYE_MESSAGE, closeReason.getReasonPhrase().trim());
-            STATE.incrementAndGet();
-        }
-    }
+  }
 }

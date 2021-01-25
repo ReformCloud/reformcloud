@@ -28,39 +28,39 @@ import com.google.gson.reflect.TypeToken;
 
 public class CloudFlareConfig {
 
-    public static final TypeToken<CloudFlareConfig> TYPE_TOKEN = new TypeToken<>() {
-    };
-    private final String email;
-    private final String apiToken;
-    private final String domainName;
-    private final String zoneId;
-    private final String subDomain;
+  public static final TypeToken<CloudFlareConfig> TYPE_TOKEN = new TypeToken<>() {
+  };
+  private final String email;
+  private final String apiToken;
+  private final String domainName;
+  private final String zoneId;
+  private final String subDomain;
 
-    public CloudFlareConfig(String email, String apiToken, String domainName, String zoneId, String subDomain) {
-        this.email = email;
-        this.apiToken = apiToken;
-        this.domainName = domainName;
-        this.zoneId = zoneId;
-        this.subDomain = subDomain;
-    }
+  public CloudFlareConfig(String email, String apiToken, String domainName, String zoneId, String subDomain) {
+    this.email = email;
+    this.apiToken = apiToken;
+    this.domainName = domainName;
+    this.zoneId = zoneId;
+    this.subDomain = subDomain;
+  }
 
-    public String getEmail() {
-        return this.email;
-    }
+  public String getEmail() {
+    return this.email;
+  }
 
-    public String getApiToken() {
-        return this.apiToken;
-    }
+  public String getApiToken() {
+    return this.apiToken;
+  }
 
-    public String getDomainName() {
-        return this.domainName;
-    }
+  public String getDomainName() {
+    return this.domainName;
+  }
 
-    public String getZoneId() {
-        return this.zoneId;
-    }
+  public String getZoneId() {
+    return this.zoneId;
+  }
 
-    public String getSubDomain() {
-        return this.subDomain;
-    }
+  public String getSubDomain() {
+    return this.subDomain;
+  }
 }

@@ -28,8 +28,8 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
@@ -39,76 +39,76 @@ import systems.reformcloud.reformcloud2.permissions.packets.util.PermissionActio
 
 public class PacketUserAction extends Packet {
 
-    private PermissionUser permissionUser;
-    private PermissionAction permissionAction;
+  private PermissionUser permissionUser;
+  private PermissionAction permissionAction;
 
-    public PacketUserAction() {
-    }
+  public PacketUserAction() {
+  }
 
-    public PacketUserAction(PermissionUser permissionUser, PermissionAction permissionAction) {
-        this.permissionUser = permissionUser;
-        this.permissionAction = permissionAction;
-    }
+  public PacketUserAction(PermissionUser permissionUser, PermissionAction permissionAction) {
+    this.permissionUser = permissionUser;
+    this.permissionAction = permissionAction;
+  }
 
-    @Override
-    public int getId() {
-        return PacketHelper.PERMISSION_BUS + 4;
-    }
+  @Override
+  public int getId() {
+    return PacketHelper.PERMISSION_BUS + 4;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        switch (this.permissionAction) {
-            case DELETE: {
-                PermissionManagement.getInstance().handleInternalUserDelete(this.permissionUser);
-                if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
-                    this.publish(new PacketUserAction(this.permissionUser, PermissionAction.DELETE));
-                }
-
-                break;
-            }
-
-            case UPDATE: {
-                PermissionManagement.getInstance().handleInternalUserUpdate(this.permissionUser);
-                if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
-                    this.publish(new PacketUserAction(this.permissionUser, PermissionAction.UPDATE));
-                }
-
-                break;
-            }
-
-            case CREATE: {
-                PermissionManagement.getInstance().handleInternalUserCreate(this.permissionUser);
-                if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
-                    this.publish(new PacketUserAction(this.permissionUser, PermissionAction.CREATE));
-                }
-
-                break;
-            }
-
-            default: {
-                throw new IllegalStateException("Unhandled user action " + this.permissionAction);
-            }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    switch (this.permissionAction) {
+      case DELETE: {
+        PermissionManagement.getInstance().handleInternalUserDelete(this.permissionUser);
+        if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
+          this.publish(new PacketUserAction(this.permissionUser, PermissionAction.DELETE));
         }
-    }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.permissionUser);
-        buffer.writeInt(this.permissionAction.ordinal());
-    }
+        break;
+      }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.permissionUser = buffer.readObject(PermissionUser.class);
-        this.permissionAction = EnumUtil.findEnumFieldByIndex(PermissionAction.class, buffer.readInt()).orElse(null);
-    }
-
-    private void publish(@NotNull Packet packet) {
-        for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
-            if (registeredChannel.isAuthenticated()
-                && ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(registeredChannel.getName()).isEmpty()) {
-                registeredChannel.sendPacket(packet);
-            }
+      case UPDATE: {
+        PermissionManagement.getInstance().handleInternalUserUpdate(this.permissionUser);
+        if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
+          this.publish(new PacketUserAction(this.permissionUser, PermissionAction.UPDATE));
         }
+
+        break;
+      }
+
+      case CREATE: {
+        PermissionManagement.getInstance().handleInternalUserCreate(this.permissionUser);
+        if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
+          this.publish(new PacketUserAction(this.permissionUser, PermissionAction.CREATE));
+        }
+
+        break;
+      }
+
+      default: {
+        throw new IllegalStateException("Unhandled user action " + this.permissionAction);
+      }
     }
+  }
+
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.permissionUser);
+    buffer.writeInt(this.permissionAction.ordinal());
+  }
+
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.permissionUser = buffer.readObject(PermissionUser.class);
+    this.permissionAction = EnumUtil.findEnumFieldByIndex(PermissionAction.class, buffer.readInt()).orElse(null);
+  }
+
+  private void publish(@NotNull Packet packet) {
+    for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
+      if (registeredChannel.isAuthenticated()
+        && ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(registeredChannel.getName()).isEmpty()) {
+        registeredChannel.sendPacket(packet);
+      }
+    }
+  }
 }

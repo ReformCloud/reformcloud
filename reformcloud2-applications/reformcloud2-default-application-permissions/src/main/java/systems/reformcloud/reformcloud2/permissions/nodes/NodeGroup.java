@@ -25,52 +25,52 @@
 package systems.reformcloud.reformcloud2.permissions.nodes;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 
 public class NodeGroup implements SerializableObject {
 
-    private long addTime;
-    private long timeout;
-    private String groupName;
+  private long addTime;
+  private long timeout;
+  private String groupName;
 
-    public NodeGroup() {
-    }
+  public NodeGroup() {
+  }
 
-    public NodeGroup(long addTime, long timeout, @NotNull String groupName) {
-        this.addTime = addTime;
-        this.timeout = timeout;
-        this.groupName = groupName;
-    }
+  public NodeGroup(long addTime, long timeout, @NotNull String groupName) {
+    this.addTime = addTime;
+    this.timeout = timeout;
+    this.groupName = groupName;
+  }
 
-    public long getAddTime() {
-        return this.addTime;
-    }
+  public long getAddTime() {
+    return this.addTime;
+  }
 
-    public long getTimeout() {
-        return this.timeout;
-    }
+  public long getTimeout() {
+    return this.timeout;
+  }
 
-    public boolean isValid() {
-        return this.timeout == -1 || this.timeout > System.currentTimeMillis();
-    }
+  public boolean isValid() {
+    return this.timeout == -1 || this.timeout > System.currentTimeMillis();
+  }
 
-    @NotNull
-    public String getGroupName() {
-        return this.groupName;
-    }
+  @NotNull
+  public String getGroupName() {
+    return this.groupName;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeLong(this.addTime);
-        buffer.writeLong(this.timeout);
-        buffer.writeString(this.groupName);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeLong(this.addTime);
+    buffer.writeLong(this.timeout);
+    buffer.writeString(this.groupName);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.addTime = buffer.readLong();
-        this.timeout = buffer.readLong();
-        this.groupName = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.addTime = buffer.readLong();
+    this.timeout = buffer.readLong();
+    this.groupName = buffer.readString();
+  }
 }

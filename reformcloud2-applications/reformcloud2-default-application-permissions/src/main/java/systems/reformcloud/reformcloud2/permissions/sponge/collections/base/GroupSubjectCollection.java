@@ -37,25 +37,25 @@ import java.util.concurrent.CompletableFuture;
 
 public class GroupSubjectCollection extends DefaultSubjectCollection {
 
-    public GroupSubjectCollection(PermissionService service) {
-        super(PermissionService.SUBJECTS_GROUP, service);
-    }
+  public GroupSubjectCollection(PermissionService service) {
+    super(PermissionService.SUBJECTS_GROUP, service);
+  }
 
-    @NotNull
-    @Override
-    protected Subject load(String id) {
-        return new GroupSubject(id, this.service, this);
-    }
+  @NotNull
+  @Override
+  protected Subject load(String id) {
+    return new GroupSubject(id, this.service, this);
+  }
 
-    @Override
-    @NotNull
-    public CompletableFuture<Boolean> hasSubject(@NotNull String identifier) {
-        return CompletableFuture.completedFuture(PermissionManagement.getInstance().getPermissionGroup(identifier).isPresent());
-    }
+  @Override
+  @NotNull
+  public CompletableFuture<Boolean> hasSubject(@NotNull String identifier) {
+    return CompletableFuture.completedFuture(PermissionManagement.getInstance().getPermissionGroup(identifier).isPresent());
+  }
 
-    @Override
-    @NotNull
-    public Collection<Subject> getLoadedSubjects() {
-        return new ArrayList<>();
-    }
+  @Override
+  @NotNull
+  public Collection<Subject> getLoadedSubjects() {
+    return new ArrayList<>();
+  }
 }

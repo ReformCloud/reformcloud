@@ -24,42 +24,62 @@
  */
 package systems.refomcloud.reformcloud2.embedded.config;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.shared.network.data.DefaultProtocolBuffer;
+import systems.reformcloud.reformcloud2.shared.process.DefaultProcessInformation;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public final class EmbeddedConfig {
 
-    private final String connectionHost;
-    private final int connectionPort;
-    private final String connectionKey;
-    private final ProcessInformation processInformation;
+  private final String connectionHost;
+  private final int connectionPort;
+  private final String connectionKey;
+  private final ProcessInformation processInformation;
 
-    public EmbeddedConfig() {
-        JsonConfiguration configuration = JsonConfiguration.read(".reformcloud/config.json");
+  public EmbeddedConfig() {
+    JsonConfiguration configuration = JsonConfiguration.newJsonConfiguration(Paths.get(".reformcloud/config.json"));
 
-        this.connectionHost = configuration.getString("host");
-        this.connectionPort = configuration.getInteger("port");
-        this.connectionKey = configuration.getString("key");
-        this.processInformation = configuration.get("startInfo", ProcessInformation.TYPE);
+    this.connectionHost = configuration.getString("host");
+    this.connectionPort = configuration.getInteger("port");
+    this.connectionKey = configuration.getString("key");
+
+    try {
+      final ByteBuf byteBuf = Unpooled.wrappedBuffer(Files.readAllBytes(Paths.get(".reformcloud/info")));
+      try {
+        ProtocolBuffer buffer = new DefaultProtocolBuffer(byteBuf);
+        this.processInformation = buffer.readObject(DefaultProcessInformation.class);
+      } finally {
+        byteBuf.release();
+      }
+    } catch (IOException exception) {
+      throw new RuntimeException("Unable to read process information", exception);
     }
+  }
 
-    @NotNull
-    public String getConnectionHost() {
-        return this.connectionHost;
-    }
+  @NotNull
+  public String getConnectionHost() {
+    return this.connectionHost;
+  }
 
-    public int getConnectionPort() {
-        return this.connectionPort;
-    }
+  public int getConnectionPort() {
+    return this.connectionPort;
+  }
 
-    @NotNull
-    public String getConnectionKey() {
-        return this.connectionKey;
-    }
+  @NotNull
+  public String getConnectionKey() {
+    return this.connectionKey;
+  }
 
-    @NotNull
-    public ProcessInformation getProcessInformation() {
-        return this.processInformation;
-    }
+  @NotNull
+  public ProcessInformation getProcessInformation() {
+    return this.processInformation;
+  }
 }

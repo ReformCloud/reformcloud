@@ -42,52 +42,52 @@ import java.util.Collection;
 
 public class MongoDatabaseProvider implements DatabaseProvider, AutoCloseable {
 
-    private final MongoClient client;
-    private final MongoDatabase database;
+  private final MongoClient client;
+  private final MongoDatabase database;
 
-    public MongoDatabaseProvider(MongoConfig config) {
-        try {
-            this.client = MongoClients.create(MessageFormat.format(
-                "mongodb://{0}:{1}@{2}:{3}/{4}",
-                config.getUserName(),
-                URLEncoder.encode(config.getPassword(), StandardCharsets.UTF_8.name()),
-                config.getHost(),
-                Integer.toString(config.getPort()),
-                config.getDatabase()
-            ));
-            this.database = this.client.getDatabase(config.getDatabase());
-        } catch (UnsupportedEncodingException exception) {
-            throw new RuntimeException(exception);
-        }
+  public MongoDatabaseProvider(MongoConfig config) {
+    try {
+      this.client = MongoClients.create(MessageFormat.format(
+        "mongodb://{0}:{1}@{2}:{3}/{4}",
+        config.getUserName(),
+        URLEncoder.encode(config.getPassword(), StandardCharsets.UTF_8.name()),
+        config.getHost(),
+        Integer.toString(config.getPort()),
+        config.getDatabase()
+      ));
+      this.database = this.client.getDatabase(config.getDatabase());
+    } catch (UnsupportedEncodingException exception) {
+      throw new RuntimeException(exception);
+    }
+  }
+
+  @Override
+  public @NotNull DatabaseTableWrapper createTable(@NotNull String tableName) {
+    return new MongoDatabaseTableWrapper(this.database, tableName);
+  }
+
+  @Override
+  public void deleteTable(@NotNull String tableName) {
+    this.database.getCollection(tableName).drop();
+  }
+
+  @Override
+  public @NotNull @UnmodifiableView Collection<String> getTableNames() {
+    Collection<String> result = new ArrayList<>();
+    for (String s : this.client.listDatabaseNames()) {
+      result.add(s);
     }
 
-    @Override
-    public @NotNull DatabaseTableWrapper createTable(@NotNull String tableName) {
-        return new MongoDatabaseTableWrapper(this.database, tableName);
-    }
+    return result;
+  }
 
-    @Override
-    public void deleteTable(@NotNull String tableName) {
-        this.database.getCollection(tableName).drop();
-    }
+  @Override
+  public @NotNull DatabaseTableWrapper getDatabase(@NotNull String tableName) {
+    return new MongoDatabaseTableWrapper(this.database, tableName);
+  }
 
-    @Override
-    public @NotNull @UnmodifiableView Collection<String> getTableNames() {
-        Collection<String> result = new ArrayList<>();
-        for (String s : this.client.listDatabaseNames()) {
-            result.add(s);
-        }
-
-        return result;
-    }
-
-    @Override
-    public @NotNull DatabaseTableWrapper getDatabase(@NotNull String tableName) {
-        return new MongoDatabaseTableWrapper(this.database, tableName);
-    }
-
-    @Override
-    public void close() {
-        this.client.close();
-    }
+  @Override
+  public void close() {
+    this.client.close();
+  }
 }

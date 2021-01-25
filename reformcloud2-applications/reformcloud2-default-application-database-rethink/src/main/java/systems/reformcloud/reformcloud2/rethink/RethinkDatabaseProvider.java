@@ -38,43 +38,43 @@ import java.util.Collection;
 
 public class RethinkDatabaseProvider implements DatabaseProvider, AutoCloseable {
 
-    private final Connection connection;
-    private final Db database;
+  private final Connection connection;
+  private final Db database;
 
-    public RethinkDatabaseProvider(RethinkConfig config) {
-        this.connection = RethinkDB.r.connection()
-            .hostname(config.getHost())
-            .port(config.getPort())
-            .user(config.getUserName(), config.getPassword())
-            .db(config.getDatabase())
-            .connect();
-        this.database = RethinkDB.r.db(config.getDatabase());
-    }
+  public RethinkDatabaseProvider(RethinkConfig config) {
+    this.connection = RethinkDB.r.connection()
+      .hostname(config.getHost())
+      .port(config.getPort())
+      .user(config.getUserName(), config.getPassword())
+      .db(config.getDatabase())
+      .connect();
+    this.database = RethinkDB.r.db(config.getDatabase());
+  }
 
-    @Override
-    public @NotNull DatabaseTableWrapper createTable(@NotNull String tableName) {
-        return new RethinkDatabaseTableWrapper(this.connection, this.database, tableName);
-    }
+  @Override
+  public @NotNull DatabaseTableWrapper createTable(@NotNull String tableName) {
+    return new RethinkDatabaseTableWrapper(this.connection, this.database, tableName);
+  }
 
-    @Override
-    public void deleteTable(@NotNull String tableName) {
-        this.database.tableDrop(tableName).run(this.connection);
-    }
+  @Override
+  public void deleteTable(@NotNull String tableName) {
+    this.database.tableDrop(tableName).run(this.connection);
+  }
 
-    @Override
-    public @NotNull @UnmodifiableView Collection<String> getTableNames() {
-        try (Result<String> result = this.database.tableList().run(this.connection, String.class)) {
-            return result.toList();
-        }
+  @Override
+  public @NotNull @UnmodifiableView Collection<String> getTableNames() {
+    try (Result<String> result = this.database.tableList().run(this.connection, String.class)) {
+      return result.toList();
     }
+  }
 
-    @Override
-    public @NotNull DatabaseTableWrapper getDatabase(@NotNull String tableName) {
-        return new RethinkDatabaseTableWrapper(this.connection, this.database, tableName);
-    }
+  @Override
+  public @NotNull DatabaseTableWrapper getDatabase(@NotNull String tableName) {
+    return new RethinkDatabaseTableWrapper(this.connection, this.database, tableName);
+  }
 
-    @Override
-    public void close() {
-        this.connection.close();
-    }
+  @Override
+  public void close() {
+    this.connection.close();
+  }
 }

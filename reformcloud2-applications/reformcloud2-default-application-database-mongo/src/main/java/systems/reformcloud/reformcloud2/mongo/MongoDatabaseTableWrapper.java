@@ -40,80 +40,80 @@ import java.util.function.Consumer;
 
 public class MongoDatabaseTableWrapper implements DatabaseTableWrapper {
 
-    private final MongoCollection<Document> collection;
+  private final MongoCollection<Document> collection;
 
-    public MongoDatabaseTableWrapper(MongoDatabase database, String name) {
-        this.collection = database.getCollection(name);
+  public MongoDatabaseTableWrapper(MongoDatabase database, String name) {
+    this.collection = database.getCollection(name);
+  }
+
+  @Override
+  public void insert(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration data) {
+    this.update(key, id, data);
+  }
+
+  @Override
+  public void update(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration newData) {
+    Optional<JsonConfiguration> configuration = this.get(key, id);
+    newData.add("_key", key).add("_identifier", id);
+    if (configuration.isPresent()) {
+      this.collection.updateOne(Filters.eq("_key", key), new JsonConfiguration().getGson().fromJson(newData.toPrettyString(), Document.class));
+    } else {
+      this.collection.insertOne(new JsonConfiguration().getGson().fromJson(newData.toPrettyString(), Document.class));
+    }
+  }
+
+  @Override
+  public void remove(@NotNull String key, @NotNull String id) {
+    if (this.collection.deleteOne(Filters.eq("_key", key)).getDeletedCount() > 0) {
+      return;
     }
 
-    @Override
-    public void insert(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration data) {
-        this.update(key, id, data);
-    }
+    this.collection.deleteOne(Filters.eq("_identifier", id));
+  }
 
-    @Override
-    public void update(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration newData) {
-        Optional<JsonConfiguration> configuration = this.get(key, id);
-        newData.add("_key", key).add("_identifier", id);
-        if (configuration.isPresent()) {
-            this.collection.updateOne(Filters.eq("_key", key), new JsonConfiguration().getGson().fromJson(newData.toPrettyString(), Document.class));
-        } else {
-            this.collection.insertOne(new JsonConfiguration().getGson().fromJson(newData.toPrettyString(), Document.class));
-        }
-    }
+  @Override
+  public @NotNull Optional<JsonConfiguration> get(@NotNull String key, @NotNull String id) {
+    Optional<JsonConfiguration> configuration = this.find("_key", key);
+    return configuration.isPresent() ? configuration : this.find("_identifier", id);
+  }
 
-    @Override
-    public void remove(@NotNull String key, @NotNull String id) {
-        if (this.collection.deleteOne(Filters.eq("_key", key)).getDeletedCount() > 0) {
-            return;
-        }
+  @Override
+  public @NotNull @UnmodifiableView Collection<String> getEntryNames() {
+    Collection<String> collection = new ArrayList<>();
+    this.collection.find().forEach((Consumer<Document>) e -> collection.add(e.getString("_key")));
+    return collection;
+  }
 
-        this.collection.deleteOne(Filters.eq("_identifier", id));
-    }
+  @Override
+  public long count() {
+    return this.collection.countDocuments();
+  }
 
-    @Override
-    public @NotNull Optional<JsonConfiguration> get(@NotNull String key, @NotNull String id) {
-        Optional<JsonConfiguration> configuration = this.find("_key", key);
-        return configuration.isPresent() ? configuration : this.find("_identifier", id);
-    }
+  @Override
+  public void clear() {
+    this.collection.drop();
+  }
 
-    @Override
-    public @NotNull @UnmodifiableView Collection<String> getEntryNames() {
-        Collection<String> collection = new ArrayList<>();
-        this.collection.find().forEach((Consumer<Document>) e -> collection.add(e.getString("_key")));
-        return collection;
-    }
+  @Override
+  public @NotNull @UnmodifiableView Collection<JsonConfiguration> getAll() {
+    Collection<JsonConfiguration> collection = new ArrayList<>();
+    this.collection.find().forEach((Consumer<Document>) e -> collection.add(new JsonConfiguration(e.toJson())));
+    return collection;
+  }
 
-    @Override
-    public long count() {
-        return this.collection.countDocuments();
-    }
+  @Override
+  public boolean has(@NotNull String key) {
+    return this.find("_key", key).isPresent();
+  }
 
-    @Override
-    public void clear() {
-        this.collection.drop();
+  private Optional<JsonConfiguration> find(String keyName, String expected) {
+    Document document = this.collection.find(Filters.eq(keyName, expected)).first();
+    if (document == null) {
+      return Optional.empty();
+    } else {
+      JsonConfiguration configuration = new JsonConfiguration(document.toJson());
+      configuration.remove("_key").remove("_identifier");
+      return Optional.of(configuration);
     }
-
-    @Override
-    public @NotNull @UnmodifiableView Collection<JsonConfiguration> getAll() {
-        Collection<JsonConfiguration> collection = new ArrayList<>();
-        this.collection.find().forEach((Consumer<Document>) e -> collection.add(new JsonConfiguration(e.toJson())));
-        return collection;
-    }
-
-    @Override
-    public boolean has(@NotNull String key) {
-        return this.find("_key", key).isPresent();
-    }
-
-    private Optional<JsonConfiguration> find(String keyName, String expected) {
-        Document document = this.collection.find(Filters.eq(keyName, expected)).first();
-        if (document == null) {
-            return Optional.empty();
-        } else {
-            JsonConfiguration configuration = new JsonConfiguration(document.toJson());
-            configuration.remove("_key").remove("_identifier");
-            return Optional.of(configuration);
-        }
-    }
+  }
 }

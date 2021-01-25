@@ -31,35 +31,33 @@ import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import systems.refomcloud.reformcloud2.embedded.plugin.sponge.event.PlayerListenerHandler;
-import systems.reformcloud.reformcloud2.shared.language.LanguageLoader;
 
 @Plugin(
-    id = "reformcloud_2_api_executor",
-    name = "ReformCloud2SpongeExecutor",
-    version = "2",
-    description = "The reformcloud executor api",
-    authors = {
-        "derklaro",
-        "ReformCloud-Team"
-    },
-    url = "https://reformcloud.systems"
+  id = "reformcloud_2_api_executor",
+  name = "ReformCloud2SpongeExecutor",
+  version = "2",
+  description = "The reformcloud executor api",
+  authors = {
+    "derklaro",
+    "ReformCloud-Team"
+  },
+  url = "https://reformcloud.systems"
 )
 public class SpongeLauncher {
 
-    @Listener
-    public void handle(final GameLoadCompleteEvent event) {
-        LanguageLoader.doLoad();
-        Sponge.getChannelRegistrar().createChannel(this, "BungeeCord");
-    }
+  @Listener
+  public void handle(final GameLoadCompleteEvent event) {
+    Sponge.getChannelRegistrar().createChannel(this, "BungeeCord");
+  }
 
-    @Listener
-    public void handle(final GameStartingServerEvent event) {
-        Sponge.getEventManager().registerListeners(this, new PlayerListenerHandler());
-        new SpongeExecutor(this);
-    }
+  @Listener
+  public void handle(final GameStartingServerEvent event) {
+    Sponge.getEventManager().registerListeners(this, new PlayerListenerHandler());
+    new SpongeExecutor(this);
+  }
 
-    @Listener
-    public void handle(final GameStoppingServerEvent event) {
-        SpongeExecutor.getInstance().getExecutorService().shutdownNow();
-    }
+  @Listener
+  public void handle(final GameStoppingServerEvent event) {
+    SpongeExecutor.getInstance().getExecutorService().shutdownNow();
+  }
 }

@@ -31,16 +31,16 @@ import systems.reformcloud.reforncloud2.notifications.bungeecord.listener.Proces
 
 public final class BungeecordPlugin extends Plugin {
 
-    private ProcessListener listener;
+  private ProcessListener listener;
 
-    @Override
-    public void onEnable() {
-        this.listener = new ProcessListener();
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(this.listener);
-    }
+  @Override
+  public void onEnable() {
+    this.listener = new ProcessListener();
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(this.listener);
+  }
 
-    @Override
-    public void onDisable() {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).unregisterListener(this.listener);
-    }
+  @Override
+  public void onDisable() {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).unregisterListener(this.listener);
+  }
 }

@@ -24,8 +24,8 @@
  */
 package systems.reformcloud.reformcloud2.node.logger;
 
+import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
 import systems.reformcloud.reformcloud2.shared.StringUtil;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -38,40 +38,40 @@ import java.util.logging.Logger;
 
 public class LoggingOutputStream extends ByteArrayOutputStream {
 
-    private static final String LINE_SEPARATOR = System.lineSeparator();
-    private static final Collection<String> EXCLUDED_LINE_STARTS = new ArrayList<>(); // No need to be thread save
+  private static final String LINE_SEPARATOR = System.lineSeparator();
+  private static final Collection<String> EXCLUDED_LINE_STARTS = new ArrayList<>(); // No need to be thread save
 
-    static {
-        String excluded = System.getProperty("systems.reformcloud.logging-excluded-line-starts", "SLF4J:");
-        EXCLUDED_LINE_STARTS.addAll(Arrays.asList(excluded.split(";")));
+  static {
+    String excluded = System.getProperty("systems.reformcloud.logging-excluded-line-starts", "SLF4J:");
+    EXCLUDED_LINE_STARTS.addAll(Arrays.asList(excluded.split(";")));
+  }
+
+  private final Logger parent;
+  private final Level level;
+
+  public LoggingOutputStream(Logger parent, Level level) {
+    this.parent = parent;
+    this.level = level;
+  }
+
+  @Override
+  public void flush() throws IOException {
+    synchronized (this) {
+      super.flush();
+      String content = this.toString(StandardCharsets.UTF_8.name());
+      super.reset();
+
+      if (content.isEmpty()
+        || content.equals(LINE_SEPARATOR)
+        || MoreCollections.hasMatch(LoggingOutputStream.EXCLUDED_LINE_STARTS, content::startsWith)) {
+        return;
+      }
+
+      if (content.endsWith(LINE_SEPARATOR)) {
+        content = StringUtil.replaceLastEmpty(content, LINE_SEPARATOR);
+      }
+
+      this.parent.log(this.level, content);
     }
-
-    private final Logger parent;
-    private final Level level;
-
-    public LoggingOutputStream(Logger parent, Level level) {
-        this.parent = parent;
-        this.level = level;
-    }
-
-    @Override
-    public void flush() throws IOException {
-        synchronized (this) {
-            super.flush();
-            String content = this.toString(StandardCharsets.UTF_8.name());
-            super.reset();
-
-            if (content.isEmpty()
-                || content.equals(LINE_SEPARATOR)
-                || Streams.hasMatch(LoggingOutputStream.EXCLUDED_LINE_STARTS, content::startsWith)) {
-                return;
-            }
-
-            if (content.endsWith(LINE_SEPARATOR)) {
-                content = StringUtil.replaceLastEmpty(content, LINE_SEPARATOR);
-            }
-
-            this.parent.log(this.level, content);
-        }
-    }
+  }
 }

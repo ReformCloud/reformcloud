@@ -49,231 +49,239 @@ import java.util.UUID;
 
 public class EmptyProxiedPlayer implements ProxiedPlayer {
 
-    private final PendingConnection pendingConnection;
+  private final PendingConnection pendingConnection;
 
-    public EmptyProxiedPlayer(@NotNull PendingConnection pendingConnection) {
-        this.pendingConnection = pendingConnection;
-    }
+  public EmptyProxiedPlayer(@NotNull PendingConnection pendingConnection) {
+    this.pendingConnection = pendingConnection;
+  }
 
-    @Override
-    public String getDisplayName() {
-        return null;
-    }
+  @Override
+  public String getDisplayName() {
+    return null;
+  }
 
-    @Override
-    public void setDisplayName(String s) {
-    }
+  @Override
+  public void setDisplayName(String s) {
+  }
 
-    @Override
-    public void sendMessage(ChatMessageType chatMessageType, BaseComponent... baseComponents) {
-    }
+  @Override
+  public void sendMessage(ChatMessageType chatMessageType, BaseComponent... baseComponents) {
+  }
 
-    @Override
-    public void sendMessage(ChatMessageType chatMessageType, BaseComponent baseComponent) {
-    }
+  @Override
+  public void sendMessage(ChatMessageType chatMessageType, BaseComponent baseComponent) {
+  }
 
-    @Override
-    public void connect(ServerInfo serverInfo) {
-    }
+  @Override
+  public void sendMessage(UUID uuid, BaseComponent... baseComponents) {
+  }
 
-    @Override
-    public void connect(ServerInfo serverInfo, ServerConnectEvent.Reason reason) {
-    }
+  @Override
+  public void sendMessage(UUID uuid, BaseComponent baseComponent) {
+  }
 
-    @Override
-    public void connect(ServerInfo serverInfo, Callback<Boolean> callback) {
-    }
+  @Override
+  public void connect(ServerInfo serverInfo) {
+  }
 
-    @Override
-    public void connect(ServerInfo serverInfo, Callback<Boolean> callback, ServerConnectEvent.Reason reason) {
-    }
+  @Override
+  public void connect(ServerInfo serverInfo, ServerConnectEvent.Reason reason) {
+  }
 
-    @Override
-    public void connect(ServerConnectRequest serverConnectRequest) {
-    }
+  @Override
+  public void connect(ServerInfo serverInfo, Callback<Boolean> callback) {
+  }
 
-    @Override
-    public Server getServer() {
-        return null;
-    }
+  @Override
+  public void connect(ServerInfo serverInfo, Callback<Boolean> callback, ServerConnectEvent.Reason reason) {
+  }
 
-    @Override
-    public int getPing() {
-        return 0;
-    }
+  @Override
+  public void connect(ServerConnectRequest serverConnectRequest) {
+  }
 
-    @Override
-    public void sendData(String s, byte[] bytes) {
-    }
+  @Override
+  public Server getServer() {
+    return null;
+  }
 
-    @Override
-    public PendingConnection getPendingConnection() {
-        return this.pendingConnection;
-    }
+  @Override
+  public int getPing() {
+    return 0;
+  }
 
-    @Override
-    public void chat(String s) {
-    }
+  @Override
+  public void sendData(String s, byte[] bytes) {
+  }
 
-    @Override
-    public ServerInfo getReconnectServer() {
-        return null;
-    }
+  @Override
+  public PendingConnection getPendingConnection() {
+    return this.pendingConnection;
+  }
 
-    @Override
-    public void setReconnectServer(ServerInfo serverInfo) {
-    }
+  @Override
+  public void chat(String s) {
+  }
 
-    @Override
-    @Deprecated
-    public String getUUID() {
-        return this.pendingConnection.getUUID();
-    }
+  @Override
+  public ServerInfo getReconnectServer() {
+    return null;
+  }
 
-    @Override
-    public UUID getUniqueId() {
-        return this.pendingConnection.getUniqueId();
-    }
+  @Override
+  public void setReconnectServer(ServerInfo serverInfo) {
+  }
 
-    @Override
-    public Locale getLocale() {
-        return null;
-    }
+  @Override
+  @Deprecated
+  public String getUUID() {
+    return this.pendingConnection.getUUID();
+  }
 
-    @Override
-    public byte getViewDistance() {
-        return 0;
-    }
+  @Override
+  public UUID getUniqueId() {
+    return this.pendingConnection.getUniqueId();
+  }
 
-    @Override
-    public ChatMode getChatMode() {
-        return null;
-    }
+  @Override
+  public Locale getLocale() {
+    return null;
+  }
 
-    @Override
-    public boolean hasChatColors() {
-        return false;
-    }
+  @Override
+  public byte getViewDistance() {
+    return 0;
+  }
 
-    @Override
-    public SkinConfiguration getSkinParts() {
-        return null;
-    }
+  @Override
+  public ChatMode getChatMode() {
+    return null;
+  }
 
-    @Override
-    public MainHand getMainHand() {
-        return null;
-    }
+  @Override
+  public boolean hasChatColors() {
+    return false;
+  }
 
-    @Override
-    public void setTabHeader(BaseComponent baseComponent, BaseComponent baseComponent1) {
-    }
+  @Override
+  public SkinConfiguration getSkinParts() {
+    return null;
+  }
 
-    @Override
-    public void setTabHeader(BaseComponent[] baseComponents, BaseComponent[] baseComponents1) {
-    }
+  @Override
+  public MainHand getMainHand() {
+    return null;
+  }
 
-    @Override
-    public void resetTabHeader() {
-    }
+  @Override
+  public void setTabHeader(BaseComponent baseComponent, BaseComponent baseComponent1) {
+  }
 
-    @Override
-    public void sendTitle(Title title) {
-    }
+  @Override
+  public void setTabHeader(BaseComponent[] baseComponents, BaseComponent[] baseComponents1) {
+  }
 
-    @Override
-    public boolean isForgeUser() {
-        return false;
-    }
+  @Override
+  public void resetTabHeader() {
+  }
 
-    @Override
-    public Map<String, String> getModList() {
-        return null;
-    }
+  @Override
+  public void sendTitle(Title title) {
+  }
 
-    @Override
-    public Scoreboard getScoreboard() {
-        return null;
-    }
+  @Override
+  public boolean isForgeUser() {
+    return false;
+  }
 
-    @Override
-    public String getName() {
-        return this.pendingConnection.getName();
-    }
+  @Override
+  public Map<String, String> getModList() {
+    return null;
+  }
 
-    @Override
-    public void sendMessage(String s) {
-    }
+  @Override
+  public Scoreboard getScoreboard() {
+    return null;
+  }
 
-    @Override
-    public void sendMessages(String... strings) {
-    }
+  @Override
+  public String getName() {
+    return this.pendingConnection.getName();
+  }
 
-    @Override
-    public void sendMessage(BaseComponent... baseComponents) {
-    }
+  @Override
+  public void sendMessage(String s) {
+  }
 
-    @Override
-    public void sendMessage(BaseComponent baseComponent) {
-    }
+  @Override
+  public void sendMessages(String... strings) {
+  }
 
-    @Override
-    public Collection<String> getGroups() {
-        return null;
-    }
+  @Override
+  public void sendMessage(BaseComponent... baseComponents) {
+  }
 
-    @Override
-    public void addGroups(String... strings) {
-    }
+  @Override
+  public void sendMessage(BaseComponent baseComponent) {
+  }
 
-    @Override
-    public void removeGroups(String... strings) {
-    }
+  @Override
+  public Collection<String> getGroups() {
+    return null;
+  }
 
-    @Override
-    public boolean hasPermission(String s) {
-        return ProxyServer.getInstance().getPluginManager().callEvent(new PermissionCheckEvent(this, s, false)).hasPermission();
-    }
+  @Override
+  public void addGroups(String... strings) {
+  }
 
-    @Override
-    public void setPermission(String s, boolean b) {
-    }
+  @Override
+  public void removeGroups(String... strings) {
+  }
 
-    @Override
-    public Collection<String> getPermissions() {
-        return null;
-    }
+  @Override
+  public boolean hasPermission(String s) {
+    return ProxyServer.getInstance().getPluginManager().callEvent(new PermissionCheckEvent(this, s, false)).hasPermission();
+  }
 
-    @Override
-    @Deprecated
-    public InetSocketAddress getAddress() {
-        return this.pendingConnection.getAddress();
-    }
+  @Override
+  public void setPermission(String s, boolean b) {
+  }
 
-    @Override
-    public SocketAddress getSocketAddress() {
-        return this.pendingConnection.getSocketAddress();
-    }
+  @Override
+  public Collection<String> getPermissions() {
+    return null;
+  }
 
-    @Override
-    public void disconnect(String s) {
-    }
+  @Override
+  @Deprecated
+  public InetSocketAddress getAddress() {
+    return this.pendingConnection.getAddress();
+  }
 
-    @Override
-    public void disconnect(BaseComponent... baseComponents) {
-    }
+  @Override
+  public SocketAddress getSocketAddress() {
+    return this.pendingConnection.getSocketAddress();
+  }
 
-    @Override
-    public void disconnect(BaseComponent baseComponent) {
-    }
+  @Override
+  public void disconnect(String s) {
+  }
 
-    @Override
-    public boolean isConnected() {
-        return false;
-    }
+  @Override
+  public void disconnect(BaseComponent... baseComponents) {
+  }
 
-    @Override
-    public Unsafe unsafe() {
-        return null;
-    }
+  @Override
+  public void disconnect(BaseComponent baseComponent) {
+  }
+
+  @Override
+  public boolean isConnected() {
+    return false;
+  }
+
+  @Override
+  public Unsafe unsafe() {
+    return null;
+  }
 }

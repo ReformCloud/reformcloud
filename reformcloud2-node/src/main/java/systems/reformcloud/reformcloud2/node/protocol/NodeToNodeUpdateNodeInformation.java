@@ -27,41 +27,42 @@ package systems.reformcloud.reformcloud2.node.protocol;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
+import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
+import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 
 public class NodeToNodeUpdateNodeInformation extends ProtocolPacket {
 
-    private DefaultNodeInformation nodeInformation;
+  private NodeInformation nodeInformation;
 
-    public NodeToNodeUpdateNodeInformation() {
-    }
+  public NodeToNodeUpdateNodeInformation() {
+  }
 
-    public NodeToNodeUpdateNodeInformation(DefaultNodeInformation nodeInformation) {
-        this.nodeInformation = nodeInformation;
-    }
+  public NodeToNodeUpdateNodeInformation(NodeInformation nodeInformation) {
+    this.nodeInformation = nodeInformation;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 9;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 9;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleNodeUpdate(this.nodeInformation);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleNodeUpdate(this.nodeInformation);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.nodeInformation);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.nodeInformation);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.nodeInformation = buffer.readObject(DefaultNodeInformation.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.nodeInformation = buffer.readObject(DefaultNodeInformation.class);
+  }
 }

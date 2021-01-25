@@ -34,19 +34,19 @@ import java.util.UUID;
 
 public class DefaultPermissionFunction implements PermissionFunction {
 
-    private final UUID uuid;
+  private final UUID uuid;
 
-    DefaultPermissionFunction(Player player) {
-        this.uuid = player.getUniqueId();
+  DefaultPermissionFunction(Player player) {
+    this.uuid = player.getUniqueId();
+  }
+
+  @Override
+  public Tristate getPermissionValue(String s) {
+    if (s == null) {
+      return Tristate.FALSE;
     }
 
-    @Override
-    public Tristate getPermissionValue(String s) {
-        if (s == null) {
-            return Tristate.FALSE;
-        }
-
-        final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(this.uuid);
-        return permissionUser.hasPermission(s) ? Tristate.TRUE : Tristate.FALSE;
-    }
+    final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(this.uuid);
+    return permissionUser.hasPermission(s) ? Tristate.TRUE : Tristate.FALSE;
+  }
 }

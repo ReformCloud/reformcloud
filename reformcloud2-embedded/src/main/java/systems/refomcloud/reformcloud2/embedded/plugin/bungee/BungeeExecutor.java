@@ -42,48 +42,48 @@ import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
 public final class BungeeExecutor extends Embedded {
 
-    private static BungeeExecutor instance;
-    private final Plugin plugin;
+  private static BungeeExecutor instance;
+  private final Plugin plugin;
 
-    BungeeExecutor(Plugin plugin) {
-        super.type = ExecutorType.API;
+  BungeeExecutor(Plugin plugin) {
+    super.type = ExecutorType.API;
 
-        instance = this;
-        this.plugin = plugin;
+    instance = this;
+    this.plugin = plugin;
 
-        PlayerAPIExecutor.setInstance(new BungeePlayerAPIExecutor());
-        ProxyServer.getInstance().setReconnectHandler(new ReformCloudReconnectHandler());
+    PlayerAPIExecutor.setInstance(new BungeePlayerAPIExecutor());
+    ProxyServer.getInstance().setReconnectHandler(new ReformCloudReconnectHandler());
 
-        super.getServiceRegistry().setProvider(ProxyServerController.class, new BungeeProxyServerController(), true);
-        super.getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ProcessEventHandler());
+    super.getServiceRegistry().setProvider(ProxyServerController.class, new BungeeProxyServerController(), true);
+    super.getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ProcessEventHandler());
 
-        for (ProcessInformation process : super.getProcessProvider().getProcesses()) {
-            this.getServiceRegistry().getProviderUnchecked(ProxyServerController.class).registerProcess(process);
-        }
-
-        ProxyServer.getInstance().getPluginManager().registerListener(this.plugin, new PlayerListenerHandler());
-        this.fixInvalidPlayers();
+    for (ProcessInformation process : super.getProcessProvider().getProcesses()) {
+      this.getServiceRegistry().getProviderUnchecked(ProxyServerController.class).registerProcess(process);
     }
 
-    @NotNull
-    public static BungeeExecutor getInstance() {
-        return instance;
-    }
+    ProxyServer.getInstance().getPluginManager().registerListener(this.plugin, new PlayerListenerHandler());
+    this.fixInvalidPlayers();
+  }
 
-    private void fixInvalidPlayers() {
-        SharedInvalidPlayerFixer.start(
-            uuid -> ProxyServer.getInstance().getPlayer(uuid) != null,
-            () -> ProxyServer.getInstance().getOnlineCount()
-        );
-    }
+  @NotNull
+  public static BungeeExecutor getInstance() {
+    return instance;
+  }
 
-    @Override
-    protected int getMaxPlayersOfEnvironment() {
-        return ProxyServer.getInstance().getConfig().getPlayerLimit();
-    }
+  private void fixInvalidPlayers() {
+    SharedInvalidPlayerFixer.start(
+      uuid -> ProxyServer.getInstance().getPlayer(uuid) != null,
+      () -> ProxyServer.getInstance().getOnlineCount()
+    );
+  }
 
-    @NotNull
-    public Plugin getPlugin() {
-        return this.plugin;
-    }
+  @Override
+  protected int getMaxPlayersOfEnvironment() {
+    return ProxyServer.getInstance().getConfig().getPlayerLimit();
+  }
+
+  @NotNull
+  public Plugin getPlugin() {
+    return this.plugin;
+  }
 }

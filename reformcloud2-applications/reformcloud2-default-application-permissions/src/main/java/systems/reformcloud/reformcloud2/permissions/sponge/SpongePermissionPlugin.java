@@ -37,24 +37,24 @@ import systems.reformcloud.reformcloud2.permissions.sponge.service.SpongePermiss
 import systems.reformcloud.reformcloud2.permissions.util.PermissionPluginUtil;
 
 @Plugin(
-    id = "reformcloud_2_perms",
-    name = "SpongePermissionPlugin",
-    version = "2",
-    description = "The reformcloud permission plugin",
-    authors = {"derklaro"},
-    url = "https://reformcloud.systems",
-    dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
+  id = "reformcloud_2_perms",
+  name = "SpongePermissionPlugin",
+  version = "2",
+  description = "The reformcloud permission plugin",
+  authors = {"derklaro"},
+  url = "https://reformcloud.systems",
+  dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
 )
 public class SpongePermissionPlugin {
 
-    @Inject
-    private ServiceManager serviceManager;
+  @Inject
+  private ServiceManager serviceManager;
 
-    @Listener
-    public void handle(final GameStartedServerEvent event) {
-        PermissionPluginUtil.awaitConnection(() -> {
-            this.serviceManager.setProvider(this, PermissionService.class, new SpongePermissionService());
-            Sponge.getEventManager().registerListeners(this, new SpongePermissionListener());
-        });
-    }
+  @Listener
+  public void handle(final GameStartedServerEvent event) {
+    PermissionPluginUtil.awaitConnection(() -> {
+      this.serviceManager.setProvider(this, PermissionService.class, new SpongePermissionService());
+      Sponge.getEventManager().registerListeners(this, new SpongePermissionListener());
+    });
+  }
 }

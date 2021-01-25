@@ -33,93 +33,68 @@ import systems.reformcloud.reformcloud2.node.event.worker.WorkerTickEvent;
 
 public final class CloudTickWorker {
 
-    static final int TPS = 20;
-    static final long SEC_IN_NANO = 1_000_000_000;
-    private static final long TICK_TIME = SEC_IN_NANO / TPS;
-    private static final long MAX_CATCHUP_BUFFER = TICK_TIME * TPS * 60L;
-    protected static long currentTick = 0;
-    private final TickAverageCounter tps1 = new TickAverageCounter(60);
-    private final TickAverageCounter tps5 = new TickAverageCounter(60 * 5);
-    private final TickAverageCounter tps15 = new TickAverageCounter(60 * 15);
-    private final TickedTaskScheduler taskScheduler;
-    private final Thread mainThread;
+  static final int TPS = 20;
+  static final long SEC_IN_NANO = 1_000_000_000;
+  private static final long TICK_TIME = SEC_IN_NANO / TPS;
+  private static final long MAX_CATCHUP_BUFFER = TICK_TIME * TPS * 60L;
+  protected static long currentTick = 0;
+  private final TickedTaskScheduler taskScheduler;
+  private final Thread mainThread;
 
-    public CloudTickWorker(@NotNull TickedTaskScheduler taskScheduler) {
-        this.taskScheduler = taskScheduler;
-        this.mainThread = Thread.currentThread();
-    }
+  public CloudTickWorker(@NotNull TickedTaskScheduler taskScheduler) {
+    this.taskScheduler = taskScheduler;
+    this.mainThread = Thread.currentThread();
+  }
 
-    public void startTick() {
-        long start = System.nanoTime();
-        long lastTick = start - TICK_TIME;
-        long catchupTime = 0;
-        long curTime;
-        long wait;
-        long tickSection = start;
+  public void startTick() {
+    long start = System.nanoTime();
+    long lastTick = start - TICK_TIME;
+    long catchupTime = 0;
+    long curTime;
+    long wait;
 
-        while (NodeExecutor.isRunning()) {
-            try {
-                curTime = System.nanoTime();
-                wait = TICK_TIME - (curTime - lastTick);
+    while (NodeExecutor.isRunning()) {
+      try {
+        curTime = System.nanoTime();
+        wait = TICK_TIME - (curTime - lastTick);
 
-                if (wait > 0) {
-                    if (catchupTime < 2E6) {
-                        wait += Math.abs(catchupTime);
-                    }
+        if (wait > 0) {
+          if (catchupTime < 2E6) {
+            wait += Math.abs(catchupTime);
+          }
 
-                    if (wait < catchupTime) {
-                        catchupTime -= wait;
-                        wait = 0;
-                    } else if (catchupTime > 2E6) {
-                        wait -= catchupTime;
-                        catchupTime -= catchupTime;
-                    }
-                }
-
-                if (wait > 0) {
-                    Thread.sleep(wait / 1_000_000);
-                    wait = TICK_TIME - (curTime - lastTick);
-                }
-
-                catchupTime = Math.min(MAX_CATCHUP_BUFFER, catchupTime - wait);
-                if (++CloudTickWorker.currentTick % TPS == 0) {
-                    long diff = curTime - tickSection;
-                    double currentTps = 1E9 / diff * TPS;
-
-                    this.tps1.add(currentTps, diff);
-                    this.tps5.add(currentTps, diff);
-                    this.tps15.add(currentTps, diff);
-
-                    tickSection = curTime;
-
-                    this.taskScheduler.fullHeartBeat();
-                    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(WorkerFullTickEvent.INSTANCE);
-                }
-
-                lastTick = curTime;
-
-                this.taskScheduler.heartBeat();
-                ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(WorkerTickEvent.INSTANCE);
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
+          if (wait < catchupTime) {
+            catchupTime -= wait;
+            wait = 0;
+          } else if (catchupTime > 2E6) {
+            wait -= catchupTime;
+            catchupTime -= catchupTime;
+          }
         }
-    }
 
-    @NotNull
-    public Thread getMainThread() {
-        return this.mainThread;
-    }
+        if (wait > 0) {
+          Thread.sleep(wait / 1_000_000);
+          wait = TICK_TIME - (curTime - lastTick);
+        }
 
-    public TickAverageCounter getTps1() {
-        return this.tps1;
-    }
+        catchupTime = Math.min(MAX_CATCHUP_BUFFER, catchupTime - wait);
+        if (++CloudTickWorker.currentTick % TPS == 0) {
+          this.taskScheduler.fullHeartBeat();
+          ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(WorkerFullTickEvent.INSTANCE);
+        }
 
-    public TickAverageCounter getTps5() {
-        return this.tps5;
-    }
+        lastTick = curTime;
 
-    public TickAverageCounter getTps15() {
-        return this.tps15;
+        this.taskScheduler.heartBeat();
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(WorkerTickEvent.INSTANCE);
+      } catch (Throwable throwable) {
+        throwable.printStackTrace();
+      }
     }
+  }
+
+  @NotNull
+  public Thread getMainThread() {
+    return this.mainThread;
+  }
 }

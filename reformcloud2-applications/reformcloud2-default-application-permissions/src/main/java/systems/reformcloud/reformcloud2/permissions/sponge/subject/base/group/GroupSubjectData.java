@@ -40,30 +40,30 @@ import java.util.stream.Collectors;
 
 public class GroupSubjectData extends AbstractSpongeSubjectData {
 
-    private final String group;
+  private final String group;
 
-    public GroupSubjectData(@NotNull String group) {
-        this.group = group;
-    }
+  public GroupSubjectData(@NotNull String group) {
+    this.group = group;
+  }
 
-    @Override
-    @NotNull
-    public Map<Set<Context>, Map<String, Boolean>> getAllPermissions() {
-        return Collections.singletonMap(SubjectData.GLOBAL_CONTEXT, this.getPermissions());
-    }
+  @Override
+  @NotNull
+  public Map<Set<Context>, Map<String, Boolean>> getAllPermissions() {
+    return Collections.singletonMap(SubjectData.GLOBAL_CONTEXT, this.getPermissions());
+  }
 
-    @Override
-    @NotNull
-    public Map<String, Boolean> getPermissions(@Nullable Set<Context> contexts) {
-        return this.getPermissions();
-    }
+  @Override
+  @NotNull
+  public Map<String, Boolean> getPermissions(@Nullable Set<Context> contexts) {
+    return this.getPermissions();
+  }
 
-    @NotNull
-    private Map<String, Boolean> getPermissions() {
-        return PermissionManagement.getInstance().getPermissionGroup(this.group)
-            .map(PermissionPluginUtil::collectPermissionsOfGroup)
-            .orElseGet(Collections::emptyList)
-            .stream()
-            .collect(Collectors.toMap(PermissionNode::getActualPermission, PermissionNode::isSet));
-    }
+  @NotNull
+  private Map<String, Boolean> getPermissions() {
+    return PermissionManagement.getInstance().getPermissionGroup(this.group)
+      .map(PermissionPluginUtil::collectPermissionsOfGroup)
+      .orElseGet(Collections::emptyList)
+      .stream()
+      .collect(Collectors.toMap(PermissionNode::getActualPermission, PermissionNode::isSet));
+  }
 }

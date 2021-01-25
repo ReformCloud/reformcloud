@@ -32,11 +32,11 @@ import java.util.UUID;
 
 public interface ProcessScreenController {
 
-    @NotNull ProcessScreen createScreen(@NotNull DefaultNodeLocalProcessWrapper wrapper);
+  @NotNull ProcessScreen createScreen(@NotNull DefaultNodeLocalProcessWrapper wrapper);
 
-    @NotNull Optional<ProcessScreen> getScreen(@NotNull UUID processUniqueId);
+  @NotNull Optional<ProcessScreen> getScreen(@NotNull UUID processUniqueId);
 
-    void unregisterScreen(@NotNull UUID processUniqueId);
+  void unregisterScreen(@NotNull UUID processUniqueId);
 
-    void tick();
+  void tick();
 }

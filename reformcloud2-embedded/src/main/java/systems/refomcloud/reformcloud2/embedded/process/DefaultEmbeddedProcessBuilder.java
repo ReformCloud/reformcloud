@@ -36,21 +36,21 @@ import systems.reformcloud.reformcloud2.shared.process.AbstractProcessBuilder;
 
 public class DefaultEmbeddedProcessBuilder extends AbstractProcessBuilder {
 
-    @NotNull
-    @Override
-    public Task<ProcessWrapper> prepare() {
-        Conditions.isTrue(super.processGroupName != null || super.processGroup != null, "No group name or group given to prepare from");
-        return Task.supply(() -> {
-            Packet packet = Embedded.getInstance().sendSyncQuery(new ApiToNodePrepareProcess(
-                super.processGroupName, super.node, super.displayName, super.messageOfTheDay, super.targetProcessFactory,
-                super.processGroup, super.template, super.inclusions, super.extra, super.initialState,
-                super.processUniqueId, super.memory, super.id, super.maxPlayers
-            )).orElse(null);
-            if (packet instanceof ApiToNodeGetProcessInformationResult) {
-                return new DefaultEmbeddedProcessWrapper(((ApiToNodeGetProcessInformationResult) packet).getProcessInformation());
-            } else {
-                return null;
-            }
-        });
-    }
+  @NotNull
+  @Override
+  public Task<ProcessWrapper> prepare() {
+    Conditions.isTrue(super.processGroupName != null || super.processGroup != null, "No group name or group given to prepare from");
+    return Task.supply(() -> {
+      Packet packet = Embedded.getInstance().sendSyncQuery(new ApiToNodePrepareProcess(
+        super.processGroupName, super.node, super.displayName, super.messageOfTheDay, super.targetProcessFactory,
+        super.processGroup, super.template, super.inclusions, super.extra, super.initialState,
+        super.processUniqueId, super.memory, super.id, super.maxPlayers
+      )).orElse(null);
+      if (packet instanceof ApiToNodeGetProcessInformationResult) {
+        return new DefaultEmbeddedProcessWrapper(((ApiToNodeGetProcessInformationResult) packet).getProcessInformation());
+      } else {
+        return null;
+      }
+    });
+  }
 }

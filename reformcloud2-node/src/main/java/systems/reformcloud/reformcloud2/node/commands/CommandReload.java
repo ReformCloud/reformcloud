@@ -31,8 +31,8 @@ import systems.reformcloud.reformcloud2.node.NodeExecutor;
 
 public final class CommandReload implements Command {
 
-    @Override
-    public void process(@NotNull CommandSender sender, @NotNull String[] strings, @NotNull String commandLine) {
-        NodeExecutor.getInstance().reload();
-    }
+  @Override
+  public void process(@NotNull CommandSender sender, @NotNull String[] strings, @NotNull String commandLine) {
+    NodeExecutor.getInstance().reload();
+  }
 }

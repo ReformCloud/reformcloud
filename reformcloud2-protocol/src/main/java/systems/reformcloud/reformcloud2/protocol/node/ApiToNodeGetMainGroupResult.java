@@ -30,7 +30,7 @@ import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
-import systems.reformcloud.reformcloud2.shared.groups.main.DefaultMainGroup;
+import systems.reformcloud.reformcloud2.shared.group.DefaultMainGroup;
 
 public class ApiToNodeGetMainGroupResult extends QueryResultPacket {
 

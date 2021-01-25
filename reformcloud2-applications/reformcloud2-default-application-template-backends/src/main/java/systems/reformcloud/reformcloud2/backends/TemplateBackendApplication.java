@@ -28,7 +28,7 @@ import systems.reformcloud.reformcloud2.backends.ftp.FTPTemplateBackend;
 import systems.reformcloud.reformcloud2.backends.sftp.SFTPTemplateBackend;
 import systems.reformcloud.reformcloud2.backends.url.URLTemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
+import systems.reformcloud.reformcloud2.executor.api.application.Application;
 import systems.reformcloud.reformcloud2.shared.dependency.DependencyFileLoader;
 
 public class TemplateBackendApplication extends Application {

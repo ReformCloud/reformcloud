@@ -37,28 +37,28 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class FactoryCollection extends DefaultSubjectCollection {
 
-    private final Map<String, Subject> cache = new ConcurrentHashMap<>();
+  private final Map<String, Subject> cache = new ConcurrentHashMap<>();
 
-    public FactoryCollection(PermissionService service) {
-        super(PermissionService.SUBJECTS_DEFAULT, service);
-    }
+  public FactoryCollection(PermissionService service) {
+    super(PermissionService.SUBJECTS_DEFAULT, service);
+  }
 
-    @NotNull
-    @Override
-    protected Subject load(String id) {
-        this.cache.putIfAbsent(id, new FactorySubject(id, this.service, this));
-        return this.cache.get(id);
-    }
+  @NotNull
+  @Override
+  protected Subject load(String id) {
+    this.cache.putIfAbsent(id, new FactorySubject(id, this.service, this));
+    return this.cache.get(id);
+  }
 
-    @Override
-    @NotNull
-    public CompletableFuture<Boolean> hasSubject(@NotNull String identifier) {
-        return CompletableFuture.completedFuture(this.cache.containsKey(identifier));
-    }
+  @Override
+  @NotNull
+  public CompletableFuture<Boolean> hasSubject(@NotNull String identifier) {
+    return CompletableFuture.completedFuture(this.cache.containsKey(identifier));
+  }
 
-    @Override
-    @NotNull
-    public Collection<Subject> getLoadedSubjects() {
-        return this.cache.values();
-    }
+  @Override
+  @NotNull
+  public Collection<Subject> getLoadedSubjects() {
+    return this.cache.values();
+  }
 }

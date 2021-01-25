@@ -34,22 +34,22 @@ import systems.reformcloud.reformcloud2.permissions.cloudburst.listeners.CloudBu
 import systems.reformcloud.reformcloud2.permissions.util.PermissionPluginUtil;
 
 @Plugin(
-    id = "reformcloud_2_perms",
-    name = "CloudBurstPermissionPlugin",
-    version = "2",
-    description = "The reformcloud permission plugin",
-    url = "https://reformcloud.systems",
-    authors = {"derklaro"},
-    dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
+  id = "reformcloud_2_perms",
+  name = "CloudBurstPermissionPlugin",
+  version = "2",
+  description = "The reformcloud permission plugin",
+  url = "https://reformcloud.systems",
+  authors = {"derklaro"},
+  dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
 )
 public class CloudBurstPermissionPlugin {
 
-    @Inject
-    public CloudBurstPermissionPlugin() {
-    }
+  @Inject
+  public CloudBurstPermissionPlugin() {
+  }
 
-    @Listener
-    public void handle(ServerStartEvent event) {
-        PermissionPluginUtil.awaitConnection(() -> Server.getInstance().getEventManager().registerListeners(this, new CloudBurstPermissionListener()));
-    }
+  @Listener
+  public void handle(ServerStartEvent event) {
+    PermissionPluginUtil.awaitConnection(() -> Server.getInstance().getEventManager().registerListeners(this, new CloudBurstPermissionListener()));
+  }
 }

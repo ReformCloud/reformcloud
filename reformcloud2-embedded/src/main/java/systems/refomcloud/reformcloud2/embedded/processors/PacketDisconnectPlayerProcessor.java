@@ -30,8 +30,8 @@ import systems.reformcloud.reformcloud2.protocol.shared.PacketDisconnectPlayer;
 
 public class PacketDisconnectPlayerProcessor extends PlayerApiToNodePacketProcessor<PacketDisconnectPlayer> {
 
-    @Override
-    public void process(@NotNull NetworkChannel channel, @NotNull PacketDisconnectPlayer packet) {
-        this.getPlayerExecutor().executeKickPlayer(packet.getPlayer(), packet.getReason());
-    }
+  @Override
+  public void process(@NotNull NetworkChannel channel, @NotNull PacketDisconnectPlayer packet) {
+    this.getPlayerExecutor().executeKickPlayer(packet.getPlayer(), packet.getReason());
+  }
 }

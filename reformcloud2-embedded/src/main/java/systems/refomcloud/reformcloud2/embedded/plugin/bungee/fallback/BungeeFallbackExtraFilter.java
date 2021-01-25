@@ -25,23 +25,24 @@
 package systems.refomcloud.reformcloud2.embedded.plugin.bungee.fallback;
 
 import systems.refomcloud.reformcloud2.embedded.Embedded;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Version;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.version.VersionType;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
 import java.util.function.Predicate;
 
 public final class BungeeFallbackExtraFilter implements Predicate<ProcessInformation> {
 
-    public static final BungeeFallbackExtraFilter INSTANCE = new BungeeFallbackExtraFilter();
+  public static final BungeeFallbackExtraFilter INSTANCE = new BungeeFallbackExtraFilter();
 
-    private BungeeFallbackExtraFilter() {
-    }
+  private BungeeFallbackExtraFilter() {
+  }
 
-    @Override
-    public boolean test(ProcessInformation processInformation) {
-        Version proxy = Embedded.getInstance().getCurrentProcessInformation().getProcessDetail().getTemplate().getVersion();
-        Version server = processInformation.getProcessDetail().getTemplate().getVersion();
+  @Override
+  public boolean test(ProcessInformation processInformation) {
+    VersionType server = processInformation.getPrimaryTemplate().getVersion().getVersionType();
+    VersionType proxy = Embedded.getInstance().getCurrentProcessInformation().getPrimaryTemplate().getVersion().getVersionType();
 
-        return (proxy.getId() == 2 && server.getId() == 1) || (proxy.getId() == 4 && server.getId() == 3);
-    }
+    return (proxy == VersionType.JAVA_PROXY && server == VersionType.JAVA_SERVER)
+      || (proxy == VersionType.POCKET_PROXY && server == VersionType.POCKET_SERVER);
+  }
 }

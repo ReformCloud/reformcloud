@@ -45,109 +45,109 @@ import java.util.Optional;
 
 public class RethinkDatabaseTableWrapper implements DatabaseTableWrapper {
 
-    private static final TypeReference<Map<String, String>> STRING_MAP_TYPE = Types.mapOf(String.class, String.class);
-    private final Connection connection;
-    private final Table table;
+  private static final TypeReference<Map<String, String>> STRING_MAP_TYPE = Types.mapOf(String.class, String.class);
+  private final Connection connection;
+  private final Table table;
 
-    public RethinkDatabaseTableWrapper(Connection connection, Db database, String targetTable) {
-        this.connection = connection;
-        this.table = database.table(targetTable);
+  public RethinkDatabaseTableWrapper(Connection connection, Db database, String targetTable) {
+    this.connection = connection;
+    this.table = database.table(targetTable);
+  }
+
+  @Override
+  public void insert(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration data) {
+    Optional<JsonConfiguration> jsonConfiguration = this.find(key, id);
+    if (jsonConfiguration.isPresent()) {
+      this.table.update(this.asMap(key, id, data)).runNoReply(this.connection);
+    } else {
+      this.table.insert(this.asMap(key, id, data)).runNoReply(this.connection);
     }
+  }
 
-    @Override
-    public void insert(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration data) {
-        Optional<JsonConfiguration> jsonConfiguration = this.find(key, id);
-        if (jsonConfiguration.isPresent()) {
-            this.table.update(this.asMap(key, id, data)).runNoReply(this.connection);
-        } else {
-            this.table.insert(this.asMap(key, id, data)).runNoReply(this.connection);
-        }
-    }
+  @Override
+  public void update(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration newData) {
+    this.insert(key, id, newData);
+  }
 
-    @Override
-    public void update(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration newData) {
-        this.insert(key, id, newData);
-    }
+  @Override
+  public void remove(@NotNull String key, @NotNull String id) {
+    this.table.filter(this.asMap(key, id)).delete().runNoReply(this.connection);
+  }
 
-    @Override
-    public void remove(@NotNull String key, @NotNull String id) {
-        this.table.filter(this.asMap(key, id)).delete().runNoReply(this.connection);
-    }
+  @Override
+  public @NotNull Optional<JsonConfiguration> get(@NotNull String key, @NotNull String id) {
+    return this.find(key, id);
+  }
 
-    @Override
-    public @NotNull Optional<JsonConfiguration> get(@NotNull String key, @NotNull String id) {
-        return this.find(key, id);
-    }
-
-    @Override
-    public @NotNull @UnmodifiableView Collection<String> getEntryNames() {
-        Collection<String> result = new ArrayList<>();
-        try (Result<Map<String, String>> run = this.table.run(this.connection, STRING_MAP_TYPE)) {
-            while (run.hasNext()) {
-                Map<String, String> map = run.next();
-                if (map == null) {
-                    continue;
-                }
-
-                result.add(map.get("_key"));
-            }
+  @Override
+  public @NotNull @UnmodifiableView Collection<String> getEntryNames() {
+    Collection<String> result = new ArrayList<>();
+    try (Result<Map<String, String>> run = this.table.run(this.connection, STRING_MAP_TYPE)) {
+      while (run.hasNext()) {
+        Map<String, String> map = run.next();
+        if (map == null) {
+          continue;
         }
 
-        return result;
+        result.add(map.get("_key"));
+      }
     }
 
-    @Override
-    public long count() {
-        return this.getEntryNames().size(); // pail
-    }
+    return result;
+  }
 
-    @Override
-    public void clear() {
-        this.table.delete().runNoReply(this.connection);
-    }
+  @Override
+  public long count() {
+    return this.getEntryNames().size(); // pail
+  }
 
-    @Override
-    public @NotNull @UnmodifiableView Collection<JsonConfiguration> getAll() {
-        Collection<JsonConfiguration> result = new ArrayList<>();
-        try (Result<Map<String, String>> run = this.table.run(this.connection, STRING_MAP_TYPE)) {
-            while (run.hasNext()) {
-                Map<String, String> map = run.next();
-                if (map == null) {
-                    continue;
-                }
+  @Override
+  public void clear() {
+    this.table.delete().runNoReply(this.connection);
+  }
 
-                result.add(new JsonConfiguration(map.get("values")));
-            }
+  @Override
+  public @NotNull @UnmodifiableView Collection<JsonConfiguration> getAll() {
+    Collection<JsonConfiguration> result = new ArrayList<>();
+    try (Result<Map<String, String>> run = this.table.run(this.connection, STRING_MAP_TYPE)) {
+      while (run.hasNext()) {
+        Map<String, String> map = run.next();
+        if (map == null) {
+          continue;
         }
 
-        return result;
+        result.add(new JsonConfiguration(map.get("values")));
+      }
     }
 
-    @Override
-    public boolean has(@NotNull String key) {
-        return this.find(key, null).isPresent();
+    return result;
+  }
+
+  @Override
+  public boolean has(@NotNull String key) {
+    return this.find(key, null).isPresent();
+  }
+
+  private Optional<JsonConfiguration> find(String key, @Nullable String id) {
+    Result<Map<String, String>> result = this.table.filter(this.asMap(key, id)).run(this.connection, Types.mapOf(String.class, String.class));
+    if (result.hasNext()) {
+      Map<String, String> map = result.first();
+      return map == null ? Optional.empty() : Optional.of(new JsonConfiguration(map.get("values")));
     }
 
-    private Optional<JsonConfiguration> find(String key, @Nullable String id) {
-        Result<Map<String, String>> result = this.table.filter(this.asMap(key, id)).run(this.connection, Types.mapOf(String.class, String.class));
-        if (result.hasNext()) {
-            Map<String, String> map = result.first();
-            return map == null ? Optional.empty() : Optional.of(new JsonConfiguration(map.get("values")));
-        }
+    return Optional.empty();
+  }
 
-        return Optional.empty();
+  private MapObject<Object, Object> asMap(String key, @Nullable String id) {
+    MapObject<Object, Object> result = RethinkDB.r.hashMap("_key", key);
+    if (id != null) {
+      result.with("_identifier", id);
     }
 
-    private MapObject<Object, Object> asMap(String key, @Nullable String id) {
-        MapObject<Object, Object> result = RethinkDB.r.hashMap("_key", key);
-        if (id != null) {
-            result.with("_identifier", id);
-        }
+    return result;
+  }
 
-        return result;
-    }
-
-    private MapObject<Object, Object> asMap(String key, String id, JsonConfiguration data) {
-        return this.asMap(key, id).with("values", data.toPrettyString());
-    }
+  private MapObject<Object, Object> asMap(String key, String id, JsonConfiguration data) {
+    return this.asMap(key, id).with("values", data.toPrettyString());
+  }
 }

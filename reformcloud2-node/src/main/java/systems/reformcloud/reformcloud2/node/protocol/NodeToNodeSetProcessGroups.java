@@ -26,44 +26,45 @@ package systems.reformcloud.reformcloud2.node.protocol;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.shared.groups.process.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
+import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroup;
 
 import java.util.Collection;
 
 public class NodeToNodeSetProcessGroups extends ProtocolPacket {
 
-    private Collection<DefaultProcessGroup> processGroups;
+  private Collection<ProcessGroup> processGroups;
 
-    public NodeToNodeSetProcessGroups() {
-    }
+  public NodeToNodeSetProcessGroups() {
+  }
 
-    public NodeToNodeSetProcessGroups(Collection<DefaultProcessGroup> processGroups) {
-        this.processGroups = processGroups;
-    }
+  public NodeToNodeSetProcessGroups(Collection<ProcessGroup> processGroups) {
+    this.processGroups = processGroups;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 17;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 17;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleProcessGroupSet(this.processGroups);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleProcessGroupSet(this.processGroups);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObjects(this.processGroups);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObjects(this.processGroups);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.processGroups = buffer.readObjects(DefaultProcessGroup.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.processGroups = buffer.readObjects(DefaultProcessGroup.class, ProcessGroup.class);
+  }
 }
