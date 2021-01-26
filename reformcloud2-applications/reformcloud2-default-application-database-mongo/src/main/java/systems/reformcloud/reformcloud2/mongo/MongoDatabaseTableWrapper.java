@@ -30,7 +30,7 @@ import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.DatabaseTableWrapper;
 
 import java.util.ArrayList;
@@ -56,9 +56,9 @@ public class MongoDatabaseTableWrapper implements DatabaseTableWrapper {
     Optional<JsonConfiguration> configuration = this.get(key, id);
     newData.add("_key", key).add("_identifier", id);
     if (configuration.isPresent()) {
-      this.collection.updateOne(Filters.eq("_key", key), new JsonConfiguration().getGson().fromJson(newData.toPrettyString(), Document.class));
+      this.collection.updateOne(Filters.eq("_key", key), JsonConfiguration.DEFAULT_ADAPTER.fromJson(newData.toPrettyString(), Document.class));
     } else {
-      this.collection.insertOne(new JsonConfiguration().getGson().fromJson(newData.toPrettyString(), Document.class));
+      this.collection.insertOne(JsonConfiguration.DEFAULT_ADAPTER.fromJson(newData.toPrettyString(), Document.class));
     }
   }
 
@@ -97,7 +97,7 @@ public class MongoDatabaseTableWrapper implements DatabaseTableWrapper {
   @Override
   public @NotNull @UnmodifiableView Collection<JsonConfiguration> getAll() {
     Collection<JsonConfiguration> collection = new ArrayList<>();
-    this.collection.find().forEach((Consumer<Document>) e -> collection.add(new JsonConfiguration(e.toJson())));
+    this.collection.find().forEach((Consumer<Document>) e -> collection.add(JsonConfiguration.newJsonConfiguration(e.toJson())));
     return collection;
   }
 
@@ -111,7 +111,7 @@ public class MongoDatabaseTableWrapper implements DatabaseTableWrapper {
     if (document == null) {
       return Optional.empty();
     } else {
-      JsonConfiguration configuration = new JsonConfiguration(document.toJson());
+      JsonConfiguration configuration = JsonConfiguration.newJsonConfiguration(document.toJson());
       configuration.remove("_key").remove("_identifier");
       return Optional.of(configuration);
     }

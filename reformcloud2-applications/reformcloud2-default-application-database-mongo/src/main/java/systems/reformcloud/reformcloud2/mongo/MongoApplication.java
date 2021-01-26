@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.mongo;
 
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.application.Application;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.provider.DatabaseProvider;
 import systems.reformcloud.reformcloud2.mongo.config.MongoConfig;
 import systems.reformcloud.reformcloud2.shared.dependency.DependencyFileLoader;
@@ -46,10 +46,12 @@ public class MongoApplication extends Application {
 
     Path configPath = this.getDataDirectory().resolve("config.json");
     if (Files.notExists(configPath)) {
-      new JsonConfiguration().add("config", new MongoConfig("127.0.0.1", 3306, "cloud", "cloud", "")).write(configPath);
+      JsonConfiguration.newJsonConfiguration()
+        .add("config", new MongoConfig("127.0.0.1", 3306, "cloud", "cloud", ""))
+        .write(configPath);
     }
 
-    MongoConfig config = JsonConfiguration.read(configPath).get("config", MongoConfig.class);
+    MongoConfig config = JsonConfiguration.newJsonConfiguration(configPath).get("config", MongoConfig.class);
     if (config == null) {
       System.err.println("Unable to load configuration for mongo module");
       return;
