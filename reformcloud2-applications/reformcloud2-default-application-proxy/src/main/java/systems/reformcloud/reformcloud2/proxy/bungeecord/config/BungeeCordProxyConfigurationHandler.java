@@ -30,8 +30,8 @@ import systems.reformcloud.reformcloud2.proxy.defaults.AbstractProxyConfiguratio
 
 public class BungeeCordProxyConfigurationHandler extends AbstractProxyConfigurationHandler {
 
-    @Override
-    public void handleTabListChange() {
-        ProxyServer.getInstance().getPlayers().forEach(BungeeCordListener::initTab0);
-    }
+  @Override
+  public void handleTabListChange() {
+    ProxyServer.getInstance().getPlayers().forEach(BungeeCordListener::initTab0);
+  }
 }

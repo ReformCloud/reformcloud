@@ -29,13 +29,13 @@ import systems.reformcloud.reformcloud2.proxy.ProxyConfiguration;
 
 public class ProxyConfigurationUpdateEvent extends Event {
 
-    private final ProxyConfiguration proxyConfiguration;
+  private final ProxyConfiguration proxyConfiguration;
 
-    public ProxyConfigurationUpdateEvent(ProxyConfiguration proxyConfiguration) {
-        this.proxyConfiguration = proxyConfiguration;
-    }
+  public ProxyConfigurationUpdateEvent(ProxyConfiguration proxyConfiguration) {
+    this.proxyConfiguration = proxyConfiguration;
+  }
 
-    public ProxyConfiguration getProxyConfiguration() {
-        return this.proxyConfiguration;
-    }
+  public ProxyConfiguration getProxyConfiguration() {
+    return this.proxyConfiguration;
+  }
 }

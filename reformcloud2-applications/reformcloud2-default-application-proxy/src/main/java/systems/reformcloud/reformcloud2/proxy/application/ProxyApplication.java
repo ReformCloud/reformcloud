@@ -40,37 +40,37 @@ import systems.reformcloud.reformcloud2.proxy.network.PacketProxyConfigUpdate;
 
 public class ProxyApplication extends Application {
 
-    private static final ApplicationUpdateRepository REPOSITORY = new ProxyAddonUpdater();
+  private static final ApplicationUpdateRepository REPOSITORY = new ProxyAddonUpdater();
 
-    private static ProxyApplication instance;
+  private static ProxyApplication instance;
 
-    public static ProxyApplication getInstance() {
-        return instance;
+  public static ProxyApplication getInstance() {
+    return instance;
+  }
+
+  @Override
+  public void onLoad() {
+    instance = this;
+    ConfigHelper.init(this.getDataDirectory().resolve("config.json"));
+
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ProcessInclusionHandler());
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketRequestConfig.class);
+
+    for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
+      if (registeredChannel.isKnown()) {
+        registeredChannel.sendPacket(new PacketProxyConfigUpdate(ConfigHelper.getProxyConfiguration()));
+      }
     }
+  }
 
-    @Override
-    public void onLoad() {
-        instance = this;
-        ConfigHelper.init(this.getDataDirectory().resolve("config.json"));
+  @Override
+  public void onDisable() {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketIds.RESERVED_EXTRA_BUS + 6);
+  }
 
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ProcessInclusionHandler());
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketRequestConfig.class);
-
-        for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
-            if (registeredChannel.isAuthenticated()) {
-                registeredChannel.sendPacket(new PacketProxyConfigUpdate(ConfigHelper.getProxyConfiguration()));
-            }
-        }
-    }
-
-    @Override
-    public void onDisable() {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketIds.RESERVED_EXTRA_BUS + 6);
-    }
-
-    @Nullable
-    @Override
-    public ApplicationUpdateRepository getUpdateRepository() {
-        return REPOSITORY;
-    }
+  @Nullable
+  @Override
+  public ApplicationUpdateRepository getUpdateRepository() {
+    return REPOSITORY;
+  }
 }

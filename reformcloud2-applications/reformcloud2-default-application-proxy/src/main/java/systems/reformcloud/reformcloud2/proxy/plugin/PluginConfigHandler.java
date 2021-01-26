@@ -35,21 +35,21 @@ import systems.reformcloud.reformcloud2.proxy.network.PacketProxyConfigUpdate;
 
 public final class PluginConfigHandler {
 
-    private PluginConfigHandler() {
-        throw new UnsupportedOperationException();
-    }
+  private PluginConfigHandler() {
+    throw new UnsupportedOperationException();
+  }
 
-    public static void request(@NotNull Runnable then) {
-        ProxyConfigurationHandler.setup();
+  public static void request(@NotNull Runnable then) {
+    ProxyConfigurationHandler.setup();
 
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketRequestConfigResult.class);
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketProxyConfigUpdate.class);
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketRequestConfigResult.class);
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketProxyConfigUpdate.class);
 
-        Embedded.getInstance().sendSyncQuery(new PacketRequestConfig()).ifPresent(result -> {
-            if (result instanceof PacketRequestConfigResult) {
-                ProxyConfigurationHandler.getInstance().handleProxyConfigUpdate(((PacketRequestConfigResult) result).getProxyConfiguration());
-                then.run();
-            }
-        });
-    }
+    Embedded.getInstance().sendSyncQuery(new PacketRequestConfig()).ifPresent(result -> {
+      if (result instanceof PacketRequestConfigResult) {
+        ProxyConfigurationHandler.getInstance().handleProxyConfigUpdate(((PacketRequestConfigResult) result).getProxyConfiguration());
+        then.run();
+      }
+    });
+  }
 }

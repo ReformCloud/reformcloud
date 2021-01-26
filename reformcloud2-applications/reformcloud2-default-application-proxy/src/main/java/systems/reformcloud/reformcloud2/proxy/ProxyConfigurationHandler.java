@@ -37,61 +37,61 @@ import java.util.Optional;
 
 public abstract class ProxyConfigurationHandler {
 
-    private static ProxyConfigurationHandler instance;
+  private static ProxyConfigurationHandler instance;
 
-    @NotNull
-    public static ProxyConfigurationHandler getInstance() {
-        return Objects.requireNonNull(instance, "The proxy config handler is configured yet");
+  @NotNull
+  public static ProxyConfigurationHandler getInstance() {
+    return Objects.requireNonNull(instance, "The proxy config handler is configured yet");
+  }
+
+  @ApiStatus.Internal
+  public static void setup() {
+    ProxyConfigurationHandlerSetupEvent setupEvent = new ProxyConfigurationHandlerSetupEvent();
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(setupEvent);
+    ProxyConfigurationHandler.instance = setupEvent.getProxyConfigurationHandler().enable();
+  }
+
+  @NotNull
+  public static String translateAlternateColorCodes(char altColorChar, @NotNull String textToTranslate) {
+    char[] b = textToTranslate.toCharArray();
+
+    for (int i = 0; i < b.length - 1; ++i) {
+      if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1) {
+        b[i] = 167;
+        b[i + 1] = Character.toLowerCase(b[i + 1]);
+      }
     }
 
-    @ApiStatus.Internal
-    public static void setup() {
-        ProxyConfigurationHandlerSetupEvent setupEvent = new ProxyConfigurationHandlerSetupEvent();
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(setupEvent);
-        ProxyConfigurationHandler.instance = setupEvent.getProxyConfigurationHandler().enable();
-    }
+    return new String(b);
+  }
 
-    @NotNull
-    public static String translateAlternateColorCodes(char altColorChar, @NotNull String textToTranslate) {
-        char[] b = textToTranslate.toCharArray();
+  @NotNull
+  @ApiStatus.Internal
+  public abstract ProxyConfigurationHandler enable();
 
-        for (int i = 0; i < b.length - 1; ++i) {
-            if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1) {
-                b[i] = 167;
-                b[i + 1] = Character.toLowerCase(b[i + 1]);
-            }
-        }
+  @NotNull
+  public abstract Optional<ProxyConfiguration> getProxyConfiguration();
 
-        return new String(b);
-    }
+  @NotNull
+  public abstract Optional<TabListConfiguration> getCurrentTabListConfiguration();
 
-    @NotNull
-    @ApiStatus.Internal
-    public abstract ProxyConfigurationHandler enable();
+  @NotNull
+  public abstract Optional<MotdConfiguration> getCurrentMessageOfTheDayConfiguration();
 
-    @NotNull
-    public abstract Optional<ProxyConfiguration> getProxyConfiguration();
+  @NotNull
+  public abstract Optional<MotdConfiguration> getCurrentMaintenanceMessageOfTheDayConfiguration();
 
-    @NotNull
-    public abstract Optional<TabListConfiguration> getCurrentTabListConfiguration();
+  @NotNull
+  public abstract Optional<MotdConfiguration> getBestMessageOfTheDayConfiguration();
 
-    @NotNull
-    public abstract Optional<MotdConfiguration> getCurrentMessageOfTheDayConfiguration();
+  public abstract void handleTabListChange();
 
-    @NotNull
-    public abstract Optional<MotdConfiguration> getCurrentMaintenanceMessageOfTheDayConfiguration();
+  @NotNull
+  public abstract String replaceMessageOfTheDayPlaceHolders(@NotNull String messageOfTheDay);
 
-    @NotNull
-    public abstract Optional<MotdConfiguration> getBestMessageOfTheDayConfiguration();
+  @NotNull
+  public abstract String replaceTabListPlaceHolders(@NotNull String tabList);
 
-    public abstract void handleTabListChange();
-
-    @NotNull
-    public abstract String replaceMessageOfTheDayPlaceHolders(@NotNull String messageOfTheDay);
-
-    @NotNull
-    public abstract String replaceTabListPlaceHolders(@NotNull String tabList);
-
-    @ApiStatus.Internal
-    public abstract void handleProxyConfigUpdate(@NotNull ProxyConfiguration proxyConfiguration);
+  @ApiStatus.Internal
+  public abstract void handleProxyConfigUpdate(@NotNull ProxyConfiguration proxyConfiguration);
 }

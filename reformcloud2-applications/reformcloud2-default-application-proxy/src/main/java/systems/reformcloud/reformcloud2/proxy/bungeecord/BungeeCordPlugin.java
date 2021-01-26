@@ -34,14 +34,14 @@ import systems.reformcloud.reformcloud2.proxy.plugin.PluginConfigHandler;
 
 public class BungeeCordPlugin extends Plugin {
 
-    @Override
-    public void onEnable() {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new BungeeCordProxyConfigurationHandlerSetupListener());
+  @Override
+  public void onEnable() {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new BungeeCordProxyConfigurationHandlerSetupListener());
 
-        PluginConfigHandler.request(() -> {
-            BungeeCordListener listener = new BungeeCordListener();
-            ProxyServer.getInstance().getPluginManager().registerListener(this, listener);
-            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(listener);
-        });
-    }
+    PluginConfigHandler.request(() -> {
+      BungeeCordListener listener = new BungeeCordListener();
+      ProxyServer.getInstance().getPluginManager().registerListener(this, listener);
+      ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(listener);
+    });
+  }
 }

@@ -30,14 +30,14 @@ import systems.reformcloud.reformcloud2.proxy.velocity.listener.VelocityListener
 
 public class VelocityProxyConfigurationHandler extends AbstractProxyConfigurationHandler {
 
-    private final ProxyServer proxyServer;
+  private final ProxyServer proxyServer;
 
-    public VelocityProxyConfigurationHandler(ProxyServer proxyServer) {
-        this.proxyServer = proxyServer;
-    }
+  public VelocityProxyConfigurationHandler(ProxyServer proxyServer) {
+    this.proxyServer = proxyServer;
+  }
 
-    @Override
-    public void handleTabListChange() {
-        this.proxyServer.getAllPlayers().forEach(VelocityListener::initTab0);
-    }
+  @Override
+  public void handleTabListChange() {
+    this.proxyServer.getAllPlayers().forEach(VelocityListener::initTab0);
+  }
 }

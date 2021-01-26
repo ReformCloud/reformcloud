@@ -31,8 +31,8 @@ import systems.reformcloud.reformcloud2.proxy.event.ProxyConfigurationHandlerSet
 
 public final class BungeeCordProxyConfigurationHandlerSetupListener {
 
-    @Listener
-    public void handle(final @NotNull ProxyConfigurationHandlerSetupEvent event) {
-        event.setProxyConfigurationHandler(new BungeeCordProxyConfigurationHandler());
-    }
+  @Listener
+  public void handle(final @NotNull ProxyConfigurationHandlerSetupEvent event) {
+    event.setProxyConfigurationHandler(new BungeeCordProxyConfigurationHandler());
+  }
 }

@@ -32,14 +32,14 @@ import java.util.Objects;
 
 public class ProxyConfigurationHandlerSetupEvent extends Event {
 
-    private ProxyConfigurationHandler proxyConfigurationHandler;
+  private ProxyConfigurationHandler proxyConfigurationHandler;
 
-    @NotNull
-    public ProxyConfigurationHandler getProxyConfigurationHandler() {
-        return Objects.requireNonNull(this.proxyConfigurationHandler, "No handler was registered by any plugin");
-    }
+  @NotNull
+  public ProxyConfigurationHandler getProxyConfigurationHandler() {
+    return Objects.requireNonNull(this.proxyConfigurationHandler, "No handler was registered by any plugin");
+  }
 
-    public void setProxyConfigurationHandler(@NotNull ProxyConfigurationHandler proxyConfigurationHandler) {
-        this.proxyConfigurationHandler = Objects.requireNonNull(proxyConfigurationHandler);
-    }
+  public void setProxyConfigurationHandler(@NotNull ProxyConfigurationHandler proxyConfigurationHandler) {
+    this.proxyConfigurationHandler = Objects.requireNonNull(proxyConfigurationHandler);
+  }
 }

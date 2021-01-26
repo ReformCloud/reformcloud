@@ -43,149 +43,149 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractProxyConfigurationHandler extends ProxyConfigurationHandler {
 
-    private final AtomicInteger[] atomicIntegers = new AtomicInteger[]{
-        new AtomicInteger(0),
-        new AtomicInteger(0),
-        new AtomicInteger(0)
-    };
-    private @Nullable ProxyConfiguration proxyConfiguration;
-    private MotdConfiguration currentMessageOfTheDayConfiguration;
-    private MotdConfiguration currentMaintenanceMessageOfTheDayConfiguration;
-    private TabListConfiguration currentTabListConfiguration;
+  private final AtomicInteger[] atomicIntegers = new AtomicInteger[]{
+    new AtomicInteger(0),
+    new AtomicInteger(0),
+    new AtomicInteger(0)
+  };
+  private @Nullable ProxyConfiguration proxyConfiguration;
+  private MotdConfiguration currentMessageOfTheDayConfiguration;
+  private MotdConfiguration currentMaintenanceMessageOfTheDayConfiguration;
+  private TabListConfiguration currentTabListConfiguration;
 
-    @Override
-    public @NotNull ProxyConfigurationHandler enable() {
-        this.startTasks();
-        return this;
-    }
+  @Override
+  public @NotNull ProxyConfigurationHandler enable() {
+    this.startTasks();
+    return this;
+  }
 
-    @Override
-    public @NotNull Optional<ProxyConfiguration> getProxyConfiguration() {
-        return Optional.ofNullable(this.proxyConfiguration);
-    }
+  @Override
+  public @NotNull Optional<ProxyConfiguration> getProxyConfiguration() {
+    return Optional.ofNullable(this.proxyConfiguration);
+  }
 
-    @Override
-    public @NotNull Optional<TabListConfiguration> getCurrentTabListConfiguration() {
-        return Optional.ofNullable(this.currentTabListConfiguration);
-    }
+  @Override
+  public @NotNull Optional<TabListConfiguration> getCurrentTabListConfiguration() {
+    return Optional.ofNullable(this.currentTabListConfiguration);
+  }
 
-    @Override
-    public @NotNull Optional<MotdConfiguration> getCurrentMessageOfTheDayConfiguration() {
-        return Optional.ofNullable(this.currentMessageOfTheDayConfiguration);
-    }
+  @Override
+  public @NotNull Optional<MotdConfiguration> getCurrentMessageOfTheDayConfiguration() {
+    return Optional.ofNullable(this.currentMessageOfTheDayConfiguration);
+  }
 
-    @Override
-    public @NotNull Optional<MotdConfiguration> getCurrentMaintenanceMessageOfTheDayConfiguration() {
-        return Optional.ofNullable(this.currentMaintenanceMessageOfTheDayConfiguration);
-    }
+  @Override
+  public @NotNull Optional<MotdConfiguration> getCurrentMaintenanceMessageOfTheDayConfiguration() {
+    return Optional.ofNullable(this.currentMaintenanceMessageOfTheDayConfiguration);
+  }
 
-    @Override
-    public @NotNull Optional<MotdConfiguration> getBestMessageOfTheDayConfiguration() {
-        return Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isMaintenance()
-            ? this.getCurrentMaintenanceMessageOfTheDayConfiguration()
-            : this.getCurrentMessageOfTheDayConfiguration();
-    }
+  @Override
+  public @NotNull Optional<MotdConfiguration> getBestMessageOfTheDayConfiguration() {
+    return Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isMaintenance()
+      ? this.getCurrentMaintenanceMessageOfTheDayConfiguration()
+      : this.getCurrentMessageOfTheDayConfiguration();
+  }
 
-    @Override
-    public @NotNull String replaceMessageOfTheDayPlaceHolders(@NotNull String messageOfTheDay) {
-        ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-        messageOfTheDay = messageOfTheDay
-            .replace("%proxy_name%", current.getProcessDetail().getName())
-            .replace("%proxy_display_name%", current.getProcessDetail().getDisplayName())
-            .replace("%proxy_unique_id%", current.getProcessDetail().getProcessUniqueID().toString())
-            .replace("%proxy_id%", Integer.toString(current.getProcessDetail().getId()))
-            .replace("%proxy_online_players%", Integer.toString(current.getProcessPlayerManager().getOnlineCount()))
-            .replace("%proxy_max_players%", Integer.toString(current.getProcessDetail().getMaxPlayers()))
-            .replace("%proxy_group%", current.getProcessGroup().getName())
-            .replace("%proxy_parent%", current.getProcessDetail().getParentName());
-        return ProxyConfigurationHandler.translateAlternateColorCodes('&', messageOfTheDay);
-    }
+  @Override
+  public @NotNull String replaceMessageOfTheDayPlaceHolders(@NotNull String messageOfTheDay) {
+    ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
+    messageOfTheDay = messageOfTheDay
+      .replace("%proxy_name%", current.getName())
+      .replace("%proxy_display_name%", current.getId().getDisplayName())
+      .replace("%proxy_unique_id%", current.getId().getUniqueId().toString())
+      .replace("%proxy_id%", Integer.toString(current.getId().getId()))
+      .replace("%proxy_online_players%", Integer.toString(current.getOnlineCount()))
+      .replace("%proxy_max_players%", Integer.toString(current.getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers()))
+      .replace("%proxy_group%", current.getProcessGroup().getName())
+      .replace("%proxy_parent%", current.getId().getNodeName());
+    return ProxyConfigurationHandler.translateAlternateColorCodes('&', messageOfTheDay);
+  }
 
-    @Override
-    public @NotNull String replaceTabListPlaceHolders(@NotNull String tabList) {
-        return this.replaceMessageOfTheDayPlaceHolders(tabList);
-    }
+  @Override
+  public @NotNull String replaceTabListPlaceHolders(@NotNull String tabList) {
+    return this.replaceMessageOfTheDayPlaceHolders(tabList);
+  }
 
-    @Override
-    public void handleProxyConfigUpdate(@NotNull ProxyConfiguration proxyConfiguration) {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new ProxyConfigurationUpdateEvent(this.proxyConfiguration = proxyConfiguration));
-    }
+  @Override
+  public void handleProxyConfigUpdate(@NotNull ProxyConfiguration proxyConfiguration) {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new ProxyConfigurationUpdateEvent(this.proxyConfiguration = proxyConfiguration));
+  }
 
-    private void startTasks() {
-        Constants.CACHED_THREAD_POOL.execute(() -> {
-            while (!Thread.interrupted()) {
-                if (this.proxyConfiguration == null || this.proxyConfiguration.getMotdDefaultConfig().isEmpty()) {
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException ignored) {
-                    }
+  private void startTasks() {
+    Constants.CACHED_THREAD_POOL.execute(() -> {
+      while (!Thread.interrupted()) {
+        if (this.proxyConfiguration == null || this.proxyConfiguration.getMotdDefaultConfig().isEmpty()) {
+          try {
+            Thread.sleep(500);
+          } catch (InterruptedException ignored) {
+          }
 
-                    continue;
-                }
+          continue;
+        }
 
-                int count = this.atomicIntegers[0].getAndIncrement();
-                this.currentMessageOfTheDayConfiguration = this.proxyConfiguration.getMotdDefaultConfig().get(count);
+        int count = this.atomicIntegers[0].getAndIncrement();
+        this.currentMessageOfTheDayConfiguration = this.proxyConfiguration.getMotdDefaultConfig().get(count);
 
-                if (count >= this.proxyConfiguration.getMotdDefaultConfig().size() - 1) {
-                    this.atomicIntegers[0].set(0);
-                }
+        if (count >= this.proxyConfiguration.getMotdDefaultConfig().size() - 1) {
+          this.atomicIntegers[0].set(0);
+        }
 
-                try {
-                    Thread.sleep(TimeUnit.SECONDS.toMillis(this.currentMessageOfTheDayConfiguration.getWaitUntilNextInSeconds()));
-                } catch (InterruptedException ignored) {
-                }
-            }
-        });
+        try {
+          Thread.sleep(TimeUnit.SECONDS.toMillis(this.currentMessageOfTheDayConfiguration.getWaitUntilNextInSeconds()));
+        } catch (InterruptedException ignored) {
+        }
+      }
+    });
 
-        Constants.CACHED_THREAD_POOL.execute(() -> {
-            while (!Thread.interrupted()) {
-                if (this.proxyConfiguration == null || this.proxyConfiguration.getMotdMaintenanceConfig().isEmpty()) {
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException ignored) {
-                    }
+    Constants.CACHED_THREAD_POOL.execute(() -> {
+      while (!Thread.interrupted()) {
+        if (this.proxyConfiguration == null || this.proxyConfiguration.getMotdMaintenanceConfig().isEmpty()) {
+          try {
+            Thread.sleep(500);
+          } catch (InterruptedException ignored) {
+          }
 
-                    continue;
-                }
+          continue;
+        }
 
-                int count = this.atomicIntegers[1].getAndIncrement();
-                this.currentMaintenanceMessageOfTheDayConfiguration = this.proxyConfiguration.getMotdMaintenanceConfig().get(count);
+        int count = this.atomicIntegers[1].getAndIncrement();
+        this.currentMaintenanceMessageOfTheDayConfiguration = this.proxyConfiguration.getMotdMaintenanceConfig().get(count);
 
-                if (count >= this.proxyConfiguration.getMotdMaintenanceConfig().size() - 1) {
-                    this.atomicIntegers[1].set(0);
-                }
+        if (count >= this.proxyConfiguration.getMotdMaintenanceConfig().size() - 1) {
+          this.atomicIntegers[1].set(0);
+        }
 
-                try {
-                    Thread.sleep(TimeUnit.SECONDS.toMillis(this.currentMaintenanceMessageOfTheDayConfiguration.getWaitUntilNextInSeconds()));
-                } catch (InterruptedException ignored) {
-                }
-            }
-        });
+        try {
+          Thread.sleep(TimeUnit.SECONDS.toMillis(this.currentMaintenanceMessageOfTheDayConfiguration.getWaitUntilNextInSeconds()));
+        } catch (InterruptedException ignored) {
+        }
+      }
+    });
 
-        Constants.CACHED_THREAD_POOL.execute(() -> {
-            while (!Thread.interrupted()) {
-                if (this.proxyConfiguration == null || this.proxyConfiguration.getTabListConfigurations().isEmpty()) {
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException ignored) {
-                    }
+    Constants.CACHED_THREAD_POOL.execute(() -> {
+      while (!Thread.interrupted()) {
+        if (this.proxyConfiguration == null || this.proxyConfiguration.getTabListConfigurations().isEmpty()) {
+          try {
+            Thread.sleep(500);
+          } catch (InterruptedException ignored) {
+          }
 
-                    continue;
-                }
+          continue;
+        }
 
-                int count = this.atomicIntegers[2].getAndIncrement();
-                this.currentTabListConfiguration = this.proxyConfiguration.getTabListConfigurations().get(count);
-                this.handleTabListChange();
+        int count = this.atomicIntegers[2].getAndIncrement();
+        this.currentTabListConfiguration = this.proxyConfiguration.getTabListConfigurations().get(count);
+        this.handleTabListChange();
 
-                if (count >= this.proxyConfiguration.getTabListConfigurations().size() - 1) {
-                    this.atomicIntegers[2].set(0);
-                }
+        if (count >= this.proxyConfiguration.getTabListConfigurations().size() - 1) {
+          this.atomicIntegers[2].set(0);
+        }
 
-                try {
-                    Thread.sleep(TimeUnit.SECONDS.toMillis(this.currentTabListConfiguration.getWaitUntilNextInSeconds()));
-                } catch (InterruptedException ignored) {
-                }
-            }
-        });
-    }
+        try {
+          Thread.sleep(TimeUnit.SECONDS.toMillis(this.currentTabListConfiguration.getWaitUntilNextInSeconds()));
+        } catch (InterruptedException ignored) {
+        }
+      }
+    });
+  }
 }

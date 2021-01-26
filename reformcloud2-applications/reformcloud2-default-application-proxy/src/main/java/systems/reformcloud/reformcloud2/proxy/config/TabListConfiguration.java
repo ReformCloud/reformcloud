@@ -30,42 +30,42 @@ import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableOb
 
 public class TabListConfiguration implements SerializableObject {
 
-    private String header;
-    private String footer;
-    private long waitUntilNextInSeconds;
+  private String header;
+  private String footer;
+  private long waitUntilNextInSeconds;
 
-    public TabListConfiguration() {
-    }
+  public TabListConfiguration() {
+  }
 
-    public TabListConfiguration(String header, String footer, long waitUntilNextInSeconds) {
-        this.header = header;
-        this.footer = footer;
-        this.waitUntilNextInSeconds = waitUntilNextInSeconds;
-    }
+  public TabListConfiguration(String header, String footer, long waitUntilNextInSeconds) {
+    this.header = header;
+    this.footer = footer;
+    this.waitUntilNextInSeconds = waitUntilNextInSeconds;
+  }
 
-    public String getHeader() {
-        return this.header;
-    }
+  public String getHeader() {
+    return this.header;
+  }
 
-    public String getFooter() {
-        return this.footer;
-    }
+  public String getFooter() {
+    return this.footer;
+  }
 
-    public long getWaitUntilNextInSeconds() {
-        return this.waitUntilNextInSeconds;
-    }
+  public long getWaitUntilNextInSeconds() {
+    return this.waitUntilNextInSeconds;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.header);
-        buffer.writeString(this.footer);
-        buffer.writeLong(this.waitUntilNextInSeconds);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.header);
+    buffer.writeString(this.footer);
+    buffer.writeLong(this.waitUntilNextInSeconds);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.header = buffer.readString();
-        this.footer = buffer.readString();
-        this.waitUntilNextInSeconds = buffer.readLong();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.header = buffer.readString();
+    this.footer = buffer.readString();
+    this.waitUntilNextInSeconds = buffer.readLong();
+  }
 }

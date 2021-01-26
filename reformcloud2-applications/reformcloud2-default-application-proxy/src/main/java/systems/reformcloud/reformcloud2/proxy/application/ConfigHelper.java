@@ -35,86 +35,86 @@ import java.util.Arrays;
 
 public final class ConfigHelper {
 
-    private static ProxyConfiguration proxyConfiguration;
+  private static ProxyConfiguration proxyConfiguration;
 
-    private ConfigHelper() {
-        throw new UnsupportedOperationException();
+  private ConfigHelper() {
+    throw new UnsupportedOperationException();
+  }
+
+  public static void init(Path configFile) {
+    if (Files.notExists(configFile)) {
+      JsonConfiguration.newJsonConfiguration()
+        .add("config", new ProxyConfiguration(
+          Arrays.asList(
+            new MotdConfiguration(
+              "§b§lReform§f§lCloud §8» §7Server Network §8» [§f§l1.8§7-§6§l1.16§8]",
+              "§b§lN§f§lews §8» §7§lWe are §a§lonline§7§l!",
+              new String[]{
+                " ",
+                "§8× §7powered by §bReform§fCloud",
+                "§8§m-------------------------",
+                "§8× §7Discord: §bhttps://discord.gg/uskXdVZ",
+                " "
+              },
+              "§a§l✔ §8● §6%proxy_online_players%§8/§f%proxy_max_players%",
+              2
+            ), new MotdConfiguration(
+              "§b§lReform§f§lCloud §8» §7Check out §b§lSpigot§f§lMC",
+              "§b§lN§f§lews §8» §7§lWe are §a§lonline§7§l!",
+              new String[]{
+                " ",
+                "§8× §7powered by §bReform§fCloud",
+                "§8§m-------------------------",
+                "§8× §7Discord: §bhttps://discord.gg/uskXdVZ",
+                " "
+              },
+              "§a§l✔ §8● §6%proxy_online_players%§8/§f%proxy_max_players%",
+              2
+            )
+          ), Arrays.asList(
+          new MotdConfiguration(
+            "§b§lReform§f§lCloud §8» §7Server Network §8» [§f§l1.8§7-§6§l1.16§8]",
+            "§b§lN§f§lews §8» §7§lWe are in §c§lmaintenance§7§l!",
+            new String[]{
+              " ",
+              "§8× §7powered by §bReform§fCloud",
+              "§8§m-------------------------",
+              "§8× §7Discord: §bhttps://discord.gg/uskXdVZ",
+              " "
+            },
+            "§c§l✘ §8● §4§lMAINTENANCE",
+            2
+          ), new MotdConfiguration(
+            "§b§lReform§f§lCloud §8» §7Check out §b§lSpigot§f§lMC",
+            "§b§lN§f§lews §8» §7§lWe are in §c§lmaintenance§7§l!",
+            new String[]{
+              " ",
+              "§8× §7powered by §bReform§fCloud",
+              "§8§m-------------------------",
+              "§8× §7Discord: §bhttps://discord.gg/uskXdVZ",
+              " "
+            },
+            "§c§l✘ §8● §4§lMAINTENANCE",
+            2
+          )
+        ), Arrays.asList(
+          new TabListConfiguration(
+            "\n §8§l» §b§lReform§f§lCloud §8§l➥ §7%proxy_online_players%§8/§7%proxy_max_players% §8§l« \n §7Server §8§l➟ §6%player_server% \n",
+            "\n §7Discord §8§l➟ §bhttps://discord.gg/uskXdVZ \n §7Twitter §8§l➟ §7@§bReform§fCloud \n",
+            2
+          ), new TabListConfiguration(
+            "\n §8§l» §b§lReform§f§lCloud §8§l➥ §7%proxy_online_players%§8/§7%proxy_max_players% §8§l« \n §8§l➟ §7§lNot just a cloud system, but an experience \n",
+            "\n §7Discord §8§l➟ §bhttps://discord.gg/uskXdVZ \n §7Twitter §8§l➟ §7@§bReform§fCloud \n",
+            2
+          )
+        )
+        )).write(configFile);
     }
 
-    public static void init(Path configFile) {
-        if (Files.notExists(configFile)) {
-            new JsonConfiguration()
-                .add("config", new ProxyConfiguration(
-                    Arrays.asList(
-                        new MotdConfiguration(
-                            "§b§lReform§f§lCloud §8» §7Server Network §8» [§f§l1.8§7-§6§l1.16§8]",
-                            "§b§lN§f§lews §8» §7§lWe are §a§lonline§7§l!",
-                            new String[]{
-                                " ",
-                                "§8× §7powered by §bReform§fCloud",
-                                "§8§m-------------------------",
-                                "§8× §7Discord: §bhttps://discord.gg/uskXdVZ",
-                                " "
-                            },
-                            "§a§l✔ §8● §6%proxy_online_players%§8/§f%proxy_max_players%",
-                            2
-                        ), new MotdConfiguration(
-                            "§b§lReform§f§lCloud §8» §7Check out §b§lSpigot§f§lMC",
-                            "§b§lN§f§lews §8» §7§lWe are §a§lonline§7§l!",
-                            new String[]{
-                                " ",
-                                "§8× §7powered by §bReform§fCloud",
-                                "§8§m-------------------------",
-                                "§8× §7Discord: §bhttps://discord.gg/uskXdVZ",
-                                " "
-                            },
-                            "§a§l✔ §8● §6%proxy_online_players%§8/§f%proxy_max_players%",
-                            2
-                        )
-                    ), Arrays.asList(
-                    new MotdConfiguration(
-                        "§b§lReform§f§lCloud §8» §7Server Network §8» [§f§l1.8§7-§6§l1.16§8]",
-                        "§b§lN§f§lews §8» §7§lWe are in §c§lmaintenance§7§l!",
-                        new String[]{
-                            " ",
-                            "§8× §7powered by §bReform§fCloud",
-                            "§8§m-------------------------",
-                            "§8× §7Discord: §bhttps://discord.gg/uskXdVZ",
-                            " "
-                        },
-                        "§c§l✘ §8● §4§lMAINTENANCE",
-                        2
-                    ), new MotdConfiguration(
-                        "§b§lReform§f§lCloud §8» §7Check out §b§lSpigot§f§lMC",
-                        "§b§lN§f§lews §8» §7§lWe are in §c§lmaintenance§7§l!",
-                        new String[]{
-                            " ",
-                            "§8× §7powered by §bReform§fCloud",
-                            "§8§m-------------------------",
-                            "§8× §7Discord: §bhttps://discord.gg/uskXdVZ",
-                            " "
-                        },
-                        "§c§l✘ §8● §4§lMAINTENANCE",
-                        2
-                    )
-                ), Arrays.asList(
-                    new TabListConfiguration(
-                        "\n §8§l» §b§lReform§f§lCloud §8§l➥ §7%proxy_online_players%§8/§7%proxy_max_players% §8§l« \n §7Server §8§l➟ §6%player_server% \n",
-                        "\n §7Discord §8§l➟ §bhttps://discord.gg/uskXdVZ \n §7Twitter §8§l➟ §7@§bReform§fCloud \n",
-                        2
-                    ), new TabListConfiguration(
-                        "\n §8§l» §b§lReform§f§lCloud §8§l➥ §7%proxy_online_players%§8/§7%proxy_max_players% §8§l« \n §8§l➟ §7§lNot just a cloud system, but an experience \n",
-                        "\n §7Discord §8§l➟ §bhttps://discord.gg/uskXdVZ \n §7Twitter §8§l➟ §7@§bReform§fCloud \n",
-                        2
-                    )
-                )
-                )).write(configFile);
-        }
+    proxyConfiguration = JsonConfiguration.newJsonConfiguration(configFile).get("config", ProxyConfiguration.class);
+  }
 
-        proxyConfiguration = JsonConfiguration.read(configFile).get("config", ProxyConfiguration.TYPE);
-    }
-
-    public static ProxyConfiguration getProxyConfiguration() {
-        return proxyConfiguration;
-    }
+  public static ProxyConfiguration getProxyConfiguration() {
+    return proxyConfiguration;
+  }
 }

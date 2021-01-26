@@ -35,32 +35,32 @@ import systems.reformcloud.reformcloud2.proxy.ProxyConfigurationHandler;
 
 public class PacketProxyConfigUpdate extends Packet {
 
-    private ProxyConfiguration proxyConfiguration;
+  private ProxyConfiguration proxyConfiguration;
 
-    public PacketProxyConfigUpdate() {
-    }
+  public PacketProxyConfigUpdate() {
+  }
 
-    public PacketProxyConfigUpdate(ProxyConfiguration proxyConfiguration) {
-        this.proxyConfiguration = proxyConfiguration;
-    }
+  public PacketProxyConfigUpdate(ProxyConfiguration proxyConfiguration) {
+    this.proxyConfiguration = proxyConfiguration;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.RESERVED_EXTRA_BUS + 5;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.RESERVED_EXTRA_BUS + 5;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ProxyConfigurationHandler.getInstance().handleProxyConfigUpdate(this.proxyConfiguration);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ProxyConfigurationHandler.getInstance().handleProxyConfigUpdate(this.proxyConfiguration);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.proxyConfiguration);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.proxyConfiguration);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.proxyConfiguration = buffer.readObject(ProxyConfiguration.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.proxyConfiguration = buffer.readObject(ProxyConfiguration.class);
+  }
 }

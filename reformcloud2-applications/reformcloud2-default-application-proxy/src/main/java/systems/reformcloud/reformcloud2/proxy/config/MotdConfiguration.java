@@ -30,58 +30,58 @@ import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableOb
 
 public class MotdConfiguration implements SerializableObject {
 
-    private String firstLine;
-    private String secondLine;
-    private String[] playerInfo;
-    private String protocol;
-    private long waitUntilNextInSeconds;
+  private String firstLine;
+  private String secondLine;
+  private String[] playerInfo;
+  private String protocol;
+  private long waitUntilNextInSeconds;
 
-    public MotdConfiguration() {
-    }
+  public MotdConfiguration() {
+  }
 
-    public MotdConfiguration(String firstLine, String secondLine, String[] playerInfo, String protocol, long waitUntilNextInSeconds) {
-        this.firstLine = firstLine;
-        this.secondLine = secondLine;
-        this.playerInfo = playerInfo;
-        this.protocol = protocol;
-        this.waitUntilNextInSeconds = waitUntilNextInSeconds;
-    }
+  public MotdConfiguration(String firstLine, String secondLine, String[] playerInfo, String protocol, long waitUntilNextInSeconds) {
+    this.firstLine = firstLine;
+    this.secondLine = secondLine;
+    this.playerInfo = playerInfo;
+    this.protocol = protocol;
+    this.waitUntilNextInSeconds = waitUntilNextInSeconds;
+  }
 
-    public String getFirstLine() {
-        return this.firstLine;
-    }
+  public String getFirstLine() {
+    return this.firstLine;
+  }
 
-    public String getSecondLine() {
-        return this.secondLine;
-    }
+  public String getSecondLine() {
+    return this.secondLine;
+  }
 
-    public String[] getPlayerInfo() {
-        return this.playerInfo;
-    }
+  public String[] getPlayerInfo() {
+    return this.playerInfo;
+  }
 
-    public String getProtocol() {
-        return this.protocol;
-    }
+  public String getProtocol() {
+    return this.protocol;
+  }
 
-    public long getWaitUntilNextInSeconds() {
-        return this.waitUntilNextInSeconds;
-    }
+  public long getWaitUntilNextInSeconds() {
+    return this.waitUntilNextInSeconds;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.firstLine);
-        buffer.writeString(this.secondLine);
-        buffer.writeStringArrays(this.playerInfo);
-        buffer.writeString(this.protocol);
-        buffer.writeLong(this.waitUntilNextInSeconds);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.firstLine);
+    buffer.writeString(this.secondLine);
+    buffer.writeStringArrays(this.playerInfo);
+    buffer.writeString(this.protocol);
+    buffer.writeLong(this.waitUntilNextInSeconds);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.firstLine = buffer.readString();
-        this.secondLine = buffer.readString();
-        this.playerInfo = buffer.readStringArrays();
-        this.protocol = buffer.readString();
-        this.waitUntilNextInSeconds = buffer.readLong();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.firstLine = buffer.readString();
+    this.secondLine = buffer.readString();
+    this.playerInfo = buffer.readStringArrays();
+    this.protocol = buffer.readString();
+    this.waitUntilNextInSeconds = buffer.readLong();
+  }
 }

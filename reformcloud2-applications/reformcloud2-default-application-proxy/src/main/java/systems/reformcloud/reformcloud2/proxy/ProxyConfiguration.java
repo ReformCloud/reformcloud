@@ -24,7 +24,6 @@
  */
 package systems.reformcloud.reformcloud2.proxy;
 
-import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
@@ -35,45 +34,43 @@ import java.util.List;
 
 public class ProxyConfiguration implements SerializableObject {
 
-    public static final TypeToken<ProxyConfiguration> TYPE = new TypeToken<>() {
-    };
-    private List<MotdConfiguration> motdDefaultConfig;
-    private List<MotdConfiguration> motdMaintenanceConfig;
-    private List<TabListConfiguration> tabListConfigurations;
+  private List<MotdConfiguration> motdDefaultConfig;
+  private List<MotdConfiguration> motdMaintenanceConfig;
+  private List<TabListConfiguration> tabListConfigurations;
 
-    public ProxyConfiguration() {
-    }
+  public ProxyConfiguration() {
+  }
 
-    public ProxyConfiguration(List<MotdConfiguration> motdDefaultConfig, List<MotdConfiguration> motdMaintenanceConfig,
-                              List<TabListConfiguration> tabListConfigurations) {
-        this.motdDefaultConfig = motdDefaultConfig;
-        this.motdMaintenanceConfig = motdMaintenanceConfig;
-        this.tabListConfigurations = tabListConfigurations;
-    }
+  public ProxyConfiguration(List<MotdConfiguration> motdDefaultConfig, List<MotdConfiguration> motdMaintenanceConfig,
+                            List<TabListConfiguration> tabListConfigurations) {
+    this.motdDefaultConfig = motdDefaultConfig;
+    this.motdMaintenanceConfig = motdMaintenanceConfig;
+    this.tabListConfigurations = tabListConfigurations;
+  }
 
-    public List<MotdConfiguration> getMotdDefaultConfig() {
-        return this.motdDefaultConfig;
-    }
+  public List<MotdConfiguration> getMotdDefaultConfig() {
+    return this.motdDefaultConfig;
+  }
 
-    public List<MotdConfiguration> getMotdMaintenanceConfig() {
-        return this.motdMaintenanceConfig;
-    }
+  public List<MotdConfiguration> getMotdMaintenanceConfig() {
+    return this.motdMaintenanceConfig;
+  }
 
-    public List<TabListConfiguration> getTabListConfigurations() {
-        return this.tabListConfigurations;
-    }
+  public List<TabListConfiguration> getTabListConfigurations() {
+    return this.tabListConfigurations;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObjects(this.motdDefaultConfig);
-        buffer.writeObjects(this.motdMaintenanceConfig);
-        buffer.writeObjects(this.tabListConfigurations);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObjects(this.motdDefaultConfig);
+    buffer.writeObjects(this.motdMaintenanceConfig);
+    buffer.writeObjects(this.tabListConfigurations);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.motdDefaultConfig = buffer.readObjects(MotdConfiguration.class);
-        this.motdMaintenanceConfig = buffer.readObjects(MotdConfiguration.class);
-        this.tabListConfigurations = buffer.readObjects(TabListConfiguration.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.motdDefaultConfig = buffer.readObjects(MotdConfiguration.class);
+    this.motdMaintenanceConfig = buffer.readObjects(MotdConfiguration.class);
+    this.tabListConfigurations = buffer.readObjects(TabListConfiguration.class);
+  }
 }

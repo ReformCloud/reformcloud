@@ -34,24 +34,24 @@ import systems.reformcloud.reformcloud2.proxy.application.ConfigHelper;
 
 public class PacketRequestConfig extends Packet {
 
-    public PacketRequestConfig() {
-    }
+  public PacketRequestConfig() {
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.RESERVED_EXTRA_BUS + 6;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.RESERVED_EXTRA_BUS + 6;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        channel.sendQueryResult(this.getQueryUniqueID(), new PacketRequestConfigResult(ConfigHelper.getProxyConfiguration()));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    channel.sendQueryResult(this.getQueryUniqueID(), new PacketRequestConfigResult(ConfigHelper.getProxyConfiguration()));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+  }
 }

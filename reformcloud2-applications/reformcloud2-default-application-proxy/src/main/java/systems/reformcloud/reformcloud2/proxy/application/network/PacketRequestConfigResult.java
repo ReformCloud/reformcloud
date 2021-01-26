@@ -32,31 +32,31 @@ import systems.reformcloud.reformcloud2.proxy.ProxyConfiguration;
 
 public class PacketRequestConfigResult extends QueryResultPacket {
 
-    private ProxyConfiguration proxyConfiguration;
+  private ProxyConfiguration proxyConfiguration;
 
-    public PacketRequestConfigResult() {
-    }
+  public PacketRequestConfigResult() {
+  }
 
-    public PacketRequestConfigResult(ProxyConfiguration proxyConfiguration) {
-        this.proxyConfiguration = proxyConfiguration;
-    }
+  public PacketRequestConfigResult(ProxyConfiguration proxyConfiguration) {
+    this.proxyConfiguration = proxyConfiguration;
+  }
 
-    public ProxyConfiguration getProxyConfiguration() {
-        return this.proxyConfiguration;
-    }
+  public ProxyConfiguration getProxyConfiguration() {
+    return this.proxyConfiguration;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.RESERVED_EXTRA_BUS + 4;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.RESERVED_EXTRA_BUS + 4;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.proxyConfiguration);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.proxyConfiguration);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.proxyConfiguration = buffer.readObject(ProxyConfiguration.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.proxyConfiguration = buffer.readObject(ProxyConfiguration.class);
+  }
 }

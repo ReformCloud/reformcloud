@@ -47,101 +47,101 @@ import java.util.UUID;
 
 public final class VelocityListener {
 
-    private final ProxyServer proxyServer;
+  private final ProxyServer proxyServer;
 
-    public VelocityListener(@NotNull ProxyServer proxyServer) {
-        this.proxyServer = proxyServer;
-    }
+  public VelocityListener(@NotNull ProxyServer proxyServer) {
+    this.proxyServer = proxyServer;
+  }
 
-    public static void initTab0(@NotNull Player player) {
-        ProxyConfigurationHandler.getInstance().getCurrentTabListConfiguration().ifPresent(tabListConfiguration -> {
-            Component header = tabListConfiguration.getHeader() == null
-                ? Component.empty()
-                : VelocityExecutor.SERIALIZER.deserialize(replaceVelocityPlaceHolders(player, tabListConfiguration.getHeader()));
-            Component footer = tabListConfiguration.getFooter() == null
-                ? Component.empty()
-                : VelocityExecutor.SERIALIZER.deserialize(replaceVelocityPlaceHolders(player, tabListConfiguration.getFooter()));
+  public static void initTab0(@NotNull Player player) {
+    ProxyConfigurationHandler.getInstance().getCurrentTabListConfiguration().ifPresent(tabListConfiguration -> {
+      Component header = tabListConfiguration.getHeader() == null
+        ? Component.empty()
+        : VelocityExecutor.SERIALIZER.deserialize(replaceVelocityPlaceHolders(player, tabListConfiguration.getHeader()));
+      Component footer = tabListConfiguration.getFooter() == null
+        ? Component.empty()
+        : VelocityExecutor.SERIALIZER.deserialize(replaceVelocityPlaceHolders(player, tabListConfiguration.getFooter()));
 
-            player.getTabList().setHeaderAndFooter(header, footer);
-        });
-    }
+      player.sendPlayerListHeaderAndFooter(header, footer);
+    });
+  }
 
-    @NotNull
-    private static String replaceVelocityPlaceHolders(@NotNull Player player, @NotNull String tablist) {
-        tablist = tablist
-            .replace("%player_server%", player.getCurrentServer().isPresent() ? player.getCurrentServer().get().getServerInfo().getName() : "")
-            .replace("%player_name%", player.getUsername())
-            .replace("%player_unique_id%", player.getUniqueId().toString())
-            .replace("%player_ping%", Long.toString(player.getPing()));
-        return ProxyConfigurationHandler.getInstance().replaceTabListPlaceHolders(tablist);
-    }
+  @NotNull
+  private static String replaceVelocityPlaceHolders(@NotNull Player player, @NotNull String tablist) {
+    tablist = tablist
+      .replace("%player_server%", player.getCurrentServer().isPresent() ? player.getCurrentServer().get().getServerInfo().getName() : "")
+      .replace("%player_name%", player.getUsername())
+      .replace("%player_unique_id%", player.getUniqueId().toString())
+      .replace("%player_ping%", Long.toString(player.getPing()));
+    return ProxyConfigurationHandler.getInstance().replaceTabListPlaceHolders(tablist);
+  }
 
-    @Subscribe
-    public void handle(final @NotNull ProxyPingEvent event) {
-        ProxyConfigurationHandler.getInstance().getBestMessageOfTheDayConfiguration().ifPresent(motdConfiguration -> {
-            ServerPing.Builder builder = event.getPing().asBuilder();
+  @Subscribe
+  public void handle(final @NotNull ProxyPingEvent event) {
+    ProxyConfigurationHandler.getInstance().getBestMessageOfTheDayConfiguration().ifPresent(motdConfiguration -> {
+      ServerPing.Builder builder = event.getPing().asBuilder();
 
-            final String protocol = motdConfiguration.getProtocol() == null ? null : ProxyConfigurationHandler.getInstance().replaceMessageOfTheDayPlaceHolders(motdConfiguration.getProtocol());
-            final String[] players = motdConfiguration.getPlayerInfo() == null ? null : Arrays.stream(motdConfiguration.getPlayerInfo())
-                .map(ProxyConfigurationHandler.getInstance()::replaceMessageOfTheDayPlaceHolders)
-                .toArray(String[]::new);
+      final String protocol = motdConfiguration.getProtocol() == null ? null : ProxyConfigurationHandler.getInstance().replaceMessageOfTheDayPlaceHolders(motdConfiguration.getProtocol());
+      final String[] players = motdConfiguration.getPlayerInfo() == null ? null : Arrays.stream(motdConfiguration.getPlayerInfo())
+        .map(ProxyConfigurationHandler.getInstance()::replaceMessageOfTheDayPlaceHolders)
+        .toArray(String[]::new);
 
-            String first = motdConfiguration.getFirstLine() == null ? "" : motdConfiguration.getFirstLine();
-            String second = motdConfiguration.getSecondLine() == null ? "" : motdConfiguration.getSecondLine();
-            final String finalMotd = ProxyConfigurationHandler.getInstance().replaceMessageOfTheDayPlaceHolders(first + "\n" + second);
+      String first = motdConfiguration.getFirstLine() == null ? "" : motdConfiguration.getFirstLine();
+      String second = motdConfiguration.getSecondLine() == null ? "" : motdConfiguration.getSecondLine();
+      final String finalMotd = ProxyConfigurationHandler.getInstance().replaceMessageOfTheDayPlaceHolders(first + "\n" + second);
 
-            ServerPing.SamplePlayer[] samplePlayers = new ServerPing.SamplePlayer[players == null ? 0 : players.length];
-            if (players != null) {
-                for (int i = 0; i < samplePlayers.length; i++) {
-                    samplePlayers[i] = new ServerPing.SamplePlayer(players[i], UUID.randomUUID());
-                }
-            }
-
-            ProcessInformation info = Embedded.getInstance().getCurrentProcessInformation();
-            int max = info.getProcessDetail().getMaxPlayers();
-            int online = info.getProcessPlayerManager().getOnlineCount();
-
-            builder
-                .description(VelocityExecutor.SERIALIZER.deserialize(finalMotd))
-                .maximumPlayers(max)
-                .onlinePlayers(online)
-                .build();
-
-            if (players != null) {
-                builder.clearSamplePlayers().samplePlayers(samplePlayers);
-            }
-
-            if (protocol != null) {
-                builder.version(new ServerPing.Version(1, protocol));
-            }
-
-            event.setPing(builder.build());
-        });
-    }
-
-    @Subscribe(order = PostOrder.LAST)
-    public void handle(final PostLoginEvent event) {
-        this.initTab();
-    }
-
-    @Subscribe
-    public void handle(final DisconnectEvent event) {
-        this.initTab();
-    }
-
-    @Subscribe
-    public void handle(final @NotNull ServerConnectedEvent event) {
-        initTab0(event.getPlayer());
-    }
-
-    @Listener
-    public void handle(final @NotNull ProcessUpdateEvent event) {
-        if (event.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(Embedded.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID())) {
-            this.initTab();
+      ServerPing.SamplePlayer[] samplePlayers = new ServerPing.SamplePlayer[players == null ? 0 : players.length];
+      if (players != null) {
+        for (int i = 0; i < samplePlayers.length; i++) {
+          samplePlayers[i] = new ServerPing.SamplePlayer(players[i], UUID.randomUUID());
         }
-    }
+      }
 
-    public void initTab() {
-        this.proxyServer.getAllPlayers().forEach(VelocityListener::initTab0);
+      ProcessInformation info = Embedded.getInstance().getCurrentProcessInformation();
+      int max = info.getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers();
+      int online = info.getOnlineCount();
+
+      builder
+        .description(VelocityExecutor.SERIALIZER.deserialize(finalMotd))
+        .maximumPlayers(max)
+        .onlinePlayers(online)
+        .build();
+
+      if (players != null) {
+        builder.clearSamplePlayers().samplePlayers(samplePlayers);
+      }
+
+      if (protocol != null) {
+        builder.version(new ServerPing.Version(1, protocol));
+      }
+
+      event.setPing(builder.build());
+    });
+  }
+
+  @Subscribe(order = PostOrder.LAST)
+  public void handle(final PostLoginEvent event) {
+    this.initTab();
+  }
+
+  @Subscribe
+  public void handle(final DisconnectEvent event) {
+    this.initTab();
+  }
+
+  @Subscribe
+  public void handle(final @NotNull ServerConnectedEvent event) {
+    initTab0(event.getPlayer());
+  }
+
+  @Listener
+  public void handle(final @NotNull ProcessUpdateEvent event) {
+    if (event.getProcessInformation().getId().getUniqueId().equals(Embedded.getInstance().getCurrentProcessInformation().getId().getUniqueId())) {
+      this.initTab();
     }
+  }
+
+  public void initTab() {
+    this.proxyServer.getAllPlayers().forEach(VelocityListener::initTab0);
+  }
 }
