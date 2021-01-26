@@ -29,7 +29,7 @@ import de.derklaro.projects.deer.api.basic.Filters;
 import de.derklaro.projects.deer.api.provider.DatabaseProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.DatabaseTableWrapper;
 import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 
@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
@@ -48,8 +49,8 @@ public class FileDatabaseTableWrapper implements DatabaseTableWrapper {
 
   public FileDatabaseTableWrapper(@NotNull String tableName) {
     this.database = DatabaseProvider.getDatabaseDriver().getDatabase(
-      Path.of("reformcloud/.database").resolve(tableName).toFile(),
-      SerializableJsonConfiguration::new,
+      Paths.get("reformcloud/.database").resolve(tableName).toFile(),
+      file -> SerializableJsonConfiguration.forPath(file.toPath()),
       1
     );
   }
@@ -81,9 +82,8 @@ public class FileDatabaseTableWrapper implements DatabaseTableWrapper {
   }
 
   @Override
-  public @NotNull
-  Optional<JsonConfiguration> get(@NotNull String key, @NotNull String id) {
-    return this.getEntry(key, id).map(result -> new JsonConfiguration(result.getJsonObject()));
+  public @NotNull Optional<JsonConfiguration> get(@NotNull String key, @NotNull String id) {
+    return this.getEntry(key, id).map(result -> JsonConfiguration.newJsonConfiguration(result.getBackingObject()));
   }
 
   @Override
@@ -149,7 +149,7 @@ public class FileDatabaseTableWrapper implements DatabaseTableWrapper {
           continue;
         }
 
-        collection.add(JsonConfiguration.read(path));
+        collection.add(JsonConfiguration.newJsonConfiguration(path));
       }
     } catch (IOException exception) {
       exception.printStackTrace();

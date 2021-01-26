@@ -26,18 +26,18 @@ package systems.reformcloud.reformcloud2.file;
 
 import de.derklaro.projects.deer.api.writer.FileWriter;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 
-import java.io.File;
+import java.nio.file.Path;
 
 public class SerializableJsonConfiguration extends JsonConfiguration implements FileWriter {
 
-  public SerializableJsonConfiguration(File file) {
-    super(file);
+  public SerializableJsonConfiguration(JsonConfiguration configuration) {
+    super(configuration.getBackingObject());
   }
 
-  public SerializableJsonConfiguration(JsonConfiguration configuration) {
-    super(configuration.getJsonObject());
+  public static SerializableJsonConfiguration forPath(@NotNull Path path) {
+    return new SerializableJsonConfiguration(JsonConfiguration.newJsonConfiguration(path));
   }
 
   @NotNull
