@@ -37,36 +37,36 @@ import systems.reformcloud.reformcloud2.tab.ReformCloudTabPlugin;
 
 public class CloudTabListeners {
 
-    private final Plugin plugin;
+  private final Plugin plugin;
 
-    public CloudTabListeners(Plugin plugin) {
-        this.plugin = plugin;
+  public CloudTabListeners(Plugin plugin) {
+    this.plugin = plugin;
+  }
+
+  @Listener
+  public void handle(final @NotNull PermissionUserUpdateEvent event) {
+    if (Embedded.getInstance().getCurrentProcessInformation().getData().getBoolean("disable-tab")) {
+      return;
     }
 
-    @Listener
-    public void handle(final @NotNull PermissionUserUpdateEvent event) {
-        if (Embedded.getInstance().getCurrentProcessInformation().getExtra().getBoolean("disable-tab")) {
-            return;
-        }
-
-        Player player = Bukkit.getPlayer(event.getPermissionUser().getUniqueID());
-        if (player == null) {
-            return;
-        }
-
-        Bukkit.getScheduler().runTask(this.plugin, () -> ReformCloudTabPlugin.pullPlayerNameTags(player));
+    Player player = Bukkit.getPlayer(event.getPermissionUser().getUniqueID());
+    if (player == null) {
+      return;
     }
 
-    @Listener
-    public void handle(final @NotNull PermissionGroupUpdateEvent event) {
-        if (Embedded.getInstance().getCurrentProcessInformation().getExtra().getBoolean("disable-tab")) {
-            return;
-        }
+    Bukkit.getScheduler().runTask(this.plugin, () -> ReformCloudTabPlugin.pullPlayerNameTags(player));
+  }
 
-        Bukkit.getScheduler().runTask(this.plugin, () -> Bukkit.getOnlinePlayers().forEach(player -> {
-            if (PermissionManagement.getInstance().loadUser(player.getUniqueId()).isInGroup(event.getPermissionGroup().getName())) {
-                ReformCloudTabPlugin.pullPlayerNameTags(player);
-            }
-        }));
+  @Listener
+  public void handle(final @NotNull PermissionGroupUpdateEvent event) {
+    if (Embedded.getInstance().getCurrentProcessInformation().getData().getBoolean("disable-tab")) {
+      return;
     }
+
+    Bukkit.getScheduler().runTask(this.plugin, () -> Bukkit.getOnlinePlayers().forEach(player -> {
+      if (PermissionManagement.getInstance().loadUser(player.getUniqueId()).isInGroup(event.getPermissionGroup().getName())) {
+        ReformCloudTabPlugin.pullPlayerNameTags(player);
+      }
+    }));
+  }
 }

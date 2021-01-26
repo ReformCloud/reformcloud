@@ -34,12 +34,12 @@ import systems.reformcloud.reformcloud2.tab.ReformCloudTabPlugin;
 
 public class BukkitTabListeners implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void handle(@NotNull final PlayerJoinEvent event) {
-        if (Embedded.getInstance().getCurrentProcessInformation().getExtra().getBoolean("disable-tab")) {
-            return;
-        }
-
-        ReformCloudTabPlugin.pullPlayerNameTags(event.getPlayer());
+  @EventHandler(priority = EventPriority.HIGHEST)
+  public void handle(@NotNull final PlayerJoinEvent event) {
+    if (Embedded.getInstance().getCurrentProcessInformation().getData().getBoolean("disable-tab")) {
+      return;
     }
+
+    ReformCloudTabPlugin.pullPlayerNameTags(event.getPlayer());
+  }
 }
