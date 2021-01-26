@@ -35,7 +35,7 @@ import com.rethinkdb.utils.Types;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.DatabaseTableWrapper;
 
 import java.util.ArrayList;
@@ -116,7 +116,7 @@ public class RethinkDatabaseTableWrapper implements DatabaseTableWrapper {
           continue;
         }
 
-        result.add(new JsonConfiguration(map.get("values")));
+        result.add(JsonConfiguration.newJsonConfiguration(map.get("values")));
       }
     }
 
@@ -132,7 +132,7 @@ public class RethinkDatabaseTableWrapper implements DatabaseTableWrapper {
     Result<Map<String, String>> result = this.table.filter(this.asMap(key, id)).run(this.connection, Types.mapOf(String.class, String.class));
     if (result.hasNext()) {
       Map<String, String> map = result.first();
-      return map == null ? Optional.empty() : Optional.of(new JsonConfiguration(map.get("values")));
+      return map == null ? Optional.empty() : Optional.of(JsonConfiguration.newJsonConfiguration(map.get("values")));
     }
 
     return Optional.empty();

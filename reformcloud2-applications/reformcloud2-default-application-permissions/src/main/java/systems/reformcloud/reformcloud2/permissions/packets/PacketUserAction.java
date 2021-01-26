@@ -34,7 +34,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.Cha
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
-import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
+import systems.reformcloud.reformcloud2.permissions.objects.PermissionUser;
 import systems.reformcloud.reformcloud2.permissions.packets.util.PermissionAction;
 
 public class PacketUserAction extends Packet {
@@ -105,8 +105,7 @@ public class PacketUserAction extends Packet {
 
   private void publish(@NotNull Packet packet) {
     for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
-      if (registeredChannel.isAuthenticated()
-        && ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(registeredChannel.getName()).isEmpty()) {
+      if (registeredChannel.isKnown() && !ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(registeredChannel.getName()).isPresent()) {
         registeredChannel.sendPacket(packet);
       }
     }

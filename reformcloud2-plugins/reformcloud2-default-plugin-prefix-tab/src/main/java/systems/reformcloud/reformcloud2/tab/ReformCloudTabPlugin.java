@@ -35,8 +35,8 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
-import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
-import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
+import systems.reformcloud.reformcloud2.permissions.objects.PermissionGroup;
+import systems.reformcloud.reformcloud2.permissions.objects.PermissionUser;
 import systems.reformcloud.reformcloud2.tab.listener.BukkitTabListeners;
 import systems.reformcloud.reformcloud2.tab.listener.CloudTabListeners;
 

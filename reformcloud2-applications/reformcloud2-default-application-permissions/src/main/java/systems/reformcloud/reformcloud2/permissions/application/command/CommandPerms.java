@@ -33,8 +33,8 @@ import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
-import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
-import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
+import systems.reformcloud.reformcloud2.permissions.objects.PermissionGroup;
+import systems.reformcloud.reformcloud2.permissions.objects.PermissionUser;
 import systems.reformcloud.reformcloud2.shared.Constants;
 import systems.reformcloud.reformcloud2.shared.parser.Parsers;
 
@@ -225,7 +225,7 @@ public class CommandPerms implements Command {
 
   private void handleUserCommand(@NotNull CommandSender source, @NotNull String[] strings) {
     Optional<PermissionUser> permissionUserOptional = PermissionManagement.getInstance().loadUser(strings[1]);
-    if (permissionUserOptional.isEmpty()) {
+    if (!permissionUserOptional.isPresent()) {
       source.sendMessage("The permission user " + strings[1] + " is not present");
       return;
     }
@@ -244,7 +244,7 @@ public class CommandPerms implements Command {
       }
 
       if (strings[2].equalsIgnoreCase("clear")) {
-        permissionUser.getPermissionNodes().clear();
+        permissionUser.getPermissions().clear();
         permissionUser.getGroups().clear();
         PermissionManagement.getInstance().updateUser(permissionUser);
         source.sendMessage("Cleared all permissions and groups of user " + strings[1]);
@@ -263,7 +263,7 @@ public class CommandPerms implements Command {
         }
 
         if (strings[3].equalsIgnoreCase("permissions") || strings[3].equalsIgnoreCase("perms")) {
-          permissionUser.getPermissionNodes().clear();
+          permissionUser.getPermissions().clear();
           PermissionManagement.getInstance().updateUser(permissionUser);
           source.sendMessage("Cleared all permissions of user " + strings[1]);
           return;
@@ -272,7 +272,7 @@ public class CommandPerms implements Command {
 
       if (strings[2].equalsIgnoreCase("addgroup")) {
         Optional<PermissionGroup> permissionGroup = PermissionManagement.getInstance().getPermissionGroup(strings[3]);
-        if (permissionGroup.isEmpty()) {
+        if (!permissionGroup.isPresent()) {
           source.sendMessage("Unable to find permission group " + strings[3]);
           return;
         }
@@ -290,7 +290,7 @@ public class CommandPerms implements Command {
 
       if (strings[2].equalsIgnoreCase("setgroup")) {
         Optional<PermissionGroup> permissionGroup = PermissionManagement.getInstance().getPermissionGroup(strings[3]);
-        if (permissionGroup.isEmpty()) {
+        if (!permissionGroup.isPresent()) {
           source.sendMessage("Unable to find permission group " + strings[3]);
           return;
         }
@@ -320,7 +320,7 @@ public class CommandPerms implements Command {
       }
 
       if (strings[2].equalsIgnoreCase("delperm")) {
-        if (!permissionUser.getPermissionNodes().removeIf(node -> node.getActualPermission().equalsIgnoreCase(strings[3]))) {
+        if (!permissionUser.getPermissions().removeIf(node -> node.getActualPermission().equalsIgnoreCase(strings[3]))) {
           source.sendMessage("The user " + strings[1] + " does not have the permission " + strings[3]);
           return;
         }
@@ -423,7 +423,7 @@ public class CommandPerms implements Command {
       }
 
       if (strings[2].equalsIgnoreCase("addperm")) {
-        if (permissionUser.getPermissionNodes().stream().anyMatch(node -> node.getActualPermission().equalsIgnoreCase(strings[3]))) {
+        if (permissionUser.getPermissions().stream().anyMatch(node -> node.getActualPermission().equalsIgnoreCase(strings[3]))) {
           source.sendMessage("The permission " + strings[3] + " is already set for user " + strings[1]);
           return;
         }
@@ -434,7 +434,7 @@ public class CommandPerms implements Command {
           return;
         }
 
-        permissionUser.getPermissionNodes().add(PermissionNode.createNode(strings[3], -1, positive));
+        permissionUser.getPermissions().add(PermissionNode.createNode(strings[3], -1, positive));
         PermissionManagement.getInstance().updateUser(permissionUser);
         source.sendMessage("The permission " + strings[3] + " is now set for the user " + strings[1] + " in context global");
         return;
@@ -444,7 +444,7 @@ public class CommandPerms implements Command {
     if (strings.length == 6) {
       if (strings[2].equalsIgnoreCase("addgroup")) {
         Optional<PermissionGroup> optionalPermissionGroup = PermissionManagement.getInstance().getPermissionGroup(strings[3]);
-        if (optionalPermissionGroup.isEmpty()) {
+        if (!optionalPermissionGroup.isPresent()) {
           source.sendMessage("The permission group " + strings[3] + " is not present");
           return;
         }
@@ -479,7 +479,7 @@ public class CommandPerms implements Command {
 
       if (strings[2].equalsIgnoreCase("setgroup")) {
         Optional<PermissionGroup> optionalPermissionGroup = PermissionManagement.getInstance().getPermissionGroup(strings[3]);
-        if (optionalPermissionGroup.isEmpty()) {
+        if (!optionalPermissionGroup.isPresent()) {
           source.sendMessage("The permission group " + strings[3] + " is not present");
           return;
         }
@@ -534,7 +534,7 @@ public class CommandPerms implements Command {
     }
 
     if (strings.length == 7 && strings[2].equalsIgnoreCase("addperm")) {
-      if (permissionUser.getPermissionNodes().stream().anyMatch(node -> node.getActualPermission().equalsIgnoreCase(strings[3]))) {
+      if (permissionUser.getPermissions().stream().anyMatch(node -> node.getActualPermission().equalsIgnoreCase(strings[3]))) {
         source.sendMessage("The permission " + strings[3] + " is already set for the user " + strings[1]);
         return;
       }
@@ -561,7 +561,7 @@ public class CommandPerms implements Command {
         return;
       }
 
-      permissionUser.getPermissionNodes().add(PermissionNode.createNode(strings[3], timeout, positive));
+      permissionUser.getPermissions().add(PermissionNode.createNode(strings[3], timeout, positive));
       PermissionManagement.getInstance().updateUser(permissionUser);
       source.sendMessage("The user " + strings[1] + " has now the permission " + strings[3] + " "
         + (timeout == -1 ? "lifetime " : "until " + Constants.FULL_DATE_FORMAT.format(timeout)));
@@ -629,19 +629,12 @@ public class CommandPerms implements Command {
         return;
       }
 
-      PermissionManagement.getInstance().createPermissionGroup(new PermissionGroup(
-        new ArrayList<>(),
-        new HashMap<>(),
-        new ArrayList<>(),
-        strings[1],
-        0,
-        defaultGroup
-      ));
+      PermissionManagement.getInstance().createPermissionGroup(new PermissionGroup(new ArrayList<>(), strings[1], 0, defaultGroup));
       source.sendMessage("Successfully created new permission group " + strings[1]);
       return;
     }
 
-    if (optionalPermissionGroup.isEmpty()) {
+    if (!optionalPermissionGroup.isPresent()) {
       source.sendMessage("The permission group " + strings[1] + " is not present");
       return;
     }
@@ -661,7 +654,7 @@ public class CommandPerms implements Command {
 
       if (strings[2].equalsIgnoreCase("clear")) {
         permissionGroup.getPerGroupPermissions().clear();
-        permissionGroup.getPermissionNodes().clear();
+        permissionGroup.getPermissions().clear();
         permissionGroup.getSubGroups().clear();
         PermissionManagement.getInstance().updateGroup(permissionGroup);
         source.sendMessage("Successfully deleted all permissions and sub groups from group " + strings[1]);
@@ -680,7 +673,7 @@ public class CommandPerms implements Command {
 
         if (strings[3].equalsIgnoreCase("permissions") || strings[3].equalsIgnoreCase("perms")) {
           permissionGroup.getPerGroupPermissions().clear();
-          permissionGroup.getPermissionNodes().clear();
+          permissionGroup.getPermissions().clear();
           PermissionManagement.getInstance().updateGroup(permissionGroup);
           source.sendMessage("Successfully deleted all permissions from group " + strings[1]);
           return;
@@ -802,7 +795,7 @@ public class CommandPerms implements Command {
       }
 
       if (strings[2].equalsIgnoreCase("delperm")) {
-        if (!permissionGroup.getPermissionNodes().removeIf(node -> node.getActualPermission().equalsIgnoreCase(strings[3]))) {
+        if (!permissionGroup.getPermissions().removeIf(node -> node.getActualPermission().equalsIgnoreCase(strings[3]))) {
           source.sendMessage("The permission " + strings[3] + " is not set for the group " + strings[1]);
           return;
         }
@@ -819,7 +812,7 @@ public class CommandPerms implements Command {
         }
 
         Optional<PermissionGroup> other = PermissionManagement.getInstance().getPermissionGroup(strings[3]);
-        if (other.isEmpty()) {
+        if (!other.isPresent()) {
           source.sendMessage("The permission group " + strings[3] + " does not exists");
           return;
         }
@@ -844,7 +837,7 @@ public class CommandPerms implements Command {
 
     if (strings.length == 5) {
       if (strings[2].equalsIgnoreCase("addperm")) {
-        if (permissionGroup.getPermissionNodes().stream().anyMatch(node -> node.getActualPermission().equalsIgnoreCase(strings[3]))) {
+        if (permissionGroup.getPermissions().stream().anyMatch(node -> node.getActualPermission().equalsIgnoreCase(strings[3]))) {
           source.sendMessage("The permission " + strings[3] + " is already set for the group " + strings[1]);
           return;
         }
@@ -855,7 +848,7 @@ public class CommandPerms implements Command {
           return;
         }
 
-        permissionGroup.getPermissionNodes().add(PermissionNode.createNode(strings[3], -1, positive));
+        permissionGroup.getPermissions().add(PermissionNode.createNode(strings[3], -1, positive));
         PermissionManagement.getInstance().updateGroup(permissionGroup);
         source.sendMessage("The permission group " + strings[1] + " has now the permission " + strings[3]);
         return;
@@ -898,7 +891,7 @@ public class CommandPerms implements Command {
     }
 
     if (strings.length == 7 && strings[2].equalsIgnoreCase("addperm")) {
-      if (permissionGroup.getPermissionNodes().stream().anyMatch(node -> node.getActualPermission().equalsIgnoreCase(strings[3]))) {
+      if (permissionGroup.getPermissions().stream().anyMatch(node -> node.getActualPermission().equalsIgnoreCase(strings[3]))) {
         source.sendMessage("The permission " + strings[3] + " is already set for the group " + strings[1] + " in the context global");
         return;
       }
@@ -925,7 +918,7 @@ public class CommandPerms implements Command {
         return;
       }
 
-      permissionGroup.getPermissionNodes().add(PermissionNode.createNode(strings[3], timeout, positive));
+      permissionGroup.getPermissions().add(PermissionNode.createNode(strings[3], timeout, positive));
       PermissionManagement.getInstance().updateGroup(permissionGroup);
       source.sendMessage("The group " + strings[1] + " has now the permission " + strings[3] + " in context global");
       return;
@@ -992,8 +985,8 @@ public class CommandPerms implements Command {
       stringBuilder.append("  ").append(subGroup).append("\n");
     }
 
-    stringBuilder.append("\n").append(" Permissions (").append(permissionGroup.getPermissionNodes().size()).append("):").append("\n");
-    for (PermissionNode permissionNode : permissionGroup.getPermissionNodes()) {
+    stringBuilder.append("\n").append(" Permissions (").append(permissionGroup.getPermissions().size()).append("):").append("\n");
+    for (PermissionNode permissionNode : permissionGroup.getPermissions()) {
       stringBuilder.append(formatPermissionNode(permissionNode));
     }
 
@@ -1038,8 +1031,8 @@ public class CommandPerms implements Command {
       stringBuilder.append("\n");
     }
 
-    stringBuilder.append("\n").append(" Permissions (").append(permissionUser.getPermissionNodes().size()).append("):").append("\n");
-    for (PermissionNode permissionNode : permissionUser.getPermissionNodes()) {
+    stringBuilder.append("\n").append(" Permissions (").append(permissionUser.getPermissions().size()).append("):").append("\n");
+    for (PermissionNode permissionNode : permissionUser.getPermissions()) {
       stringBuilder.append(formatPermissionNode(permissionNode));
     }
 

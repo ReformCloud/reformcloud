@@ -33,7 +33,7 @@ import org.cloudburstmc.server.player.Player;
 import org.cloudburstmc.server.plugin.PluginContainer;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
-import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
+import systems.reformcloud.reformcloud2.permissions.objects.PermissionUser;
 import systems.reformcloud.reformcloud2.permissions.util.PermissionPluginUtil;
 
 import java.util.Map;

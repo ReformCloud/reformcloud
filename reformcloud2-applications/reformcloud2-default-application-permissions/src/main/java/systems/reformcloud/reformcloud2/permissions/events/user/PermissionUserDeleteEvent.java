@@ -36,7 +36,7 @@ public class PermissionUserDeleteEvent extends Event {
     this.uuid = uuid;
   }
 
-  public UUID getUuid() {
+  public UUID getUniqueId() {
     return this.uuid;
   }
 }

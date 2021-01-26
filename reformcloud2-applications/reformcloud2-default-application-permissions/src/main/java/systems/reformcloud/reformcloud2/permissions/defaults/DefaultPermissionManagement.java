@@ -46,8 +46,8 @@ import systems.reformcloud.reformcloud2.permissions.events.user.PermissionUserUp
 import systems.reformcloud.reformcloud2.permissions.internal.UUIDFetcher;
 import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
-import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
-import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
+import systems.reformcloud.reformcloud2.permissions.objects.PermissionGroup;
+import systems.reformcloud.reformcloud2.permissions.objects.PermissionUser;
 import systems.reformcloud.reformcloud2.permissions.packets.PacketGroupAction;
 import systems.reformcloud.reformcloud2.permissions.packets.PacketUserAction;
 import systems.reformcloud.reformcloud2.permissions.packets.util.PermissionAction;
@@ -82,7 +82,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
     this.nameToUniqueIdDatabase = ExecutorAPI.getInstance().getDatabaseProvider().createTable(PERMISSION_NAME_TO_UNIQUE_ID_TABLE);
 
     for (JsonConfiguration configuration : this.permissionGroupTable.getAll()) {
-      PermissionGroup group = configuration.get("group", PermissionGroup.TYPE);
+      PermissionGroup group = configuration.get("group", PermissionGroup.class);
       if (group != null) {
         this.eraseGroupCache(group);
         this.nameToGroupCache.put(group.getName(), group);
@@ -100,7 +100,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
     this.nameToGroupCache.put(permissionGroup.getName(), permissionGroup);
 
     if (NODE) {
-      this.permissionGroupTable.update(permissionGroup.getName(), "", new JsonConfiguration().add("group", permissionGroup));
+      this.permissionGroupTable.update(permissionGroup.getName(), "", JsonConfiguration.newJsonConfiguration().add("group", permissionGroup));
     }
 
     this.publish(new PacketGroupAction(permissionGroup, PermissionAction.UPDATE));
@@ -108,7 +108,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
 
   @Override
   public void addGroupPermission(@NotNull PermissionGroup permissionGroup, @NotNull PermissionNode permissionNode) {
-    permissionGroup.getPermissionNodes().add(permissionNode);
+    permissionGroup.getPermissions().add(permissionNode);
     this.updateGroup(permissionGroup);
   }
 
@@ -129,13 +129,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
   @Override
   @Deprecated
   public PermissionGroup createGroup(@NotNull String name) {
-    PermissionGroup newGroup = new PermissionGroup(
-      new ArrayList<>(),
-      new ConcurrentHashMap<>(),
-      new ArrayList<>(),
-      name,
-      0
-    );
+    PermissionGroup newGroup = new PermissionGroup(new ArrayList<>(), name, 0);
     return this.createPermissionGroup(newGroup);
   }
 
@@ -147,7 +141,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
     }
 
     if (NODE) {
-      this.permissionGroupTable.insert(permissionGroup.getName(), "", new JsonConfiguration().add("group", permissionGroup));
+      this.permissionGroupTable.insert(permissionGroup.getName(), "", JsonConfiguration.newJsonConfiguration().add("group", permissionGroup));
     }
 
     this.publish(new PacketGroupAction(permissionGroup, PermissionAction.CREATE));
@@ -236,11 +230,11 @@ public class DefaultPermissionManagement extends PermissionManagement {
     }
 
     Optional<JsonConfiguration> configuration = this.permissionUserTable.get(uniqueId.toString(), "");
-    if (configuration.isEmpty()) {
+    if (!configuration.isPresent()) {
       return Optional.empty();
     }
 
-    permissionUser = configuration.get().get("user", PermissionUser.TYPE);
+    permissionUser = configuration.get().get("user", PermissionUser.class);
     if (permissionUser == null) {
       return Optional.empty();
     }
@@ -256,9 +250,9 @@ public class DefaultPermissionManagement extends PermissionManagement {
 
   @NotNull
   private PermissionUser createPermissionUser(@NotNull UUID uniqueID) {
-    PermissionUser permissionUser = new PermissionUser(uniqueID, new ArrayList<>(), new ArrayList<>());
+    PermissionUser permissionUser = new PermissionUser(uniqueID, new ArrayList<>());
 
-    this.permissionUserTable.insert(uniqueID.toString(), "", new JsonConfiguration().add("user", permissionUser));
+    this.permissionUserTable.insert(uniqueID.toString(), "", JsonConfiguration.newJsonConfiguration().add("user", permissionUser));
     this.publish(new PacketUserAction(permissionUser, PermissionAction.CREATE));
     this.uniqueIdToUserCache.put(uniqueID, permissionUser);
 
@@ -298,7 +292,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
   @Override
   public void addUserPermission(@NotNull UUID uuid, @NotNull PermissionNode permissionNode) {
     PermissionUser user = this.loadUser(uuid);
-    user.getPermissionNodes().add(permissionNode);
+    user.getPermissions().add(permissionNode);
     this.updateUser(user);
   }
 
@@ -322,7 +316,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
   public void updateUser(@NotNull PermissionUser permissionUser) {
     this.uniqueIdToUserCache.put(permissionUser.getUniqueID(), permissionUser);
 
-    this.permissionUserTable.update(permissionUser.getUniqueID().toString(), "", new JsonConfiguration().add("user", permissionUser));
+    this.permissionUserTable.update(permissionUser.getUniqueID().toString(), "", JsonConfiguration.newJsonConfiguration().add("user", permissionUser));
     this.publish(new PacketUserAction(permissionUser, PermissionAction.UPDATE));
   }
 
@@ -407,7 +401,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
 
   private void eraseUserCache(@NotNull PermissionUser permissionUser) {
     boolean hasChanged = permissionUser.getGroups().removeIf(group -> !group.isValid())
-      || permissionUser.getPermissionNodes().removeIf(permissionNode -> !permissionNode.isValid());
+      || permissionUser.getPermissions().removeIf(permissionNode -> !permissionNode.isValid());
     for (Map.Entry<String, Collection<PermissionNode>> stringCollectionEntry : permissionUser.getPerGroupPermissions().entrySet()) {
       hasChanged = stringCollectionEntry.getValue().removeIf(permissionNode -> !permissionNode.isValid());
     }
@@ -418,7 +412,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
   }
 
   private void eraseGroupCache(@NotNull PermissionGroup permissionGroup) {
-    boolean hasChanged = permissionGroup.getPermissionNodes().removeIf(permissionNode -> !permissionNode.isValid());
+    boolean hasChanged = permissionGroup.getPermissions().removeIf(permissionNode -> !permissionNode.isValid());
     for (Map.Entry<String, Collection<PermissionNode>> stringCollectionEntry : permissionGroup.getPerGroupPermissions().entrySet()) {
       hasChanged = stringCollectionEntry.getValue().removeIf(permissionNode -> !permissionNode.isValid());
     }
@@ -429,12 +423,12 @@ public class DefaultPermissionManagement extends PermissionManagement {
   }
 
   private void pushToDB(@NotNull UUID uuid, @NotNull String name) {
-    Constants.CACHED_THREAD_POOL.execute(() -> this.nameToUniqueIdDatabase.insert(name, uuid.toString(), new JsonConfiguration().add("id", uuid)));
+    Constants.CACHED_THREAD_POOL.execute(() -> this.nameToUniqueIdDatabase.insert(name, uuid.toString(), JsonConfiguration.newJsonConfiguration().add("id", uuid)));
   }
 
   private void publish(@NotNull Packet packet) {
     for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
-      if (registeredChannel.isAuthenticated()) {
+      if (registeredChannel.isKnown()) {
         if (NODE && ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(registeredChannel.getName()).isPresent()) {
           continue;
         }

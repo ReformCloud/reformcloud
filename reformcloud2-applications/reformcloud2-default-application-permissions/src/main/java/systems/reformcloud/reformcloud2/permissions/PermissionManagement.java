@@ -35,8 +35,8 @@ import systems.reformcloud.reformcloud2.permissions.defaults.DefaultPermissionMa
 import systems.reformcloud.reformcloud2.permissions.events.system.PermissionManagerSetupEvent;
 import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
-import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
-import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
+import systems.reformcloud.reformcloud2.permissions.objects.PermissionGroup;
+import systems.reformcloud.reformcloud2.permissions.objects.PermissionUser;
 
 import java.util.Collection;
 import java.util.Objects;

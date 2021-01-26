@@ -27,8 +27,8 @@ package systems.reformcloud.reformcloud2.permissions.bukkit.vault;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.permission.Permission;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
-import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
-import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
+import systems.reformcloud.reformcloud2.permissions.objects.PermissionGroup;
+import systems.reformcloud.reformcloud2.permissions.objects.PermissionUser;
 
 public class PermissionVaultChatImplementation extends Chat {
 

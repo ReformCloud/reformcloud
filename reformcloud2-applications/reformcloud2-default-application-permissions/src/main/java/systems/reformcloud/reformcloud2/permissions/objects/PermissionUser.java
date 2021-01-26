@@ -22,9 +22,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.permissions.objects.user;
+package systems.reformcloud.reformcloud2.permissions.objects;
 
-import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,27 +31,17 @@ import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfigura
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
-import systems.reformcloud.reformcloud2.permissions.checks.GeneralCheck;
-import systems.reformcloud.reformcloud2.permissions.checks.WildcardCheck;
 import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
-import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
-import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
+import systems.reformcloud.reformcloud2.permissions.objects.holder.DefaultPermissionHolder;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class PermissionUser implements SerializableObject {
+public class PermissionUser extends DefaultPermissionHolder implements SerializableObject {
 
-  public static final TypeToken<PermissionUser> TYPE = new TypeToken<>() {
-  };
   private UUID uuid;
-  private Collection<PermissionNode> permissionNodes;
   private Collection<NodeGroup> groups;
-  private Map<String, Collection<PermissionNode>> perGroupPermissions;
   private @Nullable String prefix;
   private @Nullable String suffix;
   private @Nullable String display;
@@ -63,16 +52,10 @@ public class PermissionUser implements SerializableObject {
   public PermissionUser() {
   }
 
-  public PermissionUser(
-    @NotNull UUID uuid,
-    @NotNull Collection<PermissionNode> permissionNodes,
-    @NotNull Collection<NodeGroup> groups
-  ) {
+  public PermissionUser(@NotNull UUID uuid, @NotNull Collection<NodeGroup> groups) {
     this.uuid = uuid;
-    this.permissionNodes = permissionNodes;
     this.groups = groups;
-    this.perGroupPermissions = new ConcurrentHashMap<>();
-    this.extra = new JsonConfiguration();
+    this.extra = JsonConfiguration.newJsonConfiguration();
   }
 
   @NotNull
@@ -81,18 +64,8 @@ public class PermissionUser implements SerializableObject {
   }
 
   @NotNull
-  public Collection<PermissionNode> getPermissionNodes() {
-    return this.permissionNodes;
-  }
-
-  @NotNull
   public Collection<NodeGroup> getGroups() {
     return this.groups;
-  }
-
-  @NotNull
-  public Map<String, Collection<PermissionNode>> getPerGroupPermissions() {
-    return this.perGroupPermissions == null ? (this.perGroupPermissions = new HashMap<>()) : this.perGroupPermissions;
   }
 
   @NotNull
@@ -149,7 +122,7 @@ public class PermissionUser implements SerializableObject {
 
   @NotNull
   public JsonConfiguration getExtra() {
-    return this.extra == null ? new JsonConfiguration() : this.extra;
+    return this.extra == null ? JsonConfiguration.newJsonConfiguration() : this.extra;
   }
 
   @NotNull
@@ -182,60 +155,37 @@ public class PermissionUser implements SerializableObject {
     return false;
   }
 
-  public boolean hasPermission(String permission) {
-    if (permission == null) {
-      return false;
-    }
-
-    permission = permission.toLowerCase();
-    Boolean general = GeneralCheck.hasPermission(this, permission);
-    if (general != null) {
-      return general;
-    }
-
-    Boolean wildCard = WildcardCheck.hasWildcardPermission(this, permission);
-    if (wildCard != null) {
-      return wildCard;
-    }
-
-    return PermissionManagement.getInstance().hasPermission(this, permission);
+  @Override
+  public @Nullable Boolean hasPermission(@NotNull String permission) {
+    final Boolean result = super.hasPermission(permission);
+    return result == null ? PermissionManagement.getInstance().hasPermission(this, permission) : result;
   }
 
   @Override
   public void write(@NotNull ProtocolBuffer buffer) {
     buffer.writeUniqueId(this.uuid);
     buffer.writeObjects(this.groups);
-    buffer.writeObjects(this.permissionNodes);
-
-    buffer.writeVarInt(this.getPerGroupPermissions().size());
-    for (Map.Entry<String, Collection<PermissionNode>> stringCollectionEntry : this.getPerGroupPermissions().entrySet()) {
-      buffer.writeString(stringCollectionEntry.getKey());
-      buffer.writeObjects(stringCollectionEntry.getValue());
-    }
 
     buffer.writeString(this.prefix);
     buffer.writeString(this.suffix);
     buffer.writeString(this.display);
     buffer.writeString(this.colour);
     buffer.writeArray(this.getExtra().toPrettyBytes());
+
+    super.write(buffer);
   }
 
   @Override
   public void read(@NotNull ProtocolBuffer buffer) {
     this.uuid = buffer.readUniqueId();
     this.groups = buffer.readObjects(NodeGroup.class);
-    this.permissionNodes = buffer.readObjects(PermissionNode.class);
-
-    int size = buffer.readVarInt();
-    this.perGroupPermissions = new HashMap<>(size);
-    for (int i = 0; i < size; i++) {
-      this.perGroupPermissions.put(buffer.readString(), buffer.readObjects(PermissionNode.class));
-    }
 
     this.prefix = buffer.readString();
     this.suffix = buffer.readString();
     this.display = buffer.readString();
     this.colour = buffer.readString();
-    this.extra = new JsonConfiguration(buffer.readArray());
+    this.extra = JsonConfiguration.newJsonConfiguration(buffer.readArray());
+
+    super.read(buffer);
   }
 }

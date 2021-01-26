@@ -29,8 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
-import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
-import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
+import systems.reformcloud.reformcloud2.permissions.objects.holder.PermissionHolder;
 
 import java.util.Collection;
 
@@ -40,30 +39,14 @@ public final class WildcardCheck {
     throw new UnsupportedOperationException();
   }
 
-  public static Boolean hasWildcardPermission(@NotNull PermissionGroup permissionGroup, @NotNull String perm) {
-    Boolean hasPermission = hasPermission(permissionGroup.getPermissionNodes(), perm);
+  public static Boolean hasWildcardPermission(@NotNull PermissionHolder holder, @NotNull String perm) {
+    Boolean hasPermission = hasPermission(holder.getPermissions(), perm);
     if (hasPermission != null) {
       return hasPermission;
     }
 
     final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-    final Collection<PermissionNode> currentGroupPerms = permissionGroup.getPerGroupPermissions().get(current.getProcessGroup().getName());
-    if (currentGroupPerms == null || currentGroupPerms.isEmpty()) {
-      return null;
-    }
-
-    return hasPermission(currentGroupPerms, perm);
-  }
-
-  @Nullable
-  public static Boolean hasWildcardPermission(@NotNull PermissionUser permissionUser, @NotNull String perm) {
-    Boolean hasPermission = hasPermission(permissionUser.getPermissionNodes(), perm);
-    if (hasPermission != null) {
-      return hasPermission;
-    }
-
-    final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-    final Collection<PermissionNode> currentGroupPerms = permissionUser.getPerGroupPermissions().get(current.getProcessGroup().getName());
+    final Collection<PermissionNode> currentGroupPerms = holder.getPerGroupPermissions().get(current.getProcessGroup().getName());
     if (currentGroupPerms == null || currentGroupPerms.isEmpty()) {
       return null;
     }

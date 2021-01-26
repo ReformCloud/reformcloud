@@ -30,8 +30,8 @@ import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
-import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
-import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
+import systems.reformcloud.reformcloud2.permissions.objects.PermissionGroup;
+import systems.reformcloud.reformcloud2.permissions.objects.PermissionUser;
 import systems.reformcloud.reformcloud2.permissions.packets.PacketHelper;
 
 import java.util.Collection;
@@ -55,7 +55,7 @@ public final class PermissionPluginUtil {
 
   @NotNull
   public static Collection<PermissionNode> collectPermissionsOfUser(@NotNull PermissionUser permissionUser) {
-    Collection<PermissionNode> permissionNodes = permissionUser.getPermissionNodes()
+    Collection<PermissionNode> permissionNodes = permissionUser.getPermissions()
       .stream()
       .filter(PermissionNode::isValid)
       .collect(Collectors.toCollection(CopyOnWriteArrayList::new));
@@ -91,7 +91,7 @@ public final class PermissionPluginUtil {
   }
 
   private static void collectPermissionsOfGroup(@NotNull PermissionGroup permissionGroup, @NotNull Collection<PermissionNode> permissionNodes, @NotNull Set<String> travelledGroups) {
-    permissionNodes.addAll(permissionGroup.getPermissionNodes()
+    permissionNodes.addAll(permissionGroup.getPermissions()
       .stream()
       .filter(PermissionNode::isValid)
       .filter(node -> permissionNodes.stream().noneMatch(setNode -> setNode.getActualPermission().equals(node.getActualPermission())))

@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.permissions.events.user;
 
 import systems.reformcloud.reformcloud2.executor.api.event.Event;
-import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
+import systems.reformcloud.reformcloud2.permissions.objects.PermissionUser;
 
 public class PermissionUserUpdateEvent extends Event {
 

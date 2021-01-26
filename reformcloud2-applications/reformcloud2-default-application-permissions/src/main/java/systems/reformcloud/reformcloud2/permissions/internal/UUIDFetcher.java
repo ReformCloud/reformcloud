@@ -75,7 +75,7 @@ public final class UUIDFetcher {
       httpURLConnection.connect();
 
       try (InputStreamReader reader = new InputStreamReader(httpURLConnection.getInputStream())) {
-        JsonConfiguration configuration = new JsonConfiguration(reader);
+        JsonConfiguration configuration = JsonConfiguration.newJsonConfiguration(reader);
         if (configuration.has("id")) {
           try {
             UUID uuid = fromString(PATTERN.matcher(configuration.getString("id")).replaceAll("$1-$2-$3-$4-$5"));
@@ -99,7 +99,7 @@ public final class UUIDFetcher {
       ""
     );
 
-    return configuration.isEmpty() || !configuration.get().has("id") ? null : configuration.get().get("id", UUID.class);
+    return !configuration.isPresent() || !configuration.get().has("id") ? null : configuration.get().get("id", UUID.class);
   }
 
   @NotNull

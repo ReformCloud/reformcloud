@@ -27,7 +27,7 @@ package systems.reformcloud.reformcloud2.chat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
-import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
+import systems.reformcloud.reformcloud2.permissions.objects.PermissionGroup;
 
 import java.util.UUID;
 import java.util.function.BiFunction;

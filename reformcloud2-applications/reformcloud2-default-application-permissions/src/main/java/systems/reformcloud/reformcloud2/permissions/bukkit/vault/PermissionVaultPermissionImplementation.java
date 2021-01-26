@@ -30,8 +30,8 @@ import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
-import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
-import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
+import systems.reformcloud.reformcloud2.permissions.objects.PermissionGroup;
+import systems.reformcloud.reformcloud2.permissions.objects.PermissionUser;
 
 public class PermissionVaultPermissionImplementation extends Permission {
 
@@ -72,12 +72,12 @@ public class PermissionVaultPermissionImplementation extends Permission {
   @Override
   public boolean playerRemove(String world, String player, String permission) {
     return VaultUtil.getUserFromName(player).map(user -> {
-      PermissionNode node = MoreCollections.filter(user.getPermissionNodes(), e -> e.getActualPermission().equalsIgnoreCase(permission));
+      PermissionNode node = MoreCollections.filter(user.getPermissions(), e -> e.getActualPermission().equalsIgnoreCase(permission));
       if (node == null) {
         return false;
       }
 
-      user.getPermissionNodes().remove(node);
+      user.getPermissions().remove(node);
       this.permissionManagement.updateUser(user);
       return true;
     }).orElse(false);
@@ -99,12 +99,12 @@ public class PermissionVaultPermissionImplementation extends Permission {
   @Override
   public boolean groupRemove(String world, String group, String permission) {
     return this.permissionManagement.getPermissionGroup(group).map(g -> {
-      PermissionNode node = MoreCollections.filter(g.getPermissionNodes(), e -> e.getActualPermission().equalsIgnoreCase(permission));
+      PermissionNode node = MoreCollections.filter(g.getPermissions(), e -> e.getActualPermission().equalsIgnoreCase(permission));
       if (node == null) {
         return false;
       }
 
-      g.getPermissionNodes().remove(node);
+      g.getPermissions().remove(node);
       this.permissionManagement.updateGroup(g);
       return true;
     }).orElse(false);

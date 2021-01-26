@@ -22,30 +22,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.permissions.objects.group;
+package systems.reformcloud.reformcloud2.permissions.objects;
 
-import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
-import systems.reformcloud.reformcloud2.permissions.checks.GeneralCheck;
-import systems.reformcloud.reformcloud2.permissions.checks.WildcardCheck;
-import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
+import systems.reformcloud.reformcloud2.permissions.objects.holder.DefaultPermissionHolder;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
-public class PermissionGroup implements SerializableObject {
+public class PermissionGroup extends DefaultPermissionHolder implements SerializableObject {
 
-  public static final TypeToken<PermissionGroup> TYPE = new TypeToken<>() {
-  };
-  private Collection<PermissionNode> permissionNodes;
-  private Map<String, Collection<PermissionNode>> perGroupPermissions;
   private Collection<String> subGroups;
   private String name;
   private int priority;
@@ -60,33 +51,17 @@ public class PermissionGroup implements SerializableObject {
   public PermissionGroup() {
   }
 
-  public PermissionGroup(
-    @NotNull Collection<PermissionNode> permissionNodes,
-    @NotNull Map<String, Collection<PermissionNode>> perGroupPermissions,
-    @NotNull Collection<String> subGroups,
-    @NotNull String name,
-    int priority
-  ) {
-    this(permissionNodes, perGroupPermissions, subGroups, name, priority, false);
+  public PermissionGroup(@NotNull Collection<String> subGroups, @NotNull String name, int priority) {
+    this(subGroups, name, priority, false);
   }
 
-  public PermissionGroup(
-    @NotNull Collection<PermissionNode> permissionNodes,
-    @NotNull Map<String, Collection<PermissionNode>> perGroupPermissions,
-    @NotNull Collection<String> subGroups,
-    @NotNull String name,
-    int priority,
-    boolean defaultGroup
-  ) {
-    this(permissionNodes, perGroupPermissions, subGroups, name, priority, defaultGroup, null, null, null, null, new JsonConfiguration());
+  public PermissionGroup(@NotNull Collection<String> subGroups, @NotNull String name, int priority, boolean defaultGroup) {
+    this(subGroups, name, priority, defaultGroup, null, null, null, null, JsonConfiguration.newJsonConfiguration());
   }
 
-  public PermissionGroup(Collection<PermissionNode> permissionNodes, Map<String, Collection<PermissionNode>> perGroupPermissions,
-                         Collection<String> subGroups, String name, int priority, boolean defaultGroup,
+  public PermissionGroup(Collection<String> subGroups, String name, int priority, boolean defaultGroup,
                          @Nullable String prefix, @Nullable String suffix, @Nullable String display,
                          @Nullable String colour, @NotNull JsonConfiguration extra) {
-    this.permissionNodes = permissionNodes;
-    this.perGroupPermissions = perGroupPermissions;
     this.subGroups = subGroups;
     this.name = name;
     this.priority = priority;
@@ -96,16 +71,6 @@ public class PermissionGroup implements SerializableObject {
     this.display = display;
     this.colour = colour;
     this.extra = extra;
-  }
-
-  @NotNull
-  public Collection<PermissionNode> getPermissionNodes() {
-    return this.permissionNodes;
-  }
-
-  @NotNull
-  public Map<String, Collection<PermissionNode>> getPerGroupPermissions() {
-    return this.perGroupPermissions;
   }
 
   @NotNull
@@ -172,30 +137,11 @@ public class PermissionGroup implements SerializableObject {
 
   @NotNull
   public JsonConfiguration getExtra() {
-    return this.extra == null ? new JsonConfiguration() : this.extra;
-  }
-
-  @Nullable
-  public Boolean hasPermission(@NotNull String perm) {
-    perm = perm.toLowerCase();
-    Boolean hasPermission = WildcardCheck.hasWildcardPermission(this, perm);
-    if (hasPermission != null) {
-      return hasPermission;
-    }
-
-    return GeneralCheck.hasPermission(this, perm);
+    return this.extra == null ? JsonConfiguration.newJsonConfiguration() : this.extra;
   }
 
   @Override
   public void write(@NotNull ProtocolBuffer buffer) {
-    buffer.writeObjects(this.permissionNodes);
-
-    buffer.writeVarInt(this.perGroupPermissions.size());
-    for (Map.Entry<String, Collection<PermissionNode>> stringCollectionEntry : this.perGroupPermissions.entrySet()) {
-      buffer.writeString(stringCollectionEntry.getKey());
-      buffer.writeObjects(stringCollectionEntry.getValue());
-    }
-
     buffer.writeStringArray(this.subGroups);
     buffer.writeString(this.name);
     buffer.writeInt(this.priority);
@@ -206,18 +152,12 @@ public class PermissionGroup implements SerializableObject {
     buffer.writeString(this.display);
     buffer.writeString(this.colour);
     buffer.writeArray(this.getExtra().toPrettyBytes());
+
+    super.write(buffer);
   }
 
   @Override
   public void read(@NotNull ProtocolBuffer buffer) {
-    this.permissionNodes = buffer.readObjects(PermissionNode.class);
-
-    int size = buffer.readVarInt();
-    this.perGroupPermissions = new HashMap<>(size);
-    for (int i = 0; i < size; i++) {
-      this.perGroupPermissions.put(buffer.readString(), buffer.readObjects(PermissionNode.class));
-    }
-
     this.subGroups = buffer.readStringArray();
     this.name = buffer.readString();
     this.priority = buffer.readInt();
@@ -227,6 +167,8 @@ public class PermissionGroup implements SerializableObject {
     this.suffix = buffer.readString();
     this.display = buffer.readString();
     this.colour = buffer.readString();
-    this.extra = new JsonConfiguration(buffer.readArray());
+    this.extra = JsonConfiguration.newJsonConfiguration(buffer.readArray());
+
+    super.read(buffer);
   }
 }

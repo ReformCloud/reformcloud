@@ -33,7 +33,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.Ch
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
-import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
+import systems.reformcloud.reformcloud2.permissions.objects.PermissionGroup;
 import systems.reformcloud.reformcloud2.permissions.packets.util.PermissionAction;
 
 public class PacketGroupAction extends Packet {
