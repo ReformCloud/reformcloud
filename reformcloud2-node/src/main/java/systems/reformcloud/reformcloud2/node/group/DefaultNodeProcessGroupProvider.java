@@ -30,6 +30,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.builder.ProcessGroupBuilder;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.json.adapter.JsonAdapter;
 import systems.reformcloud.reformcloud2.executor.api.group.process.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
@@ -38,6 +39,7 @@ import systems.reformcloud.reformcloud2.executor.api.registry.io.FileRegistry;
 import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.shared.group.ProcessGroupJsonReaders;
 import systems.reformcloud.reformcloud2.shared.registry.io.DefaultFileRegistry;
 
 import java.util.Collection;
@@ -46,14 +48,20 @@ import java.util.Optional;
 
 public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
 
+  private static final JsonAdapter ADAPTER = ProcessGroupJsonReaders.builder()
+    .disableHtmlEscaping()
+    .enablePrettyPrinting()
+    .enableNullSerialisation()
+    .build();
+
   private final Collection<ProcessGroup> processGroups;
   private final FileRegistry fileRegistry;
 
   public DefaultNodeProcessGroupProvider(@NotNull String registryFolder) {
-    this.fileRegistry = new DefaultFileRegistry(registryFolder, JsonConfiguration.DEFAULT_ADAPTER);
+    this.fileRegistry = new DefaultFileRegistry(registryFolder, ADAPTER);
     this.processGroups = this.fileRegistry.readKeys(
       e -> e.get("key", DefaultProcessGroup.class),
-      path -> System.err.println(TranslationHolder.translateDef("startup-unable-to-read-file",
+      path -> System.err.println(TranslationHolder.translate("startup-unable-to-read-file",
         "Process-Group", path.toAbsolutePath().toString()))
     );
   }
@@ -138,7 +146,7 @@ public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
     this.processGroups.clear();
     this.processGroups.addAll(this.fileRegistry.readKeys(
       e -> e.get("key", DefaultProcessGroup.class),
-      path -> System.err.println(TranslationHolder.translateDef("startup-unable-to-read-file",
+      path -> System.err.println(TranslationHolder.translate("startup-unable-to-read-file",
         "Process-Group", path.toAbsolutePath().toString()))
     ));
   }

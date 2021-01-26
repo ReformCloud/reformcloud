@@ -27,6 +27,10 @@ package systems.reformcloud.reformcloud2.shared.json;
 import com.google.gson.JsonElement;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.configuration.json.Element;
+import systems.reformcloud.reformcloud2.executor.api.configuration.json.types.Array;
+import systems.reformcloud.reformcloud2.executor.api.configuration.json.types.Null;
+import systems.reformcloud.reformcloud2.executor.api.configuration.json.types.Object;
+import systems.reformcloud.reformcloud2.executor.api.configuration.json.types.Primitive;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 
 import java.math.BigDecimal;
@@ -34,105 +38,125 @@ import java.math.BigInteger;
 
 public class GsonElement implements Element {
 
-    private final JsonElement gsonElement;
+  private final JsonElement gsonElement;
 
-    public GsonElement(JsonElement gsonElement) {
-        this.gsonElement = gsonElement;
-    }
+  public GsonElement(JsonElement gsonElement) {
+    this.gsonElement = gsonElement;
+  }
 
-    @Override
-    public boolean isObject() {
-        return this.gsonElement.isJsonObject();
-    }
+  @Override
+  public boolean isObject() {
+    return this.gsonElement.isJsonObject();
+  }
 
-    @Override
-    public boolean isPrimitive() {
-        return this.gsonElement.isJsonPrimitive();
-    }
+  @Override
+  public boolean isPrimitive() {
+    return this.gsonElement.isJsonPrimitive();
+  }
 
-    @Override
-    public boolean isArray() {
-        return this.gsonElement.isJsonArray();
-    }
+  @Override
+  public boolean isArray() {
+    return this.gsonElement.isJsonArray();
+  }
 
-    @Override
-    public boolean isNull() {
-        return this.gsonElement.isJsonNull();
-    }
+  @Override
+  public boolean isNull() {
+    return this.gsonElement.isJsonNull();
+  }
 
-    @Override
-    public boolean getAsBoolean() {
-        return this.gsonElement.getAsBoolean();
-    }
+  @Override
+  public boolean getAsBoolean() {
+    return this.gsonElement.getAsBoolean();
+  }
 
-    @Override
-    public @NotNull Number getAsNumber() {
-        return this.gsonElement.getAsNumber();
-    }
+  @Override
+  public @NotNull Number getAsNumber() {
+    return this.gsonElement.getAsNumber();
+  }
 
-    @Override
-    public @NotNull String getAsString() {
-        return this.gsonElement.getAsString();
-    }
+  @Override
+  public @NotNull Object getAsObject() {
+    return new GsonObject(this.gsonElement.getAsJsonObject());
+  }
 
-    @Override
-    public double getAsDouble() {
-        return this.gsonElement.getAsDouble();
-    }
+  @Override
+  public @NotNull Array getAsArray() {
+    return new GsonArray(this.gsonElement.getAsJsonArray());
+  }
 
-    @Override
-    public float getAsFloat() {
-        return this.gsonElement.getAsFloat();
-    }
+  @Override
+  public @NotNull Primitive getAsPrimitive() {
+    return new GsonPrimitive(this.gsonElement.getAsJsonPrimitive());
+  }
 
-    @Override
-    public long getAsLong() {
-        return this.gsonElement.getAsLong();
-    }
+  @Override
+  public @NotNull Null getAsNull() {
+    return GsonNull.INSTANCE;
+  }
 
-    @Override
-    public int getAsInt() {
-        return this.gsonElement.getAsInt();
-    }
+  @Override
+  public @NotNull String getAsString() {
+    return this.gsonElement.getAsString();
+  }
 
-    @Override
-    public byte getAsByte() {
-        return this.gsonElement.getAsByte();
-    }
+  @Override
+  public double getAsDouble() {
+    return this.gsonElement.getAsDouble();
+  }
 
-    @Override
-    public @NotNull BigDecimal getAsBigDecimal() {
-        return this.gsonElement.getAsBigDecimal();
-    }
+  @Override
+  public float getAsFloat() {
+    return this.gsonElement.getAsFloat();
+  }
 
-    @Override
-    public @NotNull BigInteger getAsBigInteger() {
-        return this.gsonElement.getAsBigInteger();
-    }
+  @Override
+  public long getAsLong() {
+    return this.gsonElement.getAsLong();
+  }
 
-    @Override
-    public short getAsShort() {
-        return this.gsonElement.getAsShort();
-    }
+  @Override
+  public int getAsInt() {
+    return this.gsonElement.getAsInt();
+  }
 
-    @NotNull
-    @Override
-    public String toString() {
-        return this.gsonElement.toString();
-    }
+  @Override
+  public byte getAsByte() {
+    return this.gsonElement.getAsByte();
+  }
 
-    @NotNull
-    JsonElement getGsonElement() {
-        return this.gsonElement;
-    }
+  @Override
+  public @NotNull BigDecimal getAsBigDecimal() {
+    return this.gsonElement.getAsBigDecimal();
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
+  @Override
+  public @NotNull BigInteger getAsBigInteger() {
+    return this.gsonElement.getAsBigInteger();
+  }
 
-    }
+  @Override
+  public short getAsShort() {
+    return this.gsonElement.getAsShort();
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
+  @NotNull
+  @Override
+  public String toString() {
+    return this.gsonElement.toString();
+  }
 
-    }
+  @NotNull
+  JsonElement getGsonElement() {
+    return this.gsonElement;
+  }
+
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+
+  }
+
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+
+  }
 }

@@ -27,6 +27,7 @@ package systems.reformcloud.reformcloud2.node.factory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.group.process.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.group.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
@@ -62,13 +63,13 @@ public class DefaultProcessFactory implements ProcessFactory {
     return NodeExecutor.getInstance().getTaskScheduler().queue(() -> {
       Template template = configuration.getTemplate() == null ? this.nextTemplate(configuration.getProcessGroup()) : configuration.getTemplate();
       if (template == null) {
-        System.err.println(TranslationHolder.translateDef("process-unable-to-find-template", configuration.getProcessGroup().getName()));
+        System.err.println(TranslationHolder.translate("process-unable-to-find-template", configuration.getProcessGroup().getName()));
         return null;
       }
 
       NodeInformation nodeInformation = this.getNode(configuration.getNode()).orElseGet(() -> this.getBestNode(configuration.getProcessGroup()));
       if (nodeInformation == null) {
-        System.err.println(TranslationHolder.translateDef("process-unable-to-find-node", configuration.getProcessGroup().getName()));
+        System.err.println(TranslationHolder.translate("process-unable-to-find-node", configuration.getProcessGroup().getName()));
         return null;
       }
 
@@ -76,7 +77,7 @@ public class DefaultProcessFactory implements ProcessFactory {
       UUID processUniqueId = this.preventCollision(configuration.getProcessUniqueId());
 
       ProcessInformation processInformation = new DefaultProcessInformation(
-        configuration.getExtra(),
+        configuration.getExtra() == null ? JsonConfiguration.newJsonConfiguration() : configuration.getExtra(),
         new DefaultIdentity(
           configuration.getProcessGroup().getName() + template.getServerNameSplitter() + id,
           configuration.getDisplayName() != null ? configuration.getDisplayName() : configuration.getProcessGroup().getName()
@@ -88,9 +89,9 @@ public class DefaultProcessFactory implements ProcessFactory {
         ),
         NetworkAddress.address(
           nodeInformation.getProcessStartHost().getHost(),
-          this.nextPort(configuration.getTemplate().getVersion().getDefaultStartPort())
+          this.nextPort(template.getVersion().getDefaultStartPort())
         ),
-        configuration.getTemplate(),
+        template,
         configuration.getProcessGroup(),
         DefaultProcessRuntimeInformation.EMPTY,
         new CopyOnWriteArrayList<>(),

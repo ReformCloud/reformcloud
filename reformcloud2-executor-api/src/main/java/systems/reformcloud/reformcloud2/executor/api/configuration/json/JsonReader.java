@@ -31,18 +31,13 @@ import java.lang.reflect.Type;
 
 public interface JsonReader<T> {
 
-    @Nullable
-    default Element serialize(@NotNull T t, Type typeOfT) {
-        return null;
-    }
+  @Nullable
+  default Element serialize(@NotNull T t, Type typeOfT) {
+    return null;
+  }
 
-    @Nullable
-    default T deserialize(@NotNull Element element, @NotNull Type typeOfT) {
-        return null;
-    }
-
-    @Nullable
-    default T createInstance(@NotNull Type type) {
-        return null;
-    }
+  @Nullable
+  default T deserialize(@NotNull Element element, @NotNull Type typeOfT) {
+    return null;
+  }
 }

@@ -76,7 +76,7 @@ public final class CommandTemplate implements Command {
 
     Entry2<ProcessGroup, String> entry = this.parseTemplate(strings[0]);
     if (entry == null) {
-      sender.sendMessage(TranslationHolder.translateDef("command-template-unable-to-parse", strings[0]));
+      sender.sendMessage(TranslationHolder.translate("command-template-unable-to-parse", strings[0]));
       return;
     }
 
@@ -84,7 +84,7 @@ public final class CommandTemplate implements Command {
     if (strings.length == 2) {
       if (strings[1].equalsIgnoreCase("create")) {
         if (template != null) {
-          sender.sendMessage(TranslationHolder.translateDef(
+          sender.sendMessage(TranslationHolder.translate(
             "command-template-template-already-exists",
             entry.getSecond(),
             entry.getFirst().getName()
@@ -95,7 +95,7 @@ public final class CommandTemplate implements Command {
         entry.getFirst().addTemplate(Template.builder(entry.getSecond(), Versions.PAPER_1_16).build());
         ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(entry.getFirst());
 
-        sender.sendMessage(TranslationHolder.translateDef(
+        sender.sendMessage(TranslationHolder.translate(
           "command-template-template-created",
           entry.getFirst().getName(),
           entry.getSecond()
@@ -105,7 +105,7 @@ public final class CommandTemplate implements Command {
 
       if (strings[1].equalsIgnoreCase("info")) {
         if (template == null) {
-          sender.sendMessage(TranslationHolder.translateDef(
+          sender.sendMessage(TranslationHolder.translate(
             "command-template-template-not-exists",
             entry.getSecond(),
             entry.getFirst().getName()
@@ -119,7 +119,7 @@ public final class CommandTemplate implements Command {
 
       if (strings[1].equalsIgnoreCase("delete")) {
         if (template == null) {
-          sender.sendMessage(TranslationHolder.translateDef(
+          sender.sendMessage(TranslationHolder.translate(
             "command-template-template-not-exists",
             entry.getSecond(),
             entry.getFirst().getName()
@@ -129,7 +129,7 @@ public final class CommandTemplate implements Command {
 
         entry.getFirst().removeTemplate(template);
         ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(entry.getFirst());
-        sender.sendMessage(TranslationHolder.translateDef(
+        sender.sendMessage(TranslationHolder.translate(
           "command-template-template-deleted",
           entry.getSecond(),
           entry.getFirst().getName()
@@ -142,7 +142,7 @@ public final class CommandTemplate implements Command {
     }
 
     if (template == null) {
-      sender.sendMessage(TranslationHolder.translateDef(
+      sender.sendMessage(TranslationHolder.translate(
         "command-template-template-not-exists",
         entry.getSecond(),
         entry.getFirst().getName()
@@ -152,7 +152,7 @@ public final class CommandTemplate implements Command {
 
     if (strings[1].equalsIgnoreCase("addprocessparameter")) {
       if (template.getRuntimeConfiguration().getProcessParameters().contains(strings[2])) {
-        sender.sendMessage(TranslationHolder.translateDef(
+        sender.sendMessage(TranslationHolder.translate(
           "command-template-process-parameter-already-set",
           strings[2], template.getName()
         ));
@@ -161,13 +161,13 @@ public final class CommandTemplate implements Command {
 
       template.getRuntimeConfiguration().getProcessParameters().add(strings[2]);
       ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(entry.getFirst());
-      sender.sendMessage(TranslationHolder.translateDef("command-template-process-parameter-added", strings[2], entry.getSecond()));
+      sender.sendMessage(TranslationHolder.translate("command-template-process-parameter-added", strings[2], entry.getSecond()));
       return;
     }
 
     if (strings[1].equalsIgnoreCase("addjvmoption")) {
       if (template.getRuntimeConfiguration().getJvmOptions().contains(strings[2])) {
-        sender.sendMessage(TranslationHolder.translateDef(
+        sender.sendMessage(TranslationHolder.translate(
           "command-template-process-jvm-option-already-set",
           strings[2], template.getName()
         ));
@@ -176,13 +176,13 @@ public final class CommandTemplate implements Command {
 
       template.getRuntimeConfiguration().getJvmOptions().add(strings[2]);
       ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(entry.getFirst());
-      sender.sendMessage(TranslationHolder.translateDef("command-template-process-jvm-option-added", strings[2], entry.getSecond()));
+      sender.sendMessage(TranslationHolder.translate("command-template-process-jvm-option-added", strings[2], entry.getSecond()));
       return;
     }
 
     if (strings[1].equalsIgnoreCase("addshutdowncommand")) {
       if (template.getRuntimeConfiguration().getShutdownCommands().contains(strings[2])) {
-        sender.sendMessage(TranslationHolder.translateDef(
+        sender.sendMessage(TranslationHolder.translate(
           "command-template-process-shutdown-command-already-set",
           strings[2], template.getName()
         ));
@@ -191,19 +191,19 @@ public final class CommandTemplate implements Command {
 
       template.getRuntimeConfiguration().getShutdownCommands().add(strings[2]);
       ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(entry.getFirst());
-      sender.sendMessage(TranslationHolder.translateDef("command-template-process-shutdown-command-added", strings[2], entry.getSecond()));
+      sender.sendMessage(TranslationHolder.translate("command-template-process-shutdown-command-added", strings[2], entry.getSecond()));
       return;
     }
 
     if (strings[1].equalsIgnoreCase("addsystemproperty")) {
       String[] split = strings[2].split("=");
       if (split.length != 2) {
-        sender.sendMessage(TranslationHolder.translateDef("command-template-system-property-not-parseable", strings[2]));
+        sender.sendMessage(TranslationHolder.translate("command-template-system-property-not-parseable", strings[2]));
         return;
       }
 
       if (template.getRuntimeConfiguration().getSystemProperties().containsKey(split[0])) {
-        sender.sendMessage(TranslationHolder.translateDef(
+        sender.sendMessage(TranslationHolder.translate(
           "command-template-process-system-property-already-set",
           strings[2], template.getName()
         ));
@@ -212,13 +212,13 @@ public final class CommandTemplate implements Command {
 
       template.getRuntimeConfiguration().getSystemProperties().put(split[0], split[1]);
       ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(entry.getFirst());
-      sender.sendMessage(TranslationHolder.translateDef("command-template-process-system-property-added", strings[2], entry.getSecond()));
+      sender.sendMessage(TranslationHolder.translate("command-template-process-system-property-added", strings[2], entry.getSecond()));
       return;
     }
 
     if (strings[1].equalsIgnoreCase("removeprocessparameter")) {
       if (!template.getRuntimeConfiguration().getProcessParameters().contains(strings[2])) {
-        sender.sendMessage(TranslationHolder.translateDef(
+        sender.sendMessage(TranslationHolder.translate(
           "command-template-process-parameter-not-set",
           strings[2], template.getName()
         ));
@@ -227,13 +227,13 @@ public final class CommandTemplate implements Command {
 
       template.getRuntimeConfiguration().getProcessParameters().remove(strings[2]);
       ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(entry.getFirst());
-      sender.sendMessage(TranslationHolder.translateDef("command-template-process-parameter-removed", strings[2], entry.getSecond()));
+      sender.sendMessage(TranslationHolder.translate("command-template-process-parameter-removed", strings[2], entry.getSecond()));
       return;
     }
 
     if (strings[1].equalsIgnoreCase("removejvmoption")) {
       if (!template.getRuntimeConfiguration().getJvmOptions().contains(strings[2])) {
-        sender.sendMessage(TranslationHolder.translateDef(
+        sender.sendMessage(TranslationHolder.translate(
           "command-template-process-jvm-option-not-set",
           strings[2], template.getName()
         ));
@@ -242,13 +242,13 @@ public final class CommandTemplate implements Command {
 
       template.getRuntimeConfiguration().getJvmOptions().remove(strings[2]);
       ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(entry.getFirst());
-      sender.sendMessage(TranslationHolder.translateDef("command-template-process-jvm-option-removed", strings[2], entry.getSecond()));
+      sender.sendMessage(TranslationHolder.translate("command-template-process-jvm-option-removed", strings[2], entry.getSecond()));
       return;
     }
 
     if (strings[1].equalsIgnoreCase("removeshutdowncommand")) {
       if (!template.getRuntimeConfiguration().getShutdownCommands().contains(strings[2])) {
-        sender.sendMessage(TranslationHolder.translateDef(
+        sender.sendMessage(TranslationHolder.translate(
           "command-template-process-shutdown-command-not-set",
           strings[2], template.getName()
         ));
@@ -257,13 +257,13 @@ public final class CommandTemplate implements Command {
 
       template.getRuntimeConfiguration().getShutdownCommands().remove(strings[2]);
       ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(entry.getFirst());
-      sender.sendMessage(TranslationHolder.translateDef("command-template-process-shutdown-command-removed", strings[2], entry.getSecond()));
+      sender.sendMessage(TranslationHolder.translate("command-template-process-shutdown-command-removed", strings[2], entry.getSecond()));
       return;
     }
 
     if (strings[1].equalsIgnoreCase("removesystemproperty")) {
       if (!template.getRuntimeConfiguration().getSystemProperties().containsKey(strings[2])) {
-        sender.sendMessage(TranslationHolder.translateDef(
+        sender.sendMessage(TranslationHolder.translate(
           "command-template-process-system-property-not-set",
           strings[2], template.getName()
         ));
@@ -272,14 +272,14 @@ public final class CommandTemplate implements Command {
 
       template.getRuntimeConfiguration().getSystemProperties().remove(strings[2]);
       ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(entry.getFirst());
-      sender.sendMessage(TranslationHolder.translateDef("command-template-process-system-property-removed", strings[2], entry.getSecond()));
+      sender.sendMessage(TranslationHolder.translate("command-template-process-system-property-removed", strings[2], entry.getSecond()));
       return;
     }
 
     if (strings.length == 5 && strings[1].equalsIgnoreCase("removetemplateinclusion")) {
       Inclusion.InclusionLoadType type = EnumUtil.findEnumFieldByName(Inclusion.InclusionLoadType.class, strings[4]).orElse(null);
       if (type == null) {
-        sender.sendMessage(TranslationHolder.translateDef(
+        sender.sendMessage(TranslationHolder.translate(
           "command-template-inclusion-load-type-unknown",
           strings[4], MoreCollections.map(EnumUtil.getEnumEntries(Inclusion.InclusionLoadType.class), Enum::name)
         ));
@@ -291,12 +291,12 @@ public final class CommandTemplate implements Command {
           && inclusion.getInclusionLoadType() == type) {
           template.removeTemplateInclusion(inclusion);
           ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(entry.getFirst());
-          sender.sendMessage(TranslationHolder.translateDef("command-template-template-inclusion-removed", inclusion.getKey(), entry.getSecond()));
+          sender.sendMessage(TranslationHolder.translate("command-template-template-inclusion-removed", inclusion.getKey(), entry.getSecond()));
           return;
         }
       }
 
-      sender.sendMessage(TranslationHolder.translateDef("command-template-unable-to-remove-template-inclusion",
+      sender.sendMessage(TranslationHolder.translate("command-template-unable-to-remove-template-inclusion",
         strings[2], strings[3], strings[4], entry.getSecond()));
       return;
     }
@@ -304,7 +304,7 @@ public final class CommandTemplate implements Command {
     if (strings.length == 5 && strings[1].equalsIgnoreCase("removepathinclusion")) {
       Inclusion.InclusionLoadType type = EnumUtil.findEnumFieldByName(Inclusion.InclusionLoadType.class, strings[4]).orElse(null);
       if (type == null) {
-        sender.sendMessage(TranslationHolder.translateDef(
+        sender.sendMessage(TranslationHolder.translate(
           "command-template-inclusion-load-type-unknown",
           strings[4], MoreCollections.map(EnumUtil.getEnumEntries(Inclusion.InclusionLoadType.class), Enum::name)
         ));
@@ -316,12 +316,12 @@ public final class CommandTemplate implements Command {
           && pathInclusion.getInclusionLoadType() == type) {
           template.removePathInclusion(pathInclusion);
           ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(entry.getFirst());
-          sender.sendMessage(TranslationHolder.translateDef("command-template-path-inclusion-removed", pathInclusion.getKey(), entry.getSecond()));
+          sender.sendMessage(TranslationHolder.translate("command-template-path-inclusion-removed", pathInclusion.getKey(), entry.getSecond()));
           return;
         }
       }
 
-      sender.sendMessage(TranslationHolder.translateDef("command-template-unable-to-remove-path-inclusion",
+      sender.sendMessage(TranslationHolder.translate("command-template-unable-to-remove-path-inclusion",
         strings[2], strings[3], strings[4], entry.getSecond()));
       return;
     }
@@ -329,7 +329,7 @@ public final class CommandTemplate implements Command {
     if (strings.length == 5 && strings[1].equalsIgnoreCase("addpathinclusion")) {
       Inclusion.InclusionLoadType type = EnumUtil.findEnumFieldByName(Inclusion.InclusionLoadType.class, strings[4]).orElse(null);
       if (type == null) {
-        sender.sendMessage(TranslationHolder.translateDef(
+        sender.sendMessage(TranslationHolder.translate(
           "command-template-inclusion-load-type-unknown",
           strings[4], MoreCollections.map(EnumUtil.getEnumEntries(Inclusion.InclusionLoadType.class), Enum::name)
         ));
@@ -338,21 +338,21 @@ public final class CommandTemplate implements Command {
 
       for (Inclusion pathInclusion : template.getPathInclusions()) {
         if (pathInclusion.getKey().equalsIgnoreCase(strings[2]) && pathInclusion.getBackend().equalsIgnoreCase(strings[3])) {
-          sender.sendMessage(TranslationHolder.translateDef("command-template-path-inclusion-already-added", strings[2], template.getName()));
+          sender.sendMessage(TranslationHolder.translate("command-template-path-inclusion-already-added", strings[2], template.getName()));
           return;
         }
       }
 
       template.addPathInclusions(Inclusion.inclusion(strings[2], strings[3], type));
       ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(entry.getFirst());
-      sender.sendMessage(TranslationHolder.translateDef("command-template-path-inclusion-added", strings[2], entry.getSecond()));
+      sender.sendMessage(TranslationHolder.translate("command-template-path-inclusion-added", strings[2], entry.getSecond()));
       return;
     }
 
     if (strings.length == 5 && strings[1].equalsIgnoreCase("addtemplateinclusion")) {
       Inclusion.InclusionLoadType type = EnumUtil.findEnumFieldByName(Inclusion.InclusionLoadType.class, strings[4]).orElse(null);
       if (type == null) {
-        sender.sendMessage(TranslationHolder.translateDef(
+        sender.sendMessage(TranslationHolder.translate(
           "command-template-inclusion-load-type-unknown",
           strings[4], MoreCollections.map(EnumUtil.getEnumEntries(Inclusion.InclusionLoadType.class), Enum::name)
         ));
@@ -361,19 +361,19 @@ public final class CommandTemplate implements Command {
 
       for (Inclusion inclusion : template.getTemplateInclusions()) {
         if (inclusion.getKey().equalsIgnoreCase(strings[2]) && inclusion.getBackend().equalsIgnoreCase(strings[3])) {
-          sender.sendMessage(TranslationHolder.translateDef("command-template-template-inclusion-already-added", strings[2], template.getName()));
+          sender.sendMessage(TranslationHolder.translate("command-template-template-inclusion-already-added", strings[2], template.getName()));
           return;
         }
       }
 
       if (this.parseTemplate(strings[2]) == null) {
-        sender.sendMessage(TranslationHolder.translateDef("command-template-unable-to-parse", strings[2]));
+        sender.sendMessage(TranslationHolder.translate("command-template-unable-to-parse", strings[2]));
         return;
       }
 
       template.addTemplateInclusions(Inclusion.inclusion(strings[2], strings[3], type));
       ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(entry.getFirst());
-      sender.sendMessage(TranslationHolder.translateDef("command-template-template-inclusion-added", strings[2], entry.getSecond()));
+      sender.sendMessage(TranslationHolder.translate("command-template-template-inclusion-added", strings[2], entry.getSecond()));
       return;
     }
 
@@ -506,7 +506,7 @@ public final class CommandTemplate implements Command {
     if (properties.containsKey("version")) {
       Version version = Versions.getByName(properties.getProperty("version")).orElse(null);
       if (version == null) {
-        sender.sendMessage(TranslationHolder.translateDef("command-template-unknown-version", properties.getProperty("version")));
+        sender.sendMessage(TranslationHolder.translate("command-template-unknown-version", properties.getProperty("version")));
         return;
       }
 
@@ -517,56 +517,56 @@ public final class CommandTemplate implements Command {
     if (properties.containsKey("priority")) {
       Integer priority = Parsers.INT.parse(properties.getProperty("priority"));
       if (priority == null) {
-        sender.sendMessage(TranslationHolder.translateDef("command-template-expected-int", properties.getProperty("priority")));
+        sender.sendMessage(TranslationHolder.translate("command-template-expected-int", properties.getProperty("priority")));
         return;
       }
 
       template.setPriority(priority);
-      sender.sendMessage(TranslationHolder.translateDef("command-template-edit-success", "priority", priority, template.getName()));
+      sender.sendMessage(TranslationHolder.translate("command-template-edit-success", "priority", priority, template.getName()));
     }
 
     if (properties.containsKey("global")) {
       Boolean global = Parsers.BOOLEAN.parse(properties.getProperty("global"));
       if (global == null) {
-        sender.sendMessage(TranslationHolder.translateDef("command-template-expected-boolean", properties.getProperty("global")));
+        sender.sendMessage(TranslationHolder.translate("command-template-expected-boolean", properties.getProperty("global")));
         return;
       }
 
       template.setGlobal(global);
-      sender.sendMessage(TranslationHolder.translateDef("command-template-edit-success", "global", global, template.getName()));
+      sender.sendMessage(TranslationHolder.translate("command-template-edit-success", "global", global, template.getName()));
     }
 
     if (properties.containsKey("autoreleaseonclose")) {
       Boolean autoReleaseOnClose = Parsers.BOOLEAN.parse(properties.getProperty("autoreleaseonclose"));
       if (autoReleaseOnClose == null) {
-        sender.sendMessage(TranslationHolder.translateDef("command-template-expected-boolean", properties.getProperty("autoreleaseonclose")));
+        sender.sendMessage(TranslationHolder.translate("command-template-expected-boolean", properties.getProperty("autoreleaseonclose")));
         return;
       }
 
       template.setAutoCopyOnClose(autoReleaseOnClose);
-      sender.sendMessage(TranslationHolder.translateDef("command-template-edit-success", "auto release on close", autoReleaseOnClose, template.getName()));
+      sender.sendMessage(TranslationHolder.translate("command-template-edit-success", "auto release on close", autoReleaseOnClose, template.getName()));
     }
 
     if (properties.containsKey("backend")) {
       if (!TemplateBackendManager.get(properties.getProperty("backend")).isPresent()) {
-        sender.sendMessage(TranslationHolder.translateDef("command-template-backend-not-loaded", properties.getProperty("backend")));
+        sender.sendMessage(TranslationHolder.translate("command-template-backend-not-loaded", properties.getProperty("backend")));
         return;
       }
 
       template.setBackend(properties.getProperty("backend"));
-      sender.sendMessage(TranslationHolder.translateDef("command-template-edit-success", "backend", properties.getProperty("backend"), template.getName()));
+      sender.sendMessage(TranslationHolder.translate("command-template-edit-success", "backend", properties.getProperty("backend"), template.getName()));
     }
 
     if (properties.containsKey("servernamesplitter")) {
       String splitter = properties.getProperty("servernamesplitter");
       template.setServerNameSplitter(splitter);
-      sender.sendMessage(TranslationHolder.translateDef("command-template-edit-success", "server name splitter", splitter, template.getName()));
+      sender.sendMessage(TranslationHolder.translate("command-template-edit-success", "server name splitter", splitter, template.getName()));
     }
 
     if (properties.containsKey("max-memory")) {
       Integer memory = Parsers.INT.parse(properties.getProperty("max-memory"));
       if (memory == null) {
-        sender.sendMessage(TranslationHolder.translateDef("command-template-expected-int", properties.getProperty("max-memory")));
+        sender.sendMessage(TranslationHolder.translate("command-template-expected-int", properties.getProperty("max-memory")));
         return;
       }
 
@@ -576,21 +576,21 @@ public final class CommandTemplate implements Command {
       }
 
       template.getRuntimeConfiguration().setMaximumJvmMemoryAllocation(memory);
-      sender.sendMessage(TranslationHolder.translateDef("command-template-edit-success", "max memory", memory, template.getName()));
+      sender.sendMessage(TranslationHolder.translate("command-template-edit-success", "max memory", memory, template.getName()));
     }
 
     if (properties.containsKey("dynamic-memory")) {
       Integer memory = Parsers.INT.parse(properties.getProperty("dynamic-memory"));
       if (memory == null) {
-        sender.sendMessage(TranslationHolder.translateDef("command-template-expected-int", properties.getProperty("dynamic-memory")));
+        sender.sendMessage(TranslationHolder.translate("command-template-expected-int", properties.getProperty("dynamic-memory")));
         return;
       }
 
       template.getRuntimeConfiguration().setDynamicMemory(memory);
-      sender.sendMessage(TranslationHolder.translateDef("command-template-edit-success", "dynamic memory", memory, template.getName()));
+      sender.sendMessage(TranslationHolder.translate("command-template-edit-success", "dynamic memory", memory, template.getName()));
     }
 
     ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(group);
-    sender.sendMessage(TranslationHolder.translateDef("command-template-edit-finish", template.getName(), group.getName()));
+    sender.sendMessage(TranslationHolder.translate("command-template-edit-finish", template.getName(), group.getName()));
   }
 }

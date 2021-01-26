@@ -52,7 +52,7 @@ public class DefaultNodeMainGroupProvider implements MainGroupProvider {
     this.fileRegistry = new DefaultFileRegistry(registryFolder, JsonConfiguration.DEFAULT_ADAPTER);
     this.mainGroups = this.fileRegistry.readKeys(
       e -> e.get("key", DefaultMainGroup.class),
-      path -> System.err.println(TranslationHolder.translateDef("startup-unable-to-read-file",
+      path -> System.err.println(TranslationHolder.translate("startup-unable-to-read-file",
         "Main-Group", path.toAbsolutePath().toString()))
     );
   }
@@ -134,7 +134,7 @@ public class DefaultNodeMainGroupProvider implements MainGroupProvider {
     this.mainGroups.clear();
     this.mainGroups.addAll(this.fileRegistry.readKeys(
       e -> e.get("key", DefaultMainGroup.class),
-      path -> System.err.println(TranslationHolder.translateDef("startup-unable-to-read-file",
+      path -> System.err.println(TranslationHolder.translate("startup-unable-to-read-file",
         "Main-Group", path.toAbsolutePath().toString()))
     ));
   }

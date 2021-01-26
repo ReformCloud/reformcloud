@@ -39,28 +39,29 @@ import java.io.StringReader;
 
 public class GsonParser implements JsonParser {
 
-    protected GsonParser() {
-    }
+  protected GsonParser() {
+  }
 
-    @Override
-    public @NotNull Element parse(@NotNull String json) {
-        try (Reader reader = new StringReader(json)) {
-            return this.parse(reader);
-        } catch (IOException exception) {
-            throw new JsonParseException(exception);
-        }
+  @Override
+  public @NotNull Element parse(@NotNull String json) {
+    try (Reader reader = new StringReader(json)) {
+      return this.parse(reader);
+    } catch (IOException exception) {
+      throw new JsonParseException(exception);
     }
+  }
 
-    @Override
-    public @NotNull Element parse(@NotNull Reader reader) {
-        try (JsonReader jsonReader = new JsonReader(reader)) {
-            JsonElement jsonElement = Streams.parse(jsonReader);
-            if (!jsonElement.isJsonNull() && jsonReader.peek() != JsonToken.END_DOCUMENT) {
-                throw new JsonParseException("Did not consume full json");
-            }
-            return ElementMapper.map(jsonElement);
-        } catch (IOException exception) {
-            throw new JsonParseException(exception);
-        }
+  @Override
+  public @NotNull Element parse(@NotNull Reader reader) {
+    try (JsonReader jsonReader = new JsonReader(reader)) {
+      jsonReader.setLenient(true);
+      JsonElement jsonElement = Streams.parse(jsonReader);
+      if (!jsonElement.isJsonNull() && jsonReader.peek() != JsonToken.END_DOCUMENT) {
+        throw new JsonParseException("Did not consume full json");
+      }
+      return ElementMapper.map(jsonElement);
+    } catch (IOException exception) {
+      throw new JsonParseException(exception);
     }
+  }
 }

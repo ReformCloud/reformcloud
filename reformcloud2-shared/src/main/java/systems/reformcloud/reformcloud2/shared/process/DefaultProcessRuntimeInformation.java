@@ -66,6 +66,7 @@ public class DefaultProcessRuntimeInformation implements ProcessRuntimeInformati
     this.javaVersion = "unknown";
     this.systemArchitecture = "unknown";
     this.startParameters = new String[0];
+    this.deadLockedThreads = new long[0];
     this.systemProperties = new HashMap<>();
     this.classPath = "unknown";
     this.bootClassPath = "unknown";

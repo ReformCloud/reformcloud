@@ -44,422 +44,422 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DefaultProtocolBuffer implements ProtocolBuffer {
 
-    private final ByteBuf wrapped;
+  private final ByteBuf wrapped;
 
-    public DefaultProtocolBuffer(@NotNull ByteBuf wrapped) {
-        this.wrapped = wrapped;
+  public DefaultProtocolBuffer(@NotNull ByteBuf wrapped) {
+    this.wrapped = wrapped;
+  }
+
+  @Override
+  public void writeString(@Nullable String stringToWrite) {
+    this.writeBoolean(stringToWrite == null);
+    if (stringToWrite == null) {
+      return;
     }
 
-    @Override
-    public void writeString(@Nullable String stringToWrite) {
-        this.writeBoolean(stringToWrite == null);
-        if (stringToWrite == null) {
-            return;
-        }
+    byte[] bytes = stringToWrite.getBytes(StandardCharsets.UTF_8);
+    this.writeVarInt(bytes.length);
+    this.writeBytes(bytes);
+  }
 
-        byte[] bytes = stringToWrite.getBytes(StandardCharsets.UTF_8);
-        this.writeVarInt(bytes.length);
-        this.writeBytes(bytes);
+  @Override
+  @Nullable
+  public String readString() {
+    if (this.readBoolean()) {
+      return null;
     }
 
-    @Override
-    @Nullable
-    public String readString() {
-        if (this.readBoolean()) {
-            return null;
-        }
+    int length = this.readVarInt();
 
-        int length = this.readVarInt();
+    byte[] bytes = new byte[length];
+    this.readBytes(bytes);
+    return new String(bytes, StandardCharsets.UTF_8);
+  }
 
-        byte[] bytes = new byte[length];
-        this.readBytes(bytes);
-        return new String(bytes, StandardCharsets.UTF_8);
+  @Override
+  public void writeArray(byte[] bytes) {
+    this.writeVarInt(bytes.length);
+    this.writeBytes(bytes);
+  }
+
+  @Override
+  public byte[] readArray() {
+    byte[] bytes = new byte[this.readVarInt()];
+    this.readBytes(bytes);
+    return bytes;
+  }
+
+  @Override
+  public byte[] toByteArray() {
+    byte[] bytes = new byte[this.readableBytes()];
+    this.readBytes(bytes);
+    return bytes;
+  }
+
+  @Override
+  public void writeStringArray(@NotNull Collection<String> list) {
+    this.writeVarInt(list.size());
+    for (String s : list) {
+      this.writeString(s);
+    }
+  }
+
+  @Override
+  @NotNull
+  public List<String> readStringArray() {
+    int length = this.readVarInt();
+    List<String> out = new ArrayList<>(length);
+    for (int i = 0; i < length; i++) {
+      out.add(this.readString());
     }
 
-    @Override
-    public void writeArray(byte[] bytes) {
-        this.writeVarInt(bytes.length);
-        this.writeBytes(bytes);
+    return out;
+  }
+
+  @Override
+  public void writeStringMap(@NotNull Map<String, String> list) {
+    this.writeVarInt(list.size());
+    for (Map.Entry<String, String> stringStringEntry : list.entrySet()) {
+      this.writeString(stringStringEntry.getKey());
+      this.writeString(stringStringEntry.getValue());
+    }
+  }
+
+  @NotNull
+  @Override
+  public Map<String, String> readStringMap() {
+    int size = this.readVarInt();
+    Map<String, String> out = new ConcurrentHashMap<>(size);
+
+    for (int i = 0; i < size; i++) {
+      out.put(this.readString(), this.readString());
     }
 
-    @Override
-    public byte[] readArray() {
-        byte[] bytes = new byte[this.readVarInt()];
-        this.readBytes(bytes);
-        return bytes;
+    return out;
+  }
+
+  @Override
+  public void writeStringArrays(@NotNull String[] strings) {
+    this.writeVarInt(strings.length);
+    for (String string : strings) {
+      this.writeString(string);
+    }
+  }
+
+  @NotNull
+  @Override
+  public String[] readStringArrays() {
+    int size = this.readVarInt();
+    String[] strings = new String[size];
+
+    for (int i = 0; i < size; i++) {
+      strings[i] = this.readString();
     }
 
-    @Override
-    public byte[] toByteArray() {
-        byte[] bytes = new byte[this.readableBytes()];
-        this.readBytes(bytes);
-        return bytes;
+    return strings;
+  }
+
+  @Override
+  public void writeLongArray(long[] longs) {
+    this.writeVarInt(longs.length);
+    for (long aLong : longs) {
+      this.writeLong(aLong);
+    }
+  }
+
+  @Override
+  public long[] readLongArray() {
+    int size = this.readVarInt();
+    long[] out = new long[size];
+
+    for (int i = 0; i < size; i++) {
+      out[i] = this.readLong();
     }
 
-    @Override
-    public void writeStringArray(@NotNull Collection<String> list) {
-        this.writeVarInt(list.size());
-        for (String s : list) {
-            this.writeString(s);
-        }
+    return out;
+  }
+
+  @Override
+  public <T extends SerializableObject> void writeObject(@Nullable T object) {
+    this.writeBoolean(object == null);
+    if (object == null) {
+      return;
     }
 
-    @Override
-    @NotNull
-    public List<String> readStringArray() {
-        int length = this.readVarInt();
-        List<String> out = new ArrayList<>(length);
-        for (int i = 0; i < length; i++) {
-            out.add(this.readString());
-        }
+    object.write(this);
+  }
 
-        return out;
+  @Override
+  public <T extends SerializableObject> T readObject(@NotNull Class<T> tClass) {
+    if (this.readBoolean()) {
+      return null;
     }
 
-    @Override
-    public void writeStringMap(@NotNull Map<String, String> list) {
-        this.writeVarInt(list.size());
-        for (Map.Entry<String, String> stringStringEntry : list.entrySet()) {
-            this.writeString(stringStringEntry.getKey());
-            this.writeString(stringStringEntry.getValue());
-        }
+    return this.readObject0(tClass);
+  }
+
+  @Override
+  public <T extends SerializableObject, V extends T> @Nullable T readObject(@NotNull Class<V> reader, @NotNull Class<T> type) {
+    if (this.readBoolean()) {
+      return null;
+    } else {
+      return this.readObject(reader);
+    }
+  }
+
+  @Nullable
+  private <T extends SerializableObject> T readObject0(@NotNull Class<T> tClass) {
+    try {
+      T instance = tClass.getDeclaredConstructor().newInstance();
+      instance.read(this);
+      return instance;
+    } catch (final NoSuchMethodException exception) {
+      System.err.println("Unable to find NoArgsConstructor for object class " + tClass.getName());
+    } catch (final IllegalAccessException | InvocationTargetException | InstantiationException exception) {
+      System.err.println("An exception occurred while reading object class " + tClass.getName());
+      exception.printStackTrace();
     }
 
-    @NotNull
-    @Override
-    public Map<String, String> readStringMap() {
-        int size = this.readVarInt();
-        Map<String, String> out = new ConcurrentHashMap<>(size);
+    return null;
+  }
 
-        for (int i = 0; i < size; i++) {
-            out.put(this.readString(), this.readString());
-        }
+  @Override
+  public <T extends SerializableObject> void writeObjects(@NotNull Collection<T> objects) {
+    this.writeVarInt(objects.size());
+    for (T object : objects) {
+      object.write(this);
+    }
+  }
 
-        return out;
+  @NotNull
+  @Override
+  public <T extends SerializableObject> List<T> readObjects(@NotNull Class<T> tClass) {
+    List<T> out = new CopyOnWriteArrayList<>();
+    int initial = this.readVarInt();
+    for (int i = 0; i < initial; i++) {
+      out.add(this.readObject0(tClass));
     }
 
-    @Override
-    public void writeStringArrays(@NotNull String[] strings) {
-        this.writeVarInt(strings.length);
-        for (String string : strings) {
-            this.writeString(string);
-        }
+    return out;
+  }
+
+  @Override
+  public @NotNull <T extends SerializableObject, V extends T> List<T> readObjects(@NotNull Class<V> reader, @NotNull Class<T> type) {
+    List<T> out = new CopyOnWriteArrayList<>();
+    int initial = this.readVarInt();
+    for (int i = 0; i < initial; i++) {
+      out.add(this.readObject0(reader));
     }
 
-    @NotNull
-    @Override
-    public String[] readStringArrays() {
-        int size = this.readVarInt();
-        String[] strings = new String[size];
+    return out;
+  }
 
-        for (int i = 0; i < size; i++) {
-            strings[i] = this.readString();
-        }
-
-        return strings;
+  @Override
+  public int readVarInt() {
+    int i = 0;
+    int maxRead = Math.min(5, this.readableBytes());
+    for (int j = 0; j < maxRead; j++) {
+      int k = this.readByte();
+      i |= (k & 127) << j * 7;
+      if ((k & 128) != 128) {
+        return i;
+      }
     }
 
-    @Override
-    public void writeLongArray(long[] longs) {
-        this.writeVarInt(longs.length);
-        for (long aLong : longs) {
-            this.writeLong(aLong);
-        }
+    throw new IllegalStateException("Bad VarInt received " + ByteBufUtil.hexDump(this.wrapped));
+  }
+
+  @Override
+  public void writeVarInt(int value) {
+    while (true) {
+      if ((value & -128) == 0) {
+        this.writeByte(value);
+        return;
+      }
+
+      this.writeByte(value & 127 | 128);
+      value >>>= 7;
+    }
+  }
+
+  @Override
+  @Nullable
+  public UUID readUniqueId() {
+    if (this.readBoolean()) {
+      return null;
     }
 
-    @Override
-    public long[] readLongArray() {
-        int size = this.readVarInt();
-        long[] out = new long[size];
+    return new UUID(this.readLong(), this.readLong());
+  }
 
-        for (int i = 0; i < size; i++) {
-            out[i] = this.readLong();
-        }
-
-        return out;
+  @Override
+  public void writeUniqueId(@Nullable UUID uniqueId) {
+    this.writeBoolean(uniqueId == null);
+    if (uniqueId == null) {
+      return;
     }
 
-    @Override
-    public <T extends SerializableObject> void writeObject(@Nullable T object) {
-        this.writeBoolean(object == null);
-        if (object == null) {
-            return;
-        }
+    this.writeLong(uniqueId.getMostSignificantBits());
+    this.writeLong(uniqueId.getLeastSignificantBits());
+  }
 
-        object.write(this);
+  @Override
+  public void writeInteger(@Nullable Integer integer) {
+    this.writeBoolean(integer == null);
+    if (integer == null) {
+      return;
     }
 
-    @Override
-    public <T extends SerializableObject> T readObject(@NotNull Class<T> tClass) {
-        if (this.readBoolean()) {
-            return null;
-        }
+    this.writeInt(integer);
+  }
 
-        return this.readObject0(tClass);
+  @Nullable
+  @Override
+  public Integer readInteger() {
+    if (this.readBoolean()) {
+      return null;
     }
 
-    @Override
-    public <T extends SerializableObject, V extends T> @Nullable T readObject(@NotNull Class<V> reader, @NotNull Class<T> type) {
-        if (this.readBoolean()) {
-            return null;
-        } else {
-            return this.readObject(reader);
-        }
-    }
+    return this.readInt();
+  }
 
-    @Nullable
-    private <T extends SerializableObject> T readObject0(@NotNull Class<T> tClass) {
-        try {
-            T instance = tClass.getDeclaredConstructor().newInstance();
-            instance.read(this);
-            return instance;
-        } catch (final NoSuchMethodException exception) {
-            System.err.println("Unable to find NoArgsConstructor for object class " + tClass.getName());
-        } catch (final IllegalAccessException | InvocationTargetException | InstantiationException exception) {
-            System.err.println("An exception occurred while reading object class " + tClass.getName());
-            exception.printStackTrace();
-        }
+  @Override
+  public int readableBytes() {
+    return this.wrapped.readableBytes();
+  }
 
-        return null;
-    }
+  @Override
+  public boolean readBoolean() {
+    return this.wrapped.readBoolean();
+  }
 
-    @Override
-    public <T extends SerializableObject> void writeObjects(@NotNull Collection<T> objects) {
-        this.writeVarInt(objects.size());
-        for (T object : objects) {
-            object.write(this);
-        }
-    }
+  @Override
+  public byte readByte() {
+    return this.wrapped.readByte();
+  }
 
-    @NotNull
-    @Override
-    public <T extends SerializableObject> List<T> readObjects(@NotNull Class<T> tClass) {
-        List<T> out = new CopyOnWriteArrayList<>();
-        int initial = this.readVarInt();
-        for (int i = 0; i < initial; i++) {
-            out.add(this.readObject0(tClass));
-        }
+  @Override
+  public short readUnsignedByte() {
+    return this.wrapped.readUnsignedByte();
+  }
 
-        return out;
-    }
+  @Override
+  public short readShort() {
+    return this.wrapped.readShort();
+  }
 
-    @Override
-    public @NotNull <T extends SerializableObject, V extends T> List<T> readObjects(@NotNull Class<V> reader, @NotNull Class<T> type) {
-        List<T> out = new CopyOnWriteArrayList<>();
-        int initial = this.readVarInt();
-        for (int i = 0; i < initial; i++) {
-            out.add(this.readObject0(reader));
-        }
+  @Override
+  public int readUnsignedShort() {
+    return this.wrapped.readUnsignedShort();
+  }
 
-        return out;
-    }
+  @Override
+  public int readMedium() {
+    return this.wrapped.readMedium();
+  }
 
-    @Override
-    public int readVarInt() {
-        int i = 0;
-        int maxRead = Math.min(5, this.readableBytes());
-        for (int j = 0; j < maxRead; j++) {
-            int k = this.readByte();
-            i |= (k & 127) << j * 7;
-            if ((k & 128) != 128) {
-                return i;
-            }
-        }
+  @Override
+  public int readUnsignedMedium() {
+    return this.wrapped.readUnsignedMedium();
+  }
 
-        throw new IllegalStateException("Bad VarInt received " + ByteBufUtil.hexDump(this.wrapped));
-    }
+  @Override
+  public int readInt() {
+    return this.wrapped.readInt();
+  }
 
-    @Override
-    public void writeVarInt(int value) {
-        while (true) {
-            if ((value & -128) == 0) {
-                this.writeByte(value);
-                return;
-            }
+  @Override
+  public long readUnsignedInt() {
+    return this.wrapped.readUnsignedInt();
+  }
 
-            this.writeByte(value & 127 | 128);
-            value >>>= 7;
-        }
-    }
+  @Override
+  public long readLong() {
+    return this.wrapped.readLong();
+  }
 
-    @Override
-    @Nullable
-    public UUID readUniqueId() {
-        if (this.readBoolean()) {
-            return null;
-        }
+  @Override
+  public char readChar() {
+    return this.wrapped.readChar();
+  }
 
-        return new UUID(this.readLong(), this.readLong());
-    }
+  @Override
+  public float readFloat() {
+    return this.wrapped.readFloat();
+  }
 
-    @Override
-    public void writeUniqueId(@Nullable UUID uniqueId) {
-        this.writeBoolean(uniqueId == null);
-        if (uniqueId == null) {
-            return;
-        }
+  @Override
+  public double readDouble() {
+    return this.wrapped.readDouble();
+  }
 
-        this.writeLong(uniqueId.getMostSignificantBits());
-        this.writeLong(uniqueId.getLeastSignificantBits());
-    }
+  @Override
+  public <E extends Enum<E>> E readEnum(@NotNull Class<E> enumClass) {
+    return EnumUtil.findEnumFieldByIndex(enumClass, this.readVarInt()).orElse(null);
+  }
 
-    @Override
-    public void writeInteger(@Nullable Integer integer) {
-        this.writeBoolean(integer == null);
-        if (integer == null) {
-            return;
-        }
+  @Override
+  public void readBytes(byte[] target) {
+    this.wrapped.readBytes(target);
+  }
 
-        this.writeInt(integer);
-    }
+  @Override
+  public void skipBytes(int amount) {
+    this.wrapped.skipBytes(amount);
+  }
 
-    @Nullable
-    @Override
-    public Integer readInteger() {
-        if (this.readBoolean()) {
-            return null;
-        }
+  @Override
+  public void writeBoolean(boolean b) {
+    this.wrapped.writeBoolean(b);
+  }
 
-        return this.readInt();
-    }
+  @Override
+  public void writeByte(int b) {
+    this.wrapped.writeByte(b);
+  }
 
-    @Override
-    public int readableBytes() {
-        return this.wrapped.readableBytes();
-    }
+  @Override
+  public void writeShort(int s) {
+    this.wrapped.writeShort(s);
+  }
 
-    @Override
-    public boolean readBoolean() {
-        return this.wrapped.readBoolean();
-    }
+  @Override
+  public void writeMedium(int medium) {
+    this.wrapped.writeMedium(medium);
+  }
 
-    @Override
-    public byte readByte() {
-        return this.wrapped.readByte();
-    }
+  @Override
+  public void writeInt(int i) {
+    this.wrapped.writeInt(i);
+  }
 
-    @Override
-    public short readUnsignedByte() {
-        return this.wrapped.readUnsignedByte();
-    }
+  @Override
+  public void writeLong(long l) {
+    this.wrapped.writeLong(l);
+  }
 
-    @Override
-    public short readShort() {
-        return this.wrapped.readShort();
-    }
+  @Override
+  public void writeChar(int c) {
+    this.wrapped.writeChar(c);
+  }
 
-    @Override
-    public int readUnsignedShort() {
-        return this.wrapped.readUnsignedShort();
-    }
+  @Override
+  public void writeFloat(float f) {
+    this.wrapped.writeFloat(f);
+  }
 
-    @Override
-    public int readMedium() {
-        return this.wrapped.readMedium();
-    }
+  @Override
+  public void writeDouble(double d) {
+    this.wrapped.writeDouble(d);
+  }
 
-    @Override
-    public int readUnsignedMedium() {
-        return this.wrapped.readUnsignedMedium();
-    }
+  @Override
+  public void writeBytes(byte[] bytes) {
+    this.wrapped.writeBytes(bytes);
+  }
 
-    @Override
-    public int readInt() {
-        return this.wrapped.readInt();
-    }
-
-    @Override
-    public long readUnsignedInt() {
-        return this.wrapped.readUnsignedInt();
-    }
-
-    @Override
-    public long readLong() {
-        return this.wrapped.readLong();
-    }
-
-    @Override
-    public char readChar() {
-        return this.wrapped.readChar();
-    }
-
-    @Override
-    public float readFloat() {
-        return this.wrapped.readFloat();
-    }
-
-    @Override
-    public double readDouble() {
-        return this.wrapped.readDouble();
-    }
-
-    @Override
-    public <E extends Enum<E>> E readEnum(@NotNull Class<E> enumClass) {
-        return EnumUtil.findEnumFieldByIndex(enumClass, this.readVarInt()).orElseThrow();
-    }
-
-    @Override
-    public void readBytes(byte[] target) {
-        this.wrapped.readBytes(target);
-    }
-
-    @Override
-    public void skipBytes(int amount) {
-        this.wrapped.skipBytes(amount);
-    }
-
-    @Override
-    public void writeBoolean(boolean b) {
-        this.wrapped.writeBoolean(b);
-    }
-
-    @Override
-    public void writeByte(int b) {
-        this.wrapped.writeByte(b);
-    }
-
-    @Override
-    public void writeShort(int s) {
-        this.wrapped.writeShort(s);
-    }
-
-    @Override
-    public void writeMedium(int medium) {
-        this.wrapped.writeMedium(medium);
-    }
-
-    @Override
-    public void writeInt(int i) {
-        this.wrapped.writeInt(i);
-    }
-
-    @Override
-    public void writeLong(long l) {
-        this.wrapped.writeLong(l);
-    }
-
-    @Override
-    public void writeChar(int c) {
-        this.wrapped.writeChar(c);
-    }
-
-    @Override
-    public void writeFloat(float f) {
-        this.wrapped.writeFloat(f);
-    }
-
-    @Override
-    public void writeDouble(double d) {
-        this.wrapped.writeDouble(d);
-    }
-
-    @Override
-    public void writeBytes(byte[] bytes) {
-        this.wrapped.writeBytes(bytes);
-    }
-
-    @Override
-    public void writeEnum(@NotNull Enum<?> constant) {
-        this.writeVarInt(constant.ordinal());
-    }
+  @Override
+  public void writeEnum(@NotNull Enum<?> constant) {
+    this.writeVarInt(constant.ordinal());
+  }
 }

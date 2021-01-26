@@ -219,11 +219,11 @@ public final class NodeExecutor extends ExecutorAPI {
     ));
 
     for (String mainGroupName : this.mainGroupProvider.getMainGroupNames()) {
-      System.out.println(TranslationHolder.translateDef("loading-main-group", mainGroupName));
+      System.out.println(TranslationHolder.translate("loading-main-group", mainGroupName));
     }
 
     for (String processGroupName : this.processGroupProvider.getProcessGroupNames()) {
-      System.out.println(TranslationHolder.translateDef("loading-process-group", processGroupName));
+      System.out.println(TranslationHolder.translate("loading-process-group", processGroupName));
     }
 
     this.serviceRegistry.setProvider(ClusterManager.class, new DefaultClusterManager(
@@ -290,7 +290,7 @@ public final class NodeExecutor extends ExecutorAPI {
     this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).loadApplications();
     this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).enableApplications();
 
-    System.out.println(TranslationHolder.translateDef("runtime-reload-done", Constants.TWO_POINT_THREE_DECIMAL_FORMAT.format((System.currentTimeMillis() - startTime) / 1000d)));
+    System.out.println(TranslationHolder.translate("runtime-reload-done", Constants.TWO_POINT_THREE_DECIMAL_FORMAT.format((System.currentTimeMillis() - startTime) / 1000d)));
   }
 
   public void shutdown() throws Exception {
@@ -332,7 +332,7 @@ public final class NodeExecutor extends ExecutorAPI {
   }
 
   private void startNetworkListeners() {
-    System.out.println(TranslationHolder.translateDef("network-transport-type-choose", TransportType.BEST_TYPE.getName()));
+    System.out.println(TranslationHolder.translate("network-transport-type-choose", TransportType.BEST_TYPE.getName()));
 
     for (NetworkAddress networkListener : this.nodeConfig.getNetworkListeners()) {
       this.networkServer.bind(networkListener.getHost(), networkListener.getPort(), NodeServerChannelListener::new);
@@ -348,11 +348,11 @@ public final class NodeExecutor extends ExecutorAPI {
         clusterNode.getPort(),
         NodeClientChannelListener::new
       )) {
-        System.out.println(TranslationHolder.translateDef(
+        System.out.println(TranslationHolder.translate(
           "network-node-connection-to-other-node-success", clusterNode.getHost(), clusterNode.getPort()
         ));
       } else {
-        System.out.println(TranslationHolder.translateDef(
+        System.out.println(TranslationHolder.translate(
           "network-node-connection-to-other-node-not-successful", clusterNode.getHost(), clusterNode.getPort()
         ));
       }

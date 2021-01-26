@@ -94,14 +94,14 @@ public final class CommandPlayers implements Command {
       }
 
       if (entry == null) {
-        sender.sendMessage(TranslationHolder.translateDef("command-players-player-not-found", strings[0]));
+        sender.sendMessage(TranslationHolder.translate("command-players-player-not-found", strings[0]));
         return;
       }
 
       Player subServerPlayer = entry.getFirst().getPlayers().stream().filter(e -> uniqueID == null
         ? e.getName().equals(strings[0]) : e.getUniqueID().equals(uniqueID)).findAny().orElse(null);
       if (subServerPlayer == null) {
-        sender.sendMessage(TranslationHolder.translateDef("command-players-player-not-found", strings[0]));
+        sender.sendMessage(TranslationHolder.translate("command-players-player-not-found", strings[0]));
         return;
       }
 

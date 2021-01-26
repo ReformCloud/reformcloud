@@ -149,7 +149,7 @@ public class DefaultProcessScreen implements ProcessScreen {
     for (String listeningNode : this.listeningNodes) {
       if (NodeExecutor.getInstance().isOwnIdentity(listeningNode)) {
         for (String line : lines) {
-          System.out.println(TranslationHolder.translateDef(
+          System.out.println(TranslationHolder.translate(
             "screen-line-added",
             this.processWrapper.getProcessInformation().getName(),
             NodeExecutor.getInstance().getCurrentNodeInformation().getName(),

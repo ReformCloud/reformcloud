@@ -36,108 +36,108 @@ import java.util.Optional;
 
 public class GsonArray extends GsonElement implements Array {
 
-    private final JsonArray array;
+  private final JsonArray array;
 
-    public GsonArray(JsonArray gsonElement) {
-        super(gsonElement);
-        this.array = gsonElement;
+  public GsonArray(JsonArray gsonElement) {
+    super(gsonElement);
+    this.array = gsonElement;
+  }
+
+  @Override
+  public @NotNull Array add(@Nullable Boolean bool) {
+    this.array.add(bool);
+    return this;
+  }
+
+  @Override
+  public @NotNull Array add(@Nullable Character character) {
+    this.array.add(character);
+    return this;
+  }
+
+  @Override
+  public @NotNull Array add(@Nullable Number number) {
+    this.array.add(number);
+    return this;
+  }
+
+  @Override
+  public @NotNull Array add(@Nullable String string) {
+    this.array.add(string);
+    return this;
+  }
+
+  @Override
+  public @NotNull Array add(@Nullable Element element) {
+    this.array.add(ElementMapper.map(element));
+    return this;
+  }
+
+  @Override
+  public @NotNull Array addAll(@NotNull Array array) {
+    this.array.addAll(ElementMapper.map(array).getAsJsonArray());
+    return this;
+  }
+
+  @Override
+  public @NotNull Optional<Element> set(int index, @NotNull Element element) throws ArrayIndexOutOfBoundsException {
+    final JsonElement before = this.array.set(index, ElementMapper.map(element));
+    return Optional.ofNullable(before == null ? null : ElementMapper.map(before));
+  }
+
+  @Override
+  public boolean remove(@NotNull Element element) {
+    return this.array.remove(ElementMapper.map(element));
+  }
+
+  @Override
+  public @NotNull Optional<Element> remove(int index) {
+    final JsonElement before = this.array.remove(index);
+    return Optional.ofNullable(before == null ? null : ElementMapper.map(before));
+  }
+
+  @Override
+  public boolean contains(@NotNull Element element) {
+    return this.array.contains(ElementMapper.map(element));
+  }
+
+  @Override
+  public int size() {
+    return this.array.size();
+  }
+
+  @Override
+  public @NotNull Optional<Element> get(int i) {
+    return Optional.of(ElementMapper.map(this.array.get(i)));
+  }
+
+  @Override
+  public @NotNull Array clone() {
+    return new GsonArray(this.array.deepCopy());
+  }
+
+  @NotNull
+  @Override
+  public Iterator<Element> iterator() {
+    return new ArrayIterator(this.array.iterator());
+  }
+
+  private static final class ArrayIterator implements Iterator<Element> {
+
+    private final Iterator<JsonElement> backing;
+
+    private ArrayIterator(Iterator<JsonElement> backing) {
+      this.backing = backing;
     }
 
     @Override
-    public @NotNull Array add(@Nullable Boolean bool) {
-        this.array.add(bool);
-        return this;
+    public boolean hasNext() {
+      return this.backing.hasNext();
     }
 
     @Override
-    public @NotNull Array add(@Nullable Character character) {
-        this.array.add(character);
-        return this;
+    public Element next() {
+      return ElementMapper.map(this.backing.next());
     }
-
-    @Override
-    public @NotNull Array add(@Nullable Number number) {
-        this.array.add(number);
-        return this;
-    }
-
-    @Override
-    public @NotNull Array add(@Nullable String string) {
-        this.array.add(string);
-        return this;
-    }
-
-    @Override
-    public @NotNull Array add(@Nullable Element element) {
-        this.array.add(ElementMapper.map(element));
-        return this;
-    }
-
-    @Override
-    public @NotNull Array addAll(@NotNull Array array) {
-        this.array.addAll(ElementMapper.map(array).getAsJsonArray());
-        return this;
-    }
-
-    @Override
-    public @NotNull Optional<Element> set(int index, @NotNull Element element) throws ArrayIndexOutOfBoundsException {
-        final JsonElement before = this.array.set(index, ElementMapper.map(element));
-        return Optional.ofNullable(before == null ? null : ElementMapper.map(before));
-    }
-
-    @Override
-    public boolean remove(@NotNull Element element) {
-        return this.array.remove(ElementMapper.map(element));
-    }
-
-    @Override
-    public @NotNull Optional<Element> remove(int index) {
-        final JsonElement before = this.array.remove(index);
-        return Optional.ofNullable(before == null ? null : ElementMapper.map(before));
-    }
-
-    @Override
-    public boolean contains(@NotNull Element element) {
-        return this.array.contains(ElementMapper.map(element));
-    }
-
-    @Override
-    public int size() {
-        return this.array.size();
-    }
-
-    @Override
-    public @NotNull Optional<Element> get(int i) {
-        return Optional.of(ElementMapper.map(this.array.get(i)));
-    }
-
-    @Override
-    public @NotNull Array clone() {
-        return new GsonArray(this.array.deepCopy());
-    }
-
-    @NotNull
-    @Override
-    public Iterator<Element> iterator() {
-        return new ArrayIterator(this.array.iterator());
-    }
-
-    private static final class ArrayIterator implements Iterator<Element> {
-
-        private final Iterator<JsonElement> backing;
-
-        private ArrayIterator(Iterator<JsonElement> backing) {
-            this.backing = backing;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return this.backing.hasNext();
-        }
-
-        @Override
-        public Element next() {
-            return ElementMapper.map(this.backing.next());
-        }
-    }
+  }
 }

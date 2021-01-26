@@ -33,6 +33,7 @@ import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -41,46 +42,46 @@ import java.sql.SQLException;
 
 public class H2DatabaseProvider extends AbstractSQLDatabaseProvider {
 
-    private static final Path DB_PATH = Path.of(System.getProperty("systems.reformcloud.h2-db-path", "reformcloud/.database/h2/h2_db"));
-    private final Connection connection;
+  private static final Path DB_PATH = Paths.get(System.getProperty("systems.reformcloud.h2-db-path", "reformcloud/.database/h2/h2_db"));
+  private final Connection connection;
 
-    public H2DatabaseProvider() {
-        if (Files.isDirectory(DB_PATH)) {
-            IOUtils.createDirectory(DB_PATH);
-        }
-
-        try {
-            Driver.load();
-            this.connection = DriverManager.getConnection("jdbc:h2:" + DB_PATH.toAbsolutePath());
-        } catch (SQLException exception) {
-            throw new RuntimeException(exception);
-        }
+  public H2DatabaseProvider() {
+    if (Files.isDirectory(DB_PATH)) {
+      IOUtils.createDirectory(DB_PATH);
     }
 
-    @Override
-    public void executeUpdate(@NotNull String query, @NonNls Object... objects) {
-        try (PreparedStatement preparedStatement = this.connection.prepareStatement(query)) {
-            this.appendObjectsToPreparedStatement(preparedStatement, objects);
-            preparedStatement.executeUpdate();
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-        }
+    try {
+      Driver.load();
+      this.connection = DriverManager.getConnection("jdbc:h2:" + DB_PATH.toAbsolutePath());
+    } catch (SQLException exception) {
+      throw new RuntimeException(exception);
     }
+  }
 
-    @Override
-    @NotNull
-    public <T> T executeQuery(@NotNull String query, @NotNull SQLFunction<ResultSet, T> function, @NotNull T defaultValue, @NonNls Object... objects) {
-        try (PreparedStatement preparedStatement = this.connection.prepareStatement(query)) {
-            this.appendObjectsToPreparedStatement(preparedStatement, objects);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return function.apply(resultSet);
-            } catch (Throwable throwable) {
-                return defaultValue;
-            }
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-        }
+  @Override
+  public void executeUpdate(@NotNull String query, @NonNls Object... objects) {
+    try (PreparedStatement preparedStatement = this.connection.prepareStatement(query)) {
+      this.appendObjectsToPreparedStatement(preparedStatement, objects);
+      preparedStatement.executeUpdate();
+    } catch (SQLException exception) {
+      exception.printStackTrace();
+    }
+  }
 
+  @Override
+  @NotNull
+  public <T> T executeQuery(@NotNull String query, @NotNull SQLFunction<ResultSet, T> function, @NotNull T defaultValue, @NonNls Object... objects) {
+    try (PreparedStatement preparedStatement = this.connection.prepareStatement(query)) {
+      this.appendObjectsToPreparedStatement(preparedStatement, objects);
+      try (ResultSet resultSet = preparedStatement.executeQuery()) {
+        return function.apply(resultSet);
+      } catch (Throwable throwable) {
         return defaultValue;
+      }
+    } catch (SQLException exception) {
+      exception.printStackTrace();
     }
+
+    return defaultValue;
+  }
 }

@@ -25,37 +25,45 @@
 package systems.reformcloud.reformcloud2.executor.api.configuration.json.adapter;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.configuration.json.JsonInstanceCreator;
 import systems.reformcloud.reformcloud2.executor.api.configuration.json.JsonReader;
 
 import java.lang.reflect.Type;
 
-public interface JsonAdapterBuilder {
+public interface JsonAdapterBuilder extends Cloneable {
 
-    @NotNull
-    JsonAdapterBuilder enableNullSerialisation();
+  @NotNull
+  JsonAdapterBuilder enableNullSerialisation();
 
-    @NotNull
-    JsonAdapterBuilder enableComplexMapKeySerialization();
+  @NotNull
+  JsonAdapterBuilder enableComplexMapKeySerialization();
 
-    @NotNull
-    JsonAdapterBuilder disableInnerClassSerialization();
+  @NotNull
+  JsonAdapterBuilder disableInnerClassSerialization();
 
-    @NotNull
-    JsonAdapterBuilder enablePrettyPrinting();
+  @NotNull
+  JsonAdapterBuilder enablePrettyPrinting();
 
-    @NotNull
-    JsonAdapterBuilder enableLenient();
+  @NotNull
+  JsonAdapterBuilder enableLenient();
 
-    @NotNull
-    JsonAdapterBuilder disableHtmlEscaping();
+  @NotNull
+  JsonAdapterBuilder disableHtmlEscaping();
 
-    @NotNull
-    JsonAdapterBuilder excludeModifiers(int... modifiers);
+  @NotNull
+  JsonAdapterBuilder excludeModifiers(int... modifiers);
 
-    @NotNull <T> JsonAdapterBuilder registerJsonReader(@NotNull Class<T> type, @NotNull JsonReader<T> reader);
+  @NotNull <T> JsonAdapterBuilder registerJsonReader(@NotNull Class<T> type, @NotNull JsonReader<T> reader);
 
-    @NotNull <T> JsonAdapterBuilder registerJsonReader(@NotNull Type type, @NotNull JsonReader<T> reader);
+  @NotNull <T> JsonAdapterBuilder registerJsonReader(@NotNull Type type, @NotNull JsonReader<T> reader);
 
-    @NotNull
-    JsonAdapter build();
+  @NotNull <T> JsonAdapterBuilder registerInstanceCreator(@NotNull Class<T> type, @NotNull JsonInstanceCreator<T> instanceCreator);
+
+  @NotNull <T> JsonAdapterBuilder registerInstanceCreator(@NotNull Type type, @NotNull JsonInstanceCreator<T> instanceCreator);
+
+  @NotNull
+  JsonAdapter build();
+
+  @NotNull
+  JsonAdapterBuilder clone();
 }

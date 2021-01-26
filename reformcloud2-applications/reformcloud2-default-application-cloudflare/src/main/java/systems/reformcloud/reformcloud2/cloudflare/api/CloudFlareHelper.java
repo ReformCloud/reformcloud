@@ -131,7 +131,7 @@ public final class CloudFlareHelper {
           result.getBackingObject()
             .get("errors")
             .filter(Element::isArray)
-            .map(element -> (Array) element)
+            .map(Element::getAsArray)
             .ifPresent(array -> {
               if (array.size() == 0) {
                 // CloudFlare sent us no errors?

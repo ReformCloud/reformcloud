@@ -50,23 +50,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/io.netty/netty-transport-native-kqueue -->
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-transport-native-kqueue</artifactId>
-            <version>4.1.58.Final</version>
-            <classifier>osx-x86_64</classifier>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.netty.incubator</groupId>
-            <artifactId>netty-incubator-transport-native-io_uring</artifactId>
-            <version>0.0.3.Final</version>
-            <classifier>linux-x86_64</classifier>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/io.netty/netty-codec -->
         <dependency>
             <groupId>io.netty</groupId>

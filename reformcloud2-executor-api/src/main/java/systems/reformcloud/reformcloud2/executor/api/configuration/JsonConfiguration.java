@@ -44,6 +44,7 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Map;
 import java.util.Optional;
@@ -54,15 +55,15 @@ import java.util.stream.Collectors;
 public class JsonConfiguration implements Configurable<Element, JsonConfiguration> {
 
   public static final JsonAdapter DEFAULT_ADAPTER = JsonAdapter.builder()
-    .disableHtmlEscaping()
-    .enablePrettyPrinting()
-    .enableNullSerialisation()
-    .build();
+      .disableHtmlEscaping()
+      .enablePrettyPrinting()
+      .enableNullSerialisation()
+      .build();
   protected static final Predicate<?> ALWAYS_TRUE = ignored -> true;
   protected static final Collector<Map.Entry<String, Element>, ?, Map<String, Element>> TO_MAP_COLLECTOR = Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue);
 
-  protected final Object json;
-  protected final JsonAdapter adapter;
+  protected final transient Object json;
+  protected final transient JsonAdapter adapter;
 
   protected JsonConfiguration() {
     this(JsonFactories.newObject());
@@ -89,8 +90,8 @@ public class JsonConfiguration implements Configurable<Element, JsonConfiguratio
   @NotNull
   public static JsonConfiguration newJsonConfiguration(@NotNull String json) {
     final Element backing = JsonParser.defaultParser().parse(json);
-    if (backing instanceof Object) {
-      return new JsonConfiguration((Object) backing);
+    if (backing.isObject()) {
+      return new JsonConfiguration(backing.getAsObject());
     } else {
       return new JsonConfiguration();
     }
@@ -138,7 +139,7 @@ public class JsonConfiguration implements Configurable<Element, JsonConfiguratio
 
   @NotNull
   public static JsonConfiguration newJsonConfiguration(@NotNull String path, @NotNull JsonAdapter jsonAdapter) {
-    return newJsonConfiguration(Path.of(path), jsonAdapter);
+    return newJsonConfiguration(Paths.get(path), jsonAdapter);
   }
 
   @NotNull
@@ -182,7 +183,7 @@ public class JsonConfiguration implements Configurable<Element, JsonConfiguratio
   public static JsonConfiguration newJsonConfiguration(@NotNull Reader reader, @NotNull JsonAdapter jsonAdapter) {
     final Element backingElement = JsonParser.defaultParser().parse(reader);
     if (backingElement.isObject()) {
-      return newJsonConfiguration((Object) backingElement, jsonAdapter);
+      return newJsonConfiguration(backingElement.getAsObject(), jsonAdapter);
     }
     return newJsonConfiguration(jsonAdapter);
   }
@@ -359,8 +360,8 @@ public class JsonConfiguration implements Configurable<Element, JsonConfiguratio
   @Override
   public JsonConfiguration getOrDefaultIf(@NotNull String key, JsonConfiguration def, @NotNull Predicate<JsonConfiguration> predicate) {
     return this.getInternal(key).map(element -> {
-      if (element instanceof Object) {
-        final JsonConfiguration config = JsonConfiguration.newJsonConfiguration((Object) element, this.adapter);
+      if (element.isObject()) {
+        final JsonConfiguration config = JsonConfiguration.newJsonConfiguration(element.getAsObject(), this.adapter);
         if (predicate.test(config)) {
           return config;
         }
@@ -372,7 +373,7 @@ public class JsonConfiguration implements Configurable<Element, JsonConfiguratio
   @Override
   public <T> T getOrDefaultIf(@NotNull String key, Type type, T def, @NotNull Predicate<T> predicate) {
     return this.getInternal(key).map(element -> {
-      if (element instanceof Object) {
+      if (element.isObject()) {
         final T result = this.adapter.fromJson(element, type);
         if (predicate.test(result)) {
           return result;
@@ -493,6 +494,16 @@ public class JsonConfiguration implements Configurable<Element, JsonConfiguratio
 
   @Override
   public void write(@NotNull Path path) {
+    final Path parent = path.getParent();
+    if (Files.notExists(parent)) {
+      try {
+        Files.createDirectories(parent);
+      } catch (IOException exception) {
+        exception.printStackTrace();
+        return;
+      }
+    }
+
     try (Writer writer = new OutputStreamWriter(Files.newOutputStream(path, StandardOpenOption.CREATE))) {
       this.adapter.toJson(this.json, writer);
     } catch (IOException exception) {
@@ -502,7 +513,7 @@ public class JsonConfiguration implements Configurable<Element, JsonConfiguratio
 
   @Override
   public void write(@NotNull String path) {
-    this.write(Path.of(path));
+    this.write(Paths.get(path));
   }
 
   @Override

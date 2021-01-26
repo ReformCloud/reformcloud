@@ -78,6 +78,7 @@ import systems.reformcloud.reformcloud2.protocol.shared.PacketSendPlayerTitle;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketSetPlayerLocation;
 import systems.reformcloud.reformcloud2.shared.dependency.DefaultDependencyLoader;
 import systems.reformcloud.reformcloud2.shared.event.DefaultEventManager;
+import systems.reformcloud.reformcloud2.shared.json.GsonFactories;
 import systems.reformcloud.reformcloud2.shared.network.channel.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.shared.network.client.DefaultNetworkClient;
 import systems.reformcloud.reformcloud2.shared.network.packet.DefaultPacketProvider;
@@ -100,7 +101,7 @@ public abstract class Embedded extends ExecutorAPI {
 
   protected final ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
   protected final NetworkClient networkClient = new DefaultNetworkClient();
-  protected final EmbeddedConfig config = new EmbeddedConfig();
+  protected final EmbeddedConfig config;
 
   private final DatabaseProvider databaseProvider = new DefaultEmbeddedDatabaseProvider();
   private final ChannelMessageProvider channelMessageProvider = new DefaultEmbeddedChannelMessageProvider();
@@ -116,6 +117,7 @@ public abstract class Embedded extends ExecutorAPI {
   protected IngameMessages ingameMessages = new IngameMessages();
 
   protected Embedded() {
+    GsonFactories.init();
     ExecutorAPI.setInstance(this);
 
     this.serviceRegistry.setProvider(EventManager.class, new DefaultEventManager(), false, true);
@@ -124,6 +126,8 @@ public abstract class Embedded extends ExecutorAPI {
     this.serviceRegistry.setProvider(QueryManager.class, new DefaultQueryManager(), false, true);
 
     this.serviceRegistry.getProviderUnchecked(EventManager.class).registerListener(new CurrentProcessUpdateEventListener());
+
+    this.config = new EmbeddedConfig();
     this.processInformation = this.config.getProcessInformation();
 
     Lock lock = new ReentrantLock();
@@ -132,9 +136,9 @@ public abstract class Embedded extends ExecutorAPI {
       Condition condition = lock.newCondition();
 
       this.networkClient.connect(
-        this.config.getConnectionHost(),
-        this.config.getConnectionPort(),
-        () -> new EmbeddedChannelListener(lock, condition)
+          this.config.getConnectionHost(),
+          this.config.getConnectionPort(),
+          () -> new EmbeddedChannelListener(lock, condition)
       );
 
       try {
@@ -162,14 +166,14 @@ public abstract class Embedded extends ExecutorAPI {
     this.processInformation.setCurrentState(this.processInformation.getInitialState());
 
     PacketProcessorManager.getInstance()
-      .registerProcessor(new ChannelMessageProcessor(), PacketChannelMessage.class)
-      .registerProcessor(new PacketConnectPlayerToServerProcessor(), PacketConnectPlayerToServer.class)
-      .registerProcessor(new PacketDisconnectPlayerProcessor(), PacketDisconnectPlayer.class)
-      .registerProcessor(new PacketPlayEffectToPlayerProcessor(), PacketPlayEffectToPlayer.class)
-      .registerProcessor(new PacketPlaySoundToPlayerProcessor(), PacketPlaySoundToPlayer.class)
-      .registerProcessor(new PacketSendPlayerMessageProcessor(), PacketSendPlayerMessage.class)
-      .registerProcessor(new PacketSendPlayerTitleProcessor(), PacketSendPlayerTitle.class)
-      .registerProcessor(new PacketSetPlayerLocationProcessor(), PacketSetPlayerLocation.class);
+        .registerProcessor(new ChannelMessageProcessor(), PacketChannelMessage.class)
+        .registerProcessor(new PacketConnectPlayerToServerProcessor(), PacketConnectPlayerToServer.class)
+        .registerProcessor(new PacketDisconnectPlayerProcessor(), PacketDisconnectPlayer.class)
+        .registerProcessor(new PacketPlayEffectToPlayerProcessor(), PacketPlayEffectToPlayer.class)
+        .registerProcessor(new PacketPlaySoundToPlayerProcessor(), PacketPlaySoundToPlayer.class)
+        .registerProcessor(new PacketSendPlayerMessageProcessor(), PacketSendPlayerMessage.class)
+        .registerProcessor(new PacketSendPlayerTitleProcessor(), PacketSendPlayerTitle.class)
+        .registerProcessor(new PacketSetPlayerLocationProcessor(), PacketSetPlayerLocation.class);
 
     Runtime.getRuntime().addShutdownHook(new Thread(this.networkClient::closeSync));
     this.updateCurrentProcessInformation();
@@ -262,8 +266,8 @@ public abstract class Embedded extends ExecutorAPI {
   public Task<Packet> sendQuery(@NotNull Packet packet) {
     Optional<NetworkChannel> channel = this.serviceRegistry.getProviderUnchecked(ChannelManager.class).getFirstChannel();
     return channel
-      .map(networkChannel -> this.serviceRegistry.getProviderUnchecked(QueryManager.class).sendPacketQuery(networkChannel, packet))
-      .orElseGet(() -> Task.completedTask(null));
+        .map(networkChannel -> this.serviceRegistry.getProviderUnchecked(QueryManager.class).sendPacketQuery(networkChannel, packet))
+        .orElseGet(() -> Task.completedTask(null));
   }
 
   @NotNull

@@ -93,7 +93,7 @@ public final class CommandProcess implements Command {
       if (properties.containsKey("group")) {
         Optional<ProcessGroup> group = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(properties.getProperty("group"));
         if (!group.isPresent()) {
-          commandSource.sendMessage(TranslationHolder.translateDef("command-process-group-unavailable", properties.getProperty("group")));
+          commandSource.sendMessage(TranslationHolder.translate("command-process-group-unavailable", properties.getProperty("group")));
           return;
         }
 
@@ -109,13 +109,13 @@ public final class CommandProcess implements Command {
 
     ProcessInformation target = this.getProcess(strings[0]);
     if (target == null) {
-      commandSource.sendMessage(TranslationHolder.translateDef("command-process-process-unknown", strings[0]));
+      commandSource.sendMessage(TranslationHolder.translate("command-process-process-unknown", strings[0]));
       return;
     }
 
     if (strings.length == 2 && strings[1].equalsIgnoreCase("screen")) {
       if (!target.getCurrentState().isStartedOrOnline()) {
-        commandSource.sendMessage(TranslationHolder.translateDef("command-process-screen-process-not-started", strings[0]));
+        commandSource.sendMessage(TranslationHolder.translate("command-process-screen-process-not-started", strings[0]));
         return;
       }
 
@@ -124,10 +124,10 @@ public final class CommandProcess implements Command {
       if (screen.isPresent()) {
         if (screen.get().getListeningNodes().contains(NodeExecutor.getInstance().getSelfName())) {
           screen.get().removeListeningNode(NodeExecutor.getInstance().getSelfName());
-          commandSource.sendMessage(TranslationHolder.translateDef("command-process-screen-toggle-disabled", strings[0]));
+          commandSource.sendMessage(TranslationHolder.translate("command-process-screen-toggle-disabled", strings[0]));
         } else {
           screen.get().addListeningNode(NodeExecutor.getInstance().getSelfName());
-          commandSource.sendMessage(TranslationHolder.translateDef("command-process-screen-toggle-activated", strings[0]));
+          commandSource.sendMessage(TranslationHolder.translate("command-process-screen-toggle-activated", strings[0]));
         }
       } else {
         Optional<NetworkChannel> channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
@@ -155,7 +155,7 @@ public final class CommandProcess implements Command {
     if (strings.length == 2 && strings[1].equalsIgnoreCase("copy")) {
       Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(target.getId().getUniqueId());
       if (!wrapper.isPresent()) {
-        commandSource.sendMessage(TranslationHolder.translateDef("command-process-process-unknown", strings[0]));
+        commandSource.sendMessage(TranslationHolder.translate("command-process-process-unknown", strings[0]));
         return;
       }
 
@@ -173,7 +173,7 @@ public final class CommandProcess implements Command {
       if (properties.containsKey("full")) {
         Boolean full = Parsers.BOOLEAN.parse(properties.getProperty("full"));
         if (full == null) {
-          commandSource.sendMessage(TranslationHolder.translateDef("command-required-boolean", properties.getProperty("full")));
+          commandSource.sendMessage(TranslationHolder.translate("command-required-boolean", properties.getProperty("full")));
           return;
         }
 
@@ -188,48 +188,48 @@ public final class CommandProcess implements Command {
     if (strings.length == 2 && (strings[1].equalsIgnoreCase("stop") || strings[1].equalsIgnoreCase("kill"))) {
       Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(target.getId().getUniqueId());
       if (!wrapper.isPresent()) {
-        commandSource.sendMessage(TranslationHolder.translateDef("command-process-process-unknown", strings[0]));
+        commandSource.sendMessage(TranslationHolder.translate("command-process-process-unknown", strings[0]));
         return;
       }
 
       wrapper.get().setRuntimeStateAsync(ProcessState.STOPPED);
-      commandSource.sendMessage(TranslationHolder.translateDef("command-process-stop-proceed", strings[0]));
+      commandSource.sendMessage(TranslationHolder.translate("command-process-stop-proceed", strings[0]));
       return;
     }
 
     if (strings.length == 2 && strings[1].equalsIgnoreCase("start")) {
       Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(target.getId().getUniqueId());
       if (!wrapper.isPresent()) {
-        commandSource.sendMessage(TranslationHolder.translateDef("command-process-process-unknown", strings[0]));
+        commandSource.sendMessage(TranslationHolder.translate("command-process-process-unknown", strings[0]));
         return;
       }
 
       wrapper.get().setRuntimeStateAsync(ProcessState.STARTED);
-      commandSource.sendMessage(TranslationHolder.translateDef("command-process-starting-prepared", strings[0]));
+      commandSource.sendMessage(TranslationHolder.translate("command-process-starting-prepared", strings[0]));
       return;
     }
 
     if (strings.length == 2 && strings[1].equalsIgnoreCase("restart")) {
       Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(target.getId().getUniqueId());
       if (!wrapper.isPresent()) {
-        commandSource.sendMessage(TranslationHolder.translateDef("command-process-process-unknown", strings[0]));
+        commandSource.sendMessage(TranslationHolder.translate("command-process-process-unknown", strings[0]));
         return;
       }
 
       wrapper.get().setRuntimeStateAsync(ProcessState.RESTARTING);
-      commandSource.sendMessage(TranslationHolder.translateDef("command-process-restarting", strings[0]));
+      commandSource.sendMessage(TranslationHolder.translate("command-process-restarting", strings[0]));
       return;
     }
 
     if (strings.length == 2 && strings[1].equalsIgnoreCase("pause")) {
       Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(target.getId().getUniqueId());
       if (!wrapper.isPresent()) {
-        commandSource.sendMessage(TranslationHolder.translateDef("command-process-process-unknown", strings[0]));
+        commandSource.sendMessage(TranslationHolder.translate("command-process-process-unknown", strings[0]));
         return;
       }
 
       wrapper.get().setRuntimeStateAsync(ProcessState.PAUSED);
-      commandSource.sendMessage(TranslationHolder.translateDef("command-process-pausing", strings[0]));
+      commandSource.sendMessage(TranslationHolder.translate("command-process-pausing", strings[0]));
       return;
     }
 
@@ -238,13 +238,13 @@ public final class CommandProcess implements Command {
       || strings[1].equalsIgnoreCase("execute"))) {
       Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(target.getId().getUniqueId());
       if (!wrapper.isPresent()) {
-        commandSource.sendMessage(TranslationHolder.translateDef("command-process-process-unknown", strings[0]));
+        commandSource.sendMessage(TranslationHolder.translate("command-process-process-unknown", strings[0]));
         return;
       }
 
       String command = String.join(" ", Arrays.copyOfRange(strings, 2, strings.length));
       wrapper.get().sendCommand(command);
-      commandSource.sendMessage(TranslationHolder.translateDef("command-process-command-execute", command, strings[0]));
+      commandSource.sendMessage(TranslationHolder.translate("command-process-command-execute", command, strings[0]));
       return;
     }
 

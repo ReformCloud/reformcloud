@@ -105,7 +105,7 @@ public final class NodeExecutorConfig {
           return address != null;
         },
         TranslationHolder.translate("node-setup-question-node-address-wrong"),
-        TranslationHolder.translateDef("node-setup-question-node-address", ips)
+        TranslationHolder.translate("node-setup-question-node-address", ips)
       )).addQuestion(new DefaultSetupQuestion(
         setupAnswer -> {
           Integer port = setupAnswer.getAsInt();
@@ -184,8 +184,8 @@ public final class NodeExecutorConfig {
 
   public NodeConfig reload() {
     this.nodeConfig = JsonConfiguration.newJsonConfiguration(NodeConfig.PATH).get("config", NodeConfig.class);
-    this.ingameMessages = JsonConfiguration.newJsonConfiguration("reformcloud/configs/messages.json").get("messages", IngameMessages.class);
-    this.connectionKey = JsonConfiguration.newJsonConfiguration("reformcloud/files/.connection/connection.json").getOrDefault("key", (String) null);
+    this.ingameMessages = JsonConfiguration.newJsonConfiguration(Paths.get("reformcloud/configs/messages.json")).get("messages", IngameMessages.class);
+    this.connectionKey = JsonConfiguration.newJsonConfiguration(Paths.get("reformcloud/files/.connection/connection.json")).getOrDefault("key", (String) null);
 
     return this.nodeConfig;
   }

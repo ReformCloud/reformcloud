@@ -30,12 +30,13 @@ import systems.reformcloud.reformcloud2.executor.api.network.address.DefaultNetw
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
 public class NodeConfig {
 
-  protected static final Path PATH = Path.of(System.getProperty("systems.reformcloud.node-config-path", "reformcloud/config.json"));
+  protected static final Path PATH = Paths.get(System.getProperty("systems.reformcloud.node-config-path", "reformcloud/config.json"));
 
   private final String name;
   private final UUID uniqueID;

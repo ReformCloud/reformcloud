@@ -25,6 +25,10 @@
 package systems.reformcloud.reformcloud2.executor.api.configuration.json;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.configuration.json.types.Array;
+import systems.reformcloud.reformcloud2.executor.api.configuration.json.types.Null;
+import systems.reformcloud.reformcloud2.executor.api.configuration.json.types.Object;
+import systems.reformcloud.reformcloud2.executor.api.configuration.json.types.Primitive;
 import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 
 import java.math.BigDecimal;
@@ -32,41 +36,53 @@ import java.math.BigInteger;
 
 public interface Element extends SerializableObject, Cloneable {
 
-    boolean isObject();
+  boolean isObject();
 
-    boolean isPrimitive();
+  boolean isPrimitive();
 
-    boolean isArray();
+  boolean isArray();
 
-    boolean isNull();
+  boolean isNull();
 
-    boolean getAsBoolean();
+  boolean getAsBoolean();
 
-    @NotNull
-    Number getAsNumber();
+  @NotNull
+  Number getAsNumber();
 
-    @NotNull
-    String getAsString();
+  @NotNull
+  Object getAsObject();
 
-    double getAsDouble();
+  @NotNull
+  Array getAsArray();
 
-    float getAsFloat();
+  @NotNull
+  Primitive getAsPrimitive();
 
-    long getAsLong();
+  @NotNull
+  Null getAsNull();
 
-    int getAsInt();
+  @NotNull
+  String getAsString();
 
-    byte getAsByte();
+  double getAsDouble();
 
-    @NotNull
-    BigDecimal getAsBigDecimal();
+  float getAsFloat();
 
-    @NotNull
-    BigInteger getAsBigInteger();
+  long getAsLong();
 
-    short getAsShort();
+  int getAsInt();
 
-    @NotNull
-    @Override
-    String toString();
+  byte getAsByte();
+
+  @NotNull
+  BigDecimal getAsBigDecimal();
+
+  @NotNull
+  BigInteger getAsBigInteger();
+
+  short getAsShort();
+
+  @NotNull
+  @Override
+  String toString();
 }

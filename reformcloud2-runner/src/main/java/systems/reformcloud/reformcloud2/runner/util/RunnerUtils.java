@@ -36,6 +36,7 @@ import java.net.URL;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Properties;
@@ -49,15 +50,15 @@ public final class RunnerUtils {
     /**
      * The path where the executor file is located
      */
-    public static final Path EXECUTOR_PATH = Path.of("reformcloud/.bin/executor.jar");
+    public static final Path EXECUTOR_PATH = Paths.get("reformcloud/.bin/executor.jar");
     /**
      * The path of the folder in which the application updates are located
      */
-    public static final Path APP_UPDATE_FOLDER = Path.of("reformcloud/.update/apps");
+    public static final Path APP_UPDATE_FOLDER = Paths.get("reformcloud/.update/apps");
     /**
      * The location of the runner in the node and client env
      */
-    public static final Path RUNNER_FILES_FILE = Path.of("reformcloud/files/runner.jar");
+    public static final Path RUNNER_FILES_FILE = Paths.get("reformcloud/files/runner.jar");
     /**
      * The file where the reform script is located by default
      */
@@ -67,7 +68,7 @@ public final class RunnerUtils {
     /**
      * The file where the reform script is located by default
      */
-    public static final Path GLOBAL_REFORM_SCRIPT_FILE = Path.of("global.reformscript");
+    public static final Path GLOBAL_REFORM_SCRIPT_FILE = Paths.get("global.reformscript");
     /**
      * The default discord invite for the reformcloud discord
      */

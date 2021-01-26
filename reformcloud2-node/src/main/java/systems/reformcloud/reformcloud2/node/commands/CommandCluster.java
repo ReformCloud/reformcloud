@@ -129,13 +129,13 @@ public final class CommandCluster implements Command {
         e -> e.getHost().equals(ip.trim())
       );
       if (address == null) {
-        sender.sendMessage(TranslationHolder.translateDef("command-cluster-node-not-exists", ip));
+        sender.sendMessage(TranslationHolder.translate("command-cluster-node-not-exists", ip));
         return;
       }
 
       NodeExecutor.getInstance().getNodeConfig().getClusterNodes().remove(address);
       NodeExecutor.getInstance().getNodeConfig().save();
-      sender.sendMessage(TranslationHolder.translateDef("command-cluster-node-deleted", ip));
+      sender.sendMessage(TranslationHolder.translate("command-cluster-node-deleted", ip));
       return;
     }
 

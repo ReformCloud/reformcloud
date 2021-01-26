@@ -30,65 +30,65 @@ import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer
 
 public final class DefaultInclusion implements Inclusion {
 
-    private String key;
-    private String backend;
-    private Inclusion.InclusionLoadType inclusionLoadType;
+  private String key;
+  private String backend;
+  private Inclusion.InclusionLoadType inclusionLoadType;
 
-    DefaultInclusion() {
-    }
+  DefaultInclusion() {
+  }
 
-    DefaultInclusion(String key, String backend, InclusionLoadType inclusionLoadType) {
-        this.key = key;
-        this.backend = backend;
-        this.inclusionLoadType = inclusionLoadType;
-    }
+  DefaultInclusion(String key, String backend, InclusionLoadType inclusionLoadType) {
+    this.key = key;
+    this.backend = backend;
+    this.inclusionLoadType = inclusionLoadType;
+  }
 
-    @Override
-    public @NotNull String getKey() {
-        return this.key;
-    }
+  @Override
+  public @NotNull String getKey() {
+    return this.key;
+  }
 
-    @Override
-    public void setKey(@NotNull String key) {
-        this.key = key;
-    }
+  @Override
+  public void setKey(@NotNull String key) {
+    this.key = key;
+  }
 
-    @Override
-    public @NotNull String getBackend() {
-        return this.backend;
-    }
+  @Override
+  public @NotNull String getBackend() {
+    return this.backend;
+  }
 
-    @Override
-    public void setBackend(@NotNull String backend) {
-        this.backend = backend;
-    }
+  @Override
+  public void setBackend(@NotNull String backend) {
+    this.backend = backend;
+  }
 
-    @Override
-    public @NotNull InclusionLoadType getInclusionLoadType() {
-        return this.inclusionLoadType;
-    }
+  @Override
+  public @NotNull InclusionLoadType getInclusionLoadType() {
+    return this.inclusionLoadType;
+  }
 
-    @Override
-    public void setInclusionLoadType(@NotNull InclusionLoadType inclusionLoadType) {
-        this.inclusionLoadType = inclusionLoadType;
-    }
+  @Override
+  public void setInclusionLoadType(@NotNull InclusionLoadType inclusionLoadType) {
+    this.inclusionLoadType = inclusionLoadType;
+  }
 
-    @Override
-    public @NotNull Inclusion clone() {
-        return new DefaultInclusion(this.key, this.backend, this.inclusionLoadType);
-    }
+  @Override
+  public @NotNull Inclusion clone() {
+    return new DefaultInclusion(this.key, this.backend, this.inclusionLoadType);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.key);
-        buffer.writeString(this.backend);
-        buffer.writeByte(this.inclusionLoadType.ordinal());
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.key);
+    buffer.writeString(this.backend);
+    buffer.writeByte(this.inclusionLoadType.ordinal());
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.key = buffer.readString();
-        this.backend = buffer.readString();
-        this.inclusionLoadType = EnumUtil.findEnumFieldByIndex(InclusionLoadType.class, buffer.readByte()).orElseThrow();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.key = buffer.readString();
+    this.backend = buffer.readString();
+    this.inclusionLoadType = EnumUtil.findEnumFieldByIndex(InclusionLoadType.class, buffer.readByte()).orElse(null);
+  }
 }

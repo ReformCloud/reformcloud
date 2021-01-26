@@ -114,7 +114,7 @@ public final class TranslationHolder {
 
   private static void detectAndLoadFiles() {
     final String languageToUse = System.getProperty("systems.reformcloud.language-code", "en");
-    try (InputStream stream = TranslationHolder.class.getClassLoader().getResourceAsStream("languages/" + languageToUse)) {
+    try (InputStream stream = TranslationHolder.class.getClassLoader().getResourceAsStream("languages/" + languageToUse + ".properties")) {
       if (stream == null) {
         throw new IllegalStateException("Invalid language code \"" + languageToUse + "\" specified");
       }

@@ -32,6 +32,7 @@ import systems.reformcloud.reformcloud2.shared.Constants;
 import systems.reformcloud.reformcloud2.shared.dependency.DefaultDependencyLoader;
 import systems.reformcloud.reformcloud2.shared.dependency.DependencyFileLoader;
 import systems.reformcloud.reformcloud2.shared.io.IOUtils;
+import systems.reformcloud.reformcloud2.shared.json.GsonFactories;
 
 import java.nio.file.Paths;
 
@@ -41,6 +42,9 @@ public final class NodeLauncher {
     // load all needed dependencies before proceeding
     DependencyLoader dependencyLoader = new DefaultDependencyLoader();
     dependencyLoader.load(DependencyFileLoader.collectDependenciesFromFile(NodeLauncher.class.getClassLoader().getResourceAsStream("internal/dependencies.txt")));
+
+    // init json factories
+    GsonFactories.init();
 
     // Make a clear space here to show the user that we now start the cloud itself (and because it looks better)
     System.out.println();
@@ -60,7 +64,7 @@ public final class NodeLauncher {
     nodeExecutor.bootstrap(argumentParser);
 
     double bootTime = (System.currentTimeMillis() - startTime) / 1000d;
-    System.out.println(TranslationHolder.translateDef("startup-done", Constants.TWO_POINT_THREE_DECIMAL_FORMAT.format(bootTime)));
+    System.out.println(TranslationHolder.translate("startup-done", Constants.TWO_POINT_THREE_DECIMAL_FORMAT.format(bootTime)));
 
     nodeExecutor.getCloudTickWorker().startTick();
   }

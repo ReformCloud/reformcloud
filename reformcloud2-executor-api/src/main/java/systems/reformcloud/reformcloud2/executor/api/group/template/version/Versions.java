@@ -47,7 +47,7 @@ public final class Versions {
   public static final Version SPIGOT_1_12_2 = javaServer("SPIGOT_1_12_2", "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.12.2.jar");
   public static final Version SPIGOT_1_13_2 = javaServer("SPIGOT_1_13_2", "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.13.2.jar");
   public static final Version SPIGOT_1_14_4 = javaServer("SPIGOT_1_14_4", "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.14.4.jar");
-  public static final Version SPIGOT_1_15_2 = javaServer("Spigot 1.15.2", "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.15.2.jar");
+  public static final Version SPIGOT_1_15_2 = javaServer("Spigot_1_15_2", "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.15.2.jar");
   public static final Version SPIGOT_1_16 = javaServer("SPIGOT_1_16", "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.16.jar");
   // paper versions
   public static final Version PAPER_1_8_8 = javaServer("PAPER_1_8_8", "https://dl.reformcloud.systems/mcversions/paper/paper-1.8.8.jar", false);
@@ -102,12 +102,12 @@ public final class Versions {
   // POCKET SERVERS
   // ----
   // CloudBurstMC/nukkit & CloudBurstMC/server
-  public static final Version NUKKIT_X = pocketServer("NUKKIT_X", "https://ci.nukkitx.com/job/NukkitX/job/Nukkit/job/master/lastStableBuild/artifact/target/nukkit-1.0-SNAPSHOT.jar");
+  public static final Version NUKKITX = pocketServer("NUKKITX", "https://ci.nukkitx.com/job/NukkitX/job/Nukkit/job/master/lastStableBuild/artifact/target/nukkit-1.0-SNAPSHOT.jar");
   public static final Version CLOUDBURST = pocketServer("CLOUDBURST", "https://ci.nukkitx.com/job/NukkitX/job/Server/job/bleeding/lastStableBuild/artifact/target/Cloudburst.jar");
   // ----
   // POCKET PROXIES
   // ----
-  public static final Version WATERDOG_PE = pocketProxy("WATERDOG_PE", "https://ci.codemc.org/job/yesdog/job/Waterdog/lastSuccessfulBuild/artifact/Waterfall-Proxy/bootstrap/target/Waterdog.jar");
+  public static final Version WATERDOGPE = pocketProxy("WATERDOGPE", "https://ci.codemc.org/job/yesdog/job/Waterdog/lastSuccessfulBuild/artifact/Waterfall-Proxy/bootstrap/target/Waterdog.jar");
 
   private Versions() {
     throw new UnsupportedOperationException();

@@ -50,7 +50,7 @@ public class OnlinePercentCheckerTask implements Runnable {
         .getProcessByUniqueId(prepared.getId().getUniqueId());
       if (processWrapper.isPresent()) {
         processWrapper.get().setRuntimeState(ProcessState.STARTED);
-        System.out.println(TranslationHolder.translateDef("process-start-process", processGroup.getName()));
+        System.out.println(TranslationHolder.translate("process-start-process", processGroup.getName()));
       } else {
         ExecutorAPI.getInstance().getProcessProvider().createProcess()
           .group(processGroup)
@@ -58,7 +58,7 @@ public class OnlinePercentCheckerTask implements Runnable {
           .onComplete(wrapper -> {
             if (wrapper != null) {
               wrapper.setRuntimeState(ProcessState.STARTED);
-              System.out.println(TranslationHolder.translateDef("process-start-process", processGroup.getName()));
+              System.out.println(TranslationHolder.translate("process-start-process", processGroup.getName()));
             }
           });
       }
@@ -69,7 +69,7 @@ public class OnlinePercentCheckerTask implements Runnable {
         .onComplete(wrapper -> {
           if (wrapper != null) {
             wrapper.setRuntimeState(ProcessState.STARTED);
-            System.out.println(TranslationHolder.translateDef("process-start-process", processGroup.getName()));
+            System.out.println(TranslationHolder.translate("process-start-process", processGroup.getName()));
           }
         });
     }

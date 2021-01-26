@@ -52,7 +52,7 @@ public class DefaultProcessGroup extends DefaultJsonDataHolder<ProcessGroup> imp
   private Collection<Template> templates;
   private String name;
 
-  DefaultProcessGroup() {
+  public DefaultProcessGroup() {
   }
 
   public DefaultProcessGroup(StartupConfiguration startupConfiguration, PlayerAccessConfiguration playerAccessConfiguration,

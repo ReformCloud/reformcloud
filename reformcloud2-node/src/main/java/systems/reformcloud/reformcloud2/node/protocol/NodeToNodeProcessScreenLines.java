@@ -57,7 +57,7 @@ public class NodeToNodeProcessScreenLines extends ProtocolPacket {
     @Override
     public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
         for (String line : this.newLines) {
-            System.out.println(TranslationHolder.translateDef(
+            System.out.println(TranslationHolder.translate(
                 "screen-line-added",
                 this.processName,
                 this.nodeName,

@@ -52,7 +52,7 @@ public final class DownloadHelper {
   public static void download(@NotNull String url, @NotNull Path target) {
     connect(url, (connection, exception) -> {
       if (connection != null && connection.getResponseCode() == 200) {
-        System.out.println(TranslationHolder.translateDef("runtime-download-file", url, getSize(connection.getContentLengthLong())));
+        System.out.println(TranslationHolder.translate("runtime-download-file", url, getSize(connection.getContentLengthLong())));
         final long startMillis = System.currentTimeMillis();
 
         try (InputStream stream = connection.getInputStream()) {
@@ -65,7 +65,7 @@ public final class DownloadHelper {
           ex.printStackTrace();
         }
 
-        System.out.println(TranslationHolder.translateDef("runtime-download-file-completed", url, System.currentTimeMillis() - startMillis));
+        System.out.println(TranslationHolder.translate("runtime-download-file-completed", url, System.currentTimeMillis() - startMillis));
       } else {
         new RuntimeException("Unable to download from " + url, exception).printStackTrace();
       }

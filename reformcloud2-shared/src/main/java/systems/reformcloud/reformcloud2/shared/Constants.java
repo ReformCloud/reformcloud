@@ -27,6 +27,7 @@ package systems.reformcloud.reformcloud2.shared;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -42,7 +43,7 @@ public final class Constants {
     public static final String EMPTY_STRING = "";
     public static final long MEGABYTE = 1024 * 1024;
     public static final String RUNNER_DOWNLOAD_URL = "https://internal.reformcloud.systems/runner.jar";
-    public static final String DEV_NULL_PATH = Path.of("reformcloud/.bin/dev/null").toAbsolutePath().toString();
+    public static final String DEV_NULL_PATH = Paths.get("reformcloud/.bin/dev/null").toAbsolutePath().toString();
     public static final ExecutorService CACHED_THREAD_POOL = Executors.newCachedThreadPool();
     public static final ScheduledExecutorService SINGLE_THREAD_SCHEDULED_EXECUTOR = Executors.newSingleThreadScheduledExecutor();
     public static final ArrayDeque<String> EMPTY_STRING_QUEUE = new ArrayDeque<>();

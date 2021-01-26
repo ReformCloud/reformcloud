@@ -169,7 +169,7 @@ public final class DefaultNodeProcessProvider implements ProcessProvider {
     ExecutorService executorService = Executors.newFixedThreadPool((this.processes.size() / 2) + 1);
     for (DefaultNodeLocalProcessWrapper processWrapper : this.getProcessWrappers()) {
       executorService.submit(() -> {
-        System.out.println(TranslationHolder.translateDef("application-stop-process", processWrapper.getProcessInformation().getName()));
+        System.out.println(TranslationHolder.translate("application-stop-process", processWrapper.getProcessInformation().getName()));
         processWrapper.setRuntimeState(ProcessState.STOPPED);
       });
     }

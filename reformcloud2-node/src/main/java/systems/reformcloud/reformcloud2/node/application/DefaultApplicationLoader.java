@@ -100,7 +100,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
 
       value.onLoad();
       value.getApplication().setApplicationStatus(ApplicationStatus.LOADED);
-      System.out.println(TranslationHolder.translateDef("successfully-loaded-app", value.getApplication().getName()));
+      System.out.println(TranslationHolder.translate("successfully-loaded-app", value.getApplication().getName()));
     }
   }
 
@@ -109,7 +109,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     for (Application value : this.loadedApplications.values()) {
       value.onEnable();
       value.getApplication().setApplicationStatus(ApplicationStatus.ENABLED);
-      System.out.println(TranslationHolder.translateDef("successfully-enabled-app", value.getApplication().getName()));
+      System.out.println(TranslationHolder.translate("successfully-enabled-app", value.getApplication().getName()));
     }
   }
 
@@ -216,7 +216,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
         }
 
         this.detectedApplications.add(config);
-        System.out.println(TranslationHolder.translateDef("application-detected", config.getName(), path.toString()));
+        System.out.println(TranslationHolder.translate("application-detected", config.getName(), path.toString()));
         return config;
       }
     } catch (final IOException exception) {
@@ -236,7 +236,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
       ExecutorAPI.getInstance().getDependencyLoader().detectAndLoad(mainClass);
 
       Application instance = (Application) mainClass.getDeclaredConstructor().newInstance();
-      System.out.println(TranslationHolder.translateDef("successfully-pre-installed-app", applicationConfig.getName(), applicationConfig.getAuthor()));
+      System.out.println(TranslationHolder.translate("successfully-pre-installed-app", applicationConfig.getName(), applicationConfig.getAuthor()));
 
       instance.init(new DefaultLoadedApplication(this, applicationConfig, mainClass), loader);
       if (instance.getUpdateRepository() != null) {
@@ -244,7 +244,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
       }
 
       this.loadedApplications.put(applicationConfig.getName(), instance);
-      System.out.println(TranslationHolder.translateDef("successfully-installed-app", applicationConfig.getName()));
+      System.out.println(TranslationHolder.translate("successfully-installed-app", applicationConfig.getName()));
       return instance;
     } catch (final ClassNotFoundException exception) {
       System.err.println("Unable to find main class " + applicationConfig.getMainClassName() + " for application " + applicationConfig.getName());
@@ -266,7 +266,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
 
     application.getApplication().setApplicationStatus(ApplicationStatus.PRE_DISABLE);
     application.onPreDisable();
-    System.out.println(TranslationHolder.translateDef("successfully-pre-disabled-app", application.getApplication().getName()));
+    System.out.println(TranslationHolder.translate("successfully-pre-disabled-app", application.getApplication().getName()));
 
     application.getApplication().setApplicationStatus(ApplicationStatus.DISABLED);
     application.onDisable();
@@ -293,7 +293,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     String[] split = fileName.split("-");
     String name = fileName.replace("-" + split[split.length - 1], "").replace(".jar", "");
 
-    System.out.println(TranslationHolder.translateDef(
+    System.out.println(TranslationHolder.translate(
       "application-download-update",
       application.getApplication().getApplicationConfig().getName(),
       application.getApplication().getApplicationConfig().getVersion(),

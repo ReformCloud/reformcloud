@@ -54,6 +54,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.jar.JarFile;
 
 public final class Runner {
@@ -102,7 +103,7 @@ public final class Runner {
 
     public void startApplication() {
         Path applicationFile = System.getProperties().containsKey("reformcloud.process.path")
-            ? Path.of(System.getProperty("reformcloud.process.path"))
+            ? Paths.get(System.getProperty("reformcloud.process.path"))
             : RunnerUtils.EXECUTOR_PATH;
         if (Files.notExists(applicationFile) || Files.isDirectory(applicationFile)) {
             throw new UnsupportedOperationException("Unable to start non-executable file: " + applicationFile.toString());

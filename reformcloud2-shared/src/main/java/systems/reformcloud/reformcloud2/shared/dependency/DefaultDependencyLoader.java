@@ -42,6 +42,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.DecimalFormat;
 import java.util.Arrays;
@@ -50,143 +51,143 @@ import java.util.Collections;
 
 public class DefaultDependencyLoader implements DependencyLoader {
 
-    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("##.###");
-    private static final String DEPENDENCY_DOWNLOAD_DONE_FORMAT = "Successfully completed download of dependency \"%s\" after %ss %n";
-    private static final String DEPENDENCY_LOAD_FORMAT = "Loaded dependency %s:%s version %s %n";
-    private static final String DEPENDENCY_DOWNLOAD_FORMAT = "Trying to download non-existing dependency \"%s\" version %s from %s (%s)... %n";
+  private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("##.###");
+  private static final String DEPENDENCY_DOWNLOAD_DONE_FORMAT = "Successfully completed download of dependency \"%s\" after %ss %n";
+  private static final String DEPENDENCY_LOAD_FORMAT = "Loaded dependency %s:%s version %s %n";
+  private static final String DEPENDENCY_DOWNLOAD_FORMAT = "Trying to download non-existing dependency \"%s\" version %s from %s (%s)... %n";
 
-    private static final Path REPOSITORY_PATH = Path.of(System.getProperty("reformcloud.lib.path", "reformcloud/.bin/libs"));
+  private static final Path REPOSITORY_PATH = Paths.get(System.getProperty("reformcloud.lib.path", "reformcloud/.bin/libs"));
 
-    private static Method addUrl;
-    private final URLClassLoader contextLoader;
+  private static Method addUrl;
+  private final URLClassLoader contextLoader;
 
-    public DefaultDependencyLoader() {
-        Conditions.isTrue(Thread.currentThread().getContextClassLoader() instanceof URLClassLoader, "Thread context class loader is not an url class loader");
-        this.contextLoader = (URLClassLoader) Thread.currentThread().getContextClassLoader();
+  public DefaultDependencyLoader() {
+    Conditions.isTrue(Thread.currentThread().getContextClassLoader() instanceof URLClassLoader, "Thread context class loader is not an url class loader");
+    this.contextLoader = (URLClassLoader) Thread.currentThread().getContextClassLoader();
+  }
+
+  @NotNull
+  @Contract(value = "_ -> new", pure = true)
+  private static Path getPath(@NotNull Dependency dependency) {
+    String systemPath = dependency.systemPath();
+    if (systemPath.trim().isEmpty()) {
+      systemPath = dependency.groupId().replace(".", "/") + "/" + dependency.artifactId() + "/" + dependency.version() + "/";
+    } else {
+      systemPath = systemPath.replace("../", "").replace("..\\", "");
+      if (!systemPath.endsWith(dependency.type()) && systemPath.endsWith("/")) {
+        systemPath += "/";
+      }
     }
 
-    @NotNull
-    @Contract(value = "_ -> new", pure = true)
-    private static Path getPath(@NotNull Dependency dependency) {
-        String systemPath = dependency.systemPath();
-        if (systemPath.trim().isEmpty()) {
-            systemPath = dependency.groupId().replace(".", "/") + "/" + dependency.artifactId() + "/" + dependency.version() + "/";
-        } else {
-            systemPath = systemPath.replace("../", "").replace("..\\", "");
-            if (!systemPath.endsWith(dependency.type()) && systemPath.endsWith("/")) {
-                systemPath += "/";
+    if (!systemPath.endsWith(dependency.type())) {
+      systemPath += dependency.artifactId() + "-" + dependency.version() + "." + dependency.type();
+    }
+
+    return REPOSITORY_PATH.resolve(systemPath);
+  }
+
+  @NotNull
+  @Contract(value = "_ -> new", pure = true)
+  private static String getDownloadUrl(@NotNull Dependency dependency) {
+    String repoUrl = dependency.repository().url().endsWith("/") ? dependency.repository().url() : dependency.repository().url() + "/";
+    return repoUrl + dependency.groupId().replace(".", "/")
+      + "/" + dependency.artifactId()
+      + "/" + dependency.version()
+      + "/" + dependency.artifactId() + "-" + dependency.version() + "." + dependency.type();
+  }
+
+  private static void handleException(@NotNull String format, @NotNull Dependency dependency, @NotNull Throwable exception) {
+    RuntimeException runtimeException = new RuntimeException(String.format(format, dependency.toString()), exception);
+    if (!dependency.optional()) {
+      throw runtimeException;
+    } else {
+      runtimeException.printStackTrace();
+    }
+  }
+
+  @Override
+  public void load(@NotNull Collection<Dependency> dependencies) {
+    // iterate over all dependencies and find the non-existing ones
+    for (Dependency dependency : dependencies) {
+      Path systemPath = getPath(dependency);
+      if (Files.notExists(systemPath)) {
+        System.out.printf(DEPENDENCY_DOWNLOAD_FORMAT, dependency.artifactId(), dependency.version(), dependency.repository().id(), dependency.repository().url());
+        long start = System.currentTimeMillis();
+        DownloadHelper.connect(getDownloadUrl(dependency), Collections.emptyMap(), (connection, exception) -> {
+          if (connection != null && connection.getResponseCode() == 200) {
+            try (InputStream inputStream = connection.getInputStream()) {
+              Path parent = systemPath.getParent();
+              if (parent != null && Files.notExists(parent)) {
+                Files.createDirectories(parent);
+              }
+
+              Files.copy(inputStream, systemPath, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException ioException) {
+              handleException("Unable to correctly download %s", dependency, ioException);
             }
+          } else {
+            handleException("Unable to correctly download %s", dependency, exception);
+          }
+        });
+        System.out.printf(DEPENDENCY_DOWNLOAD_DONE_FORMAT, dependency.artifactId(), DECIMAL_FORMAT.format((System.currentTimeMillis() - start) / 1000D));
+      }
+    }
+
+    // We located all all dependencies and ensured they are downloaded if not already done. Now we can load and inject them to the context class loader
+    for (Dependency dependency : dependencies) {
+      Path systemPath = getPath(dependency);
+      // Some dependencies may not exist locally because they are optional - skip them
+      if (Files.exists(systemPath)) {
+        try {
+          this.injectDependencyUrl(systemPath.toUri().toURL());
+          System.out.printf(DEPENDENCY_LOAD_FORMAT, dependency.groupId(), dependency.artifactId(), dependency.version());
+        } catch (Exception exception) {
+          handleException("Unable to correctly load %s", dependency, exception);
         }
+      }
+    }
+  }
 
-        if (!systemPath.endsWith(dependency.type())) {
-            systemPath += dependency.artifactId() + "-" + dependency.version() + "." + dependency.type();
-        }
+  @Override
+  public void detectAndLoad(@NotNull Class<?> clazz) {
+    this.load(this.detectDependencies(clazz));
+  }
 
-        return REPOSITORY_PATH.resolve(systemPath);
+  @Override
+  public void detectAndLoad(@NotNull Object clazz) {
+    this.detectAndLoad(clazz.getClass());
+  }
+
+  @Override
+  public @NotNull @UnmodifiableView Collection<Dependency> detectDependencies(@NotNull Class<?> clazz) {
+    for (Annotation annotation : clazz.getAnnotations()) {
+      if (annotation instanceof Dependency) {
+        return Collections.singletonList((Dependency) annotation);
+      }
+
+      if (annotation instanceof Dependencies) {
+        return Arrays.asList(((Dependencies) annotation).value());
+      }
     }
 
-    @NotNull
-    @Contract(value = "_ -> new", pure = true)
-    private static String getDownloadUrl(@NotNull Dependency dependency) {
-        String repoUrl = dependency.repository().url().endsWith("/") ? dependency.repository().url() : dependency.repository().url() + "/";
-        return repoUrl + dependency.groupId().replace(".", "/")
-            + "/" + dependency.artifactId()
-            + "/" + dependency.version()
-            + "/" + dependency.artifactId() + "-" + dependency.version() + "." + dependency.type();
+    return Collections.emptyList();
+  }
+
+  @Override
+  public @NotNull URLClassLoader getContextClassLoader() {
+    return this.contextLoader;
+  }
+
+  private void injectDependencyUrl(@NotNull URL url) throws Exception {
+    if (this.contextLoader instanceof RunnerClassLoader) {
+      ((RunnerClassLoader) this.contextLoader).addURL(url);
+    } else {
+      if (addUrl == null) {
+        addUrl = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+        addUrl.setAccessible(true);
+      }
+
+      addUrl.invoke(this.contextLoader, url);
     }
-
-    private static void handleException(@NotNull String format, @NotNull Dependency dependency, @NotNull Throwable exception) {
-        RuntimeException runtimeException = new RuntimeException(String.format(format, dependency.toString()), exception);
-        if (!dependency.optional()) {
-            throw runtimeException;
-        } else {
-            runtimeException.printStackTrace();
-        }
-    }
-
-    @Override
-    public void load(@NotNull Collection<Dependency> dependencies) {
-        // iterate over all dependencies and find the non-existing ones
-        for (Dependency dependency : dependencies) {
-            Path systemPath = getPath(dependency);
-            if (Files.notExists(systemPath)) {
-                System.out.printf(DEPENDENCY_DOWNLOAD_FORMAT, dependency.artifactId(), dependency.version(), dependency.repository().id(), dependency.repository().url());
-                long start = System.currentTimeMillis();
-                DownloadHelper.connect(getDownloadUrl(dependency), Collections.emptyMap(), (connection, exception) -> {
-                    if (connection != null && connection.getResponseCode() == 200) {
-                        try (InputStream inputStream = connection.getInputStream()) {
-                            Path parent = systemPath.getParent();
-                            if (parent != null && Files.notExists(parent)) {
-                                Files.createDirectories(parent);
-                            }
-
-                            Files.copy(inputStream, systemPath, StandardCopyOption.REPLACE_EXISTING);
-                        } catch (IOException ioException) {
-                            handleException("Unable to correctly download %s", dependency, ioException);
-                        }
-                    } else {
-                        handleException("Unable to correctly download %s", dependency, exception);
-                    }
-                });
-                System.out.printf(DEPENDENCY_DOWNLOAD_DONE_FORMAT, dependency.artifactId(), DECIMAL_FORMAT.format((System.currentTimeMillis() - start) / 1000D));
-            }
-        }
-
-        // We located all all dependencies and ensured they are downloaded if not already done. Now we can load and inject them to the context class loader
-        for (Dependency dependency : dependencies) {
-            Path systemPath = getPath(dependency);
-            // Some dependencies may not exist locally because they are optional - skip them
-            if (Files.exists(systemPath)) {
-                try {
-                    this.injectDependencyUrl(systemPath.toUri().toURL());
-                    System.out.printf(DEPENDENCY_LOAD_FORMAT, dependency.groupId(), dependency.artifactId(), dependency.version());
-                } catch (Exception exception) {
-                    handleException("Unable to correctly load %s", dependency, exception);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void detectAndLoad(@NotNull Class<?> clazz) {
-        this.load(this.detectDependencies(clazz));
-    }
-
-    @Override
-    public void detectAndLoad(@NotNull Object clazz) {
-        this.detectAndLoad(clazz.getClass());
-    }
-
-    @Override
-    public @NotNull @UnmodifiableView Collection<Dependency> detectDependencies(@NotNull Class<?> clazz) {
-        for (Annotation annotation : clazz.getAnnotations()) {
-            if (annotation instanceof Dependency) {
-                return Collections.singletonList((Dependency) annotation);
-            }
-
-            if (annotation instanceof Dependencies) {
-                return Arrays.asList(((Dependencies) annotation).value());
-            }
-        }
-
-        return Collections.emptyList();
-    }
-
-    @Override
-    public @NotNull URLClassLoader getContextClassLoader() {
-        return this.contextLoader;
-    }
-
-    private void injectDependencyUrl(@NotNull URL url) throws Exception {
-        if (this.contextLoader instanceof RunnerClassLoader) {
-            ((RunnerClassLoader) this.contextLoader).addURL(url);
-        } else {
-            if (addUrl == null) {
-                addUrl = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-                addUrl.setAccessible(true);
-            }
-
-            addUrl.invoke(this.contextLoader, url);
-        }
-    }
+  }
 }

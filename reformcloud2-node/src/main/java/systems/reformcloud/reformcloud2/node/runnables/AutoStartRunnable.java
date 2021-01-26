@@ -47,7 +47,7 @@ public class AutoStartRunnable implements Runnable {
         .getProcessByUniqueId(prepared.getId().getUniqueId());
       if (processWrapper.isPresent()) {
         processWrapper.get().setRuntimeState(ProcessState.STARTED);
-        System.out.println(TranslationHolder.translateDef("process-start-process", processGroup.getName()));
+        System.out.println(TranslationHolder.translate("process-start-process", processGroup.getName()));
       } else {
         ProcessWrapper wrapper = ExecutorAPI.getInstance().getProcessProvider().createProcess()
           .group(processGroup)
@@ -55,7 +55,7 @@ public class AutoStartRunnable implements Runnable {
           .getNow(null);
         if (wrapper != null) {
           wrapper.setRuntimeState(ProcessState.STARTED);
-          System.out.println(TranslationHolder.translateDef("process-start-process", processGroup.getName()));
+          System.out.println(TranslationHolder.translate("process-start-process", processGroup.getName()));
         }
       }
     } else {
@@ -65,7 +65,7 @@ public class AutoStartRunnable implements Runnable {
         .getNow(null);
       if (wrapper != null) {
         wrapper.setRuntimeState(ProcessState.STARTED);
-        System.out.println(TranslationHolder.translateDef("process-start-process", processGroup.getName()));
+        System.out.println(TranslationHolder.translate("process-start-process", processGroup.getName()));
       }
     }
   }
@@ -93,7 +93,7 @@ public class AutoStartRunnable implements Runnable {
       int prepared = MoreCollections.allOf(processes, e -> e.getCurrentState() == ProcessState.PREPARED).size();
       if (processGroup.getStartupConfiguration().getAlwaysPreparedProcessAmount() > prepared) {
         ExecutorAPI.getInstance().getProcessProvider().createProcess().group(processGroup).prepare();
-        System.out.println(TranslationHolder.translateDef("process-preparing-new-process", processGroup.getName()));
+        System.out.println(TranslationHolder.translate("process-preparing-new-process", processGroup.getName()));
       }
     }
   }

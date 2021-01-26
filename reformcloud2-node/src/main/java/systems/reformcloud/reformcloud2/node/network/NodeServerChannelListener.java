@@ -122,7 +122,7 @@ public class NodeServerChannelListener extends SharedChannelListener {
         super.networkChannel.setName(nodeInformation.getName());
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleNodeConnect(nodeInformation);
 
-        System.out.println(TranslationHolder.translateDef("network-node-other-node-connected", nodeInformation.getName()));
+        System.out.println(TranslationHolder.translate("network-node-other-node-connected", nodeInformation.getName()));
       } else if (packet.getType() == 2) {
         UUID processUniqueId = packet.getData().get("pid", UUID.class);
         if (processUniqueId == null) {
@@ -151,7 +151,7 @@ public class NodeServerChannelListener extends SharedChannelListener {
         information.setCurrentState(information.getInitialState());
 
         ExecutorAPI.getInstance().getProcessProvider().updateProcessInformation(information);
-        System.out.println(TranslationHolder.translateDef("process-connected-to-node", information.getName()));
+        System.out.println(TranslationHolder.translate("process-connected-to-node", information.getName()));
       } else {
         // invalid data
         super.networkChannel.close();

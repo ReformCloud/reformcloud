@@ -22,16 +22,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.runner;
+package systems.reformcloud.reformcloud2.executor.api.configuration.json;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public final class RunnerExecutor {
+import java.lang.reflect.Type;
 
-  public static synchronized void main(@NotNull String[] args) {
-    System.setProperty("file.encoding", "UTF-8");
+public interface JsonInstanceCreator<T> {
 
-    Runner runner = new Runner(args);
-    runner.bootstrap();
+  @Nullable
+  default T createInstance(@NotNull Type type) {
+    return null;
   }
 }

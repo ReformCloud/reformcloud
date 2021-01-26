@@ -24,6 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.group.template.version;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
@@ -39,7 +40,8 @@ public final class DefaultVersion implements Version {
     private boolean nativeTransportSupported;
     private transient VersionInfo versionInfo;
 
-    DefaultVersion() {
+    @ApiStatus.Internal
+    public DefaultVersion() {
     }
 
     DefaultVersion(String installer, String versionName, String downloadUrl, VersionType versionType, int defaultStartPort, boolean nativeTransportSupported) {

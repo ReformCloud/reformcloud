@@ -100,7 +100,7 @@ public final class CommandLaunch implements Command {
     if (properties.containsKey("template")) {
       Template baseTemplate = MoreCollections.filter(base.get().getTemplates(), e -> e.getName().equals(properties.getProperty("template")));
       if (baseTemplate == null) {
-        sender.sendMessage(TranslationHolder.translateDef("command-launch-template-not-exists", properties.getProperty("template"), base.get().getName()));
+        sender.sendMessage(TranslationHolder.translate("command-launch-template-not-exists", properties.getProperty("template"), base.get().getName()));
         return;
       }
 
@@ -110,7 +110,7 @@ public final class CommandLaunch implements Command {
     if (properties.containsKey("unique-id")) {
       UUID uniqueID = Parsers.UNIQUE_ID.parse(properties.getProperty("unique-id"));
       if (uniqueID == null) {
-        sender.sendMessage(TranslationHolder.translateDef("command-unique-id-failed", properties.getProperty("unique-id")));
+        sender.sendMessage(TranslationHolder.translate("command-unique-id-failed", properties.getProperty("unique-id")));
         return;
       }
 
@@ -158,7 +158,7 @@ public final class CommandLaunch implements Command {
     if (properties.containsKey("prepare-only")) {
       Boolean prepare = Parsers.BOOLEAN.parse(properties.getProperty("prepare-only"));
       if (prepare == null) {
-        sender.sendMessage(TranslationHolder.translateDef("command-required-boolean", properties.getProperty("prepare-only")));
+        sender.sendMessage(TranslationHolder.translate("command-required-boolean", properties.getProperty("prepare-only")));
         return;
       }
 

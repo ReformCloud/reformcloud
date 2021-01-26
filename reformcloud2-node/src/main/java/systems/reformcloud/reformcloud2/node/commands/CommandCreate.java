@@ -126,7 +126,7 @@ public final class CommandCreate implements Command {
     String name = strings[2];
     List<String> subGroups = new ArrayList<>();
     if (ExecutorAPI.getInstance().getMainGroupProvider().getMainGroup(name).isPresent()) {
-      source.sendMessage(TranslationHolder.translateDef("command-create-main-group-already-exists", name));
+      source.sendMessage(TranslationHolder.translate("command-create-main-group-already-exists", name));
       return;
     }
 
@@ -138,7 +138,7 @@ public final class CommandCreate implements Command {
 
       for (String subGroup : subGroupsStrings) {
         if (!ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(subGroup).isPresent()) {
-          source.sendMessage(TranslationHolder.translateDef("command-create-sub-group-does-not-exists", subGroup));
+          source.sendMessage(TranslationHolder.translate("command-create-sub-group-does-not-exists", subGroup));
           return;
         }
 
@@ -151,7 +151,7 @@ public final class CommandCreate implements Command {
     }
 
     ExecutorAPI.getInstance().getMainGroupProvider().createMainGroup(name).subGroups(subGroups).create();
-    source.sendMessage(TranslationHolder.translateDef("command-create-mg", name));
+    source.sendMessage(TranslationHolder.translate("command-create-mg", name));
   }
 
   private void handleProcessGroupRequest(CommandSender source, String[] strings) {
@@ -163,12 +163,12 @@ public final class CommandCreate implements Command {
     String name = strings[2];
     Version version = Versions.getByName(strings[3]).orElse(null);
     if (version == null) {
-      source.sendMessage(TranslationHolder.translateDef("command-create-version-not-found", strings[3]));
+      source.sendMessage(TranslationHolder.translate("command-create-version-not-found", strings[3]));
       return;
     }
 
     if (ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(name).isPresent()) {
-      source.sendMessage(TranslationHolder.translateDef("command-create-sub-group-already-exists", name));
+      source.sendMessage(TranslationHolder.translate("command-create-sub-group-already-exists", name));
       return;
     }
 
@@ -248,7 +248,7 @@ public final class CommandCreate implements Command {
     if (properties.containsKey("static")) {
       Boolean isStatic = Parsers.BOOLEAN.parse(properties.getProperty("static"));
       if (isStatic == null) {
-        source.sendMessage(TranslationHolder.translateDef("command-required-boolean", properties.getProperty("static")));
+        source.sendMessage(TranslationHolder.translate("command-required-boolean", properties.getProperty("static")));
         return;
       }
 
@@ -258,7 +258,7 @@ public final class CommandCreate implements Command {
     if (properties.containsKey("lobby")) {
       Boolean isLobby = Parsers.BOOLEAN.parse(properties.getProperty("lobby"));
       if (isLobby == null) {
-        source.sendMessage(TranslationHolder.translateDef("command-required-boolean", properties.getProperty("lobby")));
+        source.sendMessage(TranslationHolder.translate("command-required-boolean", properties.getProperty("lobby")));
         return;
       }
 
@@ -268,7 +268,7 @@ public final class CommandCreate implements Command {
     if (properties.containsKey("maintenance")) {
       Boolean isMaintenance = Parsers.BOOLEAN.parse(properties.getProperty("maintenance"));
       if (isMaintenance == null) {
-        source.sendMessage(TranslationHolder.translateDef("command-required-boolean", properties.getProperty("maintenance")));
+        source.sendMessage(TranslationHolder.translate("command-required-boolean", properties.getProperty("maintenance")));
         return;
       }
 
@@ -284,7 +284,7 @@ public final class CommandCreate implements Command {
       for (String mainGroup : mainGroups) {
         Optional<MainGroup> group = ExecutorAPI.getInstance().getMainGroupProvider().getMainGroup(mainGroup);
         if (!group.isPresent()) {
-          source.sendMessage(TranslationHolder.translateDef("command-create-main-group-does-not-exists", mainGroup));
+          source.sendMessage(TranslationHolder.translate("command-create-main-group-does-not-exists", mainGroup));
           return;
         }
 
@@ -344,6 +344,6 @@ public final class CommandCreate implements Command {
       .staticGroup(staticProcess)
       .lobby(lobby)
       .createPermanently();
-    source.sendMessage(TranslationHolder.translateDef("command-create-pg", name, version.getName()));
+    source.sendMessage(TranslationHolder.translate("command-create-pg", name, version.getName()));
   }
 }

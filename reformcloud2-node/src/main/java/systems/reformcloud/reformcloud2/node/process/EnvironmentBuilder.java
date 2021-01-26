@@ -126,7 +126,7 @@ final class EnvironmentBuilder {
       IOUtils.copyDirectory(versionDirectory.resolve("mods"), runningProcess.getPath().resolve("mods"));
     }
 
-    if (runningProcess.getProcessInformation().getPrimaryTemplate().getVersion().equals(Versions.NUKKIT_X)) {
+    if (runningProcess.getProcessInformation().getPrimaryTemplate().getVersion().equals(Versions.NUKKITX)) {
       IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/mcpe/nukkit/server.properties", runningProcess.getPath() + "/server.properties");
       IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/mcpe/nukkit/nukkit.yml", runningProcess.getPath() + "/nukkit.yml");
     } else if (runningProcess.getProcessInformation().getPrimaryTemplate().getVersion().equals(Versions.CLOUDBURST)) {
@@ -146,7 +146,7 @@ final class EnvironmentBuilder {
       IOUtils.createDirectory(Paths.get(runningProcess.getPath() + "/config/sponge"));
       IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/java/sponge/forge/global.conf", runningProcess.getPath() + "/config/sponge/global.conf");
       rewriteSpongeConfig(runningProcess);
-    } else if (runningProcess.getProcessInformation().getPrimaryTemplate().getVersion().equals(Versions.NUKKIT_X)
+    } else if (runningProcess.getProcessInformation().getPrimaryTemplate().getVersion().equals(Versions.NUKKITX)
       || runningProcess.getProcessInformation().getPrimaryTemplate().getVersion().equals(Versions.CLOUDBURST)) {
       rewriteServerProperties(runningProcess);
     } else {
@@ -154,7 +154,7 @@ final class EnvironmentBuilder {
       rewriteSpigotConfig(runningProcess);
     }
 
-    if (!runningProcess.getProcessInformation().getPrimaryTemplate().getVersion().equals(Versions.NUKKIT_X)) {
+    if (!runningProcess.getProcessInformation().getPrimaryTemplate().getVersion().equals(Versions.NUKKITX)) {
       IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/java/bukkit/server.properties", runningProcess.getPath() + "/server.properties");
       rewriteServerProperties(runningProcess);
     }
@@ -249,7 +249,7 @@ final class EnvironmentBuilder {
   //Waterdog
   private static boolean isLogicallyWaterDog(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
     Version version = runningProcess.getProcessInformation().getPrimaryTemplate().getVersion();
-    return version.equals(Versions.WATERDOG) || version.equals(Versions.WATERDOG_PE);
+    return version.equals(Versions.WATERDOG) || version.equals(Versions.WATERDOGPE);
   }
 
   private static void rewriteWaterDogConfig(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
@@ -261,7 +261,7 @@ final class EnvironmentBuilder {
       } else if (s.trim().startsWith("use_xuid_for_uuid:")) {
         s = "use_xuid_for_uuid: true";
       } else if (s.trim().startsWith("raknet:")) {
-        s = "    raknet: " + runningProcess.getProcessInformation().getPrimaryTemplate().getVersion().equals(Versions.WATERDOG_PE);
+        s = "    raknet: " + runningProcess.getProcessInformation().getPrimaryTemplate().getVersion().equals(Versions.WATERDOGPE);
       } else if (s.trim().startsWith("- query_port:")) {
         s = "  - query_port: " + runningProcess.getProcessInformation().getHost().getPort();
       } else if (s.trim().startsWith("max_players:") && runningProcess.getProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isUsePlayerLimit()) {
