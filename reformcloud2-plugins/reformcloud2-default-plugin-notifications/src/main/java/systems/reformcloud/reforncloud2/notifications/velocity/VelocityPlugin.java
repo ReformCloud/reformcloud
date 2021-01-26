@@ -36,32 +36,32 @@ import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reforncloud2.notifications.velocity.listener.ProcessListener;
 
 @Plugin(
-    id = "reformcloud_2_notifications",
-    name = "ReformCloud2Notifications",
-    version = "2.0",
-    description = "Publishes notifications to all players with a permission on server start/connect/stop",
-    url = "https://reformcloud.systems",
-    authors = {"derklaro"},
-    dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
+  id = "reformcloud_2_notifications",
+  name = "ReformCloud2Notifications",
+  version = "2.0",
+  description = "Publishes notifications to all players with a permission on server start/connect/stop",
+  url = "https://reformcloud.systems",
+  authors = {"derklaro"},
+  dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
 )
 public final class VelocityPlugin {
 
-    public static ProxyServer proxyServer;
-    private ProcessListener listener;
+  public static ProxyServer proxyServer;
+  private ProcessListener listener;
 
-    @Inject
-    public VelocityPlugin(ProxyServer server) {
-        proxyServer = server;
-    }
+  @Inject
+  public VelocityPlugin(ProxyServer server) {
+    proxyServer = server;
+  }
 
-    @Subscribe
-    public void handleInit(ProxyInitializeEvent event) {
-        this.listener = new ProcessListener(proxyServer);
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(this.listener);
-    }
+  @Subscribe
+  public void handleInit(ProxyInitializeEvent event) {
+    this.listener = new ProcessListener(proxyServer);
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(this.listener);
+  }
 
-    @Subscribe
-    public void handle(final ProxyShutdownEvent event) {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).unregisterListener(this.listener);
-    }
+  @Subscribe
+  public void handle(final ProxyShutdownEvent event) {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).unregisterListener(this.listener);
+  }
 }
