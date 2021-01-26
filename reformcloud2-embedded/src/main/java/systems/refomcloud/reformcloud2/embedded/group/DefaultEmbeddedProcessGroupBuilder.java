@@ -26,13 +26,12 @@ package systems.refomcloud.reformcloud2.embedded.group;
 
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
-import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.group.process.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeCreateProcessGroup;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeCreateProcessGroupResult;
 import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroupBuilder;
-import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroup;
 
 import java.util.Optional;
 

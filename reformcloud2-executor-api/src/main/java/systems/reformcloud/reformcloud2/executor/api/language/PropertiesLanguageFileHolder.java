@@ -27,6 +27,7 @@ package systems.reformcloud.reformcloud2.executor.api.language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -34,49 +35,49 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PropertiesLanguageFileHolder implements LanguageFileHolder {
 
-    private final String languageCode;
-    private final Map<String, String> translations;
+  private final String languageCode;
+  private final Map<String, String> translations;
 
-    protected PropertiesLanguageFileHolder(String languageCode, Properties translations) {
-        this.languageCode = languageCode;
-        this.translations = new ConcurrentHashMap<>();
-        copyTranslations(translations, this.translations);
-    }
+  protected PropertiesLanguageFileHolder(String languageCode, Properties translations) {
+    this.languageCode = languageCode;
+    this.translations = new ConcurrentHashMap<>();
+    copyTranslations(translations, this.translations);
+  }
 
-    private static void copyTranslations(@NotNull Properties source, @NotNull Map<String, String> target) {
-        for (String stringPropertyName : source.stringPropertyNames()) {
-            final String translation = source.getProperty(stringPropertyName);
-            if (translation != null) {
-                target.put(stringPropertyName, translation);
-            }
-        }
+  private static void copyTranslations(@NotNull Properties source, @NotNull Map<String, String> target) {
+    for (String stringPropertyName : source.stringPropertyNames()) {
+      final String translation = source.getProperty(stringPropertyName);
+      if (translation != null) {
+        target.put(stringPropertyName, translation);
+      }
     }
+  }
 
-    @Override
-    public @NotNull Optional<String> getTranslation(@NotNull String key) {
-        return Optional.ofNullable(this.translations.get(key));
-    }
+  @Override
+  public @NotNull Optional<String> getTranslation(@NotNull String key) {
+    return Optional.ofNullable(this.translations.get(key));
+  }
 
-    @Override
-    public @NotNull LanguageFileHolder registerTranslation(@NotNull String key, @NotNull String translation) {
-        this.translations.put(key, translation);
-        return this;
-    }
+  @Override
+  public @NotNull LanguageFileHolder registerTranslation(@NotNull String key, @NotNull String translation) {
+    this.translations.put(key, translation);
+    return this;
+  }
 
-    @Override
-    public @NotNull LanguageFileHolder unregisterTranslation(@NotNull String key, @NotNull String translation) {
-        this.translations.remove(key);
-        return this;
-    }
+  @Override
+  public @NotNull LanguageFileHolder unregisterTranslation(@NotNull String key, @NotNull String translation) {
+    this.translations.remove(key);
+    return this;
+  }
 
-    @Override
-    @Unmodifiable
-    public @NotNull Map<String, String> getTranslations() {
-        return Map.copyOf(this.translations);
-    }
+  @Override
+  @Unmodifiable
+  public @NotNull Map<String, String> getTranslations() {
+    return Collections.unmodifiableMap(this.translations);
+  }
 
-    @Override
-    public @NotNull String getName() {
-        return this.languageCode;
-    }
+  @Override
+  public @NotNull String getName() {
+    return this.languageCode;
+  }
 }

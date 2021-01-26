@@ -25,12 +25,13 @@
 package systems.reformcloud.reformcloud2.shared.process;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.configuration.data.DefaultJsonDataHolder;
-import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
+import systems.reformcloud.reformcloud2.executor.api.group.process.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.group.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.group.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.network.address.DefaultNetworkAddress;
 import systems.reformcloud.reformcloud2.executor.api.network.address.NetworkAddress;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
@@ -45,6 +46,7 @@ import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroup;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -58,13 +60,13 @@ public class DefaultProcessInformation extends DefaultJsonDataHolder<ProcessInfo
   private Collection<Player> players;
   private ProcessState currentState;
   private ProcessState initialState;
-  private Collection<ProcessInclusion> loadedInclusions;
+  private Collection<ProcessInclusion> inclusions;
 
   protected DefaultProcessInformation() {
   }
 
   public DefaultProcessInformation(JsonConfiguration dataHolder, Identity id, NetworkAddress host, Template primaryTemplate, ProcessGroup processGroup, ProcessRuntimeInformation info,
-                                   Collection<Player> players, ProcessState currentState, ProcessState initialState, Collection<ProcessInclusion> loadedInclusions) {
+                                   Collection<Player> players, ProcessState currentState, ProcessState initialState, Collection<ProcessInclusion> inclusions) {
     super(dataHolder);
     this.id = id;
     this.host = host;
@@ -74,7 +76,7 @@ public class DefaultProcessInformation extends DefaultJsonDataHolder<ProcessInfo
     this.players = players;
     this.currentState = currentState;
     this.initialState = initialState;
-    this.loadedInclusions = loadedInclusions;
+    this.inclusions = inclusions;
   }
 
   @Override
@@ -113,8 +115,24 @@ public class DefaultProcessInformation extends DefaultJsonDataHolder<ProcessInfo
   }
 
   @Override
-  public @NotNull Collection<ProcessInclusion> getLoadedInclusions() {
-    return this.loadedInclusions;
+  public void addProcessInclusion(@NotNull ProcessInclusion inclusion) {
+    this.inclusions.add(inclusion);
+  }
+
+  @Override
+  public void removeProcessInclusion(@NotNull ProcessInclusion inclusion) {
+    this.inclusions.remove(inclusion);
+  }
+
+  @Override
+  public void removeAllProcessInclusions() {
+    this.inclusions.clear();
+  }
+
+  @Override
+  @Unmodifiable
+  public @NotNull Collection<ProcessInclusion> getProcessInclusions() {
+    return Collections.unmodifiableCollection(this.inclusions);
   }
 
   @Override
@@ -169,7 +187,7 @@ public class DefaultProcessInformation extends DefaultJsonDataHolder<ProcessInfo
       new ArrayList<>(this.players),
       this.currentState,
       this.initialState,
-      new ArrayList<>(this.loadedInclusions)
+      new ArrayList<>(this.inclusions)
     );
   }
 

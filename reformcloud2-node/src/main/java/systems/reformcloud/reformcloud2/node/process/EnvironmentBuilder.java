@@ -28,11 +28,11 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.process.player.PlayerAccessConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.inclusion.Inclusion;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Version;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.version.VersionInstaller;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Versions;
+import systems.reformcloud.reformcloud2.executor.api.group.process.player.PlayerAccessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.group.template.inclusion.Inclusion;
+import systems.reformcloud.reformcloud2.executor.api.group.template.version.Version;
+import systems.reformcloud.reformcloud2.executor.api.group.template.version.VersionInstaller;
+import systems.reformcloud.reformcloud2.executor.api.group.template.version.Versions;
 import systems.reformcloud.reformcloud2.executor.api.network.address.NetworkAddress;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
@@ -84,7 +84,7 @@ final class EnvironmentBuilder {
       initGlobalTemplateAndCurrentTemplate(runningProcess);
     }
 
-    ProcessUtil.loadInclusions(runningProcess.getPath(), runningProcess.getProcessInformation().getLoadedInclusions());
+    ProcessUtil.loadInclusions(runningProcess.getPath(), runningProcess.getProcessInformation().getProcessInclusions());
     if (!runningProcess.getProcessInformation().getProcessGroup().createsStaticProcesses() || firstStart) {
       loadTemplateInclusions(runningProcess, Inclusion.InclusionLoadType.PAST);
       loadPathInclusions(runningProcess, Inclusion.InclusionLoadType.PAST);

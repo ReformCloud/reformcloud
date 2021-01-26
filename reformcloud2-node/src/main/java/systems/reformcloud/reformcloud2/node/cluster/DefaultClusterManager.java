@@ -40,9 +40,9 @@ import systems.reformcloud.reformcloud2.executor.api.event.events.group.ProcessG
 import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessRegisterEvent;
 import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUnregisterEvent;
 import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUpdateEvent;
-import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.group.main.MainGroup;
+import systems.reformcloud.reformcloud2.executor.api.group.process.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.group.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;

@@ -25,7 +25,7 @@
 package systems.refomcloud.reformcloud2.embedded.plugin.bungee.fallback;
 
 import systems.refomcloud.reformcloud2.embedded.Embedded;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.version.VersionType;
+import systems.reformcloud.reformcloud2.executor.api.group.template.version.VersionType;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
 import java.util.function.Predicate;

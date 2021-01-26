@@ -34,7 +34,7 @@ public final class ProcessListener {
 
   @Listener
   public void handle(ProcessRegisterEvent event) {
-    if (!CloudFlareHelper.shouldHandle(event.getProcessInformation()) || !event.getProcessInformation().getNetworkInfo().isConnected()) {
+    if (!CloudFlareHelper.shouldHandle(event.getProcessInformation()) || !event.getProcessInformation().getCurrentState().isOnline()) {
       return;
     }
 
@@ -47,9 +47,9 @@ public final class ProcessListener {
       return;
     }
 
-    if (!event.getProcessInformation().getNetworkInfo().isConnected() && CloudFlareHelper.hasEntry(event.getProcessInformation())) {
+    if (!event.getProcessInformation().getCurrentState().isOnline() && CloudFlareHelper.hasEntry(event.getProcessInformation())) {
       CloudFlareHelper.deleteRecord(event.getProcessInformation());
-    } else if (event.getProcessInformation().getNetworkInfo().isConnected() && !CloudFlareHelper.hasEntry(event.getProcessInformation())) {
+    } else if (event.getProcessInformation().getCurrentState().isOnline() && !CloudFlareHelper.hasEntry(event.getProcessInformation())) {
       CloudFlareHelper.createForProcess(event.getProcessInformation());
     }
   }

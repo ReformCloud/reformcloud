@@ -35,37 +35,37 @@ import java.util.List;
 
 public class CommandReformCloud implements SimpleCommand {
 
-    private final List<String> aliases;
+  private final List<String> aliases;
 
-    public CommandReformCloud(@NotNull List<String> aliases) {
-        this.aliases = aliases;
-    }
+  public CommandReformCloud(@NotNull List<String> aliases) {
+    this.aliases = aliases;
+  }
 
-    @Override
-    public void execute(Invocation invocation) {
-        String prefix = Embedded.getInstance().getIngameMessages().getPrefix();
-        InternalReformCloudCommand.execute(
-            message -> invocation.source().sendMessage(Identity.nil(), VelocityExecutor.SERIALIZER.deserialize(message)),
-            invocation.arguments(),
-            prefix.endsWith(" ") ? prefix : prefix + " ",
-            this.getCommandSuccessMessage(),
-            this.aliases.isEmpty() ? "rc" : this.aliases.get(0)
-        );
-    }
+  @Override
+  public void execute(Invocation invocation) {
+    String prefix = Embedded.getInstance().getIngameMessages().getPrefix();
+    InternalReformCloudCommand.execute(
+      message -> invocation.source().sendMessage(Identity.nil(), VelocityExecutor.SERIALIZER.deserialize(message)),
+      invocation.arguments(),
+      prefix.endsWith(" ") ? prefix : prefix + " ",
+      this.getCommandSuccessMessage(),
+      this.aliases.isEmpty() ? "rc" : this.aliases.get(0)
+    );
+  }
 
-    @Override
-    public boolean hasPermission(Invocation invocation) {
-        return invocation.source().hasPermission("reformcloud.command.reformcloud");
-    }
+  @Override
+  public boolean hasPermission(Invocation invocation) {
+    return invocation.source().hasPermission("reformcloud.command.reformcloud");
+  }
 
-    @NotNull
-    private String getCommandSuccessMessage() {
-        String message = Embedded.getInstance().getIngameMessages().getCommandExecuteSuccess();
-        return Embedded.getInstance().getIngameMessages().format(message);
-    }
+  @NotNull
+  private String getCommandSuccessMessage() {
+    String message = Embedded.getInstance().getIngameMessages().getCommandExecuteSuccess();
+    return Embedded.getInstance().getIngameMessages().format(message);
+  }
 
-    @NotNull
-    public List<String> getAliases() {
-        return this.aliases;
-    }
+  @NotNull
+  public List<String> getAliases() {
+    return this.aliases;
+  }
 }

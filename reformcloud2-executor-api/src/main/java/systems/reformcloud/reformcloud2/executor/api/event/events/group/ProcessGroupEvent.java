@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.executor.api.event.events.group;
 
 import systems.reformcloud.reformcloud2.executor.api.event.Event;
-import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.group.process.ProcessGroup;
 
 public abstract class ProcessGroupEvent extends Event {
 

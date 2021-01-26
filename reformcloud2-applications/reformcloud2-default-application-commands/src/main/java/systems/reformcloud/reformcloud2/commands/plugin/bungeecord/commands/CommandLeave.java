@@ -36,56 +36,61 @@ import systems.refomcloud.reformcloud2.embedded.controller.ProxyServerController
 import systems.refomcloud.reformcloud2.embedded.plugin.bungee.fallback.BungeeFallbackExtraFilter;
 import systems.refomcloud.reformcloud2.embedded.shared.SharedPlayerFallbackFilter;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
 import java.util.List;
+import java.util.Optional;
 
 public class CommandLeave extends Command {
 
-    public CommandLeave(@NotNull String name, @NotNull List<String> aliases) {
-        super(name, null, aliases.toArray(new String[0]));
+  public CommandLeave(@NotNull String name, @NotNull List<String> aliases) {
+    super(name, null, aliases.toArray(new String[0]));
+  }
+
+  @Override
+  public void execute(CommandSender commandSender, String[] strings) {
+    if (!(commandSender instanceof ProxiedPlayer)) {
+      return;
     }
 
-    @Override
-    public void execute(CommandSender commandSender, String[] strings) {
-        if (!(commandSender instanceof ProxiedPlayer)) {
-            return;
-        }
-
-        final ProxiedPlayer proxiedPlayer = (ProxiedPlayer) commandSender;
-        if (proxiedPlayer.getServer() == null) {
-            return;
-        }
-
-        if (ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers().stream().anyMatch(
-            e -> e.getProcessDetail().getName().equals(proxiedPlayer.getServer().getInfo().getName()))
-        ) {
-            proxiedPlayer.sendMessage(TextComponent.fromLegacyText(Embedded.getInstance().getIngameMessages().format(
-                Embedded.getInstance().getIngameMessages().getAlreadyConnectedToHub()
-            )));
-            return;
-        }
-
-        SharedPlayerFallbackFilter.filterFallback(
-            proxiedPlayer.getUniqueId(),
-            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers(),
-            proxiedPlayer::hasPermission,
-            BungeeFallbackExtraFilter.INSTANCE,
-            proxiedPlayer.getServer().getInfo().getName()
-        ).ifPresentOrElse(processInformation -> {
-            ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(processInformation.getProcessDetail().getName());
-            if (serverInfo == null) {
-                proxiedPlayer.sendMessage(TextComponent.fromLegacyText(Embedded.getInstance().getIngameMessages().format(
-                    Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
-                )));
-                return;
-            }
-
-            proxiedPlayer.sendMessage(TextComponent.fromLegacyText(Embedded.getInstance().getIngameMessages().format(
-                Embedded.getInstance().getIngameMessages().getConnectingToHub(), processInformation.getProcessDetail().getName()
-            )));
-            proxiedPlayer.connect(serverInfo);
-        }, () -> proxiedPlayer.sendMessage(TextComponent.fromLegacyText(Embedded.getInstance().getIngameMessages().format(
-            Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
-        ))));
+    final ProxiedPlayer proxiedPlayer = (ProxiedPlayer) commandSender;
+    if (proxiedPlayer.getServer() == null) {
+      return;
     }
+
+    if (ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers().stream().anyMatch(
+      e -> e.getName().equals(proxiedPlayer.getServer().getInfo().getName()))
+    ) {
+      proxiedPlayer.sendMessage(TextComponent.fromLegacyText(Embedded.getInstance().getIngameMessages().format(
+        Embedded.getInstance().getIngameMessages().getAlreadyConnectedToHub()
+      )));
+      return;
+    }
+
+    final Optional<ProcessInformation> fallback = SharedPlayerFallbackFilter.filterFallback(
+      proxiedPlayer.getUniqueId(),
+      ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers(),
+      proxiedPlayer::hasPermission,
+      BungeeFallbackExtraFilter.INSTANCE,
+      proxiedPlayer.getServer().getInfo().getName()
+    );
+    if (fallback.isPresent()) {
+      ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(fallback.get().getName());
+      if (serverInfo == null) {
+        proxiedPlayer.sendMessage(TextComponent.fromLegacyText(Embedded.getInstance().getIngameMessages().format(
+          Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
+        )));
+        return;
+      }
+
+      proxiedPlayer.sendMessage(TextComponent.fromLegacyText(Embedded.getInstance().getIngameMessages().format(
+        Embedded.getInstance().getIngameMessages().getConnectingToHub(), fallback.get().getName()
+      )));
+      proxiedPlayer.connect(serverInfo);
+    } else {
+      proxiedPlayer.sendMessage(TextComponent.fromLegacyText(Embedded.getInstance().getIngameMessages().format(
+        Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
+      )));
+    }
+  }
 }

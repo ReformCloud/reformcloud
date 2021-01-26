@@ -32,8 +32,8 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.application.Application;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
+import systems.reformcloud.reformcloud2.executor.api.language.LanguageFileHolder;
 import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
-import systems.reformcloud.reformcloud2.shared.language.LanguageLoader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,7 +50,7 @@ public class ReformCloudApplication extends Application {
     try (InputStream stream = this.getClass().getClassLoader().getResourceAsStream("language-cloudflare.properties")) {
       Properties properties = new Properties();
       properties.load(stream);
-      TranslationHolder.loadAddonMessageFile(this.getApplication().getName(), new LanguageLoader.InternalLanguage(properties));
+      TranslationHolder.registerLanguageFileHolder(LanguageFileHolder.properties("en", properties));
     } catch (final IOException ex) {
       ex.printStackTrace();
     }

@@ -26,8 +26,8 @@ package systems.reformcloud.reformcloud2.node.process;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.runtime.RuntimeConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.group.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.group.template.runtime.RuntimeConfiguration;
 
 final class MemoryCalculator {
 

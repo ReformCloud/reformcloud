@@ -25,8 +25,8 @@
 package systems.reformcloud.reformcloud2.node.template.installers;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Version;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.version.VersionInstaller;
+import systems.reformcloud.reformcloud2.executor.api.group.template.version.Version;
+import systems.reformcloud.reformcloud2.executor.api.group.template.version.VersionInstaller;
 import systems.reformcloud.reformcloud2.shared.io.DownloadHelper;
 import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 

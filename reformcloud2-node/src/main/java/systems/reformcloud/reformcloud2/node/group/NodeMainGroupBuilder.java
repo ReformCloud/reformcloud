@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.node.group;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
-import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
+import systems.reformcloud.reformcloud2.executor.api.group.main.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.shared.group.DefaultMainGroup;
 import systems.reformcloud.reformcloud2.shared.group.DefaultMainGroupBuilder;

@@ -32,6 +32,7 @@ import systems.reformcloud.reformcloud2.executor.api.application.updater.Default
 import systems.reformcloud.reformcloud2.shared.io.DownloadHelper;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 public class CloudFlareAddonUpdater extends DefaultApplicationUpdateRepository {
@@ -45,10 +46,10 @@ public class CloudFlareAddonUpdater extends DefaultApplicationUpdateRepository {
 
   @Override
   public void fetchOrigin() {
-    DownloadHelper.connect("https://internal.reformcloud.systems/version.properties", inputStream -> {
-      try {
+    DownloadHelper.connect("https://internal.reformcloud.systems/version.properties", (connection, throwable) -> {
+      try (InputStream stream = connection.getInputStream()) {
         Properties properties = new Properties();
-        properties.load(inputStream);
+        properties.load(stream);
 
         this.newVersion = properties.getProperty("version");
       } catch (final IOException ex) {

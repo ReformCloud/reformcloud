@@ -25,13 +25,13 @@
 package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.process.player.DefaultPlayerAccessConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.process.player.PlayerAccessConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.process.startup.DefaultStartupConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.process.startup.StartupConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
+import systems.reformcloud.reformcloud2.executor.api.group.process.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.group.process.player.DefaultPlayerAccessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.group.process.player.PlayerAccessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.group.process.startup.DefaultStartupConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.group.process.startup.StartupConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.group.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.group.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;

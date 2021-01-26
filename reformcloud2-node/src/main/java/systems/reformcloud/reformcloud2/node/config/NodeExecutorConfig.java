@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.node.config;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.messages.IngameMessages;
+import systems.reformcloud.reformcloud2.executor.api.group.messages.IngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.executor.api.network.address.DefaultNetworkAddress;
 import systems.reformcloud.reformcloud2.node.setup.DefaultSetup;

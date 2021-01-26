@@ -25,8 +25,8 @@
 package systems.reformcloud.reformcloud2.examples.process;
 
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.groups.DefaultProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.DefaultTemplate;
+import systems.reformcloud.reformcloud2.executor.api.group.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.group.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 
 import java.util.Optional;

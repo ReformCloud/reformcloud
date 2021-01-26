@@ -25,10 +25,10 @@
 package systems.reformcloud.reformcloud2.node.template;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackend;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.builder.TemplateBuilder;
+import systems.reformcloud.reformcloud2.executor.api.group.process.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.group.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.group.template.backend.TemplateBackend;
+import systems.reformcloud.reformcloud2.executor.api.group.template.builder.TemplateBuilder;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
 import systems.reformcloud.reformcloud2.shared.io.IOUtils;

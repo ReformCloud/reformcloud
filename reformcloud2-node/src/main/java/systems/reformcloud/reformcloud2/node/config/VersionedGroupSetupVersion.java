@@ -25,13 +25,13 @@
 package systems.reformcloud.reformcloud2.node.config;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.groups.main.MainGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.process.player.PlayerAccessConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.process.startup.StartupConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.setup.GroupSetupVersion;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Version;
+import systems.reformcloud.reformcloud2.executor.api.group.main.MainGroup;
+import systems.reformcloud.reformcloud2.executor.api.group.process.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.group.process.player.PlayerAccessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.group.process.startup.StartupConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.group.setup.GroupSetupVersion;
+import systems.reformcloud.reformcloud2.executor.api.group.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.group.template.version.Version;
 import systems.reformcloud.reformcloud2.shared.group.DefaultMainGroup;
 import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroup;
 

@@ -47,8 +47,8 @@ import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUpdateEvent;
 import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
-import systems.reformcloud.reformcloud2.executor.api.groups.messages.IngameMessages;
-import systems.reformcloud.reformcloud2.executor.api.groups.process.player.PlayerAccessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.group.messages.IngameMessages;
+import systems.reformcloud.reformcloud2.executor.api.group.process.player.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.client.NetworkClient;

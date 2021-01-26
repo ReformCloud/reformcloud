@@ -44,6 +44,11 @@ public abstract class DefaultPacketSender implements PacketSender {
   }
 
   @Override
+  public boolean isKnown() {
+    return this.getName() != null;
+  }
+
+  @Override
   public @NotNull Future<Void> sendPacket(@NotNull Packet packet) {
     return this.channel.writeAndFlush(packet);
   }

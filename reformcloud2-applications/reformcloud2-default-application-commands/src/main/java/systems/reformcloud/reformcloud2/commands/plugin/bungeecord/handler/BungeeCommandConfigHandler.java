@@ -34,39 +34,38 @@ import systems.reformcloud.reformcloud2.commands.plugin.bungeecord.commands.Comm
 
 public class BungeeCommandConfigHandler extends CommandConfigHandler {
 
-    private CommandLeave leave;
+  private CommandLeave leave;
+  private CommandReformCloud reformCloud;
 
-    private CommandReformCloud reformCloud;
+  @Override
+  public void handleCommandConfigRelease(@NotNull CommandsConfig commandsConfig) {
+    this.unregisterAllCommands();
 
-    @Override
-    public void handleCommandConfigRelease(@NotNull CommandsConfig commandsConfig) {
-        this.unregisterAllCommands();
-
-        if (commandsConfig.isLeaveCommandEnabled() && !commandsConfig.getLeaveCommands().isEmpty()) {
-            String name = commandsConfig.getLeaveCommands().get(0);
-            commandsConfig.getLeaveCommands().remove(name);
-            this.leave = new CommandLeave(name, commandsConfig.getLeaveCommands());
-            ProxyServer.getInstance().getPluginManager().registerCommand(BungeecordPlugin.getInstance(), this.leave);
-        }
-
-        if (commandsConfig.isReformCloudCommandEnabled() && !commandsConfig.getReformCloudCommands().isEmpty()) {
-            String name = commandsConfig.getReformCloudCommands().get(0);
-            commandsConfig.getReformCloudCommands().remove(name);
-            this.reformCloud = new CommandReformCloud(name, commandsConfig.getReformCloudCommands());
-            ProxyServer.getInstance().getPluginManager().registerCommand(BungeecordPlugin.getInstance(), this.reformCloud);
-        }
+    if (commandsConfig.isLeaveCommandEnabled() && !commandsConfig.getLeaveCommands().isEmpty()) {
+      String name = commandsConfig.getLeaveCommands().get(0);
+      commandsConfig.getLeaveCommands().remove(name);
+      this.leave = new CommandLeave(name, commandsConfig.getLeaveCommands());
+      ProxyServer.getInstance().getPluginManager().registerCommand(BungeecordPlugin.getInstance(), this.leave);
     }
 
-    @Override
-    public void unregisterAllCommands() {
-        if (this.leave != null) {
-            ProxyServer.getInstance().getPluginManager().unregisterCommand(this.leave);
-            this.leave = null;
-        }
-
-        if (this.reformCloud != null) {
-            ProxyServer.getInstance().getPluginManager().unregisterCommand(this.reformCloud);
-            this.reformCloud = null;
-        }
+    if (commandsConfig.isReformCloudCommandEnabled() && !commandsConfig.getReformCloudCommands().isEmpty()) {
+      String name = commandsConfig.getReformCloudCommands().get(0);
+      commandsConfig.getReformCloudCommands().remove(name);
+      this.reformCloud = new CommandReformCloud(name, commandsConfig.getReformCloudCommands());
+      ProxyServer.getInstance().getPluginManager().registerCommand(BungeecordPlugin.getInstance(), this.reformCloud);
     }
+  }
+
+  @Override
+  public void unregisterAllCommands() {
+    if (this.leave != null) {
+      ProxyServer.getInstance().getPluginManager().unregisterCommand(this.leave);
+      this.leave = null;
+    }
+
+    if (this.reformCloud != null) {
+      ProxyServer.getInstance().getPluginManager().unregisterCommand(this.reformCloud);
+      this.reformCloud = null;
+    }
+  }
 }

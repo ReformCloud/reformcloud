@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.node.template;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackend;
+import systems.reformcloud.reformcloud2.executor.api.group.template.backend.TemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
 
 import java.util.Collection;

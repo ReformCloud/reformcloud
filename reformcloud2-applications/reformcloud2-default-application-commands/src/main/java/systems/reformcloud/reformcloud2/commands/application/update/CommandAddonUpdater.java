@@ -32,6 +32,7 @@ import systems.reformcloud.reformcloud2.executor.api.application.updater.Default
 import systems.reformcloud.reformcloud2.shared.io.DownloadHelper;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 public class CommandAddonUpdater extends DefaultApplicationUpdateRepository {
@@ -40,10 +41,10 @@ public class CommandAddonUpdater extends DefaultApplicationUpdateRepository {
 
   @Override
   public void fetchOrigin() {
-    DownloadHelper.connect("https://internal.reformcloud.systems/version.properties", inputStream -> {
-      try {
+    DownloadHelper.connect("https://internal.reformcloud.systems/version.properties", (connection, throwable) -> {
+      try (InputStream stream = connection.getInputStream()) {
         Properties properties = new Properties();
-        properties.load(inputStream);
+        properties.load(stream);
 
         this.newVersion = properties.getProperty("version");
       } catch (final IOException ex) {
@@ -64,7 +65,9 @@ public class CommandAddonUpdater extends DefaultApplicationUpdateRepository {
       return null;
     }
 
-    return new BasicApplicationRemoteUpdate(this.newVersion,
-      "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-commands-" + this.newVersion + ".jar");
+    return new BasicApplicationRemoteUpdate(
+      this.newVersion,
+      "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-commands-" + this.newVersion + ".jar"
+    );
   }
 }

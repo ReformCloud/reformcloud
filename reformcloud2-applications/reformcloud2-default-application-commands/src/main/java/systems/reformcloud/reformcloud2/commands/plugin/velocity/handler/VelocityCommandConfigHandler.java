@@ -38,54 +38,54 @@ import java.util.Arrays;
 
 public class VelocityCommandConfigHandler extends CommandConfigHandler {
 
-    private final ProxyServer proxyServer;
-    private CommandLeave commandLeave;
-    private CommandReformCloud commandReformCloud;
+  private final ProxyServer proxyServer;
+  private CommandLeave commandLeave;
+  private CommandReformCloud commandReformCloud;
 
-    public VelocityCommandConfigHandler(ProxyServer proxyServer) {
-        this.proxyServer = proxyServer;
+  public VelocityCommandConfigHandler(ProxyServer proxyServer) {
+    this.proxyServer = proxyServer;
+  }
+
+  @Override
+  public void handleCommandConfigRelease(@NotNull CommandsConfig commandsConfig) {
+    this.unregisterAllCommands();
+    if (commandsConfig.isLeaveCommandEnabled() && !commandsConfig.getLeaveCommands().isEmpty()) {
+      this.commandLeave = new CommandLeave(commandsConfig.getLeaveCommands());
+      this.proxyServer.getCommandManager().register(
+        this.forAliases(commandsConfig.getLeaveCommands().toArray(new String[0])),
+        this.commandLeave
+      );
     }
 
-    @Override
-    public void handleCommandConfigRelease(@NotNull CommandsConfig commandsConfig) {
-        this.unregisterAllCommands();
-        if (commandsConfig.isLeaveCommandEnabled() && !commandsConfig.getLeaveCommands().isEmpty()) {
-            this.commandLeave = new CommandLeave(commandsConfig.getLeaveCommands());
-            this.proxyServer.getCommandManager().register(
-                this.forAliases(commandsConfig.getLeaveCommands().toArray(new String[0])),
-                this.commandLeave
-            );
-        }
+    if (commandsConfig.isReformCloudCommandEnabled() && !commandsConfig.getReformCloudCommands().isEmpty()) {
+      this.commandReformCloud = new CommandReformCloud(commandsConfig.getReformCloudCommands());
+      this.proxyServer.getCommandManager().register(
+        this.forAliases(commandsConfig.getReformCloudCommands().toArray(new String[0])),
+        this.commandReformCloud
+      );
+    }
+  }
 
-        if (commandsConfig.isReformCloudCommandEnabled() && !commandsConfig.getReformCloudCommands().isEmpty()) {
-            this.commandReformCloud = new CommandReformCloud(commandsConfig.getReformCloudCommands());
-            this.proxyServer.getCommandManager().register(
-                this.forAliases(commandsConfig.getReformCloudCommands().toArray(new String[0])),
-                this.commandReformCloud
-            );
-        }
+  @Override
+  public void unregisterAllCommands() {
+    if (this.commandLeave != null) {
+      this.commandLeave.getAliases().forEach(this.proxyServer.getCommandManager()::unregister);
+      this.commandLeave = null;
     }
 
-    @Override
-    public void unregisterAllCommands() {
-        if (this.commandLeave != null) {
-            this.commandLeave.getAliases().forEach(this.proxyServer.getCommandManager()::unregister);
-            this.commandLeave = null;
-        }
+    if (this.commandReformCloud != null) {
+      this.commandReformCloud.getAliases().forEach(this.proxyServer.getCommandManager()::unregister);
+      this.commandReformCloud = null;
+    }
+  }
 
-        if (this.commandReformCloud != null) {
-            this.commandReformCloud.getAliases().forEach(this.proxyServer.getCommandManager()::unregister);
-            this.commandReformCloud = null;
-        }
+  private @NotNull CommandMeta forAliases(@NonNls String[] aliases) {
+    Conditions.isTrue(aliases.length > 0);
+    CommandMeta.Builder builder = this.proxyServer.getCommandManager().metaBuilder(aliases[0]);
+    if (aliases.length > 1) {
+      builder.aliases(Arrays.copyOfRange(aliases, 1, aliases.length));
     }
 
-    private @NotNull CommandMeta forAliases(@NonNls String[] aliases) {
-        Conditions.isTrue(aliases.length > 0);
-        CommandMeta.Builder builder = this.proxyServer.getCommandManager().metaBuilder(aliases[0]);
-        if (aliases.length > 1) {
-            builder.aliases(Arrays.copyOfRange(aliases, 1, aliases.length));
-        }
-
-        return builder.build();
-    }
+    return builder.build();
+  }
 }

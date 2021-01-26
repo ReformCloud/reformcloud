@@ -24,7 +24,6 @@
  */
 package systems.reformcloud.reformcloud2.commands.application;
 
-import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.commands.application.listener.ProcessInclusionHandler;
 import systems.reformcloud.reformcloud2.commands.application.packet.PacketGetCommandsConfig;
@@ -70,21 +69,20 @@ public class ReformCloudApplication extends Application {
     final Path path = this.getDataDirectory().resolve("config.json");
     if (Files.notExists(path)) {
       IOUtils.createDirectory(path.getParent());
-      new JsonConfiguration()
+      JsonConfiguration.newJsonConfiguration()
         .add("config", new CommandsConfig(
           true, Arrays.asList("l", "leave", "lobby", "hub", "quit"),
           true, Arrays.asList("reformcloud", "rc", "cloud")
         )).write(path);
     }
 
-    commandsConfig = JsonConfiguration.read(path).get("config", new TypeToken<>() {
-    });
+    commandsConfig = JsonConfiguration.newJsonConfiguration(path).get("config", CommandsConfig.class);
 
     ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketGetCommandsConfig.class);
     ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ProcessInclusionHandler());
 
     for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
-      if (registeredChannel.isAuthenticated()) {
+      if (registeredChannel.isKnown()) {
         registeredChannel.sendPacket(new PacketReleaseCommandsConfig(commandsConfig));
       }
     }

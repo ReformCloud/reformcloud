@@ -35,25 +35,25 @@ import java.util.List;
 
 public class CommandReformCloud extends Command {
 
-    public CommandReformCloud(@NotNull String name, @NotNull List<String> aliases) {
-        super(name, "reformcloud.command.reformcloud", aliases.toArray(new String[0]));
-    }
+  public CommandReformCloud(@NotNull String name, @NotNull List<String> aliases) {
+    super(name, "reformcloud.command.reformcloud", aliases.toArray(new String[0]));
+  }
 
-    @Override
-    public void execute(CommandSender commandSender, String[] strings) {
-        String prefix = Embedded.getInstance().getIngameMessages().getPrefix();
-        InternalReformCloudCommand.execute(
-            message -> commandSender.sendMessage(TextComponent.fromLegacyText(message)),
-            strings,
-            prefix.endsWith(" ") ? prefix : prefix + " ",
-            this.getCommandSuccessMessage(),
-            super.getName()
-        );
-    }
+  @Override
+  public void execute(CommandSender commandSender, String[] strings) {
+    String prefix = Embedded.getInstance().getIngameMessages().getPrefix();
+    InternalReformCloudCommand.execute(
+      message -> commandSender.sendMessage(TextComponent.fromLegacyText(message)),
+      strings,
+      prefix.endsWith(" ") ? prefix : prefix + " ",
+      this.getCommandSuccessMessage(),
+      super.getName()
+    );
+  }
 
-    @NotNull
-    private String getCommandSuccessMessage() {
-        String message = Embedded.getInstance().getIngameMessages().getCommandExecuteSuccess();
-        return Embedded.getInstance().getIngameMessages().format(message);
-    }
+  @NotNull
+  private String getCommandSuccessMessage() {
+    String message = Embedded.getInstance().getIngameMessages().getCommandExecuteSuccess();
+    return Embedded.getInstance().getIngameMessages().format(message);
+  }
 }

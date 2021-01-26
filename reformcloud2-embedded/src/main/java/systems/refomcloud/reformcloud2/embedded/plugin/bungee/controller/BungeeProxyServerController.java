@@ -29,7 +29,7 @@ import net.md_5.bungee.api.config.ServerInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.refomcloud.reformcloud2.embedded.controller.ProxyServerController;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.version.VersionType;
+import systems.reformcloud.reformcloud2.executor.api.group.template.version.VersionType;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
 import java.lang.reflect.InvocationTargetException;

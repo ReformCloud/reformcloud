@@ -24,13 +24,13 @@
  */
 package systems.reformcloud.reformcloud2.cloudflare.api;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.cloudflare.config.CloudFlareConfig;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.json.Element;
+import systems.reformcloud.reformcloud2.executor.api.configuration.json.types.Array;
+import systems.reformcloud.reformcloud2.executor.api.configuration.json.types.Object;
 import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
@@ -62,7 +62,7 @@ public final class CloudFlareHelper {
 
   public static boolean init(@NotNull Path configPath) {
     if (Files.notExists(configPath)) {
-      new JsonConfiguration()
+      JsonConfiguration.newJsonConfiguration()
         .add("config", new CloudFlareConfig(
           "someone@example.com",
           "",
@@ -73,7 +73,7 @@ public final class CloudFlareHelper {
       return true;
     }
 
-    cloudFlareConfig = JsonConfiguration.read(configPath).get("config", CloudFlareConfig.TYPE_TOKEN);
+    cloudFlareConfig = JsonConfiguration.newJsonConfiguration(configPath).get("config", CloudFlareConfig.class);
     return false;
   }
 
@@ -89,14 +89,14 @@ public final class CloudFlareHelper {
       return;
     }
 
-    CACHE.put(target.getProcessDetail().getProcessUniqueID(), dnsID);
+    CACHE.put(target.getId().getUniqueId(), dnsID);
   }
 
   private static String createSRVRecord(ProcessInformation target) {
-    if (!A_RECORD_CACHE.containsKey(target.getProcessDetail().getParentName())) {
+    if (!A_RECORD_CACHE.containsKey(target.getId().getNodeName())) {
       String recordID = createRecord(target, prepareARecord(target));
       if (recordID != null) {
-        A_RECORD_CACHE.put(target.getProcessDetail().getParentName(), recordID);
+        A_RECORD_CACHE.put(target.getId().getNodeName(), recordID);
       }
     }
 
@@ -120,56 +120,44 @@ public final class CloudFlareHelper {
         dataOutputStream.flush();
       }
 
-      try (InputStream stream = httpURLConnection.getResponseCode() < 400
-        ? httpURLConnection.getInputStream() : httpURLConnection.getErrorStream()
-      ) {
-        JsonConfiguration result = new JsonConfiguration(stream);
+      final int responseCode = httpURLConnection.getResponseCode();
+      try (InputStream stream = responseCode < 400 ? httpURLConnection.getInputStream() : httpURLConnection.getErrorStream()) {
+        JsonConfiguration result = JsonConfiguration.newJsonConfiguration(stream);
         httpURLConnection.disconnect();
 
         if (result.getBoolean("success") && result.has("result")) {
           return result.get("result").getString("id");
         } else {
-          try {
-            JsonArray array = result.getJsonObject().getAsJsonArray("errors");
-            if (array.size() == 0) {
-              // CloudFlare sent us no errors?
-              return null;
-            }
+          result.getBackingObject()
+            .get("errors")
+            .filter(Element::isArray)
+            .map(element -> (Array) element)
+            .ifPresent(array -> {
+              if (array.size() == 0) {
+                // CloudFlare sent us no errors?
+                return;
+              }
 
-            JsonElement first = array.get(0);
-            if (!first.isJsonObject()) {
-              // Should never happen
-              return null;
-            }
+              array.get(0).ifPresent(first -> {
+                Object object = (Object) first;
+                if (object.has("code") && object.get("code").map(Element::getAsLong).orElse(0L) == 81057) {
+                  // The record already exists
+                  return;
+                }
 
-            JsonObject jsonObject = first.getAsJsonObject();
-            if (jsonObject.has("code") && jsonObject.get("code").getAsLong() == 81057) {
-              // The record already exists
-              return null;
-            }
-
-            if (jsonObject.has("message") && jsonObject.has("code")) {
-              System.err.println(TranslationHolder.translate(
-                "cloudflare-create-error",
-                configuration.getOrDefault("type", "unknown"),
-                target.getProcessDetail().getName(),
-                jsonObject.get("code").getAsLong(),
-                httpURLConnection.getResponseCode(),
-                jsonObject.get("message").getAsString())
-              );
-              return null;
-            }
-          } catch (final Throwable ignored) {
-          }
-
-          System.err.println(TranslationHolder.translate(
-            "cloudflare-create-error",
-            configuration.getOrDefault("type", "unknown"),
-            target.getProcessDetail().getName(),
-            -1,
-            httpURLConnection.getResponseCode(),
-            "No reason provided"
-          ));
+                if (object.has("message") && object.has("code")) {
+                  System.err.println(TranslationHolder.translate(
+                    "cloudflare-create-error",
+                    configuration.getOrDefault("type", "unknown"),
+                    target.getName(),
+                    object.get("code").map(Element::getAsLong).orElse(0L),
+                    responseCode,
+                    object.get("message").map(Element::getAsString).orElse("no message")
+                  ));
+                }
+              });
+            });
+          return null;
         }
       }
     } catch (final IOException ex) {
@@ -189,7 +177,7 @@ public final class CloudFlareHelper {
   }
 
   public static void deleteRecord(ProcessInformation target) {
-    String dnsID = CACHE.remove(target.getProcessDetail().getProcessUniqueID());
+    String dnsID = CACHE.remove(target.getId().getUniqueId());
     if (dnsID == null) {
       return;
     }
@@ -208,12 +196,6 @@ public final class CloudFlareHelper {
       httpURLConnection.setRequestProperty("Accept", "application/json");
       httpURLConnection.setRequestProperty("Content-Type", "application/json");
 
-      try (InputStream stream = httpURLConnection.getResponseCode() < 400
-        ? httpURLConnection.getInputStream() : httpURLConnection.getErrorStream()
-      ) {
-        new JsonConfiguration(stream); // wait for the result
-      }
-
       httpURLConnection.disconnect();
     } catch (final IOException ex) {
       ex.printStackTrace();
@@ -221,36 +203,34 @@ public final class CloudFlareHelper {
   }
 
   private static JsonConfiguration prepareConfig(ProcessInformation target) {
-    return new JsonConfiguration()
+    return JsonConfiguration.newJsonConfiguration()
       .add("type", "SRV")
       .add("name", "_minecraft._tcp." + cloudFlareConfig.getDomainName())
-      .add("content", "SRV 1 1 " + target.getNetworkInfo().getPort()
-        + " " + target.getProcessDetail().getParentName() + "." + cloudFlareConfig.getDomainName())
+      .add("content", "SRV 1 1 " + target.getHost().getPort()
+        + " " + target.getId().getNodeName() + "." + cloudFlareConfig.getDomainName())
       .add("ttl", 1)
       .add("priority", 1)
       .add("proxied", false)
-      .add("data", new JsonConfiguration()
+      .add("data", JsonConfiguration.newJsonConfiguration()
         .add("service", "_minecraft")
         .add("proto", "_tcp")
-        .add("name", cloudFlareConfig.getSubDomain().equals("@")
-          ? cloudFlareConfig.getDomainName() : cloudFlareConfig.getSubDomain())
+        .add("name", cloudFlareConfig.getSubDomain().equals("@") ? cloudFlareConfig.getDomainName() : cloudFlareConfig.getSubDomain())
         .add("priority", 1)
         .add("weight", 1)
-        .add("port", target.getNetworkInfo().getPort())
-        .add("target", target.getProcessDetail().getParentName() + "." + cloudFlareConfig.getDomainName())
-        .getJsonObject()
+        .add("port", target.getHost().getPort())
+        .add("target", target.getId().getNodeName() + "." + cloudFlareConfig.getDomainName())
+        .getBackingObject()
       );
   }
 
   private static JsonConfiguration prepareARecord(ProcessInformation processInformation) {
-    return new JsonConfiguration()
-      .add("type", processInformation.getNetworkInfo().getHost() instanceof Inet6Address ? "AAAA" : "A")
-      .add("name", processInformation.getProcessDetail().getParentName() + "." + cloudFlareConfig.getDomainName())
-      .add("content", processInformation.getNetworkInfo().getHostPlain())
+    return JsonConfiguration.newJsonConfiguration()
+      .add("type", processInformation.getHost().toInetAddress() instanceof Inet6Address ? "AAAA" : "A")
+      .add("name", processInformation.getId().getNodeName() + "." + cloudFlareConfig.getDomainName())
+      .add("content", processInformation.getHost().getHost())
       .add("ttl", 1)
       .add("proxied", false)
-      .add("data", new JsonConfiguration().getJsonObject());
-
+      .add("data", JsonConfiguration.newJsonConfiguration().getBackingObject());
   }
 
   @NotNull
@@ -262,11 +242,11 @@ public final class CloudFlareHelper {
   }
 
   public static boolean hasEntry(@NotNull ProcessInformation processInformation) {
-    return CACHE.containsKey(processInformation.getProcessDetail().getProcessUniqueID());
+    return CACHE.containsKey(processInformation.getId().getUniqueId());
   }
 
   public static boolean shouldHandle(@NotNull ProcessInformation process) {
-    return !process.getProcessDetail().getTemplate().isServer()
-      && NodeExecutor.getInstance().isOwnIdentity(process.getProcessDetail().getParentName());
+    return process.getPrimaryTemplate().getVersion().getVersionType().isProxy()
+      && NodeExecutor.getInstance().isOwnIdentity(process.getId().getNodeName());
   }
 }

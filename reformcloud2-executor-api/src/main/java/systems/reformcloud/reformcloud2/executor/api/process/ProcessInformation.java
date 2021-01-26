@@ -28,20 +28,18 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.data.JsonDataHolder;
 import systems.reformcloud.reformcloud2.executor.api.functional.Sorted;
-import systems.reformcloud.reformcloud2.executor.api.groups.process.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.group.process.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.group.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.network.address.NetworkAddress;
 import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessBuilder;
-import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessInclusion;
 import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 
-import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface ProcessInformation extends JsonDataHolder<ProcessInformation>, ProcessStateHolder, PlayerHolder, Nameable, Sorted<ProcessInformation>, SerializableObject, Cloneable {
+public interface ProcessInformation extends JsonDataHolder<ProcessInformation>, ProcessStateHolder, ProcessInclusionHolder, PlayerHolder, Nameable, Sorted<ProcessInformation>, SerializableObject, Cloneable {
 
   @NotNull
   static Optional<ProcessWrapper> getByName(@NotNull String name) {
@@ -81,9 +79,6 @@ public interface ProcessInformation extends JsonDataHolder<ProcessInformation>, 
   ProcessRuntimeInformation getRuntimeInformation();
 
   void setRuntimeInformation(@NotNull ProcessRuntimeInformation information);
-
-  @NotNull
-  Collection<ProcessInclusion> getLoadedInclusions();
 
   @NotNull
   ProcessInformation clone();

@@ -26,8 +26,8 @@ package systems.reformcloud.reformcloud2.node.config;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.console.Console;
-import systems.reformcloud.reformcloud2.executor.api.groups.setup.GroupSetupVersion;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.version.Versions;
+import systems.reformcloud.reformcloud2.executor.api.group.setup.GroupSetupVersion;
+import systems.reformcloud.reformcloud2.executor.api.group.template.version.Versions;
 import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.setup.DefaultSetup;

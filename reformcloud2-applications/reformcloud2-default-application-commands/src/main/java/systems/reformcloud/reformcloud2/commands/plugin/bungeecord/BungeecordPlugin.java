@@ -37,31 +37,31 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvid
 
 public class BungeecordPlugin extends Plugin {
 
-    private static BungeecordPlugin instance;
+  private static BungeecordPlugin instance;
 
-    public static BungeecordPlugin getInstance() {
-        return instance;
-    }
+  public static BungeecordPlugin getInstance() {
+    return instance;
+  }
 
-    @Override
-    public void onEnable() {
-        instance = this;
-        CommandConfigHandler.setInstance(new BungeeCommandConfigHandler());
+  @Override
+  public void onEnable() {
+    instance = this;
+    CommandConfigHandler.setInstance(new BungeeCommandConfigHandler());
 
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketGetCommandsConfigResult.class);
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketReleaseCommandsConfig.class);
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketGetCommandsConfigResult.class);
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketReleaseCommandsConfig.class);
 
-        Embedded.getInstance().sendSyncQuery(new PacketGetCommandsConfig()).ifPresent(e -> {
-            if (e instanceof PacketGetCommandsConfigResult) {
-                CommandConfigHandler.getInstance().handleCommandConfigRelease(((PacketGetCommandsConfigResult) e).getCommandsConfig());
-            }
-        });
-    }
+    Embedded.getInstance().sendSyncQuery(new PacketGetCommandsConfig()).ifPresent(e -> {
+      if (e instanceof PacketGetCommandsConfigResult) {
+        CommandConfigHandler.getInstance().handleCommandConfigRelease(((PacketGetCommandsConfigResult) e).getCommandsConfig());
+      }
+    });
+  }
 
-    @Override
-    public void onDisable() {
-        CommandConfigHandler.getInstance().unregisterAllCommands();
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketIds.RESERVED_EXTRA_BUS + 3);
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketIds.RESERVED_EXTRA_BUS + 2);
-    }
+  @Override
+  public void onDisable() {
+    CommandConfigHandler.getInstance().unregisterAllCommands();
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketIds.RESERVED_EXTRA_BUS + 3);
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketIds.RESERVED_EXTRA_BUS + 2);
+  }
 }

@@ -34,25 +34,25 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public interface NetworkChannel extends ChannelListenerHolder, Sorted<NetworkChannel>, PacketSender, ReNameable {
 
-    @NotNull
-    ScheduledExecutorService getEventLoop();
+  @NotNull
+  ScheduledExecutorService getEventLoop();
 
-    @NotNull
-    String getChannelId();
+  @NotNull
+  String getChannelId();
 
-    boolean isOpen();
+  boolean isOpen();
 
-    boolean isRegistered();
+  boolean isRegistered();
 
-    boolean isActive();
+  boolean isActive();
 
-    boolean isWritable();
+  boolean isWritable();
 
-    @NotNull
-    NetworkAddress getLocalAddress();
+  @NotNull
+  NetworkAddress getLocalAddress();
 
-    @NotNull
-    NetworkAddress getRemoteAddress();
+  @NotNull
+  NetworkAddress getRemoteAddress();
 
-    void flush();
+  void flush();
 }

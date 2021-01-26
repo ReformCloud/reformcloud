@@ -33,17 +33,19 @@ import java.util.concurrent.Future;
 
 public interface PacketSender extends Nameable {
 
-    @NotNull
-    Future<Void> sendPacket(@NotNull Packet packet);
+  boolean isKnown();
 
-    void sendPacketSync(@NotNull Packet packet);
+  @NotNull
+  Future<Void> sendPacket(@NotNull Packet packet);
 
-    void sendPackets(@NotNull Packet... packets);
+  void sendPacketSync(@NotNull Packet packet);
 
-    void sendQueryResult(@NotNull UUID queryUniqueId, @NotNull Packet result);
+  void sendPackets(@NotNull Packet... packets);
 
-    @NotNull
-    Future<Void> close();
+  void sendQueryResult(@NotNull UUID queryUniqueId, @NotNull Packet result);
 
-    void closeSync();
+  @NotNull
+  Future<Void> close();
+
+  void closeSync();
 }

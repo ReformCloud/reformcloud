@@ -35,32 +35,32 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 
 public class PacketReleaseCommandsConfig extends Packet {
 
-    private CommandsConfig commandsConfig;
+  private CommandsConfig commandsConfig;
 
-    public PacketReleaseCommandsConfig() {
-    }
+  public PacketReleaseCommandsConfig() {
+  }
 
-    public PacketReleaseCommandsConfig(CommandsConfig commandsConfig) {
-        this.commandsConfig = commandsConfig;
-    }
+  public PacketReleaseCommandsConfig(CommandsConfig commandsConfig) {
+    this.commandsConfig = commandsConfig;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.RESERVED_EXTRA_BUS + 3;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.RESERVED_EXTRA_BUS + 3;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        CommandConfigHandler.getInstance().handleCommandConfigRelease(this.commandsConfig);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    CommandConfigHandler.getInstance().handleCommandConfigRelease(this.commandsConfig);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.commandsConfig);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.commandsConfig);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.commandsConfig = buffer.readObject(CommandsConfig.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.commandsConfig = buffer.readObject(CommandsConfig.class);
+  }
 }

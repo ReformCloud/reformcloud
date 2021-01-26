@@ -34,27 +34,27 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 
 public class PacketGetCommandsConfig extends Packet {
 
-    public PacketGetCommandsConfig() {
-    }
+  public PacketGetCommandsConfig() {
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.RESERVED_EXTRA_BUS + 1;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.RESERVED_EXTRA_BUS + 1;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        channel.sendQueryResult(
-            this.getQueryUniqueID(),
-            new PacketGetCommandsConfigResult(ReformCloudApplication.getCommandsConfig())
-        );
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    channel.sendQueryResult(
+      this.getQueryUniqueID(),
+      new PacketGetCommandsConfigResult(ReformCloudApplication.getCommandsConfig())
+    );
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+  }
 }

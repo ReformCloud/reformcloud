@@ -42,41 +42,41 @@ import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 
 @Plugin(
-    id = "reformcloud_2_commands",
-    name = "ReformCloud2Commands",
-    version = "2.0",
-    description = "Get access to default reformcloud2 commands",
-    url = "https://reformcloud.systems",
-    authors = {"derklaro"},
-    dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
+  id = "reformcloud_2_commands",
+  name = "ReformCloud2Commands",
+  version = "2.0",
+  description = "Get access to default reformcloud2 commands",
+  url = "https://reformcloud.systems",
+  authors = {"derklaro"},
+  dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
 )
 public class VelocityPlugin {
 
-    private final ProxyServer proxyServer;
+  private final ProxyServer proxyServer;
 
-    @Inject
-    public VelocityPlugin(ProxyServer proxyServer) {
-        this.proxyServer = proxyServer;
-    }
+  @Inject
+  public VelocityPlugin(ProxyServer proxyServer) {
+    this.proxyServer = proxyServer;
+  }
 
-    @Subscribe
-    public void handle(ProxyInitializeEvent event) {
-        CommandConfigHandler.setInstance(new VelocityCommandConfigHandler(this.proxyServer));
+  @Subscribe
+  public void handle(ProxyInitializeEvent event) {
+    CommandConfigHandler.setInstance(new VelocityCommandConfigHandler(this.proxyServer));
 
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketGetCommandsConfigResult.class);
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketReleaseCommandsConfig.class);
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketGetCommandsConfigResult.class);
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketReleaseCommandsConfig.class);
 
-        Embedded.getInstance().sendSyncQuery(new PacketGetCommandsConfig()).ifPresent(e -> {
-            if (e instanceof PacketGetCommandsConfigResult) {
-                CommandConfigHandler.getInstance().handleCommandConfigRelease(((PacketGetCommandsConfigResult) e).getCommandsConfig());
-            }
-        });
-    }
+    Embedded.getInstance().sendSyncQuery(new PacketGetCommandsConfig()).ifPresent(e -> {
+      if (e instanceof PacketGetCommandsConfigResult) {
+        CommandConfigHandler.getInstance().handleCommandConfigRelease(((PacketGetCommandsConfigResult) e).getCommandsConfig());
+      }
+    });
+  }
 
-    @Subscribe
-    public void handle(ProxyShutdownEvent event) {
-        CommandConfigHandler.getInstance().unregisterAllCommands();
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketIds.RESERVED_EXTRA_BUS + 3);
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketIds.RESERVED_EXTRA_BUS + 2);
-    }
+  @Subscribe
+  public void handle(ProxyShutdownEvent event) {
+    CommandConfigHandler.getInstance().unregisterAllCommands();
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketIds.RESERVED_EXTRA_BUS + 3);
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketIds.RESERVED_EXTRA_BUS + 2);
+  }
 }
