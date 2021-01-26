@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.mysql;
 
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.application.Application;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.provider.DatabaseProvider;
 import systems.reformcloud.reformcloud2.mysql.config.MySQLDatabaseConfig;
 import systems.reformcloud.reformcloud2.shared.dependency.DependencyFileLoader;
@@ -47,10 +47,12 @@ public class MySQLApplication extends Application {
     this.previous = ExecutorAPI.getInstance().getDatabaseProvider();
     Path configPath = this.getDataDirectory().resolve("config.json");
     if (Files.notExists(configPath)) {
-      new JsonConfiguration().add("config", new MySQLDatabaseConfig("127.0.0.1", 3306, "cloud", "cloud", "")).write(configPath);
+      JsonConfiguration.newJsonConfiguration()
+        .add("config", new MySQLDatabaseConfig("127.0.0.1", 3306, "cloud", "cloud", ""))
+        .write(configPath);
     }
 
-    MySQLDatabaseConfig config = JsonConfiguration.read(configPath).get("config", MySQLDatabaseConfig.class);
+    MySQLDatabaseConfig config = JsonConfiguration.newJsonConfiguration(configPath).get("config", MySQLDatabaseConfig.class);
     if (config == null) {
       System.err.println("Unable to load configuration for mysql module");
       return;
