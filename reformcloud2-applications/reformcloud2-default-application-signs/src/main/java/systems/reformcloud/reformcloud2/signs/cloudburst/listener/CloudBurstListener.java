@@ -37,32 +37,32 @@ import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
 public class CloudBurstListener {
 
-    @Listener
-    public void handle(final @NotNull PlayerInteractEvent event) {
-        CloudBurstSignSystemAdapter signSystemAdapter = CloudBurstSignSystemAdapter.getInstance();
+  @Listener
+  public void handle(final @NotNull PlayerInteractEvent event) {
+    CloudBurstSignSystemAdapter signSystemAdapter = CloudBurstSignSystemAdapter.getInstance();
 
-        if (event.getAction().equals(PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK)) {
-            if (event.getBlock().getState().getType().getName().endsWith("_sign")) {
-                if (!(event.getBlock().getLevel().getBlockEntity(event.getBlock().getPosition()) instanceof Sign)) {
-                    return;
-                }
-
-                Sign sign = (Sign) event.getBlock().getLevel().getBlockEntity(event.getBlock().getPosition());
-                CloudSign cloudSign = signSystemAdapter.getSignAt(signSystemAdapter.getSignConverter().to(sign));
-                if (cloudSign == null) {
-                    return;
-                }
-
-                boolean canConnect = SignSystemAdapter.getInstance().canConnect(cloudSign, event.getPlayer()::hasPermission);
-                if (!ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new UserSignPreConnectEvent(
-                    event.getPlayer().getServerId(), event.getPlayer()::hasPermission, cloudSign, canConnect
-                )).isAllowConnection()) {
-                    return;
-                }
-
-                ExecutorAPI.getInstance().getPlayerProvider().getPlayer(event.getPlayer().getServerId())
-                    .ifPresent(wrapper -> wrapper.connect(cloudSign.getCurrentTarget().getProcessDetail().getName()));
-            }
+    if (event.getAction().equals(PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK)) {
+      if (event.getBlock().getState().getType().getName().endsWith("_sign")) {
+        if (!(event.getBlock().getLevel().getBlockEntity(event.getBlock().getPosition()) instanceof Sign)) {
+          return;
         }
+
+        Sign sign = (Sign) event.getBlock().getLevel().getBlockEntity(event.getBlock().getPosition());
+        CloudSign cloudSign = signSystemAdapter.getSignAt(signSystemAdapter.getSignConverter().to(sign));
+        if (cloudSign == null) {
+          return;
+        }
+
+        boolean canConnect = SignSystemAdapter.getInstance().canConnect(cloudSign, event.getPlayer()::hasPermission);
+        if (!ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new UserSignPreConnectEvent(
+          event.getPlayer().getServerId(), event.getPlayer()::hasPermission, cloudSign, canConnect
+        )).isAllowConnection()) {
+          return;
+        }
+
+        ExecutorAPI.getInstance().getPlayerProvider().getPlayer(event.getPlayer().getServerId())
+          .ifPresent(wrapper -> wrapper.connect(cloudSign.getCurrentTarget().getName()));
+      }
     }
+  }
 }

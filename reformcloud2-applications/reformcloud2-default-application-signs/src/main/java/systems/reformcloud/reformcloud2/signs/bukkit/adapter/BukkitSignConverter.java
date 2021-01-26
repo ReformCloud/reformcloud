@@ -37,54 +37,54 @@ import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
 public class BukkitSignConverter implements SignConverter<Sign> {
 
-    static final BukkitSignConverter INSTANCE = new BukkitSignConverter();
+  static final BukkitSignConverter INSTANCE = new BukkitSignConverter();
 
-    @Nullable
-    @Override
-    public Sign from(@NotNull CloudSign cloudSign) {
-        Conditions.isTrue(Bukkit.isPrimaryThread(), "Cannot call method from async on spigot servers!");
+  @Nullable
+  @Override
+  public Sign from(@NotNull CloudSign cloudSign) {
+    Conditions.isTrue(Bukkit.isPrimaryThread(), "Cannot call method from async on spigot servers!");
 
-        Location bukkit = this.accumulate(cloudSign.getLocation());
-        return bukkit != null && bukkit.getBlock().getState() instanceof Sign ? (Sign) bukkit.getBlock().getState() : null;
+    Location bukkit = this.accumulate(cloudSign.getLocation());
+    return bukkit != null && bukkit.getBlock().getState() instanceof Sign ? (Sign) bukkit.getBlock().getState() : null;
+  }
+
+  @NotNull
+  @Override
+  public CloudSign to(@NotNull Sign sign, @NotNull String group) {
+    return new CloudSign(group, this.accumulate(sign.getLocation().clone()));
+  }
+
+  @NotNull
+  @Override
+  public CloudLocation to(@NotNull Sign sign) {
+    return this.accumulate(sign.getLocation().clone());
+  }
+
+  private Location accumulate(CloudLocation location) {
+    if (Bukkit.getWorld(location.getWorld()) == null) {
+      return null;
     }
 
-    @NotNull
-    @Override
-    public CloudSign to(@NotNull Sign sign, @NotNull String group) {
-        return new CloudSign(group, this.accumulate(sign.getLocation().clone()));
-    }
+    return new Location(
+      Bukkit.getWorld(location.getWorld()),
+      location.getX(),
+      location.getY(),
+      location.getZ(),
+      location.getYaw(),
+      location.getPitch()
+    );
+  }
 
-    @NotNull
-    @Override
-    public CloudLocation to(@NotNull Sign sign) {
-        return this.accumulate(sign.getLocation().clone());
-    }
-
-    private Location accumulate(CloudLocation location) {
-        if (Bukkit.getWorld(location.getWorld()) == null) {
-            return null;
-        }
-
-        return new Location(
-            Bukkit.getWorld(location.getWorld()),
-            location.getX(),
-            location.getY(),
-            location.getZ(),
-            location.getYaw(),
-            location.getPitch()
-        );
-    }
-
-    private CloudLocation accumulate(Location location) {
-        Conditions.isTrue(location.getWorld() != null);
-        return new CloudLocation(
-            location.getWorld().getName(),
-            Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
-            location.getX(),
-            location.getY(),
-            location.getZ(),
-            location.getYaw(),
-            location.getPitch()
-        );
-    }
+  private CloudLocation accumulate(Location location) {
+    Conditions.isTrue(location.getWorld() != null);
+    return new CloudLocation(
+      location.getWorld().getName(),
+      Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
+      location.getX(),
+      location.getY(),
+      location.getZ(),
+      location.getYaw(),
+      location.getPitch()
+    );
+  }
 }

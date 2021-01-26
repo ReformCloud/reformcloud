@@ -32,39 +32,38 @@ import java.util.regex.Pattern;
 
 public final class PlaceHolderUtil {
 
-    private static final Pattern PATTERN = Pattern.compile(".*?(%sign_layout_place_holder_(\\w+)%).*?", Pattern.CASE_INSENSITIVE);
+  private static final Pattern PATTERN = Pattern.compile(".*?(%sign_layout_place_holder_(\\w+)%).*?", Pattern.CASE_INSENSITIVE);
 
-    private PlaceHolderUtil() {
-        throw new UnsupportedOperationException();
+  private PlaceHolderUtil() {
+    throw new UnsupportedOperationException();
+  }
+
+  public static <T> T format(String line, String group, ProcessInformation processInformation, Function<String, T> colorize) {
+    line = line.replace("%group%", group);
+    line = line.replace("%name%", processInformation.getName());
+    line = line.replace("%display%", processInformation.getId().getDisplayName());
+    line = line.replace("%parent%", processInformation.getId().getNodeName());
+    line = line.replace("%id%", Integer.toString(processInformation.getId().getId()));
+    line = line.replace("%uniqueid%", processInformation.getId().getUniqueId().toString());
+    line = line.replace("%state%", processInformation.getCurrentState().name());
+    line = line.replace("%connected%", Boolean.toString(processInformation.getCurrentState().isOnline()));
+    line = line.replace("%template%", processInformation.getPrimaryTemplate().getName());
+    line = line.replace("%online%", Integer.toString(processInformation.getOnlineCount()));
+    line = line.replace("%max%", Integer.toString(processInformation.getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers()));
+    line = line.replace("%whitelist%", Boolean.toString(processInformation.getProcessGroup().getPlayerAccessConfiguration().isJoinOnlyWithPermission()));
+    line = line.replace("%lobby%", Boolean.toString(processInformation.getProcessGroup().isLobbyGroup()));
+    line = line.replace("%static%", Boolean.toString(processInformation.getProcessGroup().createsStaticProcesses()));
+    line = line.replace("%motd%", processInformation.get("motd", String.class).orElse("empty"));
+
+    Matcher matcher;
+    while ((matcher = PATTERN.matcher(line)).find()) {
+      if (2 > matcher.groupCount()) {
+        continue;
+      }
+
+      line = line.replace(matcher.group(1), processInformation.get(matcher.group(2), String.class).orElse(""));
     }
 
-    public static <T> T format(String line, String group, ProcessInformation processInformation, Function<String, T> colorize) {
-        line = line.replace("%group%", group);
-        line = line.replace("%name%", processInformation.getProcessDetail().getName());
-        line = line.replace("%display%", processInformation.getProcessDetail().getDisplayName());
-        line = line.replace("%parent%", processInformation.getProcessDetail().getParentName());
-        line = line.replace("%id%", Integer.toString(processInformation.getProcessDetail().getId()));
-        line = line.replace("%uniqueid%", processInformation.getProcessDetail().getProcessUniqueID().toString());
-        line = line.replace("%state%", processInformation.getProcessDetail().getProcessState().name());
-        line = line.replace("%connected%", Boolean.toString(processInformation.getNetworkInfo().isConnected()));
-        line = line.replace("%template%", processInformation.getProcessDetail().getTemplate().getName());
-        line = line.replace("%online%", Integer.toString(processInformation.getProcessPlayerManager().getOnlineCount()));
-        line = line.replace("%max%", Integer.toString(processInformation.getProcessDetail().getMaxPlayers()));
-        line = line.replace("%whitelist%",
-            Boolean.toString(processInformation.getProcessGroup().getPlayerAccessConfiguration().isJoinOnlyPerPermission()));
-        line = line.replace("%lobby%", Boolean.toString(processInformation.getProcessGroup().isCanBeUsedAsLobby()));
-        line = line.replace("%static%", Boolean.toString(processInformation.getProcessGroup().isCanBeUsedAsLobby()));
-        line = line.replace("%motd%", processInformation.getProcessDetail().getMessageOfTheDay());
-
-        Matcher matcher;
-        while ((matcher = PATTERN.matcher(line)).find()) {
-            if (2 > matcher.groupCount()) {
-                continue;
-            }
-
-            line = line.replace(matcher.group(1), processInformation.getExtra().getOrDefault(matcher.group(2), ""));
-        }
-
-        return colorize.apply(line);
-    }
+    return colorize.apply(line);
+  }
 }

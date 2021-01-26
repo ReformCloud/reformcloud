@@ -33,21 +33,20 @@ import systems.reformcloud.reformcloud2.signs.application.ReformCloudApplication
 
 public final class ProcessInclusionHandler {
 
-    @Listener
-    public void handle(final @NotNull LocalProcessPrePrepareEvent event) {
-        this.includeSelfFile(event.getProcessInformation());
+  @Listener
+  public void handle(final @NotNull LocalProcessPrePrepareEvent event) {
+    this.includeSelfFile(event.getProcessInformation());
+  }
+
+  private void includeSelfFile(@NotNull ProcessInformation processInformation) {
+    if (processInformation.getPrimaryTemplate().getVersion().getVersionType().isProxy() || !processInformation.getProcessGroup().isLobbyGroup()) {
+      return;
     }
 
-    private void includeSelfFile(@NotNull ProcessInformation processInformation) {
-        if (!processInformation.getProcessDetail().getTemplate().getVersion().isServer()
-            || !processInformation.getProcessGroup().isCanBeUsedAsLobby()) {
-            return;
-        }
-
-        processInformation.getPreInclusions().add(new ProcessInclusion(
-            "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-signs-"
-                + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar",
-            "plugins/signs-" + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar"
-        ));
-    }
+    processInformation.addProcessInclusion(ProcessInclusion.inclusion(
+      "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-signs-"
+        + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar",
+      "plugins/signs-" + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar"
+    ));
+  }
 }

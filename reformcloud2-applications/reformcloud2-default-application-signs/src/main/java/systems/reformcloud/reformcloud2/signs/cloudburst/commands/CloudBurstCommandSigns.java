@@ -40,106 +40,106 @@ import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
 public class CloudBurstCommandSigns extends Command {
 
-    public CloudBurstCommandSigns() {
-        super(CommandData.builder("signs")
-            .setDescription("Manage signs")
-            .addPermission("reformcloud.command.signs")
-            .addParameters(new CommandParameter[]{
-                new CommandParameter("create", CommandParamType.STRING, false),
-                new CommandParameter("group", CommandParamType.STRING, false)
-            })
-            .addParameters(new CommandParameter[]{
-                new CommandParameter("delete", CommandParamType.STRING, false)
-            })
-            .addParameters(new CommandParameter[]{
-                new CommandParameter("deleteall", CommandParamType.STRING, false)
-            })
-            .addParameters(new CommandParameter[]{
-                new CommandParameter("clean", CommandParamType.STRING, false)
-            })
-            .build());
+  public CloudBurstCommandSigns() {
+    super(CommandData.builder("signs")
+      .setDescription("Manage signs")
+      .addPermission("reformcloud.command.signs")
+      .addParameters(new CommandParameter[]{
+        new CommandParameter("create", CommandParamType.STRING, false),
+        new CommandParameter("group", CommandParamType.STRING, false)
+      })
+      .addParameters(new CommandParameter[]{
+        new CommandParameter("delete", CommandParamType.STRING, false)
+      })
+      .addParameters(new CommandParameter[]{
+        new CommandParameter("deleteall", CommandParamType.STRING, false)
+      })
+      .addParameters(new CommandParameter[]{
+        new CommandParameter("clean", CommandParamType.STRING, false)
+      })
+      .build());
+  }
+
+  @Override
+  public boolean execute(CommandSender sender, String commandLabel, String[] strings) {
+    if (!(sender instanceof Player)) {
+      return true;
     }
 
-    @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] strings) {
-        if (!(sender instanceof Player)) {
-            return true;
-        }
+    CloudBurstSignSystemAdapter signSystemAdapter = CloudBurstSignSystemAdapter.getInstance();
+    Player player = (Player) sender;
 
-        CloudBurstSignSystemAdapter signSystemAdapter = CloudBurstSignSystemAdapter.getInstance();
-        Player player = (Player) sender;
-
-        if (strings.length == 2 && strings[0].equalsIgnoreCase("create")) {
-            if (ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(strings[1]).isEmpty()) {
-                sender.sendMessage("§7The process group " + strings[1] + " does not exists");
-                return true;
-            }
-
-            Block block = player.getTargetBlock(15);
-            if (block == null) {
-                sender.sendMessage("§cThe target Block is not a sign");
-                return true;
-            }
-
-            BlockEntity blockEntity = block.getLevel().getBlockEntity(block.getPosition());
-            if (!(blockEntity instanceof Sign)) {
-                sender.sendMessage("§cThe target Block is not a sign");
-                return true;
-            }
-
-            Sign entitySign = (Sign) blockEntity;
-            CloudSign cloudSign = signSystemAdapter.getSignAt(signSystemAdapter.getSignConverter().to(entitySign));
-            if (cloudSign != null) {
-                sender.sendMessage("§cThe sign already exists");
-                return true;
-            }
-
-            signSystemAdapter.createSign(entitySign, strings[1]);
-            sender.sendMessage("§7Created the sign successfully, please wait a second...");
-            return true;
-        }
-
-        if (strings.length == 1 && strings[0].equalsIgnoreCase("delete")) {
-            Block block = player.getTargetBlock(15);
-            if (block == null) {
-                sender.sendMessage("§cThe target Block is not a sign");
-                return true;
-            }
-
-            BlockEntity blockEntity = block.getLevel().getBlockEntity(block.getPosition());
-            if (!(blockEntity instanceof Sign)) {
-                sender.sendMessage("§cThe target Block is not a sign");
-                return true;
-            }
-
-            Sign sign = (Sign) blockEntity;
-            CloudSign cloudSign = signSystemAdapter.getSignAt(signSystemAdapter.getSignConverter().to(sign));
-            if (cloudSign == null) {
-                sender.sendMessage("§cThe sign does not exists");
-                return true;
-            }
-
-            signSystemAdapter.deleteSign(cloudSign.getLocation());
-            sender.sendMessage("§7Deleted sign, please wait a second...");
-            return true;
-        }
-
-        if (strings.length == 1 && strings[0].equalsIgnoreCase("deleteall")) {
-            SignSystemAdapter.getInstance().deleteAll();
-            sender.sendMessage("§7Deleting all signs, please wait...");
-            return true;
-        }
-
-        if (strings.length == 1 && strings[0].equalsIgnoreCase("clean")) {
-            SignSystemAdapter.getInstance().cleanSigns();
-            sender.sendMessage("§7Cleaning signs, please wait...");
-            return true;
-        }
-
-        sender.sendMessage("§7/signs create [group]");
-        sender.sendMessage("§7/signs delete");
-        sender.sendMessage("§7/signs deleteAll");
-        sender.sendMessage("§7/signs clean");
+    if (strings.length == 2 && strings[0].equalsIgnoreCase("create")) {
+      if (!ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(strings[1]).isPresent()) {
+        sender.sendMessage("§7The process group " + strings[1] + " does not exists");
         return true;
+      }
+
+      Block block = player.getTargetBlock(15);
+      if (block == null) {
+        sender.sendMessage("§cThe target Block is not a sign");
+        return true;
+      }
+
+      BlockEntity blockEntity = block.getLevel().getBlockEntity(block.getPosition());
+      if (!(blockEntity instanceof Sign)) {
+        sender.sendMessage("§cThe target Block is not a sign");
+        return true;
+      }
+
+      Sign entitySign = (Sign) blockEntity;
+      CloudSign cloudSign = signSystemAdapter.getSignAt(signSystemAdapter.getSignConverter().to(entitySign));
+      if (cloudSign != null) {
+        sender.sendMessage("§cThe sign already exists");
+        return true;
+      }
+
+      signSystemAdapter.createSign(entitySign, strings[1]);
+      sender.sendMessage("§7Created the sign successfully, please wait a second...");
+      return true;
     }
+
+    if (strings.length == 1 && strings[0].equalsIgnoreCase("delete")) {
+      Block block = player.getTargetBlock(15);
+      if (block == null) {
+        sender.sendMessage("§cThe target Block is not a sign");
+        return true;
+      }
+
+      BlockEntity blockEntity = block.getLevel().getBlockEntity(block.getPosition());
+      if (!(blockEntity instanceof Sign)) {
+        sender.sendMessage("§cThe target Block is not a sign");
+        return true;
+      }
+
+      Sign sign = (Sign) blockEntity;
+      CloudSign cloudSign = signSystemAdapter.getSignAt(signSystemAdapter.getSignConverter().to(sign));
+      if (cloudSign == null) {
+        sender.sendMessage("§cThe sign does not exists");
+        return true;
+      }
+
+      signSystemAdapter.deleteSign(cloudSign.getLocation());
+      sender.sendMessage("§7Deleted sign, please wait a second...");
+      return true;
+    }
+
+    if (strings.length == 1 && strings[0].equalsIgnoreCase("deleteall")) {
+      SignSystemAdapter.getInstance().deleteAll();
+      sender.sendMessage("§7Deleting all signs, please wait...");
+      return true;
+    }
+
+    if (strings.length == 1 && strings[0].equalsIgnoreCase("clean")) {
+      SignSystemAdapter.getInstance().cleanSigns();
+      sender.sendMessage("§7Cleaning signs, please wait...");
+      return true;
+    }
+
+    sender.sendMessage("§7/signs create [group]");
+    sender.sendMessage("§7/signs delete");
+    sender.sendMessage("§7/signs deleteAll");
+    sender.sendMessage("§7/signs clean");
+    return true;
+  }
 }

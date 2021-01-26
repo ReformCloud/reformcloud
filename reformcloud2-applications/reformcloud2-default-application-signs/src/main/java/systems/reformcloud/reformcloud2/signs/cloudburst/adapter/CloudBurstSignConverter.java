@@ -38,53 +38,53 @@ import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
 public class CloudBurstSignConverter implements SignConverter<Sign> {
 
-    static final CloudBurstSignConverter INSTANCE = new CloudBurstSignConverter();
+  static final CloudBurstSignConverter INSTANCE = new CloudBurstSignConverter();
 
-    @Nullable
-    @Override
-    public Sign from(@NotNull CloudSign cloudSign) {
-        Location location = this.accumulate(cloudSign.getLocation());
-        return location != null && location.getLevel().getBlockEntity(location.getBlock().getPosition()) instanceof Sign
-            ? (Sign) location.getLevel().getBlockEntity(location.getBlock().getPosition())
-            : null;
+  @Nullable
+  @Override
+  public Sign from(@NotNull CloudSign cloudSign) {
+    Location location = this.accumulate(cloudSign.getLocation());
+    return location != null && location.getLevel().getBlockEntity(location.getBlock().getPosition()) instanceof Sign
+      ? (Sign) location.getLevel().getBlockEntity(location.getBlock().getPosition())
+      : null;
+  }
+
+  @NotNull
+  @Override
+  public CloudSign to(@NotNull Sign sign, @NotNull String group) {
+    return new CloudSign(group, this.accumulate(sign.getLevel(), sign.getPosition()));
+  }
+
+  @NotNull
+  @Override
+  public CloudLocation to(@NotNull Sign sign) {
+    return this.accumulate(sign.getLevel(), sign.getPosition());
+  }
+
+  private Location accumulate(CloudLocation cloudLocation) {
+    if (Server.getInstance().getLevelByName(cloudLocation.getWorld()) == null) {
+      return null;
     }
 
-    @NotNull
-    @Override
-    public CloudSign to(@NotNull Sign sign, @NotNull String group) {
-        return new CloudSign(group, this.accumulate(sign.getLevel(), sign.getPosition()));
-    }
+    return Location.from(
+      (float) cloudLocation.getX(),
+      (float) cloudLocation.getY(),
+      (float) cloudLocation.getZ(),
+      cloudLocation.getYaw(),
+      cloudLocation.getPitch(),
+      Server.getInstance().getLevelByName(cloudLocation.getWorld())
+    );
+  }
 
-    @NotNull
-    @Override
-    public CloudLocation to(@NotNull Sign sign) {
-        return this.accumulate(sign.getLevel(), sign.getPosition());
-    }
-
-    private Location accumulate(CloudLocation cloudLocation) {
-        if (Server.getInstance().getLevelByName(cloudLocation.getWorld()) == null) {
-            return null;
-        }
-
-        return Location.from(
-            (float) cloudLocation.getX(),
-            (float) cloudLocation.getY(),
-            (float) cloudLocation.getZ(),
-            cloudLocation.getYaw(),
-            cloudLocation.getPitch(),
-            Server.getInstance().getLevelByName(cloudLocation.getWorld())
-        );
-    }
-
-    private CloudLocation accumulate(Level level, Vector3i vector3i) {
-        return new CloudLocation(
-            level.getName(),
-            Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
-            vector3i.getX(),
-            vector3i.getY(),
-            vector3i.getZ(),
-            0,
-            0
-        );
-    }
+  private CloudLocation accumulate(Level level, Vector3i vector3i) {
+    return new CloudLocation(
+      level.getName(),
+      Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
+      vector3i.getX(),
+      vector3i.getY(),
+      vector3i.getZ(),
+      0,
+      0
+    );
+  }
 }

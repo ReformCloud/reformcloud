@@ -56,119 +56,119 @@ import java.util.Objects;
 
 public class CloudBurstSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
 
-    private static CloudBurstSignSystemAdapter instance;
-    private final Object plugin;
+  private static CloudBurstSignSystemAdapter instance;
+  private final Object plugin;
 
-    public CloudBurstSignSystemAdapter(@NotNull SignConfig signConfig, @NotNull Object plugin) {
-        super(signConfig);
+  public CloudBurstSignSystemAdapter(@NotNull SignConfig signConfig, @NotNull Object plugin) {
+    super(signConfig);
 
-        instance = this;
-        this.plugin = plugin;
+    instance = this;
+    this.plugin = plugin;
 
-        Server.getInstance().getEventManager().registerListeners(plugin, new CloudBurstListener());
+    Server.getInstance().getEventManager().registerListeners(plugin, new CloudBurstListener());
+  }
+
+  public static CloudBurstSignSystemAdapter getInstance() {
+    return instance;
+  }
+
+  @Override
+  protected void setSignLines(@NotNull CloudSign cloudSign, @NotNull String[] lines) {
+    Sign blockEntitySign = this.getSignConverter().from(cloudSign);
+    if (blockEntitySign == null) {
+      return;
     }
 
-    public static CloudBurstSignSystemAdapter getInstance() {
-        return instance;
-    }
+    blockEntitySign.setText(lines);
+  }
 
-    @Override
-    protected void setSignLines(@NotNull CloudSign cloudSign, @NotNull String[] lines) {
-        Sign blockEntitySign = this.getSignConverter().from(cloudSign);
-        if (blockEntitySign == null) {
-            return;
-        }
+  @Override
+  protected void runTasks() {
+    Server.getInstance().getScheduler().scheduleRepeatingTask(
+      this.plugin,
+      this::updateSigns,
+      Objects.requireNonNull(Parsers.LONG_TO_INT.parse(Math.round(20 / super.signConfig.getUpdateInterval())))
+    );
 
-        blockEntitySign.setText(lines);
-    }
-
-    @Override
-    protected void runTasks() {
-        Server.getInstance().getScheduler().scheduleRepeatingTask(
-            this.plugin,
-            this::updateSigns,
-            Objects.requireNonNull(Parsers.LONG_TO_INT.parse(Math.round(20 / super.signConfig.getUpdateInterval())))
-        );
-
-        float distance = (float) super.signConfig.getKnockBackDistance();
-        Server.getInstance().getScheduler().scheduleDelayedRepeatingTask(this.plugin, () -> {
-            for (CloudSign sign : this.signs) {
-                Sign blockEntitySign = this.getSignConverter().from(sign);
-                if (blockEntitySign == null) {
-                    continue;
-                }
-
-                Vector3i vector3i = blockEntitySign.getPosition();
-                AxisAlignedBB alignedBB = new SimpleAxisAlignedBB(vector3i, vector3i)
-                    .expand(distance, distance, distance);
-
-                for (Entity entity : blockEntitySign.getLevel().getNearbyEntities(alignedBB)) {
-                    if (!(entity instanceof Player)) {
-                        continue;
-                    }
-
-                    Player player = (Player) entity;
-                    if (player.hasPermission(super.signConfig.getKnockBackBypassPermission())) {
-                        continue;
-                    }
-
-                    Vector3f vector = player.getPosition()
-                        .sub(vector3i.toFloat())
-                        .normalize()
-                        .mul(super.signConfig.getKnockBackStrength());
-                    player.setMotion(Vector3f.from(vector.getX(), 0.2D, vector.getZ()));
-                }
-            }
-        }, 20, 5);
-    }
-
-    @Override
-    protected @NotNull String replaceAll(@NotNull String line, @NotNull String group, @Nullable ProcessInformation processInformation) {
-        if (processInformation == null) {
-            line = line.replace("%group%", group);
-            return TextFormat.colorize('&', line);
-        }
-
-        return PlaceHolderUtil.format(line, group, processInformation, s -> TextFormat.colorize('&', s));
-    }
-
-    @Override
-    public void changeBlock(@NotNull CloudSign sign, @NotNull SignSubLayout layout) {
+    float distance = (float) super.signConfig.getKnockBackDistance();
+    Server.getInstance().getScheduler().scheduleDelayedRepeatingTask(this.plugin, () -> {
+      for (CloudSign sign : this.signs) {
         Sign blockEntitySign = this.getSignConverter().from(sign);
         if (blockEntitySign == null) {
-            return;
+          continue;
         }
 
-        this.changeBlock0(blockEntitySign, layout);
-    }
+        Vector3i vector3i = blockEntitySign.getPosition();
+        AxisAlignedBB alignedBB = new SimpleAxisAlignedBB(vector3i, vector3i)
+          .expand(distance, distance, distance);
 
-    @Override
-    public @NotNull SignConverter<Sign> getSignConverter() {
-        return CloudBurstSignConverter.INSTANCE;
-    }
+        for (Entity entity : blockEntitySign.getLevel().getNearbyEntities(alignedBB)) {
+          if (!(entity instanceof Player)) {
+            continue;
+          }
 
-    @Override
-    public void handleSignConfigUpdate(@NotNull SignConfig config) {
-        super.signConfig = config;
-        this.restartTasks();
-    }
+          Player player = (Player) entity;
+          if (player.hasPermission(super.signConfig.getKnockBackBypassPermission())) {
+            continue;
+          }
 
-    private void changeBlock0(@NotNull Sign sign, @NotNull SignSubLayout layout) {
-        if (!(sign.getBlock().getState().getBehavior() instanceof BlockBehaviorSignPost)) {
-            return;
+          Vector3f vector = player.getPosition()
+            .sub(vector3i.toFloat())
+            .normalize()
+            .mul(super.signConfig.getKnockBackStrength());
+          player.setMotion(Vector3f.from(vector.getX(), 0.2D, vector.getZ()));
         }
+      }
+    }, 20, 5);
+  }
 
-        Block behind = sign.getBlock().getSide(sign.getBlockState().ensureTrait(BlockTraits.FACING_DIRECTION).getOpposite());
-        try {
-            Field blockType = BlockIds.class.getDeclaredField(layout.getBlock().toUpperCase());
-            blockType.setAccessible(true);
-            sign.getLevel().setBlock(behind.getPosition(), BlockState.get((Identifier) blockType.get(null)), true, true);
-        } catch (NoSuchFieldException | IllegalAccessException | ClassCastException ignored) {
-        }
+  @Override
+  protected @NotNull String replaceAll(@NotNull String line, @NotNull String group, @Nullable ProcessInformation processInformation) {
+    if (processInformation == null) {
+      line = line.replace("%group%", group);
+      return TextFormat.colorize('&', line);
     }
 
-    private void restartTasks() {
-        Server.getInstance().getScheduler().cancelTask(this.plugin);
-        this.runTasks();
+    return PlaceHolderUtil.format(line, group, processInformation, s -> TextFormat.colorize('&', s));
+  }
+
+  @Override
+  public void changeBlock(@NotNull CloudSign sign, @NotNull SignSubLayout layout) {
+    Sign blockEntitySign = this.getSignConverter().from(sign);
+    if (blockEntitySign == null) {
+      return;
     }
+
+    this.changeBlock0(blockEntitySign, layout);
+  }
+
+  @Override
+  public @NotNull SignConverter<Sign> getSignConverter() {
+    return CloudBurstSignConverter.INSTANCE;
+  }
+
+  @Override
+  public void handleSignConfigUpdate(@NotNull SignConfig config) {
+    super.signConfig = config;
+    this.restartTasks();
+  }
+
+  private void changeBlock0(@NotNull Sign sign, @NotNull SignSubLayout layout) {
+    if (!(sign.getBlock().getState().getBehavior() instanceof BlockBehaviorSignPost)) {
+      return;
+    }
+
+    Block behind = sign.getBlock().getSide(sign.getBlockState().ensureTrait(BlockTraits.FACING_DIRECTION).getOpposite());
+    try {
+      Field blockType = BlockIds.class.getDeclaredField(layout.getBlock().toUpperCase());
+      blockType.setAccessible(true);
+      sign.getLevel().setBlock(behind.getPosition(), BlockState.get((Identifier) blockType.get(null)), true, true);
+    } catch (NoSuchFieldException | IllegalAccessException | ClassCastException ignored) {
+    }
+  }
+
+  private void restartTasks() {
+    Server.getInstance().getScheduler().cancelTask(this.plugin);
+    this.runTasks();
+  }
 }

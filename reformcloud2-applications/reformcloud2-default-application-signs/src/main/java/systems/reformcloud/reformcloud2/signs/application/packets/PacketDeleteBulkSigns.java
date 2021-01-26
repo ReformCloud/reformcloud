@@ -39,39 +39,39 @@ import java.util.Collection;
 
 public class PacketDeleteBulkSigns extends Packet {
 
-    private Collection<CloudSign> cloudSigns;
+  private Collection<CloudSign> cloudSigns;
 
-    public PacketDeleteBulkSigns() {
-    }
+  public PacketDeleteBulkSigns() {
+  }
 
-    public PacketDeleteBulkSigns(Collection<CloudSign> cloudSigns) {
-        this.cloudSigns = cloudSigns;
-    }
+  public PacketDeleteBulkSigns(Collection<CloudSign> cloudSigns) {
+    this.cloudSigns = cloudSigns;
+  }
 
-    @Override
-    public int getId() {
-        return PacketUtil.SIGN_BUS + 7;
-    }
+  @Override
+  public int getId() {
+    return PacketUtil.SIGN_BUS + 7;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        for (CloudSign cloudSign : this.cloudSigns) {
-            ReformCloudApplication.delete(cloudSign);
-            for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
-                if (registeredChannel.isAuthenticated()) {
-                    registeredChannel.sendPacket(new PacketDeleteSign(cloudSign));
-                }
-            }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    for (CloudSign cloudSign : this.cloudSigns) {
+      ReformCloudApplication.delete(cloudSign);
+      for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
+        if (registeredChannel.isKnown()) {
+          registeredChannel.sendPacket(new PacketDeleteSign(cloudSign));
         }
+      }
     }
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObjects(this.cloudSigns);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObjects(this.cloudSigns);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.cloudSigns = buffer.readObjects(CloudSign.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.cloudSigns = buffer.readObjects(CloudSign.class);
+  }
 }

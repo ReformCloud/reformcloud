@@ -37,35 +37,35 @@ import systems.reformcloud.reformcloud2.signs.cloudburst.commands.CloudBurstComm
 import systems.reformcloud.reformcloud2.signs.util.ConfigRequesterUtil;
 
 @Plugin(
-    id = "reformcloud_2_signs",
-    name = "CloudBurstSingsPlugin",
-    version = "2",
-    description = "The reformcloud permission plugin",
-    url = "https://reformcloud.systems",
-    authors = {"derklaro"},
-    dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
+  id = "reformcloud_2_signs",
+  name = "CloudBurstSingsPlugin",
+  version = "2",
+  description = "The reformcloud permission plugin",
+  url = "https://reformcloud.systems",
+  authors = {"derklaro"},
+  dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
 )
 public class CloudBurstPlugin {
 
-    @Inject
-    public CloudBurstPlugin() {
-    }
+  @Inject
+  public CloudBurstPlugin() {
+  }
 
-    @Listener
-    public void handle(ServerInitializationEvent event) {
-        Server.getInstance().getCommandRegistry().register(
-            Server.getInstance().getPluginManager().getPlugin("reformcloud_2_signs").orElse(null),
-            new CloudBurstCommandSigns()
-        );
-    }
+  @Listener
+  public void handle(ServerInitializationEvent event) {
+    Server.getInstance().getCommandRegistry().register(
+      Server.getInstance().getPluginManager().getPlugin("reformcloud_2_signs").orElse(null),
+      new CloudBurstCommandSigns()
+    );
+  }
 
-    @Listener
-    public void handle(ServerStartEvent event) {
-        ConfigRequesterUtil.requestSignConfigAsync(config -> new CloudBurstSignSystemAdapter(config, this));
-    }
+  @Listener
+  public void handle(ServerStartEvent event) {
+    ConfigRequesterUtil.requestSignConfigAsync(config -> new CloudBurstSignSystemAdapter(config, this));
+  }
 
-    @Listener
-    public void handle(ServerShutdownEvent event) {
-        Server.getInstance().getScheduler().cancelTask(this);
-    }
+  @Listener
+  public void handle(ServerShutdownEvent event) {
+    Server.getInstance().getScheduler().cancelTask(this);
+  }
 }

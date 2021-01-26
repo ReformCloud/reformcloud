@@ -38,30 +38,30 @@ import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
 public class BukkitListener implements Listener {
 
-    @EventHandler
-    public void handle(final PlayerInteractEvent event) {
-        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
-            && event.getClickedBlock() != null
-            && event.getClickedBlock().getState() instanceof Sign
-        ) {
-            Sign sign = (Sign) event.getClickedBlock().getState();
-            CloudSign cloudSign = BukkitSignSystemAdapter.getInstance().getSignAt(
-                BukkitSignSystemAdapter.getInstance().getSignConverter().to(sign)
-            );
+  @EventHandler
+  public void handle(final PlayerInteractEvent event) {
+    if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
+      && event.getClickedBlock() != null
+      && event.getClickedBlock().getState() instanceof Sign
+    ) {
+      Sign sign = (Sign) event.getClickedBlock().getState();
+      CloudSign cloudSign = BukkitSignSystemAdapter.getInstance().getSignAt(
+        BukkitSignSystemAdapter.getInstance().getSignConverter().to(sign)
+      );
 
-            if (cloudSign == null) {
-                return;
-            }
+      if (cloudSign == null) {
+        return;
+      }
 
-            boolean canConnect = SignSystemAdapter.getInstance().canConnect(cloudSign, event.getPlayer()::hasPermission);
-            if (!ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new UserSignPreConnectEvent(
-                event.getPlayer().getUniqueId(), event.getPlayer()::hasPermission, cloudSign, canConnect
-            )).isAllowConnection()) {
-                return;
-            }
+      boolean canConnect = SignSystemAdapter.getInstance().canConnect(cloudSign, event.getPlayer()::hasPermission);
+      if (!ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new UserSignPreConnectEvent(
+        event.getPlayer().getUniqueId(), event.getPlayer()::hasPermission, cloudSign, canConnect
+      )).isAllowConnection()) {
+        return;
+      }
 
-            ExecutorAPI.getInstance().getPlayerProvider().getPlayer(event.getPlayer().getUniqueId())
-                .ifPresent(wrapper -> wrapper.connect(cloudSign.getCurrentTarget().getProcessDetail().getName()));
-        }
+      ExecutorAPI.getInstance().getPlayerProvider().getPlayer(event.getPlayer().getUniqueId())
+        .ifPresent(wrapper -> wrapper.connect(cloudSign.getCurrentTarget().getName()));
     }
+  }
 }

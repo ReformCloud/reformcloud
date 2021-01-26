@@ -30,42 +30,42 @@ import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableOb
 
 public class SignSubLayout implements SerializableObject {
 
-    private String[] lines;
-    private String block;
-    private int subID;
+  private String[] lines;
+  private String block;
+  private int subID;
 
-    public SignSubLayout() {
-    }
+  public SignSubLayout() {
+  }
 
-    public SignSubLayout(String[] lines, String block, int subID) {
-        this.lines = lines;
-        this.block = block;
-        this.subID = subID;
-    }
+  public SignSubLayout(String[] lines, String block, int subID) {
+    this.lines = lines;
+    this.block = block;
+    this.subID = subID;
+  }
 
-    public String[] getLines() {
-        return this.lines;
-    }
+  public String[] getLines() {
+    return this.lines;
+  }
 
-    public String getBlock() {
-        return this.block;
-    }
+  public String getBlock() {
+    return this.block;
+  }
 
-    public int getSubID() {
-        return this.subID;
-    }
+  public int getSubID() {
+    return this.subID;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeStringArrays(this.lines);
-        buffer.writeString(this.block);
-        buffer.writeInt(this.subID);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeStringArrays(this.lines);
+    buffer.writeString(this.block);
+    buffer.writeInt(this.subID);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.lines = buffer.readStringArrays();
-        this.block = buffer.readString();
-        this.subID = buffer.readInt();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.lines = buffer.readStringArrays();
+    this.block = buffer.readString();
+    this.subID = buffer.readInt();
+  }
 }

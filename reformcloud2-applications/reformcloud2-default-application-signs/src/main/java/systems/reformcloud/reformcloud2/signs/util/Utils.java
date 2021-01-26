@@ -32,39 +32,39 @@ import java.util.function.Function;
 
 public final class Utils {
 
-    private Utils() {
-        throw new UnsupportedOperationException();
+  private Utils() {
+    throw new UnsupportedOperationException();
+  }
+
+  public static boolean canConnect(@NotNull ProcessInformation target, @NotNull Function<String, Boolean> permissionChecker) {
+    if (!target.getCurrentState().isOnline()) {
+      return false;
     }
 
-    public static boolean canConnect(@NotNull ProcessInformation target, @NotNull Function<String, Boolean> permissionChecker) {
-        if (!target.getNetworkInfo().isConnected()) {
-            return false;
-        }
-
-        boolean canConnect = true;
-        if (target.getProcessGroup().getPlayerAccessConfiguration().isMaintenance()) {
-            canConnect = permissionChecker.apply(target.getProcessGroup().getPlayerAccessConfiguration().getMaintenanceJoinPermission());
-        }
-
-        if (canConnect && target.getProcessGroup().getPlayerAccessConfiguration().isUseCloudPlayerLimit()
-            && target.getProcessPlayerManager().getOnlineCount() >= target.getProcessDetail().getMaxPlayers()) {
-            canConnect = permissionChecker.apply(target.getProcessGroup().getPlayerAccessConfiguration().getFullJoinPermission());
-        }
-
-        if (canConnect && target.getProcessGroup().getPlayerAccessConfiguration().isJoinOnlyPerPermission()) {
-            canConnect = permissionChecker.apply(target.getProcessGroup().getPlayerAccessConfiguration().getJoinPermission());
-        }
-
-        ProcessState state = target.getProcessDetail().getProcessState();
-        if (canConnect && (!state.isOnline() || state.equals(ProcessState.INVISIBLE))) {
-            canConnect = permissionChecker.apply(target.getProcessGroup().getPlayerAccessConfiguration().getFullJoinPermission());
-        }
-
-        return canConnect;
+    boolean canConnect = true;
+    if (target.getProcessGroup().getPlayerAccessConfiguration().isMaintenance()) {
+      canConnect = permissionChecker.apply(target.getProcessGroup().getPlayerAccessConfiguration().getMaintenanceJoinPermission());
     }
 
-    public static boolean canConnectPerState(@NotNull ProcessInformation processInformation) {
-        ProcessState state = processInformation.getProcessDetail().getProcessState();
-        return state.equals(ProcessState.STARTED) || state.equals(ProcessState.FULL) || state.equals(ProcessState.READY);
+    if (canConnect && target.getProcessGroup().getPlayerAccessConfiguration().isUsePlayerLimit()
+      && target.getOnlineCount() >= target.getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers()) {
+      canConnect = permissionChecker.apply(target.getProcessGroup().getPlayerAccessConfiguration().getFullJoinPermission());
     }
+
+    if (canConnect && target.getProcessGroup().getPlayerAccessConfiguration().isJoinOnlyWithPermission()) {
+      canConnect = permissionChecker.apply(target.getProcessGroup().getPlayerAccessConfiguration().getJoinPermission());
+    }
+
+    ProcessState state = target.getCurrentState();
+    if (canConnect && (!state.isOnline() || state.equals(ProcessState.INVISIBLE))) {
+      canConnect = permissionChecker.apply(target.getProcessGroup().getPlayerAccessConfiguration().getFullJoinPermission());
+    }
+
+    return canConnect;
+  }
+
+  public static boolean canConnectPerState(@NotNull ProcessInformation processInformation) {
+    ProcessState state = processInformation.getCurrentState();
+    return state.equals(ProcessState.STARTED) || state.equals(ProcessState.FULL) || state.equals(ProcessState.READY);
+  }
 }

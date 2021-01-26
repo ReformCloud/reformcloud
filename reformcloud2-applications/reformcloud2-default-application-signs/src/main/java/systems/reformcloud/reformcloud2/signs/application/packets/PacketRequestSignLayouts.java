@@ -34,24 +34,24 @@ import systems.reformcloud.reformcloud2.signs.packets.PacketUtil;
 
 public class PacketRequestSignLayouts extends Packet {
 
-    public PacketRequestSignLayouts() {
-    }
+  public PacketRequestSignLayouts() {
+  }
 
-    @Override
-    public int getId() {
-        return PacketUtil.SIGN_BUS + 3;
-    }
+  @Override
+  public int getId() {
+    return PacketUtil.SIGN_BUS + 3;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        channel.sendQueryResult(this.getQueryUniqueID(), new PacketRequestSignLayoutsResult(ReformCloudApplication.getSignConfig()));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    channel.sendQueryResult(this.getQueryUniqueID(), new PacketRequestSignLayoutsResult(ReformCloudApplication.getSignConfig()));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+  }
 }

@@ -39,41 +39,41 @@ import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
 public class PacketCreateSign extends Packet {
 
-    private CloudSign cloudSign;
+  private CloudSign cloudSign;
 
-    public PacketCreateSign() {
-    }
+  public PacketCreateSign() {
+  }
 
-    public PacketCreateSign(CloudSign cloudSign) {
-        this.cloudSign = cloudSign;
-    }
+  public PacketCreateSign(CloudSign cloudSign) {
+    this.cloudSign = cloudSign;
+  }
 
-    @Override
-    public int getId() {
-        return PacketUtil.SIGN_BUS + 2;
-    }
+  @Override
+  public int getId() {
+    return PacketUtil.SIGN_BUS + 2;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
-            ReformCloudApplication.insert(this.cloudSign);
-            for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
-                if (registeredChannel.isAuthenticated()) {
-                    registeredChannel.sendPacket(new PacketCreateSign(this.cloudSign));
-                }
-            }
-        } else {
-            SignSystemAdapter.getInstance().handleInternalSignCreate(this.cloudSign);
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
+      ReformCloudApplication.insert(this.cloudSign);
+      for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
+        if (registeredChannel.isKnown()) {
+          registeredChannel.sendPacket(new PacketCreateSign(this.cloudSign));
         }
+      }
+    } else {
+      SignSystemAdapter.getInstance().handleInternalSignCreate(this.cloudSign);
     }
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.cloudSign);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.cloudSign);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.cloudSign = buffer.readObject(CloudSign.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.cloudSign = buffer.readObject(CloudSign.class);
+  }
 }

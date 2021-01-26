@@ -55,102 +55,101 @@ import java.util.Collections;
 
 public class ReformCloudApplication extends Application {
 
-    private static final ApplicationUpdateRepository REPOSITORY = new SignsUpdater();
-    private static SignConfig signConfig;
-    private static JsonConfiguration databaseEntry;
-    private static ReformCloudApplication instance;
+  private static final ApplicationUpdateRepository REPOSITORY = new SignsUpdater();
+  private static SignConfig signConfig;
+  private static JsonConfiguration databaseEntry;
+  private static ReformCloudApplication instance;
 
-    public static ReformCloudApplication getInstance() {
-        return instance;
+  public static ReformCloudApplication getInstance() {
+    return instance;
+  }
+
+  public static SignConfig getSignConfig() {
+    return signConfig;
+  }
+
+  public static void insert(CloudSign cloudSign) {
+    Collection<CloudSign> signs = read();
+    if (signs == null) {
+      return;
     }
 
-    public static SignConfig getSignConfig() {
-        return signConfig;
+    signs.add(cloudSign);
+    databaseEntry.add("signs", signs);
+
+    insert();
+  }
+
+  public static void delete(CloudSign cloudSign) {
+    Collection<CloudSign> signs = read();
+    if (signs == null) {
+      return;
     }
 
-    public static void insert(CloudSign cloudSign) {
-        Collection<CloudSign> signs = read();
-        if (signs == null) {
-            return;
-        }
+    MoreCollections.findFirst(signs, e -> e.getLocation().equals(cloudSign.getLocation())).ifPresent(signs::remove);
+    databaseEntry.add("signs", signs);
 
-        signs.add(cloudSign);
-        databaseEntry.add("signs", signs);
+    insert();
+  }
 
-        insert();
+  private static Collection<CloudSign> read() {
+    return databaseEntry.get("signs", TypeToken.getParameterized(Collection.class, CloudSign.class).getType());
+  }
+
+  private static void insert() {
+    ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(SignSystemAdapter.table).update("signs", "", databaseEntry);
+  }
+
+  @Override
+  public void onLoad() {
+    instance = this;
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ProcessInclusionHandler());
+  }
+
+  @Override
+  public void onEnable() {
+    Path configFile = this.getDataDirectory().resolve("layout.json");
+    if (Files.notExists(configFile)) {
+      ConfigHelper.createDefault(configFile);
     }
 
-    public static void delete(CloudSign cloudSign) {
-        Collection<CloudSign> signs = read();
-        if (signs == null) {
-            return;
-        }
-
-        MoreCollections.findFirst(signs, e -> e.getLocation().equals(cloudSign.getLocation())).ifPresent(signs::remove);
-        databaseEntry.add("signs", signs);
-
-        insert();
+    ExecutorAPI.getInstance().getDatabaseProvider().createTable(SignSystemAdapter.table);
+    if (!ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(SignSystemAdapter.table).has("signs")) {
+      ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(SignSystemAdapter.table).insert(
+        "signs",
+        "",
+        JsonConfiguration.newJsonConfiguration().add("signs", Collections.emptyList())
+      );
     }
 
-    private static Collection<CloudSign> read() {
-        return databaseEntry.get("signs", new TypeToken<>() {
-        });
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPackets(Arrays.asList(
+      PacketCreateSign.class,
+      PacketDeleteSign.class,
+      PacketDeleteBulkSigns.class,
+      PacketRequestSignLayouts.class
+    ));
+
+    databaseEntry = ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(SignSystemAdapter.table).get("signs", "").orElse(JsonConfiguration.newJsonConfiguration());
+    signConfig = ConfigHelper.read(configFile);
+
+    for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
+      if (registeredChannel.isKnown()) {
+        registeredChannel.sendPacket(new PacketReloadSignConfig(signConfig));
+      }
     }
+  }
 
-    private static void insert() {
-        ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(SignSystemAdapter.table).update("signs", "", databaseEntry);
-    }
+  @Override
+  public void onDisable() {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketUtil.SIGN_BUS + 1);
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketUtil.SIGN_BUS + 2);
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketUtil.SIGN_BUS + 3);
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketUtil.SIGN_BUS + 7);
+  }
 
-    @Override
-    public void onLoad() {
-        instance = this;
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ProcessInclusionHandler());
-    }
-
-    @Override
-    public void onEnable() {
-        Path configFile = this.getDataDirectory().resolve("layout.json");
-        if (Files.notExists(configFile)) {
-            ConfigHelper.createDefault(configFile);
-        }
-
-        ExecutorAPI.getInstance().getDatabaseProvider().createTable(SignSystemAdapter.table);
-        if (!ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(SignSystemAdapter.table).has("signs")) {
-            ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(SignSystemAdapter.table).insert(
-                "signs",
-                "",
-                new JsonConfiguration().add("signs", Collections.emptyList())
-            );
-        }
-
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPackets(Arrays.asList(
-            PacketCreateSign.class,
-            PacketDeleteSign.class,
-            PacketDeleteBulkSigns.class,
-            PacketRequestSignLayouts.class
-        ));
-
-        databaseEntry = ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(SignSystemAdapter.table).get("signs", "").orElseGet(JsonConfiguration::new);
-        signConfig = ConfigHelper.read(configFile);
-
-        for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
-            if (registeredChannel.isAuthenticated()) {
-                registeredChannel.sendPacket(new PacketReloadSignConfig(signConfig));
-            }
-        }
-    }
-
-    @Override
-    public void onDisable() {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketUtil.SIGN_BUS + 1);
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketUtil.SIGN_BUS + 2);
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketUtil.SIGN_BUS + 3);
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketUtil.SIGN_BUS + 7);
-    }
-
-    @Nullable
-    @Override
-    public ApplicationUpdateRepository getUpdateRepository() {
-        return REPOSITORY;
-    }
+  @Nullable
+  @Override
+  public ApplicationUpdateRepository getUpdateRepository() {
+    return REPOSITORY;
+  }
 }

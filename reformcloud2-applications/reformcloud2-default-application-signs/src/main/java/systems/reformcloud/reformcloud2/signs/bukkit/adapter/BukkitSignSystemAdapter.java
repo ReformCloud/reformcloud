@@ -53,171 +53,171 @@ import java.lang.reflect.Method;
 
 public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
 
-    private static BukkitSignSystemAdapter instance;
-    private final Plugin plugin;
+  private static BukkitSignSystemAdapter instance;
+  private final Plugin plugin;
 
-    public BukkitSignSystemAdapter(JavaPlugin plugin, SignConfig config) {
-        super(config);
-        instance = this;
+  public BukkitSignSystemAdapter(JavaPlugin plugin, SignConfig config) {
+    super(config);
+    instance = this;
 
-        this.plugin = plugin;
+    this.plugin = plugin;
 
-        Bukkit.getPluginManager().registerEvents(new BukkitListener(), plugin);
+    Bukkit.getPluginManager().registerEvents(new BukkitListener(), plugin);
 
-        PluginCommand signs = plugin.getCommand("signs");
-        Conditions.isTrue(signs != null);
-        signs.setExecutor(new BukkitCommandSigns());
-        signs.setPermission("reformcloud.command.signs");
-    }
+    PluginCommand signs = plugin.getCommand("signs");
+    Conditions.isTrue(signs != null);
+    signs.setExecutor(new BukkitCommandSigns());
+    signs.setPermission("reformcloud.command.signs");
+  }
 
-    public static BukkitSignSystemAdapter getInstance() {
-        return instance;
-    }
+  public static BukkitSignSystemAdapter getInstance() {
+    return instance;
+  }
 
-    @Override
-    protected void setSignLines(@NotNull CloudSign cloudSign, @NotNull String[] lines) {
-        this.run(() -> {
-            Sign sign = this.getSignConverter().from(cloudSign);
-            if (sign != null && lines.length == 4) {
-                for (int i = 0; i < 4; i++) {
-                    sign.setLine(i, lines[i]);
-                }
-
-                sign.update();
-            }
-        });
-    }
-
-    @Override
-    public void handleSignConfigUpdate(@NotNull SignConfig config) {
-        super.signConfig = config;
-        this.restartTask();
-    }
-
-    @Override
-    public @NotNull SignConverter<Sign> getSignConverter() {
-        return BukkitSignConverter.INSTANCE;
-    }
-
-    @NotNull
-    protected String replaceAll(@NotNull String line, @NotNull String group, ProcessInformation processInformation) {
-        if (processInformation == null) {
-            line = line.replace("%group%", group);
-            return ChatColor.translateAlternateColorCodes('&', line);
+  @Override
+  protected void setSignLines(@NotNull CloudSign cloudSign, @NotNull String[] lines) {
+    this.run(() -> {
+      Sign sign = this.getSignConverter().from(cloudSign);
+      if (sign != null && lines.length == 4) {
+        for (int i = 0; i < 4; i++) {
+          sign.setLine(i, lines[i]);
         }
 
-        return PlaceHolderUtil.format(line, group, processInformation, s -> ChatColor.translateAlternateColorCodes('&', s));
+        sign.update();
+      }
+    });
+  }
+
+  @Override
+  public void handleSignConfigUpdate(@NotNull SignConfig config) {
+    super.signConfig = config;
+    this.restartTask();
+  }
+
+  @Override
+  public @NotNull SignConverter<Sign> getSignConverter() {
+    return BukkitSignConverter.INSTANCE;
+  }
+
+  @NotNull
+  protected String replaceAll(@NotNull String line, @NotNull String group, ProcessInformation processInformation) {
+    if (processInformation == null) {
+      line = line.replace("%group%", group);
+      return ChatColor.translateAlternateColorCodes('&', line);
     }
 
-    @Override
-    public void changeBlock(@NotNull CloudSign sign, @NotNull SignSubLayout layout) {
-        this.run(() -> {
-            Sign bukkit = this.getSignConverter().from(sign);
-            if (bukkit != null) {
-                this.changeBlockBehind(bukkit, layout);
-            }
-        });
+    return PlaceHolderUtil.format(line, group, processInformation, s -> ChatColor.translateAlternateColorCodes('&', s));
+  }
+
+  @Override
+  public void changeBlock(@NotNull CloudSign sign, @NotNull SignSubLayout layout) {
+    this.run(() -> {
+      Sign bukkit = this.getSignConverter().from(sign);
+      if (bukkit != null) {
+        this.changeBlockBehind(bukkit, layout);
+      }
+    });
+  }
+
+  @Override
+  public void cleanSigns() {
+    this.run(super::cleanSigns);
+  }
+
+  @SuppressWarnings("deprecation") // Not happy with it but it's the backport to 1.8 :/
+  private void changeBlockBehind(@NotNull Sign sign, @NotNull SignSubLayout layout) {
+    BlockState blockState = sign.getLocation().getBlock().getState();
+    BlockFace blockFace = this.getSignFacing(blockState);
+
+    if (blockFace == null) {
+      MaterialData data = blockState.getData();
+      if (data instanceof org.bukkit.material.Sign) {
+        org.bukkit.material.Sign materialSign = (org.bukkit.material.Sign) data;
+        blockFace = materialSign.isWallSign() ? materialSign.getFacing() : BlockFace.UP;
+      }
     }
 
-    @Override
-    public void cleanSigns() {
-        this.run(super::cleanSigns);
+    if (blockFace == null) {
+      return;
     }
 
-    @SuppressWarnings("deprecation") // Not happy with it but it's the backport to 1.8 :/
-    private void changeBlockBehind(@NotNull Sign sign, @NotNull SignSubLayout layout) {
-        BlockState blockState = sign.getLocation().getBlock().getState();
-        BlockFace blockFace = this.getSignFacing(blockState);
+    BlockState back = sign.getLocation().getBlock().getRelative(blockFace.getOppositeFace()).getState();
+    Material material = Material.getMaterial(layout.getBlock().toUpperCase());
+    if (material == null || !material.isBlock()) {
+      return;
+    }
 
-        if (blockFace == null) {
-            MaterialData data = blockState.getData();
-            if (data instanceof org.bukkit.material.Sign) {
-                org.bukkit.material.Sign materialSign = (org.bukkit.material.Sign) data;
-                blockFace = materialSign.isWallSign() ? materialSign.getFacing() : BlockFace.UP;
-            }
+    back.setType(material);
+    if (layout.getSubID() > -1) {
+      back.setData(new MaterialData(material, (byte) layout.getSubID()));
+    }
+    back.update(true);
+  }
+
+  @Nullable
+  private BlockFace getSignFacing(@NotNull BlockState blockState) {
+    try {
+      Method getBlockDataMethod = BlockState.class.getDeclaredMethod("getBlockData");
+      Object blockData = getBlockDataMethod.invoke(blockState);
+
+      Class<?> wallSignClass = Class.forName("org.bukkit.block.data.type.WallSign");
+      if (wallSignClass.isInstance(blockData)) {
+        Method getFacingMethod = wallSignClass.getMethod("getFacing");
+        return (BlockFace) getFacingMethod.invoke(blockData);
+      }
+
+      return BlockFace.UP;
+    } catch (final ReflectiveOperationException ex) {
+      return null;
+    }
+  }
+
+  private void restartTask() {
+    Bukkit.getScheduler().cancelTasks(this.plugin);
+    this.runTasks();
+  }
+
+  @Override
+  protected void runTasks() {
+    Bukkit.getScheduler().runTaskTimer(this.plugin, this::updateSigns, 0, Math.round(20 / super.signConfig.getUpdateInterval()));
+
+    double distance = super.signConfig.getKnockBackDistance();
+    Bukkit.getScheduler().scheduleSyncRepeatingTask(this.plugin, () -> {
+      for (CloudSign cachedSign : this.signs) {
+        Sign bukkitSign = this.getSignConverter().from(cachedSign);
+        if (bukkitSign == null) {
+          continue;
         }
 
-        if (blockFace == null) {
-            return;
+        Location location = bukkitSign.getLocation();
+        if (location.getWorld() == null) {
+          continue;
         }
 
-        BlockState back = sign.getLocation().getBlock().getRelative(blockFace.getOppositeFace()).getState();
-        Material material = Material.getMaterial(layout.getBlock().toUpperCase());
-        if (material == null || !material.isBlock()) {
-            return;
-        }
+        location.getWorld()
+          .getNearbyEntities(location, distance, distance, distance)
+          .stream()
+          .filter(e -> e instanceof Player && !e.hasPermission(super.signConfig.getKnockBackBypassPermission()))
+          .forEach(e -> e.setVelocity(e.getLocation()
+            .toVector()
+            .subtract(location.toVector())
+            .normalize()
+            .multiply(super.signConfig.getKnockBackStrength())
+            .setY(0.2D)
+          ));
+      }
+    }, 20, 5);
+  }
 
-        back.setType(material);
-        if (layout.getSubID() > -1) {
-            back.setData(new MaterialData(material, (byte) layout.getSubID()));
-        }
-        back.update(true);
+  private void run(@NotNull Runnable runnable) {
+    if (Bukkit.isPrimaryThread()) {
+      runnable.run();
+    } else {
+      Bukkit.getScheduler().runTask(this.plugin, runnable);
     }
+  }
 
-    @Nullable
-    private BlockFace getSignFacing(@NotNull BlockState blockState) {
-        try {
-            Method getBlockDataMethod = BlockState.class.getDeclaredMethod("getBlockData");
-            Object blockData = getBlockDataMethod.invoke(blockState);
-
-            Class<?> wallSignClass = Class.forName("org.bukkit.block.data.type.WallSign");
-            if (wallSignClass.isInstance(blockData)) {
-                Method getFacingMethod = wallSignClass.getMethod("getFacing");
-                return (BlockFace) getFacingMethod.invoke(blockData);
-            }
-
-            return BlockFace.UP;
-        } catch (final ReflectiveOperationException ex) {
-            return null;
-        }
-    }
-
-    private void restartTask() {
-        Bukkit.getScheduler().cancelTasks(this.plugin);
-        this.runTasks();
-    }
-
-    @Override
-    protected void runTasks() {
-        Bukkit.getScheduler().runTaskTimer(this.plugin, this::updateSigns, 0, Math.round(20 / super.signConfig.getUpdateInterval()));
-
-        double distance = super.signConfig.getKnockBackDistance();
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this.plugin, () -> {
-            for (CloudSign cachedSign : this.signs) {
-                Sign bukkitSign = this.getSignConverter().from(cachedSign);
-                if (bukkitSign == null) {
-                    continue;
-                }
-
-                Location location = bukkitSign.getLocation();
-                if (location.getWorld() == null) {
-                    continue;
-                }
-
-                location.getWorld()
-                    .getNearbyEntities(location, distance, distance, distance)
-                    .stream()
-                    .filter(e -> e instanceof Player && !e.hasPermission(super.signConfig.getKnockBackBypassPermission()))
-                    .forEach(e -> e.setVelocity(e.getLocation()
-                        .toVector()
-                        .subtract(location.toVector())
-                        .normalize()
-                        .multiply(super.signConfig.getKnockBackStrength())
-                        .setY(0.2D)
-                    ));
-            }
-        }, 20, 5);
-    }
-
-    private void run(@NotNull Runnable runnable) {
-        if (Bukkit.isPrimaryThread()) {
-            runnable.run();
-        } else {
-            Bukkit.getScheduler().runTask(this.plugin, runnable);
-        }
-    }
-
-    public Plugin getPlugin() {
-        return this.plugin;
-    }
+  public Plugin getPlugin() {
+    return this.plugin;
+  }
 }
