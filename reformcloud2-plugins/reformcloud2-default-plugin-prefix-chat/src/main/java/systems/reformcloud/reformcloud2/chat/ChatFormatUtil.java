@@ -35,33 +35,33 @@ import java.util.function.Function;
 
 final class ChatFormatUtil {
 
-    private ChatFormatUtil() {
-        throw new UnsupportedOperationException();
-    }
+  private ChatFormatUtil() {
+    throw new UnsupportedOperationException();
+  }
 
-    @Nullable
-    static String buildFormat(@NotNull UUID playerUniqueId, @NotNull String format, @NotNull String message,
-                              @NotNull String playerName, @NotNull String playerDisplayName,
-                              @NotNull Function<String, Boolean> permissionChecker, @NotNull BiFunction<Character, String, String> colourReplacer) {
-        return PermissionManagement.getInstance().getExistingUser(playerUniqueId).map(user -> {
-            final String usableMessage = permissionChecker.apply("reformcloud.chat.coloured")
-                ? colourReplacer.apply('&', message.replace("%", "%%"))
-                : message.replace("%", "%%");
-            if (usableMessage.trim().isEmpty()) {
-                return null;
-            }
+  @Nullable
+  static String buildFormat(@NotNull UUID playerUniqueId, @NotNull String format, @NotNull String message,
+                            @NotNull String playerName, @NotNull String playerDisplayName,
+                            @NotNull Function<String, Boolean> permissionChecker, @NotNull BiFunction<Character, String, String> colourReplacer) {
+    return PermissionManagement.getInstance().getExistingUser(playerUniqueId).map(user -> {
+      final String usableMessage = permissionChecker.apply("reformcloud.chat.coloured")
+        ? colourReplacer.apply('&', message.replace("%", "%%"))
+        : message.replace("%", "%%");
+      if (usableMessage.trim().isEmpty()) {
+        return null;
+      }
 
-            PermissionGroup permissionGroup = user.getHighestPermissionGroup().orElse(null);
-            final String finalFormat = format
-                .replace("%name%", playerName)
-                .replace("%player_display%", playerDisplayName)
-                .replace("%group%", permissionGroup == null ? "" : permissionGroup.getName())
-                .replace("%priority%", permissionGroup == null ? "" : Integer.toString(permissionGroup.getPriority()))
-                .replace("%prefix%", user.getPrefix().orElse(""))
-                .replace("%suffix%", user.getSuffix().orElse(""))
-                .replace("%display%", user.getDisplay().orElse(""))
-                .replace("%colour%", user.getColour().orElse(""));
-            return colourReplacer.apply('&', finalFormat).replace("%message%", usableMessage);
-        }).orElse(null);
-    }
+      PermissionGroup permissionGroup = user.getHighestPermissionGroup().orElse(null);
+      final String finalFormat = format
+        .replace("%name%", playerName)
+        .replace("%player_display%", playerDisplayName)
+        .replace("%group%", permissionGroup == null ? "" : permissionGroup.getName())
+        .replace("%priority%", permissionGroup == null ? "" : Integer.toString(permissionGroup.getPriority()))
+        .replace("%prefix%", user.getPrefix().orElse(""))
+        .replace("%suffix%", user.getSuffix().orElse(""))
+        .replace("%display%", user.getDisplay().orElse(""))
+        .replace("%colour%", user.getColour().orElse(""));
+      return colourReplacer.apply('&', finalFormat).replace("%message%", usableMessage);
+    }).orElse(null);
+  }
 }

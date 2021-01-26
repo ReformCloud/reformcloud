@@ -35,37 +35,37 @@ import org.jetbrains.annotations.NotNull;
 
 public class BukkitChatPlugin extends JavaPlugin implements Listener {
 
-    private String chatFormat;
+  private String chatFormat;
 
-    @Override
-    public void onEnable() {
-        if (Bukkit.getPluginManager().getPlugin("ReformCloud2BukkitPermissions") == null) {
-            System.err.println("[Chat] Unable to find permission plugin, do not load permission listeners");
-            return;
-        }
-
-        super.getConfig().options().copyDefaults(true);
-        super.saveConfig();
-        this.chatFormat = super.getConfig().getString("format", "%display%%name% &7➤ &f%message%");
-
-        Bukkit.getPluginManager().registerEvents(this, this);
+  @Override
+  public void onEnable() {
+    if (Bukkit.getPluginManager().getPlugin("ReformCloud2BukkitPermissions") == null) {
+      System.err.println("[Chat] Unable to find permission plugin, do not load permission listeners");
+      return;
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void handle(final @NotNull AsyncPlayerChatEvent event) {
-        String format = ChatFormatUtil.buildFormat(
-            event.getPlayer().getUniqueId(),
-            this.chatFormat,
-            event.getMessage(),
-            event.getPlayer().getName(),
-            event.getPlayer().getDisplayName(),
-            event.getPlayer()::hasPermission,
-            (colorChar, message) -> ChatColor.translateAlternateColorCodes(colorChar, message)
-        );
-        if (format == null) {
-            event.setCancelled(true);
-        } else {
-            event.setFormat(format);
-        }
+    super.getConfig().options().copyDefaults(true);
+    super.saveConfig();
+    this.chatFormat = super.getConfig().getString("format", "%display%%name% &7➤ &f%message%");
+
+    Bukkit.getPluginManager().registerEvents(this, this);
+  }
+
+  @EventHandler(priority = EventPriority.HIGHEST)
+  public void handle(final @NotNull AsyncPlayerChatEvent event) {
+    String format = ChatFormatUtil.buildFormat(
+      event.getPlayer().getUniqueId(),
+      this.chatFormat,
+      event.getMessage(),
+      event.getPlayer().getName(),
+      event.getPlayer().getDisplayName(),
+      event.getPlayer()::hasPermission,
+      (colorChar, message) -> ChatColor.translateAlternateColorCodes(colorChar, message)
+    );
+    if (format == null) {
+      event.setCancelled(true);
+    } else {
+      event.setFormat(format);
     }
+  }
 }

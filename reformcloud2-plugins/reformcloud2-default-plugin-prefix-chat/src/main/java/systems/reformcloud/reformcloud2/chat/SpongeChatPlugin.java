@@ -43,64 +43,64 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @Plugin(
-    id = "reformcloud_2_chat",
-    name = "ReformCloud2Chat",
-    version = "2",
-    description = "The reformcloud chat plugin",
-    authors = {"derklaro"},
-    url = "https://reformcloud.systems",
-    dependencies = {@Dependency(id = "reformcloud_2_perms")}
+  id = "reformcloud_2_chat",
+  name = "ReformCloud2Chat",
+  version = "2",
+  description = "The reformcloud chat plugin",
+  authors = {"derklaro"},
+  url = "https://reformcloud.systems",
+  dependencies = {@Dependency(id = "reformcloud_2_perms")}
 )
 public class SpongeChatPlugin {
 
-    @Inject
-    @DefaultConfig(sharedRoot = false)
-    public Path defaultConf;
+  @Inject
+  @DefaultConfig(sharedRoot = false)
+  public Path defaultConf;
 
-    private String chatFormat;
+  private String chatFormat;
 
-    @Listener
-    public void handle(GameInitializationEvent event) {
-        ConfigurationLoader<CommentedConfigurationNode> configurationLoader = HoconConfigurationLoader.builder().setPath(this.defaultConf).build();
-        try {
-            CommentedConfigurationNode configurationNode = configurationLoader.load();
-            if (Files.notExists(this.defaultConf)) {
-                Files.createFile(this.defaultConf);
-                // set defaults in config
-                configurationNode.getNode("format").setValue("%display%%name% &7➤ &f%message%");
-                configurationLoader.save(configurationNode);
-            }
+  @Listener
+  public void handle(GameInitializationEvent event) {
+    ConfigurationLoader<CommentedConfigurationNode> configurationLoader = HoconConfigurationLoader.builder().setPath(this.defaultConf).build();
+    try {
+      CommentedConfigurationNode configurationNode = configurationLoader.load();
+      if (Files.notExists(this.defaultConf)) {
+        Files.createFile(this.defaultConf);
+        // set defaults in config
+        configurationNode.getNode("format").setValue("%display%%name% &7➤ &f%message%");
+        configurationLoader.save(configurationNode);
+      }
 
-            CommentedConfigurationNode format = configurationNode.getNode("format");
-            if (format.isVirtual()) {
-                // the node is not set in the config/was removed
-                format.setValue("%display%%name% &7➤ &f%message%");
-                configurationLoader.save(configurationNode);
-            }
+      CommentedConfigurationNode format = configurationNode.getNode("format");
+      if (format.isVirtual()) {
+        // the node is not set in the config/was removed
+        format.setValue("%display%%name% &7➤ &f%message%");
+        configurationLoader.save(configurationNode);
+      }
 
-            this.chatFormat = format.getString();
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
+      this.chatFormat = format.getString();
+    } catch (IOException exception) {
+      exception.printStackTrace();
     }
+  }
 
-    @Listener
-    public void handle(MessageChannelEvent.Chat event) {
-        event.getCause().first(Player.class).ifPresent(player -> {
-            String format = ChatFormatUtil.buildFormat(
-                player.getUniqueId(),
-                this.chatFormat,
-                event.getRawMessage().toPlain(),
-                player.getName(),
-                player.getDisplayNameData().displayName().get().toPlain(),
-                player::hasPermission,
-                (colorChar, message) -> TextSerializers.FORMATTING_CODE.replaceCodes(message, colorChar)
-            );
-            if (format == null) {
-                event.setCancelled(true);
-            } else {
-                event.setMessage(Text.of(format));
-            }
-        });
-    }
+  @Listener
+  public void handle(MessageChannelEvent.Chat event) {
+    event.getCause().first(Player.class).ifPresent(player -> {
+      String format = ChatFormatUtil.buildFormat(
+        player.getUniqueId(),
+        this.chatFormat,
+        event.getRawMessage().toPlain(),
+        player.getName(),
+        player.getDisplayNameData().displayName().get().toPlain(),
+        player::hasPermission,
+        (colorChar, message) -> TextSerializers.FORMATTING_CODE.replaceCodes(message, colorChar)
+      );
+      if (format == null) {
+        event.setCancelled(true);
+      } else {
+        event.setMessage(Text.of(format));
+      }
+    });
+  }
 }

@@ -35,45 +35,46 @@ import org.cloudburstmc.server.utils.TextFormat;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Plugin(
-    id = "reformcloud_2_chat",
-    name = "CloudBurstChatPlugin",
-    version = "2",
-    description = "The reformcloud chat prefix plugin",
-    url = "https://reformcloud.systems",
-    authors = {"derklaro"},
-    dependencies = {@Dependency(id = "reformcloud_2_perms")}
+  id = "reformcloud_2_chat",
+  name = "CloudBurstChatPlugin",
+  version = "2",
+  description = "The reformcloud chat prefix plugin",
+  url = "https://reformcloud.systems",
+  authors = {"derklaro"},
+  dependencies = {@Dependency(id = "reformcloud_2_perms")}
 )
 public class CloudBurstChatPlugin {
 
-    private final String chatFormat;
+  private final String chatFormat;
 
-    @Inject
-    public CloudBurstChatPlugin() {
-        Path path = Path.of("plugins/ReformCloud2Chat/config.yml").toAbsolutePath();
-        if (Files.notExists(path)) {
-            new Config(path.toString(), Config.YAML, new ConfigSection("format", "%display%%name% &7➤ &f%message%"));
-        }
-
-        this.chatFormat = new Config(path.toString(), Config.YAML).getString("format", "%display%%name% &7➤ &f%message%");
+  @Inject
+  public CloudBurstChatPlugin() {
+    Path path = Paths.get("plugins/ReformCloud2Chat/config.yml").toAbsolutePath();
+    if (Files.notExists(path)) {
+      new Config(path.toString(), Config.YAML, new ConfigSection("format", "%display%%name% &7➤ &f%message%"));
     }
 
-    @Listener
-    public void handle(PlayerChatEvent event) {
-        String format = ChatFormatUtil.buildFormat(
-            event.getPlayer().getServerId(),
-            this.chatFormat,
-            event.getMessage(),
-            event.getPlayer().getName(),
-            event.getPlayer().getDisplayName(),
-            event.getPlayer()::hasPermission,
-            (colorChar, message) -> TextFormat.colorize(colorChar, message)
-        );
-        if (format == null) {
-            event.setCancelled(true);
-        } else {
-            event.setFormat(format);
-        }
+    this.chatFormat = new Config(path.toString(), Config.YAML).getString("format", "%display%%name% &7➤ &f%message%");
+  }
+
+  @Listener
+  public void handle(PlayerChatEvent event) {
+    String format = ChatFormatUtil.buildFormat(
+      event.getPlayer().getServerId(),
+      this.chatFormat,
+      event.getMessage(),
+      event.getPlayer().getName(),
+      event.getPlayer().getDisplayName(),
+      event.getPlayer()::hasPermission,
+      (colorChar, message) -> TextFormat.colorize(colorChar, message)
+    );
+    if (format == null) {
+      event.setCancelled(true);
+    } else {
+      event.setFormat(format);
     }
+  }
 }
