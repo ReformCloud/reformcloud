@@ -32,22 +32,22 @@ import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 
 public class ExampleChannelMessageHandling {
 
-    // Sends a channel message to all nodes and processes
-    public static void sendCustomChannelMessage() {
-        ExecutorAPI.getInstance().getChannelMessageProvider().publishChannelMessage(
-            "testChannel", // The name of the channel which is accessible for better identifying of the message
-            new JsonConfiguration().add("extra", "hello") // The data which should get sent to the network components
-        );
+  // Sends a channel message to all nodes and processes
+  public static void sendCustomChannelMessage() {
+    ExecutorAPI.getInstance().getChannelMessageProvider().publishChannelMessage(
+      "testChannel", // The name of the channel which is accessible for better identifying of the message
+      JsonConfiguration.newJsonConfiguration().add("extra", "hello") // The data which should get sent to the network components
+    );
+  }
+
+  // Handles the receive of a custom channel message. Do not forgot to register the listener.
+  @Listener
+  public void handle(final @NotNull ChannelMessageReceiveEvent event) {
+    // Checks if the base channel is the same as the message was sent to
+    if (!event.getChannel().equals("testChannel")) {
+      return;
     }
 
-    // Handles the receive of a custom channel message. Do not forgot to register the listener.
-    @Listener
-    public void handle(final @NotNull ChannelMessageReceiveEvent event) {
-        // Checks if the base channel is the same as the message was sent to
-        if (!event.getChannel().equals("testChannel")) {
-            return;
-        }
-
-        System.out.println(event.getData().get("extra")); // print the message which was sent in the json config
-    }
+    System.out.println(event.getData().get("extra")); // print the message which was sent in the json config
+  }
 }

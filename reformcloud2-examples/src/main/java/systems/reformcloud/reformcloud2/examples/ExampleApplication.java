@@ -35,13 +35,13 @@ import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
  */
 public class ExampleApplication extends Application {
 
-    @Override
-    public void onLoad() {
-        System.out.println("The example application has been loaded");
-    }
+  @Override
+  public void onLoad() {
+    System.out.println("The example application has been loaded");
+  }
 
-    @Override
-    public void onEnable() {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ExampleEventListener()); // Registers a new listener
-    }
+  @Override
+  public void onEnable() {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ExampleEventListener()); // Registers a new listener
+  }
 }

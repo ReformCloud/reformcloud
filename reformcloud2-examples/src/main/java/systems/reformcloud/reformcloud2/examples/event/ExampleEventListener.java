@@ -34,13 +34,13 @@ import systems.reformcloud.reformcloud2.executor.api.event.priority.EventPriorit
  */
 public class ExampleEventListener {
 
-    @Listener
-    public void handle(final @NotNull ExampleEvent exampleEvent) { // listen to our created event
-        System.out.println("The example event has been called...!");
-    }
+  @Listener
+  public void handle(final @NotNull ExampleEvent exampleEvent) { // listen to our created event
+    System.out.println("The example event has been called...!");
+  }
 
-    @Listener(priority = EventPriority.LAST) // This listener will be invoked after all others
-    public void handle(final @NotNull ProcessRegisterEvent event) {
-        System.out.println("The process " + event.getProcessInformation().getProcessDetail().getName() + " was started");
-    }
+  @Listener(priority = EventPriority.LAST) // This listener will be invoked after all others
+  public void handle(final @NotNull ProcessRegisterEvent event) {
+    System.out.println("The process " + event.getProcessInformation().getName() + " was started");
+  }
 }

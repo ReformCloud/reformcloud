@@ -25,37 +25,26 @@
 package systems.reformcloud.reformcloud2.examples.process;
 
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.group.DefaultProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.group.template.builder.DefaultTemplate;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
-
-import java.util.Optional;
 
 public class ExampleProcessHandling {
 
-    // Starts a new process of the lobby group
-    public static void startProcessFromGroup() {
-        ExecutorAPI.getInstance().getProcessProvider().createProcess() // get a new process builder
-            .group("Lobby") // Use the group lobby. REQUIRED
-            .prepare() // Prepare the process
-            .thenAccept(wrapper -> wrapper.setRuntimeState(ProcessState.STARTED)); // start the process
-    }
+  // Starts a new process of the lobby group
+  public static void startProcessFromGroup() {
+    ExecutorAPI.getInstance().getProcessProvider().createProcess() // get a new process builder
+      .group("Lobby") // Use the group lobby. REQUIRED
+      .prepare() // Prepare the process
+      .thenAccept(wrapper -> wrapper.setRuntimeState(ProcessState.STARTED)); // start the process
+  }
 
-    // Starts a new process of the group lobby with the template default
-    public static void startProcessFromGroupWithTemplate() {
-        Optional<DefaultProcessGroup> group = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup("Lobby");
-        ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup("Lobby")
-            .ifPresent(processGroup -> {
-                DefaultTemplate template = processGroup.getTemplate("default");
-                if (template == null) {
-                    return;
-                }
-
-                ExecutorAPI.getInstance().getProcessProvider().createProcess()
-                    .group("Lobby") // Use the group lobby. REQUIRED
-                    .template(template) // Set the template to 'default'
-                    .prepare() // Prepare the process
-                    .thenAccept(wrapper -> wrapper.setRuntimeState(ProcessState.STARTED)); // start the process
-            });
-    }
+  // Starts a new process of the group lobby with the template default
+  public static void startProcessFromGroupWithTemplate() {
+    ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup("Lobby").flatMap(processGroup -> processGroup.getTemplate("default")).ifPresent(template -> {
+      ExecutorAPI.getInstance().getProcessProvider().createProcess()
+        .group("Lobby") // Use the group lobby. REQUIRED
+        .template(template) // Set the template to 'default'
+        .prepare() // Prepare the process
+        .thenAccept(wrapper -> wrapper.setRuntimeState(ProcessState.STARTED)); // start the process
+    });
+  }
 }
