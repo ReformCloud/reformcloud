@@ -24,13 +24,12 @@
  */
 package systems.reformcloud.reformcloud2.backends.ftp;
 
-import com.google.gson.reflect.TypeToken;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPSClient;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.group.process.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.group.template.backend.TemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
@@ -45,6 +44,7 @@ import java.io.OutputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.Executor;
@@ -96,13 +96,12 @@ public final class FTPTemplateBackend implements TemplateBackend {
 
   public static void load(Path configPath) {
     if (Files.notExists(configPath)) {
-      new JsonConfiguration().add("config", new FTPConfig(
+      JsonConfiguration.newJsonConfiguration().add("config", new FTPConfig(
         false, false, "127.0.0.1", 21, "rc", "password", "rc/templates"
       )).write(configPath);
     }
 
-    FTPConfig config = JsonConfiguration.read(configPath).get("config", new TypeToken<>() {
-    });
+    FTPConfig config = JsonConfiguration.newJsonConfiguration(configPath).get("config", FTPConfig.class);
     if (config == null || !config.isEnabled()) {
       return;
     }
@@ -167,7 +166,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
         }
 
         for (FTPFile file : files) {
-          this.loadFiles(file, group + "/" + template + "/" + file.getName(), Path.of(target.toString(), file.getName()));
+          this.loadFiles(file, group + "/" + template + "/" + file.getName(), Paths.get(target.toString(), file.getName()));
         }
       } catch (final IOException ex) {
         ex.printStackTrace();
@@ -183,7 +182,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
       }
 
       for (FTPFile ftpFile : files) {
-        this.loadFiles(ftpFile, path + "/" + ftpFile.getName(), Path.of(target.toString(), ftpFile.getName()));
+        this.loadFiles(ftpFile, path + "/" + ftpFile.getName(), Paths.get(target.toString(), ftpFile.getName()));
       }
     } else if (file.isFile()) {
       IOUtils.createDirectory(target.getParent());
@@ -228,7 +227,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
         }
 
         for (FTPFile file : files) {
-          this.loadFiles(file, path + "/" + file.getName(), Path.of(target.toString(), file.getName()));
+          this.loadFiles(file, path + "/" + file.getName(), Paths.get(target.toString(), file.getName()));
         }
       } catch (final IOException ex) {
         ex.printStackTrace();

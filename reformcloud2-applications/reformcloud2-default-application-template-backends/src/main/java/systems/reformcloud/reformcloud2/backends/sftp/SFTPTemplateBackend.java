@@ -39,13 +39,13 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.group.template.builder.DefaultTemplate;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.group.process.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.group.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.group.template.backend.TemplateBackend;
-import systems.reformcloud.reformcloud2.node.template.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
+import systems.reformcloud.reformcloud2.node.template.TemplateBackendManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,6 +53,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -70,12 +71,12 @@ public final class SFTPTemplateBackend implements TemplateBackend {
 
   public static void load(Path configPath) {
     if (Files.notExists(configPath)) {
-      new JsonConfiguration().add("config", new SFTPConfig(
+      JsonConfiguration.newJsonConfiguration().add("config", new SFTPConfig(
         false, "127.0.0.1", 22, "rc", "password", "rc/templates"
       )).write(configPath);
     }
 
-    SFTPConfig config = JsonConfiguration.read(configPath).get("config", SFTPConfig.class);
+    SFTPConfig config = JsonConfiguration.newJsonConfiguration(configPath).get("config", SFTPConfig.class);
     if (config == null || !config.isEnabled()) {
       return;
     }
@@ -114,9 +115,9 @@ public final class SFTPTemplateBackend implements TemplateBackend {
   }
 
   @Override
-  public @NotNull Task<Void> loadGlobalTemplates(@NotNull DefaultProcessGroup group, @NotNull Path target) {
+  public @NotNull Task<Void> loadGlobalTemplates(@NotNull ProcessGroup group, @NotNull Path target) {
     Collection<Task<Void>> tasks = new ArrayList<>();
-    for (DefaultTemplate template : group.getTemplates()) {
+    for (Template template : group.getTemplates()) {
       if (template.isGlobal()) {
         tasks.add(this.loadTemplate(group.getName(), template.getName(), target));
       }
@@ -189,7 +190,7 @@ public final class SFTPTemplateBackend implements TemplateBackend {
       localDir += "/";
     }
 
-    Path local = Path.of(localDir);
+    Path local = Paths.get(localDir);
     Files.createDirectories(local);
 
     for (RemoteResourceInfo resourceInfo : this.sftpClient.ls(remoteDir)) {
@@ -235,7 +236,7 @@ public final class SFTPTemplateBackend implements TemplateBackend {
       // discard silently
     }
 
-    try (DirectoryStream<Path> stream = Files.newDirectoryStream(Path.of(localDir))) {
+    try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(localDir))) {
       for (Path path : stream) {
         Path fileName = path.getFileName();
         if (fileName == null || excluded.contains(fileName.toString())) {

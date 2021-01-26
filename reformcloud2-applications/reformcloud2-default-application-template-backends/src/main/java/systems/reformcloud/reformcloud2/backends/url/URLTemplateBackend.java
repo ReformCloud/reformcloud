@@ -25,12 +25,12 @@
 package systems.reformcloud.reformcloud2.backends.url;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.group.process.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.group.template.backend.TemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.utility.MoreCollections;
 import systems.reformcloud.reformcloud2.node.template.TemplateBackendManager;
-import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.shared.io.DownloadHelper;
 import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 
@@ -39,6 +39,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 
 public final class URLTemplateBackend implements TemplateBackend {
@@ -51,10 +52,10 @@ public final class URLTemplateBackend implements TemplateBackend {
 
   public static void load(Path configPath) {
     if (Files.notExists(configPath)) {
-      new JsonConfiguration().add("baseUrl", "https://127.0.0.1/rc/templates").write(configPath);
+      JsonConfiguration.newJsonConfiguration().add("baseUrl", "https://127.0.0.1/rc/templates").write(configPath);
     }
 
-    TemplateBackendManager.registerBackend(new URLTemplateBackend(JsonConfiguration.read(configPath)));
+    TemplateBackendManager.registerBackend(new URLTemplateBackend(JsonConfiguration.newJsonConfiguration(configPath)));
   }
 
   public static void unload() {
@@ -86,14 +87,14 @@ public final class URLTemplateBackend implements TemplateBackend {
   @Override
   public Task<Void> loadTemplate(@NotNull String group, @NotNull String template, @NotNull Path target) {
     DownloadHelper.download(this.getBasePath() + group + "-" + template + ".zip", "reformcloud/files/temp/template.zip");
-    IOUtils.unZip(Path.of("reformcloud/files/temp/template.zip"), target);
+    IOUtils.unZip(Paths.get("reformcloud/files/temp/template.zip"), target);
     IOUtils.deleteFile("reformcloud/files/temp/template.zip");
     return Task.completedTask(null);
   }
 
   @NotNull
   @Override
-  public Task<Void> loadGlobalTemplates(@NotNull DefaultProcessGroup group, @NotNull Path target) {
+  public Task<Void> loadGlobalTemplates(@NotNull ProcessGroup group, @NotNull Path target) {
     MoreCollections.allOf(group.getTemplates(), e -> e.getBackend().equals(this.getName())
       && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target));
     return Task.completedTask(null);
@@ -103,7 +104,7 @@ public final class URLTemplateBackend implements TemplateBackend {
   @Override
   public Task<Void> loadPath(@NotNull String path, @NotNull Path target) {
     DownloadHelper.download(this.getBasePath() + path, "reformcloud/files/temp/template.zip");
-    IOUtils.unZip(Path.of("reformcloud/files/temp/template.zip"), target);
+    IOUtils.unZip(Paths.get("reformcloud/files/temp/template.zip"), target);
     IOUtils.deleteFile("reformcloud/files/temp/template.zip");
     return Task.completedTask(null);
   }
