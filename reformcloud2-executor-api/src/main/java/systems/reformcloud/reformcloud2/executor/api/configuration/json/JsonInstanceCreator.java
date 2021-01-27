@@ -29,10 +29,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
 
+@FunctionalInterface
 public interface JsonInstanceCreator<T> {
 
   @Nullable
-  default T createInstance(@NotNull Type type) {
-    return null;
-  }
+  T createInstance(@NotNull Type type);
 }

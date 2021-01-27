@@ -29,7 +29,9 @@ import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.data.DefaultJsonDataHolder;
 import systems.reformcloud.reformcloud2.executor.api.group.process.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.group.process.player.DefaultPlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.group.process.player.PlayerAccessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.group.process.startup.DefaultStartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.group.process.startup.StartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.group.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.group.template.builder.DefaultTemplate;
@@ -194,8 +196,8 @@ public class DefaultProcessGroup extends DefaultJsonDataHolder<ProcessGroup> imp
 
   @Override
   public void read(@NotNull ProtocolBuffer buffer) {
-    this.startupConfiguration = buffer.readObject(StartupConfiguration.class);
-    this.playerAccessConfiguration = buffer.readObject(PlayerAccessConfiguration.class);
+    this.startupConfiguration = buffer.readObject(DefaultStartupConfiguration.class, StartupConfiguration.class);
+    this.playerAccessConfiguration = buffer.readObject(DefaultPlayerAccessConfiguration.class, PlayerAccessConfiguration.class);
     this.showIdInName = buffer.readBoolean();
     this.createsStaticProcesses = buffer.readBoolean();
     this.lobbyGroup = buffer.readBoolean();

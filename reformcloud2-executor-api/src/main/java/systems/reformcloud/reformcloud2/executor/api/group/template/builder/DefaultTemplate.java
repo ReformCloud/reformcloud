@@ -30,6 +30,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.configuration.data.DefaultJsonDataHolder;
 import systems.reformcloud.reformcloud2.executor.api.group.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.group.template.inclusion.DefaultInclusion;
 import systems.reformcloud.reformcloud2.executor.api.group.template.inclusion.Inclusion;
 import systems.reformcloud.reformcloud2.executor.api.group.template.runtime.DefaultRuntimeConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.group.template.runtime.RuntimeConfiguration;
@@ -275,8 +276,8 @@ public class DefaultTemplate extends DefaultJsonDataHolder<Template> implements 
     this.serverNameSplitter = buffer.readString();
     this.runtimeConfiguration = buffer.readObject(DefaultRuntimeConfiguration.class);
     this.version = buffer.readObject(DefaultVersion.class, Version.class);
-    this.templateInclusions = buffer.readObjects(Inclusion.class);
-    this.pathInclusions = buffer.readObjects(Inclusion.class);
+    this.templateInclusions = buffer.readObjects(DefaultInclusion.class, Inclusion.class);
+    this.pathInclusions = buffer.readObjects(DefaultInclusion.class, Inclusion.class);
     this.name = buffer.readString();
     super.read(buffer);
   }

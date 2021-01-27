@@ -155,7 +155,7 @@ public class DefaultStartupConfiguration implements StartupConfiguration {
     this.alwaysOnlineProcessAmount = buffer.readInt();
     this.alwaysPreparedProcessAmount = buffer.readInt();
     this.jvmCommand = buffer.readString();
-    this.startupConfiguration = buffer.readObject(null);
+    this.startupConfiguration = buffer.readObject(DefaultAutomaticStartupConfiguration.class);
     this.startingNodes = buffer.readStringArray();
   }
 }

@@ -22,18 +22,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.configuration.json;
+package systems.reformcloud.reformcloud2.shared.json;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.google.gson.JsonElement;
+import com.google.gson.TypeAdapter;
+import com.google.gson.internal.bind.TypeAdapters;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.json.types.Object;
 
-import java.lang.reflect.Type;
+import java.io.IOException;
 
-public interface JsonReader<T> extends JsonInstanceCreator<T> {
+final class GsonJsonConfigurationTypeAdapter extends TypeAdapter<JsonConfiguration> {
 
-  @Nullable
-  Element serialize(@NotNull T t, Type typeOfT);
+  @Override
+  public void write(JsonWriter out, JsonConfiguration value) throws IOException {
+    final Object backing = value.getBackingObject();
+    if (backing instanceof GsonObject) {
+      TypeAdapters.JSON_ELEMENT.write(out, ((GsonObject) backing).gsonObject);
+    }
+  }
 
-  @Nullable
-  T deserialize(@NotNull Element element, @NotNull Type typeOfT);
+  @Override
+  public JsonConfiguration read(JsonReader in) throws IOException {
+    final JsonElement element = TypeAdapters.JSON_ELEMENT.read(in);
+    if (element.isJsonObject()) {
+      return JsonConfiguration.newJsonConfiguration(new GsonObject(element.getAsJsonObject()));
+    } else {
+      return null;
+    }
+  }
 }

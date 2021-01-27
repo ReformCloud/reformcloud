@@ -32,6 +32,7 @@ import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -210,7 +211,10 @@ public class DefaultProtocolBuffer implements ProtocolBuffer {
   @Nullable
   private <T extends SerializableObject> T readObject0(@NotNull Class<T> tClass) {
     try {
-      T instance = tClass.getDeclaredConstructor().newInstance();
+      Constructor<T> constructor = tClass.getDeclaredConstructor();
+      constructor.setAccessible(true);
+
+      T instance = constructor.newInstance();
       instance.read(this);
       return instance;
     } catch (final NoSuchMethodException exception) {

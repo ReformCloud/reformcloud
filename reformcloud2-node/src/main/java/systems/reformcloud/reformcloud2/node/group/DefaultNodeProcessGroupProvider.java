@@ -29,7 +29,6 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.builder.ProcessGroupBuilder;
-import systems.reformcloud.reformcloud2.executor.api.configuration.json.adapter.JsonAdapter;
 import systems.reformcloud.reformcloud2.executor.api.group.process.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
@@ -47,17 +46,11 @@ import java.util.Optional;
 
 public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
 
-  private static final JsonAdapter ADAPTER = ProcessGroupJsonReaders.builder()
-    .disableHtmlEscaping()
-    .enablePrettyPrinting()
-    .enableNullSerialisation()
-    .build();
-
   private final Collection<ProcessGroup> processGroups;
   private final FileRegistry fileRegistry;
 
   public DefaultNodeProcessGroupProvider(@NotNull String registryFolder) {
-    this.fileRegistry = new DefaultFileRegistry(registryFolder, ADAPTER);
+    this.fileRegistry = new DefaultFileRegistry(registryFolder, ProcessGroupJsonReaders.ADAPTER);
     this.processGroups = this.fileRegistry.readKeys(
       e -> e.get("key", DefaultProcessGroup.class),
       path -> System.err.println(TranslationHolder.translate("startup-unable-to-read-file",

@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 
 public class GsonObject extends GsonElement implements Object {
 
-  private final JsonObject gsonObject;
+  final JsonObject gsonObject;
 
   public GsonObject(JsonObject gsonObject) {
     super(gsonObject);

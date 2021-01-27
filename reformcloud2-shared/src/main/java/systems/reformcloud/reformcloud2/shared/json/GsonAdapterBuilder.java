@@ -32,7 +32,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.gson.internal.bind.TypeAdapters;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.configuration.json.JsonInstanceCreator;
 import systems.reformcloud.reformcloud2.executor.api.configuration.json.JsonReader;
 import systems.reformcloud.reformcloud2.executor.api.configuration.json.adapter.JsonAdapter;
@@ -50,6 +52,7 @@ public class GsonAdapterBuilder implements JsonAdapterBuilder {
 
   private GsonAdapterBuilder(GsonBuilder gsonBuilder) {
     this.gsonBuilder = gsonBuilder;
+    this.gsonBuilder.registerTypeAdapterFactory(TypeAdapters.newTypeHierarchyFactory(JsonConfiguration.class, new GsonJsonConfigurationTypeAdapter()));
   }
 
   @Override
@@ -128,7 +131,7 @@ public class GsonAdapterBuilder implements JsonAdapterBuilder {
     return new GsonAdapterBuilder(this.gsonBuilder.create().newBuilder()); // looks like the only way to do that
   }
 
-  private static final class GsonSerializerBacking<T> implements JsonSerializer<T>, JsonDeserializer<T> {
+  private static final class GsonSerializerBacking<T> implements JsonSerializer<T>, JsonDeserializer<T>, InstanceCreator<T> {
 
     private final JsonReader<T> backing;
 
@@ -144,6 +147,11 @@ public class GsonAdapterBuilder implements JsonAdapterBuilder {
     @Override
     public JsonElement serialize(T src, Type typeOfSrc, JsonSerializationContext context) {
       return ElementMapper.map(this.backing.serialize(src, typeOfSrc));
+    }
+
+    @Override
+    public T createInstance(Type type) {
+      return this.backing.createInstance(type);
     }
   }
 
