@@ -32,6 +32,8 @@ import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableObject;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
@@ -204,7 +206,7 @@ public class DefaultProtocolBuffer implements ProtocolBuffer {
     if (this.readBoolean()) {
       return null;
     } else {
-      return this.readObject(reader);
+      return this.readObject0(reader);
     }
   }
 
@@ -465,5 +467,10 @@ public class DefaultProtocolBuffer implements ProtocolBuffer {
   @Override
   public void writeEnum(@NotNull Enum<?> constant) {
     this.writeVarInt(constant.ordinal());
+  }
+
+  @Override
+  public void transferTo(@NotNull OutputStream stream) throws IOException {
+    this.wrapped.readBytes(stream, this.readableBytes());
   }
 }

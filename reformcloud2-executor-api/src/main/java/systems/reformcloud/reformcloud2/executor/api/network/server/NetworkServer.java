@@ -26,13 +26,14 @@ package systems.reformcloud.reformcloud2.executor.api.network.server;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.address.NetworkAddress;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public interface NetworkServer extends Server {
 
-  boolean bind(@NotNull String host, int port, @NotNull Supplier<ChannelListener> channelListenerFactory);
+  boolean bind(@NotNull String host, int port, @NotNull Function<NetworkChannel, ChannelListener> channelListenerFactory);
 
-  boolean bind(@NotNull NetworkAddress address, @NotNull Supplier<ChannelListener> channelListenerFactory);
+  boolean bind(@NotNull NetworkAddress address, @NotNull Function<NetworkChannel, ChannelListener> channelListenerFactory);
 }

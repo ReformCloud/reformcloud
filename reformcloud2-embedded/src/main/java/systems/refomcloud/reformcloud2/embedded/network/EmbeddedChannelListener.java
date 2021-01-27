@@ -45,7 +45,8 @@ public class EmbeddedChannelListener extends SharedChannelListener {
   private final Condition condition;
   private boolean wasActive = false;
 
-  public EmbeddedChannelListener(Lock lock, Condition condition) {
+  public EmbeddedChannelListener(NetworkChannel channel, Lock lock, Condition condition) {
+    super(channel);
     PacketRegister.preAuth();
 
     this.lock = lock;

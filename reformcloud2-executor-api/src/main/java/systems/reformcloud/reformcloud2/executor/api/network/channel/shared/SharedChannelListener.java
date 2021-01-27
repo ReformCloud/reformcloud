@@ -36,7 +36,11 @@ import java.util.Optional;
 
 public abstract class SharedChannelListener implements ChannelListener {
 
-  protected NetworkChannel networkChannel;
+  protected final NetworkChannel networkChannel;
+
+  public SharedChannelListener(NetworkChannel networkChannel) {
+    this.networkChannel = networkChannel;
+  }
 
   @Override
   public void handle(@NotNull Packet input) {

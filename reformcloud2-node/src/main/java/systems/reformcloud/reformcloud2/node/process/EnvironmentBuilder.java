@@ -382,6 +382,7 @@ final class EnvironmentBuilder {
       properties.setProperty("server-ip", wrapper.getProcessInformation().getHost().getHost());
       properties.setProperty("server-port", Integer.toString(wrapper.getProcessInformation().getHost().getPort()));
       properties.setProperty("online-mode", Boolean.toString(false));
+      properties.setProperty("use-native-transport", Boolean.toString(wrapper.getProcessInformation().getPrimaryTemplate().getVersion().isNativeTransportSupported()));
 
       final PlayerAccessConfiguration configuration = wrapper.getProcessInformation().getProcessGroup().getPlayerAccessConfiguration();
       if (configuration.isUsePlayerLimit() && configuration.getMaxPlayers() >= 0) {
@@ -408,9 +409,8 @@ final class EnvironmentBuilder {
     final ByteBuf byteBuf = Unpooled.buffer();
     try (OutputStream outputStream = Files.newOutputStream(wrapper.getPath().resolve(".reformcloud/info"))) {
       final ProtocolBuffer buffer = new DefaultProtocolBuffer(byteBuf);
-      wrapper.getProcessInformation().write(buffer);
-
-      outputStream.write(buffer.toByteArray());
+      buffer.writeObject(wrapper.getProcessInformation());
+      buffer.transferTo(outputStream);
     } catch (IOException exception) {
       exception.printStackTrace();
     } finally {

@@ -27,6 +27,8 @@ package systems.reformcloud.reformcloud2.executor.api.network.data;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -139,4 +141,6 @@ public interface ProtocolBuffer {
   void writeBytes(byte[] bytes);
 
   void writeEnum(@NotNull Enum<?> constant);
+
+  void transferTo(@NotNull OutputStream stream) throws IOException;
 }

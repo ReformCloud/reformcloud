@@ -30,6 +30,8 @@ import org.jetbrains.annotations.Range;
 import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 
+import java.util.Objects;
+
 public final class DefaultVersion implements Version {
 
   private String installer;
@@ -131,6 +133,23 @@ public final class DefaultVersion implements Version {
   @Override
   public void setName(@NotNull String newName) {
     this.versionName = newName;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || this.getClass() != o.getClass()) {
+      return false;
+    }
+    DefaultVersion that = (DefaultVersion) o;
+    return Objects.equals(this.versionName, that.versionName) && this.versionType == that.versionType;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.versionName, this.versionType);
   }
 
   @Override

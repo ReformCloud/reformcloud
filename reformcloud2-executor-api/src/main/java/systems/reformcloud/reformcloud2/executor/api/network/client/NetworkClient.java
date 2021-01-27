@@ -29,11 +29,11 @@ import systems.reformcloud.reformcloud2.executor.api.network.address.NetworkAddr
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public interface NetworkClient extends NetworkChannel {
 
-  boolean connect(@NotNull String host, int port, @NotNull Supplier<ChannelListener> channelListenerFactory);
+  boolean connect(@NotNull String host, int port, @NotNull Function<NetworkChannel, ChannelListener> channelListenerFactory);
 
-  boolean connect(@NotNull NetworkAddress address, @NotNull Supplier<ChannelListener> channelListenerFactory);
+  boolean connect(@NotNull NetworkAddress address, @NotNull Function<NetworkChannel, ChannelListener> channelListenerFactory);
 }

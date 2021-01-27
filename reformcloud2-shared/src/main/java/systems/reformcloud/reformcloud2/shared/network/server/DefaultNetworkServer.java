@@ -31,6 +31,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.address.NetworkAddress;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.server.NetworkServer;
 import systems.reformcloud.reformcloud2.shared.network.handler.NettyChannelInitializer;
@@ -39,7 +40,7 @@ import systems.reformcloud.reformcloud2.shared.network.transport.TransportType;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 @SuppressWarnings("deprecation") // 1.8 is too old to use the new channel factory
 public class DefaultNetworkServer implements NetworkServer {
@@ -49,7 +50,7 @@ public class DefaultNetworkServer implements NetworkServer {
   private final EventLoopGroup worker = TransportType.BEST_TYPE.getEventLoopGroup(EventLoopGroupType.WORKER);
 
   @Override
-  public boolean bind(@NotNull String host, int port, @NotNull Supplier<ChannelListener> channelListenerFactory) {
+  public boolean bind(@NotNull String host, int port, @NotNull Function<NetworkChannel, ChannelListener> channelListenerFactory) {
     if (!this.channelFutures.containsKey(port)) {
       return new ServerBootstrap()
         .channelFactory(TransportType.BEST_TYPE.getServerSocketChannelFactory())
@@ -76,7 +77,7 @@ public class DefaultNetworkServer implements NetworkServer {
   }
 
   @Override
-  public boolean bind(@NotNull NetworkAddress address, @NotNull Supplier<ChannelListener> channelListenerFactory) {
+  public boolean bind(@NotNull NetworkAddress address, @NotNull Function<NetworkChannel, ChannelListener> channelListenerFactory) {
     return this.bind(address.getHost(), address.getPort(), channelListenerFactory);
   }
 

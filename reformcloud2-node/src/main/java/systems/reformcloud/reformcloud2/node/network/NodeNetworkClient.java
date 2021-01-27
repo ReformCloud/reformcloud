@@ -25,20 +25,21 @@
 package systems.reformcloud.reformcloud2.node.network;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.shared.network.client.DefaultNetworkClient;
 
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public final class NodeNetworkClient extends DefaultNetworkClient {
 
   public static final Collection<String> CONNECTIONS = new CopyOnWriteArrayList<>();
 
   @Override
-  public boolean connect(@NotNull String host, int port, @NotNull Supplier<ChannelListener> supplier) {
+  public boolean connect(@NotNull String host, int port, @NotNull Function<NetworkChannel, ChannelListener> supplier) {
     if (CONNECTIONS.stream().anyMatch(host::equals)) {
       return false;
     }

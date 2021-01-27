@@ -42,6 +42,10 @@ public final class NodeClientChannelListener extends SharedChannelListener {
 
   private boolean wasActive = false;
 
+  public NodeClientChannelListener(NetworkChannel networkChannel) {
+    super(networkChannel);
+  }
+
   @Override
   public boolean shouldHandle(@NotNull Packet packet) {
     return super.networkChannel.getName() != null || packet.getId() == PacketIds.AUTH_BUS + 1;

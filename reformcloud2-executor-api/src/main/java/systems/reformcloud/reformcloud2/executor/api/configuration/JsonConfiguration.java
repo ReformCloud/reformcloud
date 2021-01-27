@@ -372,15 +372,7 @@ public class JsonConfiguration implements Configurable<Element, JsonConfiguratio
 
   @Override
   public <T> T getOrDefaultIf(@NotNull String key, Type type, T def, @NotNull Predicate<T> predicate) {
-    return this.getInternal(key).map(element -> {
-      if (element.isObject()) {
-        final T result = this.adapter.fromJson(element, type);
-        if (predicate.test(result)) {
-          return result;
-        }
-      }
-      return def;
-    }).orElse(def);
+    return this.getInternal(key).map(element -> this.adapter.<T>fromJson(element, type)).orElse(def);
   }
 
   @Override

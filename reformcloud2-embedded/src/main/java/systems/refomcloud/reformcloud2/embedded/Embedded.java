@@ -138,7 +138,7 @@ public abstract class Embedded extends ExecutorAPI {
       this.networkClient.connect(
         this.config.getConnectionHost(),
         this.config.getConnectionPort(),
-        () -> new EmbeddedChannelListener(lock, condition)
+        channel -> new EmbeddedChannelListener(channel, lock, condition)
       );
 
       try {
@@ -162,7 +162,6 @@ public abstract class Embedded extends ExecutorAPI {
       }
     });
 
-    this.updateMaxPlayers();
     this.processInformation.setCurrentState(this.processInformation.getInitialState());
 
     PacketProcessorManager.getInstance()
@@ -291,6 +290,7 @@ public abstract class Embedded extends ExecutorAPI {
   }
 
   public int getMaxPlayers() {
+    this.updateMaxPlayers();
     return this.maxPlayers;
   }
 

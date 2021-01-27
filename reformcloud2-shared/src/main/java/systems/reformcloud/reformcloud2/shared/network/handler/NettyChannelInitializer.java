@@ -28,15 +28,16 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public class NettyChannelInitializer extends ChannelInitializer<Channel> {
 
-  private final Supplier<ChannelListener> channelListenerFactory;
+  private final Function<NetworkChannel, ChannelListener> channelListenerFactory;
 
-  public NettyChannelInitializer(Supplier<ChannelListener> channelListenerFactory) {
+  public NettyChannelInitializer(Function<NetworkChannel, ChannelListener> channelListenerFactory) {
     this.channelListenerFactory = channelListenerFactory;
   }
 

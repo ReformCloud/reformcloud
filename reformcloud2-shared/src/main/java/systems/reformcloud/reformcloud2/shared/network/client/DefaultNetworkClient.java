@@ -31,6 +31,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.address.NetworkAddress;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
 import systems.reformcloud.reformcloud2.executor.api.network.client.NetworkClient;
 import systems.reformcloud.reformcloud2.shared.network.channel.DefaultNetworkChannel;
@@ -38,7 +39,7 @@ import systems.reformcloud.reformcloud2.shared.network.handler.NettyChannelIniti
 import systems.reformcloud.reformcloud2.shared.network.transport.EventLoopGroupType;
 import systems.reformcloud.reformcloud2.shared.network.transport.TransportType;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 @SuppressWarnings("deprecation") // 1.8 is too old to use the new channel factory
 public class DefaultNetworkClient extends DefaultNetworkChannel implements NetworkClient {
@@ -46,7 +47,7 @@ public class DefaultNetworkClient extends DefaultNetworkChannel implements Netwo
   private final EventLoopGroup workerGroup = TransportType.BEST_TYPE.getEventLoopGroup(EventLoopGroupType.WORKER);
 
   @Override
-  public boolean connect(@NotNull String host, int port, @NotNull Supplier<ChannelListener> channelListenerFactory) {
+  public boolean connect(@NotNull String host, int port, @NotNull Function<NetworkChannel, ChannelListener> channelListenerFactory) {
     try {
       ChannelFuture future = this.connect0(host, port, channelListenerFactory).awaitUninterruptibly();
       if (future.isSuccess()) {
@@ -61,11 +62,11 @@ public class DefaultNetworkClient extends DefaultNetworkChannel implements Netwo
   }
 
   @Override
-  public boolean connect(@NotNull NetworkAddress address, @NotNull Supplier<ChannelListener> channelListenerFactory) {
+  public boolean connect(@NotNull NetworkAddress address, @NotNull Function<NetworkChannel, ChannelListener> channelListenerFactory) {
     return this.connect(address.getHost(), address.getPort(), channelListenerFactory);
   }
 
-  private @NotNull ChannelFuture connect0(@NotNull String host, int port, @NotNull Supplier<ChannelListener> channelListenerFactory) {
+  private @NotNull ChannelFuture connect0(@NotNull String host, int port, @NotNull Function<NetworkChannel, ChannelListener> channelListenerFactory) {
     return new Bootstrap()
       .group(this.workerGroup)
       .channelFactory(TransportType.BEST_TYPE.getSocketChannelFactory())

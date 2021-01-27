@@ -49,6 +49,10 @@ public class NodeServerChannelListener extends SharedChannelListener {
 
   private int type = 0;
 
+  public NodeServerChannelListener(NetworkChannel networkChannel) {
+    super(networkChannel);
+  }
+
   @Override
   public boolean shouldHandle(@NotNull Packet packet) {
     return super.networkChannel.getName() != null || packet.getId() == PacketIds.AUTH_BUS;

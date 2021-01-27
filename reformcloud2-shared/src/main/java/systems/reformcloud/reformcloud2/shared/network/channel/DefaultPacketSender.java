@@ -30,6 +30,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSende
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 public abstract class DefaultPacketSender implements PacketSender {
@@ -73,11 +74,18 @@ public abstract class DefaultPacketSender implements PacketSender {
 
   @Override
   public @NotNull Future<Void> close() {
-    return this.channel.close();
+    final Channel channel = this.channel;
+    if (channel != null) {
+      return channel.close();
+    }
+    return CompletableFuture.completedFuture(null);
   }
 
   @Override
   public void closeSync() {
-    this.channel.close().syncUninterruptibly();
+    final Channel channel = this.channel;
+    if (channel != null) {
+      channel.close().syncUninterruptibly();
+    }
   }
 }

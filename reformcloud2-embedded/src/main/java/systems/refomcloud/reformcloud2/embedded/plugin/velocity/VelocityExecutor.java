@@ -73,7 +73,7 @@ public final class VelocityExecutor extends Embedded {
 
   @Override
   protected int getMaxPlayersOfEnvironment() {
-    return this.proxyServer.getConfiguration().getShowMaxPlayers();
+    return this.proxyServer == null ? 0 : this.proxyServer.getConfiguration().getShowMaxPlayers();
   }
 
   @NotNull

@@ -89,4 +89,7 @@ public interface Version extends ReNameable, SerializableObject, Cloneable {
 
   @NotNull
   Version clone();
+
+  @Override
+  boolean equals(Object other);
 }

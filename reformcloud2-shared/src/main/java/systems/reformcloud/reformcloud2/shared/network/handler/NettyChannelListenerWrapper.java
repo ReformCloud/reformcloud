@@ -33,14 +33,14 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.Ch
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.shared.network.channel.DefaultNetworkChannel;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public class NettyChannelListenerWrapper extends ChannelInboundHandlerAdapter {
 
-  private final Supplier<ChannelListener> channelListenerFactory;
+  private final Function<NetworkChannel, ChannelListener> channelListenerFactory;
   private NetworkChannel networkChannel;
 
-  public NettyChannelListenerWrapper(Supplier<ChannelListener> channelListenerFactory) {
+  public NettyChannelListenerWrapper(Function<NetworkChannel, ChannelListener> channelListenerFactory) {
     this.channelListenerFactory = channelListenerFactory;
   }
 
@@ -57,7 +57,9 @@ public class NettyChannelListenerWrapper extends ChannelInboundHandlerAdapter {
   public void channelActive(ChannelHandlerContext ctx) {
     if (this.networkChannel == null) {
       this.networkChannel = new DefaultNetworkChannel(ctx.channel());
-      this.networkChannel.setListener(this.channelListenerFactory.get());
+
+      this.networkChannel.setListener(this.channelListenerFactory.apply(this.networkChannel));
+      this.networkChannel.getListener().channelActive(this.networkChannel);
     }
   }
 
