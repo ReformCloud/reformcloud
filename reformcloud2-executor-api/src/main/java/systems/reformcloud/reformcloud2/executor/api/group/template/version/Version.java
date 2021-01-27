@@ -38,11 +38,12 @@ public interface Version extends ReNameable, SerializableObject, Cloneable {
   static Version version(@NotNull String versionName,
                          @NotNull String downloadUrl,
                          @NotNull String installer,
+                         @NotNull String configurator,
                          @NotNull VersionType versionType,
                          @Range(from = 0, to = 65536) int defaultStartPort,
                          boolean nativeTransportSupported
   ) {
-    return new DefaultVersion(installer, versionName, downloadUrl, versionType, defaultStartPort, nativeTransportSupported);
+    return new DefaultVersion(installer, configurator, versionName, downloadUrl, versionType, defaultStartPort, nativeTransportSupported);
   }
 
   @NotNull
@@ -50,12 +51,13 @@ public interface Version extends ReNameable, SerializableObject, Cloneable {
   static Version version(@NotNull String versionName,
                          @NotNull String downloadUrl,
                          @NotNull String installer,
+                         @NotNull String configurator,
                          @NotNull VersionType versionType,
                          @Range(from = 0, to = 65536) int defaultStartPort,
                          boolean nativeTransportSupported,
                          @Nullable VersionInfo versionInfo
   ) {
-    return new DefaultVersion(installer, versionName, downloadUrl, versionType, defaultStartPort, nativeTransportSupported, versionInfo);
+    return new DefaultVersion(installer, configurator, versionName, downloadUrl, versionType, defaultStartPort, nativeTransportSupported, versionInfo);
   }
 
   @NotNull
@@ -86,6 +88,11 @@ public interface Version extends ReNameable, SerializableObject, Cloneable {
   String getInstaller();
 
   void setInstaller(@NotNull String installer);
+
+  @NotNull
+  String getConfigurator();
+
+  void setConfigurator(@NotNull String configurator);
 
   @NotNull
   Version clone();

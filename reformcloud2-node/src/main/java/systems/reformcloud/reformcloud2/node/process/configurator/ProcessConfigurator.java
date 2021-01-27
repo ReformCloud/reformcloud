@@ -22,14 +22,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.group.template.version;
+package systems.reformcloud.reformcloud2.node.process.configurator;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
+import systems.reformcloud.reformcloud2.node.process.DefaultNodeLocalProcessWrapper;
 
-public interface VersionInstaller extends Nameable {
-  String DOWNLOADING = "downloading";
-  String SPONGE = "sponge";
+public interface ProcessConfigurator extends Nameable {
 
-  boolean installVersion(@NotNull Version version);
+  void configure(@NotNull DefaultNodeLocalProcessWrapper wrapper);
 }

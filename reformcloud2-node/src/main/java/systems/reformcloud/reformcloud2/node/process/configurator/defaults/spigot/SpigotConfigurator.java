@@ -22,14 +22,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.group.template.version;
+package systems.reformcloud.reformcloud2.node.process.configurator.defaults.spigot;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
+import systems.reformcloud.reformcloud2.executor.api.group.template.ProcessConfigurators;
+import systems.reformcloud.reformcloud2.node.process.DefaultNodeLocalProcessWrapper;
+import systems.reformcloud.reformcloud2.node.process.configurator.defaults.ConfiguratorUtils;
+import systems.reformcloud.reformcloud2.node.process.configurator.defaults.ServerPropertiesConfigurator;
 
-public interface VersionInstaller extends Nameable {
-  String DOWNLOADING = "downloading";
-  String SPONGE = "sponge";
+import java.nio.file.Path;
 
-  boolean installVersion(@NotNull Version version);
+public class SpigotConfigurator extends ServerPropertiesConfigurator {
+
+  public SpigotConfigurator() {
+    super("files/java/bukkit/server.properties");
+  }
+
+  @Override
+  public String getName() {
+    return ProcessConfigurators.SPIGOT;
+  }
+
+  @Override
+  public void configure(@NotNull DefaultNodeLocalProcessWrapper wrapper) {
+    final Path spigotYml = wrapper.getPath().resolve("spigot.yml");
+
+    ConfiguratorUtils.extractCompiledFile("files/java/bukkit/spigot.yml", spigotYml);
+    ConfiguratorUtils.rewriteFile(spigotYml, line -> {
+      if (line.trim().startsWith("bungeecord:")) {
+        line = "  bungeecord: true";
+      }
+      return line;
+    });
+
+    super.configure(wrapper);
+  }
 }

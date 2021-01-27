@@ -22,14 +22,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.group.template.version;
+package systems.reformcloud.reformcloud2.node.process.configurator.defaults.cloudburst;
 
-import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
+import systems.reformcloud.reformcloud2.executor.api.group.template.ProcessConfigurators;
+import systems.reformcloud.reformcloud2.node.process.configurator.defaults.ServerPropertiesConfigurator;
 
-public interface VersionInstaller extends Nameable {
-  String DOWNLOADING = "downloading";
-  String SPONGE = "sponge";
+public class NukkitConfigurator extends ServerPropertiesConfigurator {
 
-  boolean installVersion(@NotNull Version version);
+  public NukkitConfigurator() {
+    super("files/mcpe/nukkit/server.properties");
+  }
+
+  @Override
+  public String getName() {
+    return ProcessConfigurators.NUKKIT;
+  }
 }

@@ -37,6 +37,7 @@ public final class DefaultVersion implements Version {
   private String installer;
   private String versionName;
   private String downloadUrl;
+  private String configurator;
   private VersionType versionType;
   private int defaultStartPort;
   private boolean nativeTransportSupported;
@@ -46,12 +47,13 @@ public final class DefaultVersion implements Version {
   public DefaultVersion() {
   }
 
-  DefaultVersion(String installer, String versionName, String downloadUrl, VersionType versionType, int defaultStartPort, boolean nativeTransportSupported) {
-    this(installer, versionName, downloadUrl, versionType, defaultStartPort, nativeTransportSupported, null);
+  DefaultVersion(String installer, String configurator, String versionName, String downloadUrl, VersionType versionType, int defaultStartPort, boolean nativeTransportSupported) {
+    this(installer, configurator, versionName, downloadUrl, versionType, defaultStartPort, nativeTransportSupported, null);
   }
 
-  DefaultVersion(String installer, String versionName, String downloadUrl, VersionType versionType, int defaultStartPort, boolean nativeTransportSupported, VersionInfo info) {
+  DefaultVersion(String installer, String configurator, String versionName, String downloadUrl, VersionType versionType, int defaultStartPort, boolean nativeTransportSupported, VersionInfo info) {
     this.installer = installer;
+    this.configurator = configurator;
     this.versionName = versionName;
     this.downloadUrl = downloadUrl;
     this.versionType = versionType;
@@ -121,8 +123,18 @@ public final class DefaultVersion implements Version {
   }
 
   @Override
+  public @NotNull String getConfigurator() {
+    return this.configurator;
+  }
+
+  @Override
+  public void setConfigurator(@NotNull String configurator) {
+    this.configurator = configurator;
+  }
+
+  @Override
   public @NotNull Version clone() {
-    return Version.version(this.versionName, this.downloadUrl, this.installer, this.versionType, this.defaultStartPort, this.nativeTransportSupported, this.versionInfo);
+    return Version.version(this.versionName, this.configurator, this.downloadUrl, this.installer, this.versionType, this.defaultStartPort, this.nativeTransportSupported, this.versionInfo);
   }
 
   @Override
@@ -157,6 +169,7 @@ public final class DefaultVersion implements Version {
     buffer.writeString(this.installer);
     buffer.writeString(this.versionName);
     buffer.writeString(this.downloadUrl);
+    buffer.writeString(this.configurator);
     buffer.writeByte(this.versionType.ordinal());
     buffer.writeInt(this.defaultStartPort);
     buffer.writeBoolean(this.nativeTransportSupported);
@@ -167,6 +180,7 @@ public final class DefaultVersion implements Version {
     this.installer = buffer.readString();
     this.versionName = buffer.readString();
     this.downloadUrl = buffer.readString();
+    this.configurator = buffer.readString();
     this.versionType = EnumUtil.findEnumFieldByIndex(VersionType.class, buffer.readByte()).orElse(null);
     this.defaultStartPort = buffer.readInt();
     this.nativeTransportSupported = buffer.readBoolean();

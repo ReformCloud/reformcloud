@@ -82,6 +82,7 @@ import systems.reformcloud.reformcloud2.node.network.NodeServerChannelListener;
 import systems.reformcloud.reformcloud2.node.player.DefaultNodePlayerProvider;
 import systems.reformcloud.reformcloud2.node.process.DefaultNodeLocalProcessWrapper;
 import systems.reformcloud.reformcloud2.node.process.DefaultNodeProcessProvider;
+import systems.reformcloud.reformcloud2.node.process.configurator.ProcessConfiguratorRegistry;
 import systems.reformcloud.reformcloud2.node.process.screen.DefaultProcessScreenController;
 import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreenController;
 import systems.reformcloud.reformcloud2.node.processors.ApiToNodeGetIngameMessagesProcessor;
@@ -239,6 +240,7 @@ public final class NodeExecutor extends ExecutorAPI {
 
     TemplateBackendManager.registerDefaults();
     VersionInstallerRegistry.registerDefaults();
+    ProcessConfiguratorRegistry.registerDefaults();
 
     this.startNetworkListeners();
 

@@ -22,14 +22,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.group.template.version;
+package systems.reformcloud.reformcloud2.node.process.configurator.defaults;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
+import systems.reformcloud.reformcloud2.node.process.DefaultNodeLocalProcessWrapper;
+import systems.reformcloud.reformcloud2.node.process.configurator.ProcessConfigurator;
 
-public interface VersionInstaller extends Nameable {
-  String DOWNLOADING = "downloading";
-  String SPONGE = "sponge";
+public abstract class ServerPropertiesConfigurator implements ProcessConfigurator {
 
-  boolean installVersion(@NotNull Version version);
+  private final String internalFileLocation;
+
+  public ServerPropertiesConfigurator(String internalFileLocation) {
+    this.internalFileLocation = internalFileLocation;
+  }
+
+  @Override
+  public void configure(@NotNull DefaultNodeLocalProcessWrapper wrapper) {
+    ConfiguratorUtils.extractCompiledFile(this.internalFileLocation, wrapper.getPath().resolve("server.properties"));
+    ConfiguratorUtils.rewriteServerProperties(wrapper);
+  }
 }

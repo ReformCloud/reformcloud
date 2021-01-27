@@ -22,14 +22,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.group.template.version;
+package systems.reformcloud.reformcloud2.node.process.configurator.defaults.sponge;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
+import systems.reformcloud.reformcloud2.executor.api.group.template.ProcessConfigurators;
+import systems.reformcloud.reformcloud2.node.process.DefaultNodeLocalProcessWrapper;
+import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 
-public interface VersionInstaller extends Nameable {
-  String DOWNLOADING = "downloading";
-  String SPONGE = "sponge";
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Locale;
 
-  boolean installVersion(@NotNull Version version);
+public class SpongeForgeConfigurator extends SpongeVanillaConfigurator {
+
+  @Override
+  public void configure(@NotNull DefaultNodeLocalProcessWrapper wrapper) {
+    super.configure(wrapper);
+
+    final Path versionDirectory = Paths.get("reformcloud/files", wrapper.getProcessInformation().getPrimaryTemplate().getVersion().getName().toLowerCase(Locale.ROOT));
+    IOUtils.copyDirectory(versionDirectory.resolve("mods"), wrapper.getPath().resolve("mods"));
+  }
+
+  @Override
+  public String getName() {
+    return ProcessConfigurators.SPONGE_FORGE;
+  }
 }

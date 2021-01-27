@@ -303,7 +303,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
     return MoreCollections.concat(shutdownCommands, DEFAULT_SHUTDOWN_COMMANDS);
   }
 
-  protected Path getPath() {
+  public Path getPath() {
     return this.path;
   }
 

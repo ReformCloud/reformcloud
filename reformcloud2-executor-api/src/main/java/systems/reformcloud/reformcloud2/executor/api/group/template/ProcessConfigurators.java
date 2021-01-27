@@ -22,14 +22,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.group.template.version;
+package systems.reformcloud.reformcloud2.executor.api.group.template;
 
-import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
+public interface ProcessConfigurators {
 
-public interface VersionInstaller extends Nameable {
-  String DOWNLOADING = "downloading";
-  String SPONGE = "sponge";
-
-  boolean installVersion(@NotNull Version version);
+  String SPIGOT = "spigot";
+  String BUNGEE_CORD = "bungeecord";
+  String WATERDOG = "waterdog";
+  String VELOCITY = "velocity";
+  String NUKKIT = "nukkit";
+  String CLOUDBURST = "cloudburst";
+  String GLOWSTONE = "glowstone";
+  String SPONGE_FORGE = "sponge_forge";
+  String SPONGE_VANILLA = "sponge_vanilla";
 }
