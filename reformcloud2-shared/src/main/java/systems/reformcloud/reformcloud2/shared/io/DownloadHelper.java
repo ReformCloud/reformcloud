@@ -60,7 +60,7 @@ public final class DownloadHelper {
           if (parent != null) {
             IOUtils.createDirectory(target.getParent());
           }
-          IOUtils.doCopy(stream, target, StandardCopyOption.REPLACE_EXISTING);
+          IOUtils.copy(stream, target, StandardCopyOption.REPLACE_EXISTING);
         } catch (final IOException ex) {
           ex.printStackTrace();
         }

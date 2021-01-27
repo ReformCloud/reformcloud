@@ -107,7 +107,7 @@ public final class ConfiguratorUtils {
         if (bufferedImage.getHeight() != 64 || bufferedImage.getWidth() != 64) {
           System.err.println("The server icon of the process " + wrapper.getProcessInformation().getName() + " is not correctly sized");
           IOUtils.rename(Paths.get(wrapper.getPath() + "/server-icon.png"), wrapper.getPath() + "/server-icon-old.png");
-          IOUtils.doOverrideInternalCopy(ConfiguratorUtils.class.getClassLoader(), "files/server-icon.png", wrapper.getPath() + "/server-icon.png");
+          IOUtils.copyCompiledFile(ConfiguratorUtils.class.getClassLoader(), "files/server-icon.png", wrapper.getPath() + "/server-icon.png");
         }
       } else {
         extractCompiledFile("files/server-icon.png", iconPath);

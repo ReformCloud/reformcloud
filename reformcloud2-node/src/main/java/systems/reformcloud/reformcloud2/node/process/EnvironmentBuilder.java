@@ -85,8 +85,8 @@ final class EnvironmentBuilder {
     }
 
     IOUtils.createDirectory(Paths.get(wrapper.getPath() + "/plugins"));
-    IOUtils.doCopy("reformcloud/files/runner.jar", wrapper.getPath().resolve("runner.jar"));
-    IOUtils.doOverrideInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/embedded.jar", wrapper.getPath() + "/plugins/executor.jar");
+    IOUtils.copy("reformcloud/files/runner.jar", wrapper.getPath().resolve("runner.jar"));
+    IOUtils.copyCompiledFile(EnvironmentBuilder.class.getClassLoader(), "files/embedded.jar", wrapper.getPath() + "/plugins/executor.jar");
 
     final NetworkAddress connectHost = NodeExecutor.getInstance().getAnyAddress();
     JsonConfiguration.newJsonConfiguration()

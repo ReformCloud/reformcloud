@@ -42,6 +42,7 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -60,22 +61,8 @@ public final class IOUtils {
   public static void deleteFile(Path file) {
     try {
       Files.deleteIfExists(file);
-    } catch (final IOException ex) {
-      ex.printStackTrace();
-    }
-  }
-
-  public static void createFile(Path path) {
-    if (Files.notExists(path)) {
-      Path parent = path.getParent();
-      if (parent != null && Files.notExists(parent)) {
-        try {
-          Files.createDirectories(parent);
-          Files.createFile(path);
-        } catch (final IOException ex) {
-          ex.printStackTrace();
-        }
-      }
+    } catch (IOException exception) {
+      exception.printStackTrace();
     }
   }
 
@@ -88,20 +75,18 @@ public final class IOUtils {
   }
 
   public static void createDirectory(@Nullable Path path) {
-    if (path == null) {
-      return;
-    }
-
-    try {
-      Files.createDirectories(path);
-    } catch (final IOException ex) {
-      ex.printStackTrace();
+    if (path != null) {
+      try {
+        Files.createDirectories(path);
+      } catch (IOException exception) {
+        exception.printStackTrace();
+      }
     }
   }
 
-  public static void doCopy(String from, Path target) {
+  public static void copy(String from, Path target) {
     try (InputStream inputStream = Files.newInputStream(Paths.get(from))) {
-      doCopy(inputStream, target, StandardCopyOption.REPLACE_EXISTING);
+      copy(inputStream, target, StandardCopyOption.REPLACE_EXISTING);
     } catch (IOException exception) {
       exception.printStackTrace();
     }
@@ -179,24 +164,11 @@ public final class IOUtils {
     createDirectory(path);
   }
 
-  public static void doInternalCopy(ClassLoader classLoader, String file, String target) {
-    if (Files.exists(Paths.get(target))) {
-      return;
-    }
-
+  public static void copyCompiledFile(ClassLoader classLoader, String file, String target) {
     try (InputStream inputStream = classLoader.getResourceAsStream(file)) {
-      doCopy(inputStream, Paths.get(target));
-    } catch (final IOException ex) {
-      ex.printStackTrace();
-    }
-  }
-
-  public static void doOverrideInternalCopy(ClassLoader classLoader, String file, String target) {
-    deleteFile(Paths.get(target));
-    try (InputStream inputStream = classLoader.getResourceAsStream(file)) {
-      doCopy(inputStream, Paths.get(target));
-    } catch (final IOException ex) {
-      ex.printStackTrace();
+      Files.copy(Objects.requireNonNull(inputStream), Paths.get(target), StandardCopyOption.REPLACE_EXISTING);
+    } catch (IOException exception) {
+      exception.printStackTrace();
     }
   }
 
@@ -224,16 +196,16 @@ public final class IOUtils {
           return FileVisitResult.CONTINUE;
         }
       });
-    } catch (final IOException ex) {
-      ex.printStackTrace();
+    } catch (IOException exception) {
+      exception.printStackTrace();
     }
   }
 
-  static void doCopy(InputStream inputStream, Path path, CopyOption... options) {
+  static void copy(InputStream inputStream, Path path, CopyOption... options) {
     try {
       Files.copy(inputStream, path, options);
-    } catch (final IOException ex) {
-      ex.printStackTrace();
+    } catch (IOException exception) {
+      exception.printStackTrace();
     }
   }
 
