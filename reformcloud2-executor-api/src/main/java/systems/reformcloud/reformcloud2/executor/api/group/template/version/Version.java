@@ -33,60 +33,60 @@ import systems.reformcloud.reformcloud2.executor.api.utility.name.ReNameable;
 
 public interface Version extends ReNameable, SerializableObject, Cloneable {
 
-    @NotNull
-    @Contract(pure = true)
-    static Version version(@NotNull String versionName,
-                           @NotNull String downloadUrl,
-                           @NotNull String installer,
-                           @NotNull VersionType versionType,
-                           @Range(from = 0, to = 65536) int defaultStartPort,
-                           boolean nativeTransportSupported
-    ) {
-        return new DefaultVersion(installer, versionName, downloadUrl, versionType, defaultStartPort, nativeTransportSupported);
-    }
+  @NotNull
+  @Contract(pure = true)
+  static Version version(@NotNull String versionName,
+                         @NotNull String downloadUrl,
+                         @NotNull String installer,
+                         @NotNull VersionType versionType,
+                         @Range(from = 0, to = 65536) int defaultStartPort,
+                         boolean nativeTransportSupported
+  ) {
+    return new DefaultVersion(installer, versionName, downloadUrl, versionType, defaultStartPort, nativeTransportSupported);
+  }
 
-    @NotNull
-    @Contract(pure = true)
-    static Version version(@NotNull String versionName,
-                           @NotNull String downloadUrl,
-                           @NotNull String installer,
-                           @NotNull VersionType versionType,
-                           @Range(from = 0, to = 65536) int defaultStartPort,
-                           boolean nativeTransportSupported,
-                           @Nullable VersionInfo versionInfo
-    ) {
-        return new DefaultVersion(installer, versionName, downloadUrl, versionType, defaultStartPort, nativeTransportSupported, versionInfo);
-    }
+  @NotNull
+  @Contract(pure = true)
+  static Version version(@NotNull String versionName,
+                         @NotNull String downloadUrl,
+                         @NotNull String installer,
+                         @NotNull VersionType versionType,
+                         @Range(from = 0, to = 65536) int defaultStartPort,
+                         boolean nativeTransportSupported,
+                         @Nullable VersionInfo versionInfo
+  ) {
+    return new DefaultVersion(installer, versionName, downloadUrl, versionType, defaultStartPort, nativeTransportSupported, versionInfo);
+  }
 
-    @NotNull
-    String getDownloadUrl();
+  @NotNull
+  String getDownloadUrl();
 
-    void setDownloadUrl(@NotNull String downloadUrl);
+  void setDownloadUrl(@NotNull String downloadUrl);
 
-    @NotNull
-    VersionType getVersionType();
+  @NotNull
+  VersionType getVersionType();
 
-    void setVersionType(@NotNull VersionType versionType);
+  void setVersionType(@NotNull VersionType versionType);
 
-    @Range(from = 0, to = 65536)
-    int getDefaultStartPort();
+  @Range(from = 0, to = 65536)
+  int getDefaultStartPort();
 
-    void setDefaultStartPort(@Range(from = 0, to = 65536) int defaultStartPort);
+  void setDefaultStartPort(@Range(from = 0, to = 65536) int defaultStartPort);
 
-    boolean isNativeTransportSupported();
+  boolean isNativeTransportSupported();
 
-    void setNativeTransportSupported(boolean nativeTransportSupported);
+  void setNativeTransportSupported(boolean nativeTransportSupported);
 
-    @NotNull
-    VersionInfo getInfo();
+  @NotNull
+  VersionInfo getInfo();
 
-    void setInfo(@NotNull VersionInfo versionInfo);
+  void setInfo(@NotNull VersionInfo versionInfo);
 
-    @NotNull
-    String getInstaller();
+  @NotNull
+  String getInstaller();
 
-    void setInstaller(@NotNull String installer);
+  void setInstaller(@NotNull String installer);
 
-    @NotNull
-    Version clone();
+  @NotNull
+  Version clone();
 }

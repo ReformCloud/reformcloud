@@ -34,110 +34,110 @@ import java.util.Map;
 
 public class DefaultRuntimeConfiguration implements RuntimeConfiguration {
 
-    private int initialJvmMemoryAllocation;
-    private int maximumJvmMemoryAllocation;
-    private int dynamicMemory;
-    private Collection<String> processParameters;
-    private Collection<String> jvmOptions;
-    private Map<String, String> systemProperties;
-    private Collection<String> shutdownCommands;
+  private int initialJvmMemoryAllocation;
+  private int maximumJvmMemoryAllocation;
+  private int dynamicMemory;
+  private Collection<String> processParameters;
+  private Collection<String> jvmOptions;
+  private Map<String, String> systemProperties;
+  private Collection<String> shutdownCommands;
 
-    protected DefaultRuntimeConfiguration() {
-    }
+  protected DefaultRuntimeConfiguration() {
+  }
 
-    protected DefaultRuntimeConfiguration(int initialJvmMemoryAllocation, int maximumJvmMemoryAllocation, int dynamicMemory, Collection<String> processParameters,
-                                          Collection<String> jvmOptions, Map<String, String> systemProperties, Collection<String> shutdownCommands) {
-        this.initialJvmMemoryAllocation = initialJvmMemoryAllocation;
-        this.maximumJvmMemoryAllocation = maximumJvmMemoryAllocation;
-        this.dynamicMemory = dynamicMemory;
-        this.processParameters = processParameters;
-        this.jvmOptions = jvmOptions;
-        this.systemProperties = systemProperties;
-        this.shutdownCommands = shutdownCommands;
-    }
+  protected DefaultRuntimeConfiguration(int initialJvmMemoryAllocation, int maximumJvmMemoryAllocation, int dynamicMemory, Collection<String> processParameters,
+                                        Collection<String> jvmOptions, Map<String, String> systemProperties, Collection<String> shutdownCommands) {
+    this.initialJvmMemoryAllocation = initialJvmMemoryAllocation;
+    this.maximumJvmMemoryAllocation = maximumJvmMemoryAllocation;
+    this.dynamicMemory = dynamicMemory;
+    this.processParameters = processParameters;
+    this.jvmOptions = jvmOptions;
+    this.systemProperties = systemProperties;
+    this.shutdownCommands = shutdownCommands;
+  }
 
-    @Override
-    public int getInitialJvmMemoryAllocation() {
-        return this.initialJvmMemoryAllocation;
-    }
+  @Override
+  public int getInitialJvmMemoryAllocation() {
+    return this.initialJvmMemoryAllocation;
+  }
 
-    @Override
-    public void setInitialJvmMemoryAllocation(int initialJvmMemoryAllocation) {
-        this.initialJvmMemoryAllocation = initialJvmMemoryAllocation;
-    }
+  @Override
+  public void setInitialJvmMemoryAllocation(int initialJvmMemoryAllocation) {
+    this.initialJvmMemoryAllocation = initialJvmMemoryAllocation;
+  }
 
-    @Override
-    public int getMaximumJvmMemoryAllocation() {
-        return this.maximumJvmMemoryAllocation;
-    }
+  @Override
+  public int getMaximumJvmMemoryAllocation() {
+    return this.maximumJvmMemoryAllocation;
+  }
 
-    @Override
-    public void setMaximumJvmMemoryAllocation(int maximumJvmMemoryAllocation) {
-        this.maximumJvmMemoryAllocation = maximumJvmMemoryAllocation;
-    }
+  @Override
+  public void setMaximumJvmMemoryAllocation(int maximumJvmMemoryAllocation) {
+    this.maximumJvmMemoryAllocation = maximumJvmMemoryAllocation;
+  }
 
-    @Override
-    public int getDynamicMemory() {
-        return this.dynamicMemory;
-    }
+  @Override
+  public int getDynamicMemory() {
+    return this.dynamicMemory;
+  }
 
-    @Override
-    public void setDynamicMemory(int dynamicMemory) {
-        this.dynamicMemory = dynamicMemory;
-    }
+  @Override
+  public void setDynamicMemory(int dynamicMemory) {
+    this.dynamicMemory = dynamicMemory;
+  }
 
-    @Override
-    public @NotNull Collection<String> getProcessParameters() {
-        return this.processParameters;
-    }
+  @Override
+  public @NotNull Collection<String> getProcessParameters() {
+    return this.processParameters;
+  }
 
-    @Override
-    public @NotNull Collection<String> getJvmOptions() {
-        return this.jvmOptions;
-    }
+  @Override
+  public @NotNull Collection<String> getJvmOptions() {
+    return this.jvmOptions;
+  }
 
-    @Override
-    public @NotNull Map<String, String> getSystemProperties() {
-        return this.systemProperties;
-    }
+  @Override
+  public @NotNull Map<String, String> getSystemProperties() {
+    return this.systemProperties;
+  }
 
-    @Override
-    public @NotNull Collection<String> getShutdownCommands() {
-        return this.shutdownCommands;
-    }
+  @Override
+  public @NotNull Collection<String> getShutdownCommands() {
+    return this.shutdownCommands;
+  }
 
-    @Override
-    public @NotNull RuntimeConfiguration clone() {
-        return new DefaultRuntimeConfiguration(
-            this.initialJvmMemoryAllocation,
-            this.maximumJvmMemoryAllocation,
-            this.dynamicMemory,
-            new ArrayList<>(this.processParameters),
-            new ArrayList<>(this.jvmOptions),
-            new HashMap<>(this.systemProperties),
-            new ArrayList<>(this.shutdownCommands)
-        );
-    }
+  @Override
+  public @NotNull RuntimeConfiguration clone() {
+    return new DefaultRuntimeConfiguration(
+      this.initialJvmMemoryAllocation,
+      this.maximumJvmMemoryAllocation,
+      this.dynamicMemory,
+      new ArrayList<>(this.processParameters),
+      new ArrayList<>(this.jvmOptions),
+      new HashMap<>(this.systemProperties),
+      new ArrayList<>(this.shutdownCommands)
+    );
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeInt(this.initialJvmMemoryAllocation);
-        buffer.writeInt(this.maximumJvmMemoryAllocation);
-        buffer.writeInt(this.dynamicMemory);
-        buffer.writeStringArray(this.processParameters);
-        buffer.writeStringArray(this.jvmOptions);
-        buffer.writeStringMap(this.systemProperties);
-        buffer.writeStringArray(this.shutdownCommands);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeInt(this.initialJvmMemoryAllocation);
+    buffer.writeInt(this.maximumJvmMemoryAllocation);
+    buffer.writeInt(this.dynamicMemory);
+    buffer.writeStringArray(this.processParameters);
+    buffer.writeStringArray(this.jvmOptions);
+    buffer.writeStringMap(this.systemProperties);
+    buffer.writeStringArray(this.shutdownCommands);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.initialJvmMemoryAllocation = buffer.readInt();
-        this.maximumJvmMemoryAllocation = buffer.readInt();
-        this.dynamicMemory = buffer.readInt();
-        this.processParameters = buffer.readStringArray();
-        this.jvmOptions = buffer.readStringArray();
-        this.systemProperties = buffer.readStringMap();
-        this.shutdownCommands = buffer.readStringArray();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.initialJvmMemoryAllocation = buffer.readInt();
+    this.maximumJvmMemoryAllocation = buffer.readInt();
+    this.dynamicMemory = buffer.readInt();
+    this.processParameters = buffer.readStringArray();
+    this.jvmOptions = buffer.readStringArray();
+    this.systemProperties = buffer.readStringMap();
+    this.shutdownCommands = buffer.readStringArray();
+  }
 }

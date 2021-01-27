@@ -37,76 +37,76 @@ import java.util.function.Function;
 
 public final class DefaultTask<V> extends Task<V> {
 
-    private Consumer<TaskCompletionException> failureConsumer;
+  private Consumer<TaskCompletionException> failureConsumer;
 
-    @Override
-    public V get(long timeout, TimeUnit unit) {
-        try {
-            return super.get(timeout, unit);
-        } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
-            this.handleFailure(ex);
-        }
-
-        this.handleFailure(new NullPointerException("A task returned null as response"));
-        return null;
+  @Override
+  public V get(long timeout, TimeUnit unit) {
+    try {
+      return super.get(timeout, unit);
+    } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
+      this.handleFailure(ex);
     }
 
-    @Override
-    public V get() {
-        try {
-            return super.get();
-        } catch (final InterruptedException | ExecutionException ex) {
-            this.handleFailure(ex);
-        }
+    this.handleFailure(new NullPointerException("A task returned null as response"));
+    return null;
+  }
 
-        this.handleFailure(new NullPointerException("A task returned null as response"));
-        return null;
+  @Override
+  public V get() {
+    try {
+      return super.get();
+    } catch (final InterruptedException | ExecutionException ex) {
+      this.handleFailure(ex);
     }
 
-    @Override
-    public void awaitUninterruptedly() {
-        this.get();
-    }
+    this.handleFailure(new NullPointerException("A task returned null as response"));
+    return null;
+  }
 
-    @Override
-    public void awaitUninterruptedly(@NotNull TimeUnit timeUnit, long time) {
-        this.get(time, timeUnit);
-    }
+  @Override
+  public void awaitUninterruptedly() {
+    this.get();
+  }
 
-    @Override
-    public V getUninterruptedly() {
-        return this.get();
-    }
+  @Override
+  public void awaitUninterruptedly(@NotNull TimeUnit timeUnit, long time) {
+    this.get(time, timeUnit);
+  }
 
-    @Override
-    public V getUninterruptedly(TimeUnit timeUnit, long time) {
-        return this.get(time, timeUnit);
-    }
+  @Override
+  public V getUninterruptedly() {
+    return this.get();
+  }
 
-    @NotNull
-    @Override
-    public Task<V> onFailure(@NotNull Consumer<TaskCompletionException> consumer) {
-        this.failureConsumer = Objects.requireNonNull(consumer);
-        return this;
-    }
+  @Override
+  public V getUninterruptedly(TimeUnit timeUnit, long time) {
+    return this.get(time, timeUnit);
+  }
 
-    @Override
-    public @NotNull <U> Task<U> thenSupply(@NotNull Function<V, U> function) {
-        Task<U> task = new DefaultTask<>();
-        this.thenAccept(result -> task.complete(function.apply(result)));
-        return task;
-    }
+  @NotNull
+  @Override
+  public Task<V> onFailure(@NotNull Consumer<TaskCompletionException> consumer) {
+    this.failureConsumer = Objects.requireNonNull(consumer);
+    return this;
+  }
 
-    @Override
-    public boolean completeExceptionally(Throwable ex) {
-        boolean result = super.completeExceptionally(ex);
-        this.handleFailure(ex);
-        return result;
-    }
+  @Override
+  public @NotNull <U> Task<U> thenSupply(@NotNull Function<V, U> function) {
+    Task<U> task = new DefaultTask<>();
+    this.thenAccept(result -> task.complete(function.apply(result)));
+    return task;
+  }
 
-    private void handleFailure(Throwable throwable) {
-        if (this.failureConsumer != null) {
-            this.failureConsumer.accept(new TaskCompletionException("A task raised an exception", throwable));
-        }
+  @Override
+  public boolean completeExceptionally(Throwable ex) {
+    boolean result = super.completeExceptionally(ex);
+    this.handleFailure(ex);
+    return result;
+  }
+
+  private void handleFailure(Throwable throwable) {
+    if (this.failureConsumer != null) {
+      this.failureConsumer.accept(new TaskCompletionException("A task raised an exception", throwable));
     }
+  }
 }

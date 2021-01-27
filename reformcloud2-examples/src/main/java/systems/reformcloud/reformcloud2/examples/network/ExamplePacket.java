@@ -35,38 +35,38 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
  */
 public class ExamplePacket extends Packet {
 
-    private String exampleMessage;
-    private ExampleSerializableObject exampleSerializableObject;
+  private String exampleMessage;
+  private ExampleSerializableObject exampleSerializableObject;
 
-    public ExamplePacket() {
-        // The no args constructor is required in every packet for the decode process
-    }
+  public ExamplePacket() {
+    // The no args constructor is required in every packet for the decode process
+  }
 
-    public ExamplePacket(String exampleMessage) {
-        this.exampleMessage = exampleMessage;
-    }
+  public ExamplePacket(String exampleMessage) {
+    this.exampleMessage = exampleMessage;
+  }
 
-    @Override
-    public int getId() {
-        // The id of a packet has to be unique!
-        return 100;
-    }
+  @Override
+  public int getId() {
+    // The id of a packet has to be unique!
+    return 100;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        System.out.println(this.exampleMessage); // Print out the read message from the read() method
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    System.out.println(this.exampleMessage); // Print out the read message from the read() method
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.exampleMessage); // write the example string into the buffer
-        buffer.writeObject(this.exampleSerializableObject); // write the example serializable object into the buffer
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.exampleMessage); // write the example string into the buffer
+    buffer.writeObject(this.exampleSerializableObject); // write the example serializable object into the buffer
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        // Read the objects in the same order as written into the buffer by the write() method
-        this.exampleMessage = buffer.readString(); // Read the example string from the buffer
-        this.exampleSerializableObject = buffer.readObject(ExampleSerializableObject.class); // read the serializable object by the class of the object
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    // Read the objects in the same order as written into the buffer by the write() method
+    this.exampleMessage = buffer.readString(); // Read the example string from the buffer
+    this.exampleSerializableObject = buffer.readObject(ExampleSerializableObject.class); // read the serializable object by the class of the object
+  }
 }

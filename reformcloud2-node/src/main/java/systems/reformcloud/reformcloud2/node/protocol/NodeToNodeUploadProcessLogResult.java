@@ -31,31 +31,31 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryR
 
 public class NodeToNodeUploadProcessLogResult extends QueryResultPacket {
 
-    private String logUrl;
+  private String logUrl;
 
-    public NodeToNodeUploadProcessLogResult() {
-    }
+  public NodeToNodeUploadProcessLogResult() {
+  }
 
-    public NodeToNodeUploadProcessLogResult(String logUrl) {
-        this.logUrl = logUrl;
-    }
+  public NodeToNodeUploadProcessLogResult(String logUrl) {
+    this.logUrl = logUrl;
+  }
 
-    public String getLogUrl() {
-        return this.logUrl;
-    }
+  public String getLogUrl() {
+    return this.logUrl;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 28;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 28;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.logUrl);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.logUrl);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.logUrl = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.logUrl = buffer.readString();
+  }
 }

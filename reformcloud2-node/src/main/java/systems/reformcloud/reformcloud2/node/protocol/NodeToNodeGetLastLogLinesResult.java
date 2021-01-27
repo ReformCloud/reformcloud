@@ -34,31 +34,31 @@ import java.util.Queue;
 
 public class NodeToNodeGetLastLogLinesResult extends QueryResultPacket {
 
-    private Queue<String> lastLogLines;
+  private Queue<String> lastLogLines;
 
-    public NodeToNodeGetLastLogLinesResult() {
-    }
+  public NodeToNodeGetLastLogLinesResult() {
+  }
 
-    public NodeToNodeGetLastLogLinesResult(Queue<String> lastLogLines) {
-        this.lastLogLines = lastLogLines;
-    }
+  public NodeToNodeGetLastLogLinesResult(Queue<String> lastLogLines) {
+    this.lastLogLines = lastLogLines;
+  }
 
-    public Queue<String> getLastLogLines() {
-        return this.lastLogLines;
-    }
+  public Queue<String> getLastLogLines() {
+    return this.lastLogLines;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 30;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 30;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeStringArray(this.lastLogLines);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeStringArray(this.lastLogLines);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.lastLogLines = new ArrayDeque<>(buffer.readStringArray());
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.lastLogLines = new ArrayDeque<>(buffer.readStringArray());
+  }
 }

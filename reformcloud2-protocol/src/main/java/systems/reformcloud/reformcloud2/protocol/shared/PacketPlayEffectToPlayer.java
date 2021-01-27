@@ -35,44 +35,44 @@ import java.util.UUID;
 
 public class PacketPlayEffectToPlayer extends ProtocolPacket {
 
-    private UUID uniqueId;
-    private String effect;
+  private UUID uniqueId;
+  private String effect;
 
-    public PacketPlayEffectToPlayer() {
-    }
+  public PacketPlayEffectToPlayer() {
+  }
 
-    public PacketPlayEffectToPlayer(UUID uniqueId, String effect) {
-        this.uniqueId = uniqueId;
-        this.effect = effect;
-    }
+  public PacketPlayEffectToPlayer(UUID uniqueId, String effect) {
+    this.uniqueId = uniqueId;
+    this.effect = effect;
+  }
 
-    public UUID getUniqueId() {
-        return this.uniqueId;
-    }
+  public UUID getUniqueId() {
+    return this.uniqueId;
+  }
 
-    public String getEffect() {
-        return this.effect;
-    }
+  public String getEffect() {
+    return this.effect;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.API_BUS + 15;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.API_BUS + 15;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        super.post(channel, PacketPlayEffectToPlayer.class, this);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    super.post(channel, PacketPlayEffectToPlayer.class, this);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.uniqueId);
-        buffer.writeString(this.effect);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.uniqueId);
+    buffer.writeString(this.effect);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.uniqueId = buffer.readUniqueId();
-        this.effect = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.uniqueId = buffer.readUniqueId();
+    this.effect = buffer.readString();
+  }
 }

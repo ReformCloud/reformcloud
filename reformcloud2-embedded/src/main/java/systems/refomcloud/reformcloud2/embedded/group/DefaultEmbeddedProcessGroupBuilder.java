@@ -37,18 +37,18 @@ import java.util.Optional;
 
 class DefaultEmbeddedProcessGroupBuilder extends DefaultProcessGroupBuilder {
 
-    @NotNull
-    @Override
-    public Task<ProcessGroup> createPermanently() {
-        return Task.supply(() -> {
-            Optional<Packet> packet = Embedded.getInstance().sendSyncQuery(new ApiToNodeCreateProcessGroup(
-                super.name, super.staticGroup, super.lobby, super.showId, super.templates, super.playerAccessConfiguration, super.startupConfiguration
-            ));
-            if (!packet.isPresent() || !(packet.get() instanceof ApiToNodeCreateProcessGroupResult)) {
-                return null;
-            }
+  @NotNull
+  @Override
+  public Task<ProcessGroup> createPermanently() {
+    return Task.supply(() -> {
+      Optional<Packet> packet = Embedded.getInstance().sendSyncQuery(new ApiToNodeCreateProcessGroup(
+        super.name, super.staticGroup, super.lobby, super.showId, super.templates, super.playerAccessConfiguration, super.startupConfiguration
+      ));
+      if (!packet.isPresent() || !(packet.get() instanceof ApiToNodeCreateProcessGroupResult)) {
+        return null;
+      }
 
-            return ((ApiToNodeCreateProcessGroupResult) packet.get()).getProcessGroup();
-        });
-    }
+      return ((ApiToNodeCreateProcessGroupResult) packet.get()).getProcessGroup();
+    });
+  }
 }

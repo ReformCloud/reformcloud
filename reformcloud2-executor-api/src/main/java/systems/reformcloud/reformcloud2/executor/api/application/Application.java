@@ -41,85 +41,85 @@ import java.util.concurrent.Executors;
 
 public class Application {
 
-    private Path dataDirectory;
-    private LoadedApplication application;
-    private ExecutorService executorService;
-    private AppClassLoader appClassLoader;
+  private Path dataDirectory;
+  private LoadedApplication application;
+  private ExecutorService executorService;
+  private AppClassLoader appClassLoader;
 
-    public final void init(@NotNull LoadedApplication application, AppClassLoader loader) {
-        this.application = application;
-        this.executorService = Executors.newCachedThreadPool();
-        this.appClassLoader = loader;
+  public final void init(@NotNull LoadedApplication application, AppClassLoader loader) {
+    this.application = application;
+    this.executorService = Executors.newCachedThreadPool();
+    this.appClassLoader = loader;
 
-        this.dataDirectory = application.getApplicationLoader().getApplicationFolder().resolve(application.getName());
-        if (Files.notExists(this.dataDirectory)) {
-            try {
-                Files.createDirectories(this.dataDirectory);
-            } catch (IOException exception) {
-                exception.printStackTrace();
-            }
-        }
+    this.dataDirectory = application.getApplicationLoader().getApplicationFolder().resolve(application.getName());
+    if (Files.notExists(this.dataDirectory)) {
+      try {
+        Files.createDirectories(this.dataDirectory);
+      } catch (IOException exception) {
+        exception.printStackTrace();
+      }
     }
+  }
 
-    public void onLoad() {
-    }
+  public void onLoad() {
+  }
 
-    public void onEnable() {
-    }
+  public void onEnable() {
+  }
 
-    public void onPreDisable() {
-    }
+  public void onPreDisable() {
+  }
 
-    public void onDisable() {
-    }
+  public void onDisable() {
+  }
 
-    @Nullable
-    public ApplicationUpdateRepository getUpdateRepository() {
-        return null;
-    }
+  @Nullable
+  public ApplicationUpdateRepository getUpdateRepository() {
+    return null;
+  }
 
-    @NotNull
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
-    public final File getDataFolder() {
-        return this.dataDirectory.toFile();
-    }
+  @NotNull
+  @Deprecated
+  @ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
+  public final File getDataFolder() {
+    return this.dataDirectory.toFile();
+  }
 
-    @NotNull
-    public Path getDataDirectory() {
-        return this.dataDirectory;
-    }
+  @NotNull
+  public Path getDataDirectory() {
+    return this.dataDirectory;
+  }
 
-    @Nullable
-    public final InputStream getResourceAsStream(String name) {
-        return this.getClass().getClassLoader().getResourceAsStream(name);
-    }
+  @Nullable
+  public final InputStream getResourceAsStream(String name) {
+    return this.getClass().getClassLoader().getResourceAsStream(name);
+  }
 
-    public final AppClassLoader getAppClassLoader() {
-        return this.appClassLoader;
-    }
+  public final AppClassLoader getAppClassLoader() {
+    return this.appClassLoader;
+  }
 
-    @NotNull
-    public final LoadedApplication getApplication() {
-        return this.application;
-    }
+  @NotNull
+  public final LoadedApplication getApplication() {
+    return this.application;
+  }
 
-    public void log(String log) {
-        System.out.println(log);
-    }
+  public void log(String log) {
+    System.out.println(log);
+  }
 
-    @NotNull
-    public final ExecutorService getExecutorService() {
-        return this.executorService;
-    }
+  @NotNull
+  public final ExecutorService getExecutorService() {
+    return this.executorService;
+  }
 
-    /**
-     * @deprecated replaced with {@link ExecutorAPI#getDependencyLoader()}
-     */
-    @NotNull
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
-    public DependencyLoader getDependencyLoader() {
-        return ExecutorAPI.getInstance().getDependencyLoader();
-    }
+  /**
+   * @deprecated replaced with {@link ExecutorAPI#getDependencyLoader()}
+   */
+  @NotNull
+  @Deprecated
+  @ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
+  public DependencyLoader getDependencyLoader() {
+    return ExecutorAPI.getInstance().getDependencyLoader();
+  }
 }

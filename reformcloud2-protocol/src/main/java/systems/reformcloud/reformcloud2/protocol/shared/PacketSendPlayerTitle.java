@@ -35,76 +35,76 @@ import java.util.UUID;
 
 public class PacketSendPlayerTitle extends ProtocolPacket {
 
-    private UUID uniqueId;
-    private String title;
-    private String subTitle;
-    private int fadeIn;
-    private int stay;
-    private int fadeOut;
+  private UUID uniqueId;
+  private String title;
+  private String subTitle;
+  private int fadeIn;
+  private int stay;
+  private int fadeOut;
 
-    public PacketSendPlayerTitle() {
-    }
+  public PacketSendPlayerTitle() {
+  }
 
-    public PacketSendPlayerTitle(UUID uniqueId, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
-        this.uniqueId = uniqueId;
-        this.title = title;
-        this.subTitle = subTitle;
-        this.fadeIn = fadeIn;
-        this.stay = stay;
-        this.fadeOut = fadeOut;
-    }
+  public PacketSendPlayerTitle(UUID uniqueId, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
+    this.uniqueId = uniqueId;
+    this.title = title;
+    this.subTitle = subTitle;
+    this.fadeIn = fadeIn;
+    this.stay = stay;
+    this.fadeOut = fadeOut;
+  }
 
-    public UUID getUniqueId() {
-        return this.uniqueId;
-    }
+  public UUID getUniqueId() {
+    return this.uniqueId;
+  }
 
-    public String getTitle() {
-        return this.title;
-    }
+  public String getTitle() {
+    return this.title;
+  }
 
-    public String getSubTitle() {
-        return this.subTitle;
-    }
+  public String getSubTitle() {
+    return this.subTitle;
+  }
 
-    public int getFadeIn() {
-        return this.fadeIn;
-    }
+  public int getFadeIn() {
+    return this.fadeIn;
+  }
 
-    public int getStay() {
-        return this.stay;
-    }
+  public int getStay() {
+    return this.stay;
+  }
 
-    public int getFadeOut() {
-        return this.fadeOut;
-    }
+  public int getFadeOut() {
+    return this.fadeOut;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.API_BUS + 12;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.API_BUS + 12;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        super.post(channel, PacketSendPlayerTitle.class, this);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    super.post(channel, PacketSendPlayerTitle.class, this);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.uniqueId);
-        buffer.writeString(this.title);
-        buffer.writeString(this.subTitle);
-        buffer.writeInt(this.fadeIn);
-        buffer.writeInt(this.stay);
-        buffer.writeInt(this.fadeOut);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.uniqueId);
+    buffer.writeString(this.title);
+    buffer.writeString(this.subTitle);
+    buffer.writeInt(this.fadeIn);
+    buffer.writeInt(this.stay);
+    buffer.writeInt(this.fadeOut);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.uniqueId = buffer.readUniqueId();
-        this.title = buffer.readString();
-        this.subTitle = buffer.readString();
-        this.fadeIn = buffer.readInt();
-        this.stay = buffer.readInt();
-        this.fadeOut = buffer.readInt();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.uniqueId = buffer.readUniqueId();
+    this.title = buffer.readString();
+    this.subTitle = buffer.readString();
+    this.fadeIn = buffer.readInt();
+    this.stay = buffer.readInt();
+    this.fadeOut = buffer.readInt();
+  }
 }

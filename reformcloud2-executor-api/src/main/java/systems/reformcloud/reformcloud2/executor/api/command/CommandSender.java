@@ -30,9 +30,9 @@ import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
 
 public interface CommandSender extends Nameable {
 
-    void sendMessage(@NotNull String message);
+  void sendMessage(@NotNull String message);
 
-    void sendMessages(@NonNls String[] messages);
+  void sendMessages(@NonNls String[] messages);
 
-    boolean hasPermission(@NotNull String permission);
+  boolean hasPermission(@NotNull String permission);
 }

@@ -36,33 +36,33 @@ import java.util.jar.JarFile;
 
 public final class RunnerPremain {
 
-    public static void premain(@NotNull String agentArgs, @NotNull Instrumentation instrumentation) {
-        if (System.getProperty("reformcloud.lib.path") == null || System.getProperty("reformcloud.process.path") == null) {
-            return;
-        }
-
-        Path path = Paths.get(System.getProperty("reformcloud.lib.path") + "/reformcloud/.bin/libs/");
-        if (Files.notExists(path) || !Files.isDirectory(path)) {
-            throw new RuntimeException("Unable to parse runtime libs path");
-        }
-
-        try {
-            instrumentation.appendToSystemClassLoaderSearch(new JarFile(System.getProperty("reformcloud.process.path")));
-            walkFileTree(path, instrumentation);
-        } catch (IOException exception) {
-            throw new RuntimeException("Unable to load dependencies");
-        }
+  public static void premain(@NotNull String agentArgs, @NotNull Instrumentation instrumentation) {
+    if (System.getProperty("reformcloud.lib.path") == null || System.getProperty("reformcloud.process.path") == null) {
+      return;
     }
 
-    private static void walkFileTree(@NotNull Path start, @NotNull Instrumentation instrumentation) throws IOException {
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(start)) {
-            for (Path value : stream) {
-                if (Files.isDirectory(value)) {
-                    walkFileTree(value, instrumentation);
-                } else if (value.toString().endsWith(".jar")) {
-                    instrumentation.appendToSystemClassLoaderSearch(new JarFile(value.toFile()));
-                }
-            }
-        }
+    Path path = Paths.get(System.getProperty("reformcloud.lib.path") + "/reformcloud/.bin/libs/");
+    if (Files.notExists(path) || !Files.isDirectory(path)) {
+      throw new RuntimeException("Unable to parse runtime libs path");
     }
+
+    try {
+      instrumentation.appendToSystemClassLoaderSearch(new JarFile(System.getProperty("reformcloud.process.path")));
+      walkFileTree(path, instrumentation);
+    } catch (IOException exception) {
+      throw new RuntimeException("Unable to load dependencies");
+    }
+  }
+
+  private static void walkFileTree(@NotNull Path start, @NotNull Instrumentation instrumentation) throws IOException {
+    try (DirectoryStream<Path> stream = Files.newDirectoryStream(start)) {
+      for (Path value : stream) {
+        if (Files.isDirectory(value)) {
+          walkFileTree(value, instrumentation);
+        } else if (value.toString().endsWith(".jar")) {
+          instrumentation.appendToSystemClassLoaderSearch(new JarFile(value.toFile()));
+        }
+      }
+    }
+  }
 }

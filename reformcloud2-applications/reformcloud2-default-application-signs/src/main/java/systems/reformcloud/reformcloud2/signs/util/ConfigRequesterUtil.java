@@ -35,16 +35,16 @@ import java.util.function.Consumer;
 
 public final class ConfigRequesterUtil {
 
-    private ConfigRequesterUtil() {
-        throw new UnsupportedOperationException();
-    }
+  private ConfigRequesterUtil() {
+    throw new UnsupportedOperationException();
+  }
 
-    public static void requestSignConfigAsync(Consumer<SignConfig> callback) {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketRequestSignLayoutsResult.class);
-        Embedded.getInstance().sendSyncQuery(new PacketRequestSignLayouts()).ifPresent(result -> {
-            if (result instanceof PacketRequestSignLayoutsResult) {
-                callback.accept(((PacketRequestSignLayoutsResult) result).getSignConfig());
-            }
-        });
-    }
+  public static void requestSignConfigAsync(Consumer<SignConfig> callback) {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketRequestSignLayoutsResult.class);
+    Embedded.getInstance().sendSyncQuery(new PacketRequestSignLayouts()).ifPresent(result -> {
+      if (result instanceof PacketRequestSignLayoutsResult) {
+        callback.accept(((PacketRequestSignLayoutsResult) result).getSignConfig());
+      }
+    });
+  }
 }

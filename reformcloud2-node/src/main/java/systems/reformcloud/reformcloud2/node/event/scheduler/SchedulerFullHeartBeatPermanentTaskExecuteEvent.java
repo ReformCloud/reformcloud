@@ -28,13 +28,13 @@ import systems.reformcloud.reformcloud2.executor.api.event.Event;
 
 public class SchedulerFullHeartBeatPermanentTaskExecuteEvent extends Event {
 
-    private final Runnable runnable;
+  private final Runnable runnable;
 
-    public SchedulerFullHeartBeatPermanentTaskExecuteEvent(Runnable runnable) {
-        this.runnable = runnable;
-    }
+  public SchedulerFullHeartBeatPermanentTaskExecuteEvent(Runnable runnable) {
+    this.runnable = runnable;
+  }
 
-    public Runnable getRunnable() {
-        return this.runnable;
-    }
+  public Runnable getRunnable() {
+    return this.runnable;
+  }
 }

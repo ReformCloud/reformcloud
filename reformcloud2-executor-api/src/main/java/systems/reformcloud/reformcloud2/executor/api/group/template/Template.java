@@ -38,44 +38,44 @@ import systems.reformcloud.reformcloud2.executor.api.utility.name.ReNameable;
 
 public interface Template extends ReNameable, JsonDataHolder<Template>, InclusionHolder, SerializableObject, Sorted<Template>, Cloneable {
 
-    @NotNull
-    @Contract(value = "_, _ -> new", pure = true)
-    static TemplateBuilder builder(@NotNull String name, @NotNull Version version) {
-        return TemplateBuilder.newBuilder(name, version);
-    }
+  @NotNull
+  @Contract(value = "_, _ -> new", pure = true)
+  static TemplateBuilder builder(@NotNull String name, @NotNull Version version) {
+    return TemplateBuilder.newBuilder(name, version);
+  }
 
-    int getPriority();
+  int getPriority();
 
-    void setPriority(int priority);
+  void setPriority(int priority);
 
-    boolean isGlobal();
+  boolean isGlobal();
 
-    void setGlobal(boolean global);
+  void setGlobal(boolean global);
 
-    boolean isAutoCopyOnClose();
+  boolean isAutoCopyOnClose();
 
-    void setAutoCopyOnClose(boolean autoCopyOnClose);
+  void setAutoCopyOnClose(boolean autoCopyOnClose);
 
-    @NotNull
-    String getBackend();
+  @NotNull
+  String getBackend();
 
-    void setBackend(@NotNull String backend);
+  void setBackend(@NotNull String backend);
 
-    @Nullable
-    String getServerNameSplitter();
+  @Nullable
+  String getServerNameSplitter();
 
-    void setServerNameSplitter(@Nullable String serverNameSplitter);
+  void setServerNameSplitter(@Nullable String serverNameSplitter);
 
-    @NotNull
-    RuntimeConfiguration getRuntimeConfiguration();
+  @NotNull
+  RuntimeConfiguration getRuntimeConfiguration();
 
-    void setRuntimeConfiguration(@NotNull RuntimeConfiguration runtimeConfiguration);
+  void setRuntimeConfiguration(@NotNull RuntimeConfiguration runtimeConfiguration);
 
-    @NotNull
-    Version getVersion();
+  @NotNull
+  Version getVersion();
 
-    void setVersion(@NotNull Version version);
+  void setVersion(@NotNull Version version);
 
-    @NotNull
-    Template clone();
+  @NotNull
+  Template clone();
 }

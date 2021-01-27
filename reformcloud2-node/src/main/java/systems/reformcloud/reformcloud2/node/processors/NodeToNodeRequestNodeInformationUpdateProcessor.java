@@ -33,8 +33,8 @@ import systems.reformcloud.reformcloud2.protocol.processor.PacketProcessor;
 
 public class NodeToNodeRequestNodeInformationUpdateProcessor implements PacketProcessor<NodeToNodeRequestNodeInformationUpdate> {
 
-    @Override
-    public void process(@NotNull NetworkChannel channel, @NotNull NodeToNodeRequestNodeInformationUpdate packet) {
-        channel.sendQueryResult(packet.getQueryUniqueID(), new NodeToNodeRequestNodeInformationUpdateResult(NodeExecutor.getInstance().updateCurrentNodeInformation()));
-    }
+  @Override
+  public void process(@NotNull NetworkChannel channel, @NotNull NodeToNodeRequestNodeInformationUpdate packet) {
+    channel.sendQueryResult(packet.getQueryUniqueID(), new NodeToNodeRequestNodeInformationUpdateResult(NodeExecutor.getInstance().updateCurrentNodeInformation()));
+  }
 }

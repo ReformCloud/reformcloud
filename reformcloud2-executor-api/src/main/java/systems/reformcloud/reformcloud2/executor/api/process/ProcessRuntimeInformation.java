@@ -31,57 +31,57 @@ import java.util.Map;
 
 public interface ProcessRuntimeInformation extends SerializableObject, Cloneable {
 
-    long getCreationMillis();
+  long getCreationMillis();
 
-    double getCpuUsageSystem();
+  double getCpuUsageSystem();
 
-    double getCpuUsageInternal();
+  double getCpuUsageInternal();
 
-    double getLoadAverageSystem();
+  double getLoadAverageSystem();
 
-    int getProcessorCount();
+  int getProcessorCount();
 
-    long getMemoryUsageSystem();
+  long getMemoryUsageSystem();
 
-    long getMemoryUsageInternal();
+  long getMemoryUsageInternal();
 
-    long getNonHeapMemoryUsage();
+  long getNonHeapMemoryUsage();
 
-    long getCollectionMemoryUsage();
+  long getCollectionMemoryUsage();
 
-    int getLoadedClasses();
+  int getLoadedClasses();
 
-    long getUnloadedClasses();
+  long getUnloadedClasses();
 
-    long getTotalLoadedClasses();
+  long getTotalLoadedClasses();
 
-    @NotNull
-    String getOsVersion();
+  @NotNull
+  String getOsVersion();
 
-    @NotNull
-    String getJavaVersion();
+  @NotNull
+  String getJavaVersion();
 
-    @NotNull
-    String getSystemArchitecture();
+  @NotNull
+  String getSystemArchitecture();
 
-    @NotNull
-    String[] getStartParameters();
+  @NotNull
+  String[] getStartParameters();
 
-    int getStacktraces();
+  int getStacktraces();
 
-    long[] getDeadLockedThreads();
+  long[] getDeadLockedThreads();
 
-    @NotNull
-    Map<String, String> getSystemProperties();
+  @NotNull
+  Map<String, String> getSystemProperties();
 
-    @NotNull
-    String getClassPath();
+  @NotNull
+  String getClassPath();
 
-    @NotNull
-    String getBootClassPath();
+  @NotNull
+  String getBootClassPath();
 
-    long getProcessId();
+  long getProcessId();
 
-    @NotNull
-    ProcessRuntimeInformation clone();
+  @NotNull
+  ProcessRuntimeInformation clone();
 }

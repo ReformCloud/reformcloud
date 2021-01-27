@@ -28,15 +28,15 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ApplicationRemoteUpdate {
 
-    /**
-     * @return The new version string of the app after the update
-     */
-    @NotNull
-    String getNewVersion();
+  /**
+   * @return The new version string of the app after the update
+   */
+  @NotNull
+  String getNewVersion();
 
-    /**
-     * @return The url to download the update
-     */
-    @NotNull
-    String getDownloadUrl();
+  /**
+   * @return The url to download the update
+   */
+  @NotNull
+  String getDownloadUrl();
 }

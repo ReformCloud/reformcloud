@@ -36,47 +36,47 @@ import java.util.Collection;
 
 public class NodeToNodeProcessScreenLines extends ProtocolPacket {
 
-    private String processName;
-    private String nodeName;
-    private Collection<String> newLines;
+  private String processName;
+  private String nodeName;
+  private Collection<String> newLines;
 
-    public NodeToNodeProcessScreenLines() {
-    }
+  public NodeToNodeProcessScreenLines() {
+  }
 
-    public NodeToNodeProcessScreenLines(String processName, String nodeName, Collection<String> newLines) {
-        this.processName = processName;
-        this.nodeName = nodeName;
-        this.newLines = newLines;
-    }
+  public NodeToNodeProcessScreenLines(String processName, String nodeName, Collection<String> newLines) {
+    this.processName = processName;
+    this.nodeName = nodeName;
+    this.newLines = newLines;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 39;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 39;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        for (String line : this.newLines) {
-            System.out.println(TranslationHolder.translate(
-                "screen-line-added",
-                this.processName,
-                this.nodeName,
-                line
-            ));
-        }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    for (String line : this.newLines) {
+      System.out.println(TranslationHolder.translate(
+        "screen-line-added",
+        this.processName,
+        this.nodeName,
+        line
+      ));
     }
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.processName);
-        buffer.writeString(this.nodeName);
-        buffer.writeStringArray(this.newLines);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.processName);
+    buffer.writeString(this.nodeName);
+    buffer.writeStringArray(this.newLines);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.processName = buffer.readString();
-        this.nodeName = buffer.readString();
-        this.newLines = buffer.readStringArray();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.processName = buffer.readString();
+    this.nodeName = buffer.readString();
+    this.newLines = buffer.readStringArray();
+  }
 }

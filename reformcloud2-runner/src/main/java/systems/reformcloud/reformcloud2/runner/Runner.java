@@ -59,78 +59,78 @@ import java.util.jar.JarFile;
 
 public final class Runner {
 
-    private final ReformScriptInterpreter interpreter = new RunnerReformScriptInterpreter();
-    private final Updater applicationsUpdater;
-    private final Updater cloudVersionUpdater;
-    private final String[] args;
+  private final ReformScriptInterpreter interpreter = new RunnerReformScriptInterpreter();
+  private final Updater applicationsUpdater;
+  private final Updater cloudVersionUpdater;
+  private final String[] args;
 
-    protected Runner(@NotNull String[] args) {
-        this.interpreter
-            .registerInterpreterCommand(new CheckForUpdatesCommand(this))
-            .registerInterpreterCommand(new CheckIfDevModeCommand())
-            .registerInterpreterCommand(new CheckIfSnapshotApplyCommand())
-            .registerInterpreterCommand(new ExecuteCommand())
-            .registerInterpreterCommand(new IfCommand())
-            .registerInterpreterCommand(new PrintlnCommand())
-            .registerInterpreterCommand(new SetSystemPropertiesCommand())
-            .registerInterpreterCommand(new StartApplicationCommand(this))
-            .registerInterpreterCommand(new UnpackApplicationCommand())
-            .registerInterpreterCommand(new VariableCommand())
-            .registerInterpreterCommand(new WriteEnvCommand())
+  protected Runner(@NotNull String[] args) {
+    this.interpreter
+      .registerInterpreterCommand(new CheckForUpdatesCommand(this))
+      .registerInterpreterCommand(new CheckIfDevModeCommand())
+      .registerInterpreterCommand(new CheckIfSnapshotApplyCommand())
+      .registerInterpreterCommand(new ExecuteCommand())
+      .registerInterpreterCommand(new IfCommand())
+      .registerInterpreterCommand(new PrintlnCommand())
+      .registerInterpreterCommand(new SetSystemPropertiesCommand())
+      .registerInterpreterCommand(new StartApplicationCommand(this))
+      .registerInterpreterCommand(new UnpackApplicationCommand())
+      .registerInterpreterCommand(new VariableCommand())
+      .registerInterpreterCommand(new WriteEnvCommand())
 
-            .registerInterpreterVariable(new EnvNotAPIVariable())
-            .registerInterpreterVariable(new EnvSetVariable())
-            .registerInterpreterVariable(new GitCommitVariable())
-            .registerInterpreterVariable(new SetupRequiredVariable());
+      .registerInterpreterVariable(new EnvNotAPIVariable())
+      .registerInterpreterVariable(new EnvSetVariable())
+      .registerInterpreterVariable(new GitCommitVariable())
+      .registerInterpreterVariable(new SetupRequiredVariable());
 
-        this.applicationsUpdater = new ApplicationsUpdater(RunnerUtils.APP_UPDATE_FOLDER);
-        this.cloudVersionUpdater = new CloudVersionUpdater(RunnerUtils.GLOBAL_REFORM_SCRIPT_FILE);
-        this.args = args;
+    this.applicationsUpdater = new ApplicationsUpdater(RunnerUtils.APP_UPDATE_FOLDER);
+    this.cloudVersionUpdater = new CloudVersionUpdater(RunnerUtils.GLOBAL_REFORM_SCRIPT_FILE);
+    this.args = args;
+  }
+
+  public void bootstrap() {
+    if (Files.notExists(RunnerUtils.GLOBAL_REFORM_SCRIPT_FILE)) {
+      RunnerUtils.copyCompiledFile("global.reformscript", RunnerUtils.GLOBAL_REFORM_SCRIPT_FILE);
     }
 
-    public void bootstrap() {
-        if (Files.notExists(RunnerUtils.GLOBAL_REFORM_SCRIPT_FILE)) {
-            RunnerUtils.copyCompiledFile("global.reformscript", RunnerUtils.GLOBAL_REFORM_SCRIPT_FILE);
-        }
-
-        InterpretedReformScript global = this.interpreter.interpret(RunnerUtils.GLOBAL_REFORM_SCRIPT_FILE);
-        if (global == null) {
-            throw new RuntimeException("Unable to interpret global reform script! Please recheck the syntax");
-        }
-
-        global.execute();
+    InterpretedReformScript global = this.interpreter.interpret(RunnerUtils.GLOBAL_REFORM_SCRIPT_FILE);
+    if (global == null) {
+      throw new RuntimeException("Unable to interpret global reform script! Please recheck the syntax");
     }
 
-    public void startApplication() {
-        Path applicationFile = System.getProperties().containsKey("reformcloud.process.path")
-            ? Paths.get(System.getProperty("reformcloud.process.path"))
-            : RunnerUtils.EXECUTOR_PATH;
-        if (Files.notExists(applicationFile) || Files.isDirectory(applicationFile)) {
-            throw new UnsupportedOperationException("Unable to start non-executable file: " + applicationFile.toString());
-        }
+    global.execute();
+  }
 
-        this.startApplication0(applicationFile);
+  public void startApplication() {
+    Path applicationFile = System.getProperties().containsKey("reformcloud.process.path")
+      ? Paths.get(System.getProperty("reformcloud.process.path"))
+      : RunnerUtils.EXECUTOR_PATH;
+    if (Files.notExists(applicationFile) || Files.isDirectory(applicationFile)) {
+      throw new UnsupportedOperationException("Unable to start non-executable file: " + applicationFile.toString());
     }
 
-    private void startApplication0(@NotNull Path applicationFilePath) {
-        try (JarFile file = new JarFile(applicationFilePath.toFile())) {
-            URLClassLoader classLoader = new RunnerClassLoader(new URL[]{applicationFilePath.toUri().toURL()});
-            Thread.currentThread().setContextClassLoader(classLoader);
+    this.startApplication0(applicationFile);
+  }
 
-            String mainClass = file.getManifest().getMainAttributes().getValue("Main-Class");
-            Method main = classLoader.loadClass(mainClass).getMethod("main", String[].class);
+  private void startApplication0(@NotNull Path applicationFilePath) {
+    try (JarFile file = new JarFile(applicationFilePath.toFile())) {
+      URLClassLoader classLoader = new RunnerClassLoader(new URL[]{applicationFilePath.toUri().toURL()});
+      Thread.currentThread().setContextClassLoader(classLoader);
 
-            main.invoke(null, (Object) this.args);
-        } catch (final IOException | ReflectiveOperationException ex) {
-            throw new RuntimeException(ex);
-        }
+      String mainClass = file.getManifest().getMainAttributes().getValue("Main-Class");
+      Method main = classLoader.loadClass(mainClass).getMethod("main", String[].class);
+
+      main.invoke(null, (Object) this.args);
+    } catch (final IOException | ReflectiveOperationException ex) {
+      throw new RuntimeException(ex);
     }
+  }
 
-    public Updater getApplicationsUpdater() {
-        return this.applicationsUpdater;
-    }
+  public Updater getApplicationsUpdater() {
+    return this.applicationsUpdater;
+  }
 
-    public Updater getCloudVersionUpdater() {
-        return this.cloudVersionUpdater;
-    }
+  public Updater getCloudVersionUpdater() {
+    return this.cloudVersionUpdater;
+  }
 }

@@ -30,9 +30,9 @@ import systems.reformcloud.reformcloud2.protocol.shared.PacketSetPlayerLocation;
 
 public class PacketSetPlayerLocationProcessor extends PlayerApiToNodePacketProcessor<PacketSetPlayerLocation> {
 
-    @Override
-    public void process(@NotNull NetworkChannel channel, @NotNull PacketSetPlayerLocation packet) {
-        this.getPlayerExecutor()
-            .executeTeleport(packet.getUniqueId(), packet.getWorld(), packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch());
-    }
+  @Override
+  public void process(@NotNull NetworkChannel channel, @NotNull PacketSetPlayerLocation packet) {
+    this.getPlayerExecutor()
+      .executeTeleport(packet.getUniqueId(), packet.getWorld(), packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch());
+  }
 }

@@ -33,52 +33,52 @@ import java.nio.charset.StandardCharsets;
  * @since 25. October 2020
  */
 public enum HttpVersion {
-    /**
-     * Represents HTTP 1.0.
-     */
-    HTTP_1_0("HTTP", 1, 0, false),
-    /**
-     * Represents HTTP 1.1 which is exactly like HTTP 1.0 but keep alive default is by default {@code true}.
-     */
-    HTTP_1_1("HTTP", 1, 1, true);
+  /**
+   * Represents HTTP 1.0.
+   */
+  HTTP_1_0("HTTP", 1, 0, false),
+  /**
+   * Represents HTTP 1.1 which is exactly like HTTP 1.0 but keep alive default is by default {@code true}.
+   */
+  HTTP_1_1("HTTP", 1, 1, true);
 
-    private final String protocolName;
-    private final int majorVersion;
-    private final int minorVersion;
-    private final String text;
-    private final boolean keepAliveDefault;
-    private final byte[] bytes;
+  private final String protocolName;
+  private final int majorVersion;
+  private final int minorVersion;
+  private final String text;
+  private final boolean keepAliveDefault;
+  private final byte[] bytes;
 
-    HttpVersion(String protocolName, int majorVersion, int minorVersion, boolean keepAliveDefault) {
-        this.protocolName = protocolName.trim().toUpperCase();
-        this.majorVersion = majorVersion;
-        this.minorVersion = minorVersion;
-        this.text = this.protocolName + '/' + majorVersion + '.' + minorVersion;
-        this.keepAliveDefault = keepAliveDefault;
-        this.bytes = this.text.getBytes(StandardCharsets.US_ASCII);
-    }
+  HttpVersion(String protocolName, int majorVersion, int minorVersion, boolean keepAliveDefault) {
+    this.protocolName = protocolName.trim().toUpperCase();
+    this.majorVersion = majorVersion;
+    this.minorVersion = minorVersion;
+    this.text = this.protocolName + '/' + majorVersion + '.' + minorVersion;
+    this.keepAliveDefault = keepAliveDefault;
+    this.bytes = this.text.getBytes(StandardCharsets.US_ASCII);
+  }
 
-    public String getProtocolName() {
-        return this.protocolName;
-    }
+  public String getProtocolName() {
+    return this.protocolName;
+  }
 
-    public int getMajorVersion() {
-        return this.majorVersion;
-    }
+  public int getMajorVersion() {
+    return this.majorVersion;
+  }
 
-    public int getMinorVersion() {
-        return this.minorVersion;
-    }
+  public int getMinorVersion() {
+    return this.minorVersion;
+  }
 
-    public String getText() {
-        return this.text;
-    }
+  public String getText() {
+    return this.text;
+  }
 
-    public boolean isKeepAliveDefault() {
-        return this.keepAliveDefault;
-    }
+  public boolean isKeepAliveDefault() {
+    return this.keepAliveDefault;
+  }
 
-    public byte[] getBytes() {
-        return this.bytes;
-    }
+  public byte[] getBytes() {
+    return this.bytes;
+  }
 }

@@ -35,46 +35,46 @@ import java.net.URI;
 
 public interface NetworkAddress extends SerializableObject, Cloneable {
 
-    @NotNull
-    @Contract(value = "_ -> new", pure = true)
-    static NetworkAddress fromUri(@NotNull URI uri) {
-        return address(uri.getHost(), uri.getPort());
-    }
+  @NotNull
+  @Contract(value = "_ -> new", pure = true)
+  static NetworkAddress fromUri(@NotNull URI uri) {
+    return address(uri.getHost(), uri.getPort());
+  }
 
-    @NotNull
-    @Contract(value = "_ -> new", pure = true)
-    static NetworkAddress fromInetSocketAddress(@NotNull InetSocketAddress inetSocketAddress) {
-        return fromInetAddress(inetSocketAddress.getAddress(), inetSocketAddress.getPort());
-    }
+  @NotNull
+  @Contract(value = "_ -> new", pure = true)
+  static NetworkAddress fromInetSocketAddress(@NotNull InetSocketAddress inetSocketAddress) {
+    return fromInetAddress(inetSocketAddress.getAddress(), inetSocketAddress.getPort());
+  }
 
-    @NotNull
-    @Contract(value = "_, _ -> new", pure = true)
-    static NetworkAddress fromInetAddress(@NotNull InetAddress inetAddress, @Range(from = 0, to = 65535) int port) {
-        return address(inetAddress.getHostAddress(), port);
-    }
+  @NotNull
+  @Contract(value = "_, _ -> new", pure = true)
+  static NetworkAddress fromInetAddress(@NotNull InetAddress inetAddress, @Range(from = 0, to = 65535) int port) {
+    return address(inetAddress.getHostAddress(), port);
+  }
 
-    @NotNull
-    @Contract(value = "_, _ -> new", pure = true)
-    static NetworkAddress address(@NotNull String host, @Range(from = 0, to = 65535) int port) {
-        return new DefaultNetworkAddress(host, port);
-    }
+  @NotNull
+  @Contract(value = "_, _ -> new", pure = true)
+  static NetworkAddress address(@NotNull String host, @Range(from = 0, to = 65535) int port) {
+    return new DefaultNetworkAddress(host, port);
+  }
 
-    @NotNull
-    String getHost();
+  @NotNull
+  String getHost();
 
-    void setHost(@NotNull String host);
+  void setHost(@NotNull String host);
 
-    @Range(from = 0, to = 65535)
-    int getPort();
+  @Range(from = 0, to = 65535)
+  int getPort();
 
-    void setPort(@Range(from = 0, to = 65535) int port);
+  void setPort(@Range(from = 0, to = 65535) int port);
 
-    @NotNull
-    InetAddress toInetAddress();
+  @NotNull
+  InetAddress toInetAddress();
 
-    @NotNull
-    InetSocketAddress toInetSocketAddress();
+  @NotNull
+  InetSocketAddress toInetSocketAddress();
 
-    @NotNull
-    NetworkAddress clone();
+  @NotNull
+  NetworkAddress clone();
 }

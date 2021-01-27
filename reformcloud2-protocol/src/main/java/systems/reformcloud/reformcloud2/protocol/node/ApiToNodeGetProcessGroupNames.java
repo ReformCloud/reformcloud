@@ -36,25 +36,25 @@ import java.util.Collection;
 
 public class ApiToNodeGetProcessGroupNames extends ProtocolPacket {
 
-    public ApiToNodeGetProcessGroupNames() {
-    }
+  public ApiToNodeGetProcessGroupNames() {
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 69;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 69;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        Collection<String> processGroupNames = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroupNames();
-        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetStringCollectionResult(processGroupNames));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    Collection<String> processGroupNames = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroupNames();
+    channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetStringCollectionResult(processGroupNames));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+  }
 }

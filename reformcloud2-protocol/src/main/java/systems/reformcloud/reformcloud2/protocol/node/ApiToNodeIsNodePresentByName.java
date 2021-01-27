@@ -34,33 +34,33 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodeIsNodePresentByName extends ProtocolPacket {
 
-    private String name;
+  private String name;
 
-    public ApiToNodeIsNodePresentByName() {
-    }
+  public ApiToNodeIsNodePresentByName() {
+  }
 
-    public ApiToNodeIsNodePresentByName(String name) {
-        this.name = name;
-    }
+  public ApiToNodeIsNodePresentByName(String name) {
+    this.name = name;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 31;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 31;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        boolean present = ExecutorAPI.getInstance().getNodeInformationProvider().isNodePresent(this.name);
-        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeIsNodePresentResult(present));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    boolean present = ExecutorAPI.getInstance().getNodeInformationProvider().isNodePresent(this.name);
+    channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeIsNodePresentResult(present));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.name);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.name);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.name = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.name = buffer.readString();
+  }
 }

@@ -39,70 +39,70 @@ import java.util.stream.Collectors;
 
 public class GsonObject extends GsonElement implements Object {
 
-    private final JsonObject gsonObject;
+  private final JsonObject gsonObject;
 
-    public GsonObject(JsonObject gsonObject) {
-        super(gsonObject);
-        this.gsonObject = gsonObject;
-    }
+  public GsonObject(JsonObject gsonObject) {
+    super(gsonObject);
+    this.gsonObject = gsonObject;
+  }
 
-    @Override
-    public @NotNull Optional<Element> remove(@NotNull String property) {
-        JsonElement removed = this.gsonObject.remove(property);
-        return Optional.ofNullable(removed == null ? null : ElementMapper.map(removed));
-    }
+  @Override
+  public @NotNull Optional<Element> remove(@NotNull String property) {
+    JsonElement removed = this.gsonObject.remove(property);
+    return Optional.ofNullable(removed == null ? null : ElementMapper.map(removed));
+  }
 
-    @Override
-    public @NotNull Object add(@NotNull String property, @Nullable String value) {
-        this.gsonObject.addProperty(property, value);
-        return this;
-    }
+  @Override
+  public @NotNull Object add(@NotNull String property, @Nullable String value) {
+    this.gsonObject.addProperty(property, value);
+    return this;
+  }
 
-    @Override
-    public @NotNull Object add(@NotNull String property, @Nullable Number value) {
-        this.gsonObject.addProperty(property, value);
-        return this;
-    }
+  @Override
+  public @NotNull Object add(@NotNull String property, @Nullable Number value) {
+    this.gsonObject.addProperty(property, value);
+    return this;
+  }
 
-    @Override
-    public @NotNull Object add(@NotNull String property, @Nullable Boolean value) {
-        this.gsonObject.addProperty(property, value);
-        return this;
-    }
+  @Override
+  public @NotNull Object add(@NotNull String property, @Nullable Boolean value) {
+    this.gsonObject.addProperty(property, value);
+    return this;
+  }
 
-    @Override
-    public @NotNull Object add(@NotNull String property, @Nullable Character value) {
-        this.gsonObject.addProperty(property, value);
-        return this;
-    }
+  @Override
+  public @NotNull Object add(@NotNull String property, @Nullable Character value) {
+    this.gsonObject.addProperty(property, value);
+    return this;
+  }
 
-    @Override
-    public @NotNull Object add(@NotNull String property, @Nullable Element value) {
-        this.gsonObject.add(property, ElementMapper.map(value));
-        return this;
-    }
+  @Override
+  public @NotNull Object add(@NotNull String property, @Nullable Element value) {
+    this.gsonObject.add(property, ElementMapper.map(value));
+    return this;
+  }
 
-    @Override
-    public @NotNull Optional<Element> get(@NotNull String property) {
-        JsonElement element = this.gsonObject.get(property);
-        return Optional.ofNullable(element == null ? null : ElementMapper.map(element));
-    }
+  @Override
+  public @NotNull Optional<Element> get(@NotNull String property) {
+    JsonElement element = this.gsonObject.get(property);
+    return Optional.ofNullable(element == null ? null : ElementMapper.map(element));
+  }
 
-    @Override
-    public boolean has(@NotNull String property) {
-        return this.gsonObject.has(property);
-    }
+  @Override
+  public boolean has(@NotNull String property) {
+    return this.gsonObject.has(property);
+  }
 
-    @Override
-    public @NotNull Set<Map.Entry<String, Element>> entrySet() {
-        return this.gsonObject.entrySet().stream().map(entry -> {
-            final Element mapped = ElementMapper.map(entry.getValue());
-            return new Entry2<>(entry.getKey(), mapped);
-        }).collect(Collectors.toSet());
-    }
+  @Override
+  public @NotNull Set<Map.Entry<String, Element>> entrySet() {
+    return this.gsonObject.entrySet().stream().map(entry -> {
+      final Element mapped = ElementMapper.map(entry.getValue());
+      return new Entry2<>(entry.getKey(), mapped);
+    }).collect(Collectors.toSet());
+  }
 
-    @Override
-    public @NotNull Object clone() {
-        return new GsonObject(this.gsonObject.deepCopy());
-    }
+  @Override
+  public @NotNull Object clone() {
+    return new GsonObject(this.gsonObject.deepCopy());
+  }
 }

@@ -31,31 +31,31 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryR
 
 public class ApiToNodeGetProcessGroupCountResult extends QueryResultPacket {
 
-    private long count;
+  private long count;
 
-    public ApiToNodeGetProcessGroupCountResult() {
-    }
+  public ApiToNodeGetProcessGroupCountResult() {
+  }
 
-    public ApiToNodeGetProcessGroupCountResult(long count) {
-        this.count = count;
-    }
+  public ApiToNodeGetProcessGroupCountResult(long count) {
+    this.count = count;
+  }
 
-    public long getCount() {
-        return this.count;
-    }
+  public long getCount() {
+    return this.count;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 68;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 68;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeLong(this.count);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeLong(this.count);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.count = buffer.readLong();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.count = buffer.readLong();
+  }
 }

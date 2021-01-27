@@ -32,32 +32,32 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryR
 
 public class ApiToNodeUploadProcessLogResult extends QueryResultPacket {
 
-    private String logUrl;
+  private String logUrl;
 
-    public ApiToNodeUploadProcessLogResult() {
-    }
+  public ApiToNodeUploadProcessLogResult() {
+  }
 
-    public ApiToNodeUploadProcessLogResult(String logUrl) {
-        this.logUrl = logUrl;
-    }
+  public ApiToNodeUploadProcessLogResult(String logUrl) {
+    this.logUrl = logUrl;
+  }
 
-    @Nullable
-    public String getLogUrl() {
-        return this.logUrl;
-    }
+  @Nullable
+  public String getLogUrl() {
+    return this.logUrl;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 89;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 89;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.logUrl);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.logUrl);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.logUrl = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.logUrl = buffer.readString();
+  }
 }

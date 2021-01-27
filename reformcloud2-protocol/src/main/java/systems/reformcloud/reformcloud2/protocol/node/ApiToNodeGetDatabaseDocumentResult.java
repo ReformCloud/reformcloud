@@ -33,37 +33,37 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryR
 
 public class ApiToNodeGetDatabaseDocumentResult extends QueryResultPacket {
 
-    private JsonConfiguration result;
+  private JsonConfiguration result;
 
-    public ApiToNodeGetDatabaseDocumentResult() {
-    }
+  public ApiToNodeGetDatabaseDocumentResult() {
+  }
 
-    public ApiToNodeGetDatabaseDocumentResult(JsonConfiguration result) {
-        this.result = result;
-    }
+  public ApiToNodeGetDatabaseDocumentResult(JsonConfiguration result) {
+    this.result = result;
+  }
 
-    @Nullable
-    public JsonConfiguration getResult() {
-        return this.result;
-    }
+  @Nullable
+  public JsonConfiguration getResult() {
+    return this.result;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 8;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 8;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeBoolean(this.result != null);
-        if (this.result != null) {
-            buffer.writeString(this.result.toPrettyString());
-        }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeBoolean(this.result != null);
+    if (this.result != null) {
+      buffer.writeString(this.result.toPrettyString());
     }
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        if (buffer.readBoolean()) {
-            this.result = JsonConfiguration.newJsonConfiguration(buffer.readString());
-        }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    if (buffer.readBoolean()) {
+      this.result = JsonConfiguration.newJsonConfiguration(buffer.readString());
     }
+  }
 }

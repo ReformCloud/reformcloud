@@ -35,31 +35,31 @@ import java.util.Collection;
 
 public class ApiToNodeGetMainGroupObjectsResult extends QueryResultPacket {
 
-    private Collection<MainGroup> mainGroups;
+  private Collection<MainGroup> mainGroups;
 
-    public ApiToNodeGetMainGroupObjectsResult() {
-    }
+  public ApiToNodeGetMainGroupObjectsResult() {
+  }
 
-    public ApiToNodeGetMainGroupObjectsResult(Collection<MainGroup> mainGroups) {
-        this.mainGroups = mainGroups;
-    }
+  public ApiToNodeGetMainGroupObjectsResult(Collection<MainGroup> mainGroups) {
+    this.mainGroups = mainGroups;
+  }
 
-    public Collection<MainGroup> getMainGroups() {
-        return this.mainGroups;
-    }
+  public Collection<MainGroup> getMainGroups() {
+    return this.mainGroups;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 55;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 55;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObjects(this.mainGroups);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObjects(this.mainGroups);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.mainGroups = buffer.readObjects(DefaultMainGroup.class, MainGroup.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.mainGroups = buffer.readObjects(DefaultMainGroup.class, MainGroup.class);
+  }
 }

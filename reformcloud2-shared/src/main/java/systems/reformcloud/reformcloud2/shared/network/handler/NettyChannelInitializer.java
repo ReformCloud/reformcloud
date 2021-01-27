@@ -34,19 +34,19 @@ import java.util.function.Supplier;
 
 public class NettyChannelInitializer extends ChannelInitializer<Channel> {
 
-    private final Supplier<ChannelListener> channelListenerFactory;
+  private final Supplier<ChannelListener> channelListenerFactory;
 
-    public NettyChannelInitializer(Supplier<ChannelListener> channelListenerFactory) {
-        this.channelListenerFactory = channelListenerFactory;
-    }
+  public NettyChannelInitializer(Supplier<ChannelListener> channelListenerFactory) {
+    this.channelListenerFactory = channelListenerFactory;
+  }
 
-    @Override
-    protected void initChannel(Channel channel) {
-        channel.pipeline()
-            .addLast("frame-decoder", new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4))
-            .addLast("frame-encoder", new LengthFieldPrepender(4, 0, false))
-            .addLast("packet-decoder", new NettyPacketDecoder())
-            .addLast("packet-encoder", new NettyPacketEncoder())
-            .addLast("listener", new NettyChannelListenerWrapper(this.channelListenerFactory));
-    }
+  @Override
+  protected void initChannel(Channel channel) {
+    channel.pipeline()
+      .addLast("frame-decoder", new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4))
+      .addLast("frame-encoder", new LengthFieldPrepender(4, 0, false))
+      .addLast("packet-decoder", new NettyPacketDecoder())
+      .addLast("packet-encoder", new NettyPacketEncoder())
+      .addLast("listener", new NettyChannelListenerWrapper(this.channelListenerFactory));
+  }
 }

@@ -25,7 +25,6 @@
 package systems.reformcloud.reformcloud2.executor.api.application.updater;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
 
 public abstract class DefaultApplicationUpdateRepository implements ApplicationUpdateRepository {
 

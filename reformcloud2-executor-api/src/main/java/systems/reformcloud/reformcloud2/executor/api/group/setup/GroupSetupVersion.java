@@ -33,5 +33,5 @@ import java.util.function.Consumer;
 
 public interface GroupSetupVersion extends Nameable {
 
-    void install(@NotNull Consumer<ProcessGroup> processGroupInstaller, @NotNull Consumer<MainGroup> mainGroupInstaller);
+  void install(@NotNull Consumer<ProcessGroup> processGroupInstaller, @NotNull Consumer<MainGroup> mainGroupInstaller);
 }

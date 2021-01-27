@@ -34,32 +34,32 @@ import java.util.Set;
 
 public interface Object extends Element, Cloneable {
 
-    @NotNull
-    Optional<Element> remove(@NotNull String property);
+  @NotNull
+  Optional<Element> remove(@NotNull String property);
 
-    @NotNull
-    Object add(@NotNull String property, @Nullable String value);
+  @NotNull
+  Object add(@NotNull String property, @Nullable String value);
 
-    @NotNull
-    Object add(@NotNull String property, @Nullable Number value);
+  @NotNull
+  Object add(@NotNull String property, @Nullable Number value);
 
-    @NotNull
-    Object add(@NotNull String property, @Nullable Boolean value);
+  @NotNull
+  Object add(@NotNull String property, @Nullable Boolean value);
 
-    @NotNull
-    Object add(@NotNull String property, @Nullable Character value);
+  @NotNull
+  Object add(@NotNull String property, @Nullable Character value);
 
-    @NotNull
-    Object add(@NotNull String property, @Nullable Element value);
+  @NotNull
+  Object add(@NotNull String property, @Nullable Element value);
 
-    @NotNull
-    Optional<Element> get(@NotNull String property);
+  @NotNull
+  Optional<Element> get(@NotNull String property);
 
-    boolean has(@NotNull String property);
+  boolean has(@NotNull String property);
 
-    @NotNull
-    Set<Map.Entry<String, Element>> entrySet();
+  @NotNull
+  Set<Map.Entry<String, Element>> entrySet();
 
-    @NotNull
-    Object clone();
+  @NotNull
+  Object clone();
 }

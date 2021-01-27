@@ -37,31 +37,31 @@ import systems.reformcloud.reformcloud2.proxy.velocity.listener.VelocityListener
 import systems.reformcloud.reformcloud2.proxy.velocity.listener.VelocityProxyConfigurationHandlerSetupListener;
 
 @Plugin(
-    id = "reformcloud_2_proxy",
-    name = "ReformCloud2Proxy",
-    version = "2.0",
-    description = "The proxy plugin",
-    url = "https://reformcloud.systems",
-    authors = {"derklaro"},
-    dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
+  id = "reformcloud_2_proxy",
+  name = "ReformCloud2Proxy",
+  version = "2.0",
+  description = "The proxy plugin",
+  url = "https://reformcloud.systems",
+  authors = {"derklaro"},
+  dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
 )
 public class VelocityPlugin {
 
-    private final ProxyServer server;
+  private final ProxyServer server;
 
-    @Inject
-    public VelocityPlugin(ProxyServer server) {
-        this.server = server;
-    }
+  @Inject
+  public VelocityPlugin(ProxyServer server) {
+    this.server = server;
+  }
 
-    @Subscribe
-    public void handle(final ProxyInitializeEvent event) {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new VelocityProxyConfigurationHandlerSetupListener(this.server));
+  @Subscribe
+  public void handle(final ProxyInitializeEvent event) {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new VelocityProxyConfigurationHandlerSetupListener(this.server));
 
-        PluginConfigHandler.request(() -> {
-            VelocityListener listener = new VelocityListener(this.server);
-            this.server.getEventManager().register(this, listener);
-            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(listener);
-        });
-    }
+    PluginConfigHandler.request(() -> {
+      VelocityListener listener = new VelocityListener(this.server);
+      this.server.getEventManager().register(this, listener);
+      ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(listener);
+    });
+  }
 }

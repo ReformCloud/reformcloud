@@ -32,31 +32,31 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryR
 
 public class ApiToNodeGetIngameMessagesResult extends QueryResultPacket {
 
-    private IngameMessages messages;
+  private IngameMessages messages;
 
-    public ApiToNodeGetIngameMessagesResult() {
-    }
+  public ApiToNodeGetIngameMessagesResult() {
+  }
 
-    public ApiToNodeGetIngameMessagesResult(IngameMessages messages) {
-        this.messages = messages;
-    }
+  public ApiToNodeGetIngameMessagesResult(IngameMessages messages) {
+    this.messages = messages;
+  }
 
-    public IngameMessages getMessages() {
-        return this.messages;
-    }
+  public IngameMessages getMessages() {
+    return this.messages;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 21;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 21;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.messages);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.messages);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.messages = buffer.readObject(IngameMessages.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.messages = buffer.readObject(IngameMessages.class);
+  }
 }

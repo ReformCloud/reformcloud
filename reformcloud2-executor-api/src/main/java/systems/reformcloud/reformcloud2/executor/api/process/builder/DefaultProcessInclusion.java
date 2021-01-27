@@ -29,36 +29,36 @@ import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer
 
 public class DefaultProcessInclusion implements ProcessInclusion {
 
-    private String name;
-    private String downloadUrl;
+  private String name;
+  private String downloadUrl;
 
-    protected DefaultProcessInclusion() {
-    }
+  protected DefaultProcessInclusion() {
+  }
 
-    protected DefaultProcessInclusion(String name, String downloadUrl) {
-        this.name = name;
-        this.downloadUrl = downloadUrl;
-    }
+  protected DefaultProcessInclusion(String name, String downloadUrl) {
+    this.name = name;
+    this.downloadUrl = downloadUrl;
+  }
 
-    @Override
-    public @NotNull String getName() {
-        return this.name;
-    }
+  @Override
+  public @NotNull String getName() {
+    return this.name;
+  }
 
-    @Override
-    public @NotNull String getDownloadUrl() {
-        return this.downloadUrl;
-    }
+  @Override
+  public @NotNull String getDownloadUrl() {
+    return this.downloadUrl;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.name);
-        buffer.writeString(this.downloadUrl);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.name);
+    buffer.writeString(this.downloadUrl);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.name = buffer.readString();
-        this.downloadUrl = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.name = buffer.readString();
+    this.downloadUrl = buffer.readString();
+  }
 }

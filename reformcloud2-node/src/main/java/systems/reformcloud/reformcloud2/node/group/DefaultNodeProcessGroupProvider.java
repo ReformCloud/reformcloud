@@ -29,7 +29,6 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.builder.ProcessGroupBuilder;
-import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.configuration.json.adapter.JsonAdapter;
 import systems.reformcloud.reformcloud2.executor.api.group.process.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;

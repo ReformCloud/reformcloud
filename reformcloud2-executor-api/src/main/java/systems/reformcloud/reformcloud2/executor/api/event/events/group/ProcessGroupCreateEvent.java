@@ -28,7 +28,7 @@ import systems.reformcloud.reformcloud2.executor.api.group.process.ProcessGroup;
 
 public class ProcessGroupCreateEvent extends ProcessGroupEvent {
 
-    public ProcessGroupCreateEvent(ProcessGroup processGroup) {
-        super(processGroup);
-    }
+  public ProcessGroupCreateEvent(ProcessGroup processGroup) {
+    super(processGroup);
+  }
 }

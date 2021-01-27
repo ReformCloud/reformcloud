@@ -31,10 +31,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface ReNameable extends Nameable {
 
-    /**
-     * Sets a new name for the current nameable object
-     *
-     * @param newName The new name which should get used
-     */
-    void setName(@NotNull String newName);
+  /**
+   * Sets a new name for the current nameable object
+   *
+   * @param newName The new name which should get used
+   */
+  void setName(@NotNull String newName);
 }

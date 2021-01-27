@@ -33,23 +33,23 @@ import java.util.List;
 
 public interface EventManager {
 
-    @Nullable <T extends Event> T callEvent(@NotNull Class<? extends T> event);
+  @Nullable <T extends Event> T callEvent(@NotNull Class<? extends T> event);
 
-    @NotNull <T extends Event> T callEvent(@NotNull T event);
+  @NotNull <T extends Event> T callEvent(@NotNull T event);
 
-    @NotNull <T extends Event> Task<T> callEventAsync(@NotNull Class<? extends T> event);
+  @NotNull <T extends Event> Task<T> callEventAsync(@NotNull Class<? extends T> event);
 
-    @NotNull <T extends Event> Task<T> callEventAsync(@NotNull T event);
+  @NotNull <T extends Event> Task<T> callEventAsync(@NotNull T event);
 
-    void registerListener(@NotNull Object listener);
+  void registerListener(@NotNull Object listener);
 
-    void registerListener(@NotNull Class<?> listener);
+  void registerListener(@NotNull Class<?> listener);
 
-    void unregisterListener(@NotNull Object listener);
+  void unregisterListener(@NotNull Object listener);
 
-    void unregisterAll();
+  void unregisterAll();
 
-    @NotNull
-    @UnmodifiableView
-    List<ListenerContainer> getListeners();
+  @NotNull
+  @UnmodifiableView
+  List<ListenerContainer> getListeners();
 }

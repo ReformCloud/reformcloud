@@ -33,21 +33,21 @@ import java.util.Collection;
 
 public final class WriteEnvCommand extends InterpreterCommand {
 
-    public WriteEnvCommand() {
-        super("write_env");
-    }
+  public WriteEnvCommand() {
+    super("write_env");
+  }
 
-    @Override
-    public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
-        String version = WriteEnvCommand.class.getPackage().getImplementationVersion();
-        System.setProperty("reformcloud.runner.version", version);
+  @Override
+  public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
+    String version = WriteEnvCommand.class.getPackage().getImplementationVersion();
+    System.setProperty("reformcloud.runner.version", version);
 
-        RunnerUtils.rewriteFile(script.getScriptPath(), s -> {
-            if (s.startsWith("# VARIABLE reformcloud.runner.version=") || s.startsWith("VARIABLE reformcloud.runner.version=")) {
-                s = "VARIABLE reformcloud.runner.version=" + version;
-            }
+    RunnerUtils.rewriteFile(script.getScriptPath(), s -> {
+      if (s.startsWith("# VARIABLE reformcloud.runner.version=") || s.startsWith("VARIABLE reformcloud.runner.version=")) {
+        s = "VARIABLE reformcloud.runner.version=" + version;
+      }
 
-            return s;
-        });
-    }
+      return s;
+    });
+  }
 }

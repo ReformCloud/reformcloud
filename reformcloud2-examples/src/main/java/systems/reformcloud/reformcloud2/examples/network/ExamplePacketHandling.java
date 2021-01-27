@@ -33,26 +33,26 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvid
  */
 public class ExamplePacketHandling {
 
-    // Registers the packet for the handling in the network
-    public static void registerOwnPackets() {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(ExamplePacket.class);
-    }
+  // Registers the packet for the handling in the network
+  public static void registerOwnPackets() {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(ExamplePacket.class);
+  }
 
-    // Sends the created example packet to the network component named controller. By default, every
-    // controller or node listen on this name from the api or a client.
-    // In the network from node to node every node is registered by the real name of it.
-    // This methods sends a packet as an api component to the main network component where the registered handler
-    // will get called
-    public static void sendPacketAsApi() {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
-            .getFirstChannel() // Get the first channel (on apis it's always the channel to the node)
-            .ifPresent(channel -> channel.sendPacket(new ExamplePacket("test")));
-    }
+  // Sends the created example packet to the network component named controller. By default, every
+  // controller or node listen on this name from the api or a client.
+  // In the network from node to node every node is registered by the real name of it.
+  // This methods sends a packet as an api component to the main network component where the registered handler
+  // will get called
+  public static void sendPacketAsApi() {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
+      .getFirstChannel() // Get the first channel (on apis it's always the channel to the node)
+      .ifPresent(channel -> channel.sendPacket(new ExamplePacket("test")));
+  }
 
-    // This methods sends a packet as another node in the cluster to the node named Node-1
-    public static void sendPacketAsNode() {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
-            .getChannel("Node-1") // Get the channel of Node-1 (or any other node/process)
-            .ifPresent(channel -> channel.sendPacket(new ExamplePacket("test")));
-    }
+  // This methods sends a packet as another node in the cluster to the node named Node-1
+  public static void sendPacketAsNode() {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
+      .getChannel("Node-1") // Get the channel of Node-1 (or any other node/process)
+      .ifPresent(channel -> channel.sendPacket(new ExamplePacket("test")));
+  }
 }

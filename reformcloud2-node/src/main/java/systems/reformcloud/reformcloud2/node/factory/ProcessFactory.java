@@ -31,7 +31,7 @@ import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
 
 public interface ProcessFactory extends Nameable {
 
-    @NotNull Task<ProcessInformation> buildProcessInformation(@NotNull ProcessFactoryConfiguration configuration);
+  @NotNull Task<ProcessInformation> buildProcessInformation(@NotNull ProcessFactoryConfiguration configuration);
 
-    boolean isDefault();
+  boolean isDefault();
 }

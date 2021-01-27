@@ -30,8 +30,8 @@ import systems.reformcloud.reformcloud2.protocol.shared.PacketPlayEffectToPlayer
 
 public class PacketPlayEffectToPlayerProcessor extends PlayerApiToNodePacketProcessor<PacketPlayEffectToPlayer> {
 
-    @Override
-    public void process(@NotNull NetworkChannel channel, @NotNull PacketPlayEffectToPlayer packet) {
-        this.getPlayerProvider().getPlayer(packet.getUniqueId()).ifPresent(wrapper -> wrapper.playEffect(packet.getEffect()));
-    }
+  @Override
+  public void process(@NotNull NetworkChannel channel, @NotNull PacketPlayEffectToPlayer packet) {
+    this.getPlayerProvider().getPlayer(packet.getUniqueId()).ifPresent(wrapper -> wrapper.playEffect(packet.getEffect()));
+  }
 }

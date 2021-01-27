@@ -29,16 +29,16 @@ import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableOb
 
 public interface ProcessStateHolder extends SerializableObject, Cloneable {
 
-    @NotNull
-    ProcessState getCurrentState();
+  @NotNull
+  ProcessState getCurrentState();
 
-    void setCurrentState(@NotNull ProcessState newState);
+  void setCurrentState(@NotNull ProcessState newState);
 
-    @NotNull
-    ProcessState getInitialState();
+  @NotNull
+  ProcessState getInitialState();
 
-    void setInitialState(@NotNull ProcessState newInitialState);
+  void setInitialState(@NotNull ProcessState newInitialState);
 
-    @NotNull
-    ProcessStateHolder clone();
+  @NotNull
+  ProcessStateHolder clone();
 }

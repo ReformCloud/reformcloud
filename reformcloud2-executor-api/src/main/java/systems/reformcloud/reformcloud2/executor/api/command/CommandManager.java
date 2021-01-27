@@ -34,26 +34,26 @@ import java.util.Optional;
 
 public interface CommandManager {
 
-    @NotNull
-    default CommandManager registerCommand(@NotNull Command command, @NotNull String description, @NotNull String... aliases) {
-        return this.registerCommand(command, description, Arrays.asList(aliases));
-    }
+  @NotNull
+  default CommandManager registerCommand(@NotNull Command command, @NotNull String description, @NotNull String... aliases) {
+    return this.registerCommand(command, description, Arrays.asList(aliases));
+  }
 
-    @NotNull
-    CommandManager registerCommand(@NotNull Command command, @NotNull String description, @NotNull List<String> aliases);
+  @NotNull
+  CommandManager registerCommand(@NotNull Command command, @NotNull String description, @NotNull List<String> aliases);
 
-    void unregisterCommand(@NotNull CommandContainer command);
+  void unregisterCommand(@NotNull CommandContainer command);
 
-    void unregisterCommand(@NotNull String... aliases);
+  void unregisterCommand(@NotNull String... aliases);
 
-    @NotNull
-    Optional<CommandContainer> getCommand(@NotNull String anyAlias);
+  @NotNull
+  Optional<CommandContainer> getCommand(@NotNull String anyAlias);
 
-    @NotNull
-    @UnmodifiableView Collection<CommandContainer> getCommands();
+  @NotNull
+  @UnmodifiableView Collection<CommandContainer> getCommands();
 
-    boolean process(@NotNull String commandLine, @NotNull CommandSender commandSender);
+  boolean process(@NotNull String commandLine, @NotNull CommandSender commandSender);
 
-    @NotNull
-    List<String> suggest(@NotNull String commandLine, @NotNull CommandSender commandSender);
+  @NotNull
+  List<String> suggest(@NotNull String commandLine, @NotNull CommandSender commandSender);
 }

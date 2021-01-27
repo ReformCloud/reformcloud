@@ -30,31 +30,31 @@ import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
 
 public final class ConsoleCommandSender implements CommandSender {
 
-    public static final CommandSender INSTANCE = new ConsoleCommandSender();
+  public static final CommandSender INSTANCE = new ConsoleCommandSender();
 
-    private ConsoleCommandSender() {
-    }
+  private ConsoleCommandSender() {
+  }
 
-    @Override
-    public void sendMessage(@NotNull String message) {
-        System.out.println(message);
-    }
+  @Override
+  public void sendMessage(@NotNull String message) {
+    System.out.println(message);
+  }
 
-    @Override
-    public void sendMessages(@NonNls String[] messages) {
-        for (String message : messages) {
-            System.out.println(message);
-        }
+  @Override
+  public void sendMessages(@NonNls String[] messages) {
+    for (String message : messages) {
+      System.out.println(message);
     }
+  }
 
-    @Override
-    public boolean hasPermission(@NotNull String permission) {
-        return true;
-    }
+  @Override
+  public boolean hasPermission(@NotNull String permission) {
+    return true;
+  }
 
-    @NotNull
-    @Override
-    public String getName() {
-        return ConsoleCommandSender.class.getSimpleName();
-    }
+  @NotNull
+  @Override
+  public String getName() {
+    return ConsoleCommandSender.class.getSimpleName();
+  }
 }

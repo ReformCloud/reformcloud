@@ -32,25 +32,25 @@ import java.io.IOException;
 
 public interface ChannelListener {
 
-    boolean shouldHandle(@NotNull Packet packet);
+  boolean shouldHandle(@NotNull Packet packet);
 
-    void channelActive(@NotNull NetworkChannel channel);
+  void channelActive(@NotNull NetworkChannel channel);
 
-    void channelInactive(@NotNull NetworkChannel channel);
+  void channelInactive(@NotNull NetworkChannel channel);
 
-    void channelWriteAbilityChanged(@NotNull NetworkChannel channel);
+  void channelWriteAbilityChanged(@NotNull NetworkChannel channel);
 
-    void handle(@NotNull Packet input);
+  void handle(@NotNull Packet input);
 
-    default void exceptionCaught(@NotNull NetworkChannel channel, @NotNull Throwable cause) {
-        boolean debug = Boolean.getBoolean("systems.reformcloud.debug-net");
-        if (!(cause instanceof IOException) && debug) {
-            System.err.println("Exception in channel " + channel.getRemoteAddress());
-            cause.printStackTrace();
-        }
+  default void exceptionCaught(@NotNull NetworkChannel channel, @NotNull Throwable cause) {
+    boolean debug = Boolean.getBoolean("systems.reformcloud.debug-net");
+    if (!(cause instanceof IOException) && debug) {
+      System.err.println("Exception in channel " + channel.getRemoteAddress());
+      cause.printStackTrace();
     }
+  }
 
-    default void readOperationCompleted(@NotNull NetworkChannel channel) {
-        channel.flush();
-    }
+  default void readOperationCompleted(@NotNull NetworkChannel channel) {
+    channel.flush();
+  }
 }

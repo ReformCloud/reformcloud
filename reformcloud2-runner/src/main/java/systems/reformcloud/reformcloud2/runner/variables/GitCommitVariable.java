@@ -31,13 +31,13 @@ import java.util.Collection;
 
 public final class GitCommitVariable extends InterpreterVariable {
 
-    public GitCommitVariable() {
-        super("git_commit");
-    }
+  public GitCommitVariable() {
+    super("git_commit");
+  }
 
-    @NotNull
-    @Override
-    public String unwrap(@NotNull String cursorLine, @NotNull Collection<String> fullLines) {
-        return GitCommitVariable.class.getPackage().getSpecificationVersion();
-    }
+  @NotNull
+  @Override
+  public String unwrap(@NotNull String cursorLine, @NotNull Collection<String> fullLines) {
+    return GitCommitVariable.class.getPackage().getSpecificationVersion();
+  }
 }

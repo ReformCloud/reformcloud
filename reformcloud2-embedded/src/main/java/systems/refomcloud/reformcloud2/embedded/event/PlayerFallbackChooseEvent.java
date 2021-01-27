@@ -35,32 +35,32 @@ import java.util.UUID;
 
 public class PlayerFallbackChooseEvent extends Event {
 
-    private final UUID playerUniqueId;
-    private final Collection<ProcessInformation> allLobbies;
-    private ProcessInformation filteredFallback;
+  private final UUID playerUniqueId;
+  private final Collection<ProcessInformation> allLobbies;
+  private ProcessInformation filteredFallback;
 
-    public PlayerFallbackChooseEvent(UUID playerUniqueId, ProcessInformation filteredFallback, Collection<ProcessInformation> allLobbies) {
-        this.playerUniqueId = playerUniqueId;
-        this.filteredFallback = filteredFallback;
-        this.allLobbies = allLobbies;
-    }
+  public PlayerFallbackChooseEvent(UUID playerUniqueId, ProcessInformation filteredFallback, Collection<ProcessInformation> allLobbies) {
+    this.playerUniqueId = playerUniqueId;
+    this.filteredFallback = filteredFallback;
+    this.allLobbies = allLobbies;
+  }
 
-    @NotNull
-    public UUID getPlayerUniqueId() {
-        return this.playerUniqueId;
-    }
+  @NotNull
+  public UUID getPlayerUniqueId() {
+    return this.playerUniqueId;
+  }
 
-    @NotNull
-    public Optional<ProcessInformation> getFilteredFallback() {
-        return Optional.ofNullable(this.filteredFallback);
-    }
+  @NotNull
+  public Optional<ProcessInformation> getFilteredFallback() {
+    return Optional.ofNullable(this.filteredFallback);
+  }
 
-    public void setFilteredFallback(@Nullable ProcessInformation filteredFallback) {
-        this.filteredFallback = filteredFallback;
-    }
+  public void setFilteredFallback(@Nullable ProcessInformation filteredFallback) {
+    this.filteredFallback = filteredFallback;
+  }
 
-    @NotNull
-    public Collection<ProcessInformation> getAllLobbies() {
-        return this.allLobbies;
-    }
+  @NotNull
+  public Collection<ProcessInformation> getAllLobbies() {
+    return this.allLobbies;
+  }
 }

@@ -35,84 +35,84 @@ import java.util.UUID;
 
 public class PacketSetPlayerLocation extends ProtocolPacket {
 
-    protected UUID uniqueId;
-    protected String world;
-    protected double x;
-    protected double y;
-    protected double z;
-    protected float yaw;
-    protected float pitch;
+  protected UUID uniqueId;
+  protected String world;
+  protected double x;
+  protected double y;
+  protected double z;
+  protected float yaw;
+  protected float pitch;
 
-    public PacketSetPlayerLocation() {
-    }
+  public PacketSetPlayerLocation() {
+  }
 
-    public PacketSetPlayerLocation(UUID uniqueId, String world, double x, double y, double z, float yaw, float pitch) {
-        this.uniqueId = uniqueId;
-        this.world = world;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.yaw = yaw;
-        this.pitch = pitch;
-    }
+  public PacketSetPlayerLocation(UUID uniqueId, String world, double x, double y, double z, float yaw, float pitch) {
+    this.uniqueId = uniqueId;
+    this.world = world;
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.yaw = yaw;
+    this.pitch = pitch;
+  }
 
-    public UUID getUniqueId() {
-        return this.uniqueId;
-    }
+  public UUID getUniqueId() {
+    return this.uniqueId;
+  }
 
-    public String getWorld() {
-        return this.world;
-    }
+  public String getWorld() {
+    return this.world;
+  }
 
-    public double getX() {
-        return this.x;
-    }
+  public double getX() {
+    return this.x;
+  }
 
-    public double getY() {
-        return this.y;
-    }
+  public double getY() {
+    return this.y;
+  }
 
-    public double getZ() {
-        return this.z;
-    }
+  public double getZ() {
+    return this.z;
+  }
 
-    public float getYaw() {
-        return this.yaw;
-    }
+  public float getYaw() {
+    return this.yaw;
+  }
 
-    public float getPitch() {
-        return this.pitch;
-    }
+  public float getPitch() {
+    return this.pitch;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.API_BUS + 16;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.API_BUS + 16;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        super.post(channel, PacketSetPlayerLocation.class, this);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    super.post(channel, PacketSetPlayerLocation.class, this);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.uniqueId);
-        buffer.writeString(this.world);
-        buffer.writeDouble(this.x);
-        buffer.writeDouble(this.y);
-        buffer.writeDouble(this.z);
-        buffer.writeFloat(this.yaw);
-        buffer.writeFloat(this.pitch);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.uniqueId);
+    buffer.writeString(this.world);
+    buffer.writeDouble(this.x);
+    buffer.writeDouble(this.y);
+    buffer.writeDouble(this.z);
+    buffer.writeFloat(this.yaw);
+    buffer.writeFloat(this.pitch);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.uniqueId = buffer.readUniqueId();
-        this.world = buffer.readString();
-        this.x = buffer.readDouble();
-        this.y = buffer.readDouble();
-        this.z = buffer.readDouble();
-        this.yaw = buffer.readFloat();
-        this.pitch = buffer.readFloat();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.uniqueId = buffer.readUniqueId();
+    this.world = buffer.readString();
+    this.x = buffer.readDouble();
+    this.y = buffer.readDouble();
+    this.z = buffer.readDouble();
+    this.yaw = buffer.readFloat();
+    this.pitch = buffer.readFloat();
+  }
 }

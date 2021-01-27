@@ -36,25 +36,25 @@ import java.util.Collection;
 
 public class ApiToNodeGetNodeNames extends ProtocolPacket {
 
-    public ApiToNodeGetNodeNames() {
-    }
+  public ApiToNodeGetNodeNames() {
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 25;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 25;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        Collection<String> nodeNames = ExecutorAPI.getInstance().getNodeInformationProvider().getNodeNames();
-        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetNodeNamesResult(nodeNames));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    Collection<String> nodeNames = ExecutorAPI.getInstance().getNodeInformationProvider().getNodeNames();
+    channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetNodeNamesResult(nodeNames));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+  }
 }

@@ -33,40 +33,40 @@ import java.lang.reflect.Type;
 
 public interface JsonAdapter {
 
-    @NotNull
-    static JsonAdapterBuilder builder() {
-        return JsonFactories.newAdapterBuilder();
-    }
+  @NotNull
+  static JsonAdapterBuilder builder() {
+    return JsonFactories.newAdapterBuilder();
+  }
 
-    @NotNull
-    Element toTree(@NotNull Object object);
+  @NotNull
+  Element toTree(@NotNull Object object);
 
-    @NotNull
-    Element toTree(@NotNull Object object, @NotNull Type type);
+  @NotNull
+  Element toTree(@NotNull Object object, @NotNull Type type);
 
-    @NotNull
-    String toJson(@NotNull Object object);
+  @NotNull
+  String toJson(@NotNull Object object);
 
-    @NotNull
-    String toJson(@NotNull Object object, @NotNull Type type);
+  @NotNull
+  String toJson(@NotNull Object object, @NotNull Type type);
 
-    @NotNull
-    String toJson(@NotNull Element element);
+  @NotNull
+  String toJson(@NotNull Element element);
 
-    @NotNull
-    String toJson(@NotNull Element element, @NotNull Type type);
+  @NotNull
+  String toJson(@NotNull Element element, @NotNull Type type);
 
-    void toJson(@NotNull Element element, @NotNull Appendable writer);
+  void toJson(@NotNull Element element, @NotNull Appendable writer);
 
-    void toJson(@NotNull Object object, @NotNull Type type, @NotNull Appendable writer);
+  void toJson(@NotNull Object object, @NotNull Type type, @NotNull Appendable writer);
 
-    @NotNull <T> T fromJson(@NotNull String json, @NotNull Class<T> type);
+  @NotNull <T> T fromJson(@NotNull String json, @NotNull Class<T> type);
 
-    @NotNull <T> T fromJson(@NotNull String json, @NotNull Type type);
+  @NotNull <T> T fromJson(@NotNull String json, @NotNull Type type);
 
-    @NotNull <T> T fromJson(@NotNull Element element, @NotNull Class<T> type);
+  @NotNull <T> T fromJson(@NotNull Element element, @NotNull Class<T> type);
 
-    @NotNull <T> T fromJson(@NotNull Element element, @NotNull Type type);
+  @NotNull <T> T fromJson(@NotNull Element element, @NotNull Type type);
 
-    @NotNull <T> T fromJson(@NotNull Reader reader, @NotNull Type type);
+  @NotNull <T> T fromJson(@NotNull Reader reader, @NotNull Type type);
 }

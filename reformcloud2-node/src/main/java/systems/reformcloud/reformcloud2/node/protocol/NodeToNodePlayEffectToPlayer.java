@@ -36,36 +36,36 @@ import java.util.UUID;
 
 public class NodeToNodePlayEffectToPlayer extends ProtocolPacket {
 
-    private UUID uniqueId;
-    private String effect;
+  private UUID uniqueId;
+  private String effect;
 
-    public NodeToNodePlayEffectToPlayer() {
-    }
+  public NodeToNodePlayEffectToPlayer() {
+  }
 
-    public NodeToNodePlayEffectToPlayer(UUID uniqueId, String effect) {
-        this.uniqueId = uniqueId;
-        this.effect = effect;
-    }
+  public NodeToNodePlayEffectToPlayer(UUID uniqueId, String effect) {
+    this.uniqueId = uniqueId;
+    this.effect = effect;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 37;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 37;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.uniqueId).ifPresent(player -> player.playEffect(this.effect));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.uniqueId).ifPresent(player -> player.playEffect(this.effect));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.uniqueId);
-        buffer.writeString(this.effect);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.uniqueId);
+    buffer.writeString(this.effect);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.uniqueId = buffer.readUniqueId();
-        this.effect = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.uniqueId = buffer.readUniqueId();
+    this.effect = buffer.readString();
+  }
 }

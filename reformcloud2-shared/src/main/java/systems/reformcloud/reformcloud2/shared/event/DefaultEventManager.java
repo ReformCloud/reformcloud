@@ -43,109 +43,109 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class DefaultEventManager implements EventManager {
 
-    private static final Comparator<ListenerContainer> PRIORITY_COMPARATOR = (c1, c2) -> (c1.getPriority().getPriority() > c2.getPriority().getPriority()) ? 1 : -1;
-    private final List<ListenerContainer> registeredListeners = new CopyOnWriteArrayList<>();
+  private static final Comparator<ListenerContainer> PRIORITY_COMPARATOR = (c1, c2) -> (c1.getPriority().getPriority() > c2.getPriority().getPriority()) ? 1 : -1;
+  private final List<ListenerContainer> registeredListeners = new CopyOnWriteArrayList<>();
 
-    @Nullable
-    @Override
-    public <T extends Event> T callEvent(@NotNull Class<? extends T> event) {
-        try {
-            return this.callEvent(event.getDeclaredConstructor().newInstance());
-        } catch (final NoSuchMethodException exception) {
-            System.err.println("Missing NoArgsConstructor in event class " + event.getName());
-        } catch (final InstantiationException | IllegalAccessException | InvocationTargetException exception) {
-            exception.printStackTrace();
-        }
-
-        return null;
+  @Nullable
+  @Override
+  public <T extends Event> T callEvent(@NotNull Class<? extends T> event) {
+    try {
+      return this.callEvent(event.getDeclaredConstructor().newInstance());
+    } catch (final NoSuchMethodException exception) {
+      System.err.println("Missing NoArgsConstructor in event class " + event.getName());
+    } catch (final InstantiationException | IllegalAccessException | InvocationTargetException exception) {
+      exception.printStackTrace();
     }
 
-    @NotNull
-    @Override
-    public <T extends Event> T callEvent(@NotNull T event) {
-        List<ListenerContainer> containers = new ArrayList<>();
-        for (ListenerContainer registeredListener : this.registeredListeners) {
-            if (registeredListener.getTargetEventClass().equals(event.getClass())) {
-                containers.add(registeredListener);
-            }
-        }
+    return null;
+  }
 
-        containers.sort(PRIORITY_COMPARATOR);
-        for (ListenerContainer registeredListener : containers) {
-            try {
-                registeredListener.call(event);
-            } catch (final InvocationTargetException | IllegalAccessException exception) {
-                System.err.println("Exception posting event " + event.getClass().getName() + " to class " + registeredListener.getListenerInstance().getClass().getName());
-                exception.printStackTrace();
-            }
-        }
-
-        return event;
+  @NotNull
+  @Override
+  public <T extends Event> T callEvent(@NotNull T event) {
+    List<ListenerContainer> containers = new ArrayList<>();
+    for (ListenerContainer registeredListener : this.registeredListeners) {
+      if (registeredListener.getTargetEventClass().equals(event.getClass())) {
+        containers.add(registeredListener);
+      }
     }
 
-    @NotNull
-    @Override
-    public <T extends Event> Task<T> callEventAsync(@NotNull Class<? extends T> event) {
-        return Task.supply(() -> this.callEvent(event));
+    containers.sort(PRIORITY_COMPARATOR);
+    for (ListenerContainer registeredListener : containers) {
+      try {
+        registeredListener.call(event);
+      } catch (final InvocationTargetException | IllegalAccessException exception) {
+        System.err.println("Exception posting event " + event.getClass().getName() + " to class " + registeredListener.getListenerInstance().getClass().getName());
+        exception.printStackTrace();
+      }
     }
 
-    @NotNull
-    @Override
-    public <T extends Event> Task<T> callEventAsync(@NotNull T event) {
-        return Task.supply(() -> this.callEvent(event));
+    return event;
+  }
+
+  @NotNull
+  @Override
+  public <T extends Event> Task<T> callEventAsync(@NotNull Class<? extends T> event) {
+    return Task.supply(() -> this.callEvent(event));
+  }
+
+  @NotNull
+  @Override
+  public <T extends Event> Task<T> callEventAsync(@NotNull T event) {
+    return Task.supply(() -> this.callEvent(event));
+  }
+
+  @Override
+  public void registerListener(@NotNull Object listener) {
+    for (Method declaredMethod : listener.getClass().getDeclaredMethods()) {
+      Listener annotation = declaredMethod.getAnnotation(Listener.class);
+      if (annotation == null) {
+        continue;
+      }
+
+      Class<?>[] parameters = declaredMethod.getParameterTypes();
+      if (parameters.length != 1) {
+        System.err.println("Unable to register listener method " + declaredMethod.getName()
+          + "@" + listener.getClass().getName() + " because method has more or less than one parameter");
+        continue;
+      }
+
+      if (!Event.class.isAssignableFrom(parameters[0])) {
+        System.err.println("Unable to register listener method " + declaredMethod.getName()
+          + "@" + listener.getClass().getName() + " because parameter type " + parameters[0].getName()
+          + " is not assignable from " + Event.class.getName());
+        continue;
+      }
+
+      ListenerContainer container = new DefaultListenerContainer(parameters[0], listener, declaredMethod, annotation.priority());
+      this.registeredListeners.add(container);
     }
+  }
 
-    @Override
-    public void registerListener(@NotNull Object listener) {
-        for (Method declaredMethod : listener.getClass().getDeclaredMethods()) {
-            Listener annotation = declaredMethod.getAnnotation(Listener.class);
-            if (annotation == null) {
-                continue;
-            }
-
-            Class<?>[] parameters = declaredMethod.getParameterTypes();
-            if (parameters.length != 1) {
-                System.err.println("Unable to register listener method " + declaredMethod.getName()
-                    + "@" + listener.getClass().getName() + " because method has more or less than one parameter");
-                continue;
-            }
-
-            if (!Event.class.isAssignableFrom(parameters[0])) {
-                System.err.println("Unable to register listener method " + declaredMethod.getName()
-                    + "@" + listener.getClass().getName() + " because parameter type " + parameters[0].getName()
-                    + " is not assignable from " + Event.class.getName());
-                continue;
-            }
-
-            ListenerContainer container = new DefaultListenerContainer(parameters[0], listener, declaredMethod, annotation.priority());
-            this.registeredListeners.add(container);
-        }
+  @Override
+  public void registerListener(@NotNull Class<?> listener) {
+    try {
+      this.registerListener(listener.getDeclaredConstructor().newInstance());
+    } catch (final NoSuchMethodException exception) {
+      System.err.println("Missing NoArgsConstructor in listener class " + listener.getName());
+    } catch (final InstantiationException | IllegalAccessException | InvocationTargetException exception) {
+      exception.printStackTrace();
     }
+  }
 
-    @Override
-    public void registerListener(@NotNull Class<?> listener) {
-        try {
-            this.registerListener(listener.getDeclaredConstructor().newInstance());
-        } catch (final NoSuchMethodException exception) {
-            System.err.println("Missing NoArgsConstructor in listener class " + listener.getName());
-        } catch (final InstantiationException | IllegalAccessException | InvocationTargetException exception) {
-            exception.printStackTrace();
-        }
-    }
+  @Override
+  public void unregisterListener(@NotNull Object listener) {
+    this.registeredListeners.removeIf(listenerContainer -> listenerContainer.getListenerInstance() == listener);
+  }
 
-    @Override
-    public void unregisterListener(@NotNull Object listener) {
-        this.registeredListeners.removeIf(listenerContainer -> listenerContainer.getListenerInstance() == listener);
-    }
+  @Override
+  public void unregisterAll() {
+    this.registeredListeners.clear();
+  }
 
-    @Override
-    public void unregisterAll() {
-        this.registeredListeners.clear();
-    }
-
-    @NotNull
-    @Override
-    public @UnmodifiableView List<ListenerContainer> getListeners() {
-        return Collections.unmodifiableList(this.registeredListeners);
-    }
+  @NotNull
+  @Override
+  public @UnmodifiableView List<ListenerContainer> getListeners() {
+    return Collections.unmodifiableList(this.registeredListeners);
+  }
 }

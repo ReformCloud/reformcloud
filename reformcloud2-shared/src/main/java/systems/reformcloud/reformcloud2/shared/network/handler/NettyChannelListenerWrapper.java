@@ -37,67 +37,67 @@ import java.util.function.Supplier;
 
 public class NettyChannelListenerWrapper extends ChannelInboundHandlerAdapter {
 
-    private final Supplier<ChannelListener> channelListenerFactory;
-    private NetworkChannel networkChannel;
+  private final Supplier<ChannelListener> channelListenerFactory;
+  private NetworkChannel networkChannel;
 
-    public NettyChannelListenerWrapper(Supplier<ChannelListener> channelListenerFactory) {
-        this.channelListenerFactory = channelListenerFactory;
-    }
+  public NettyChannelListenerWrapper(Supplier<ChannelListener> channelListenerFactory) {
+    this.channelListenerFactory = channelListenerFactory;
+  }
 
-    private static void release(@NotNull Object msg) {
-        if (msg instanceof ReferenceCounted) {
-            ReferenceCounted referenceCounted = (ReferenceCounted) msg;
-            if (referenceCounted.refCnt() > 0) {
-                referenceCounted.release(referenceCounted.refCnt());
-            }
-        }
+  private static void release(@NotNull Object msg) {
+    if (msg instanceof ReferenceCounted) {
+      ReferenceCounted referenceCounted = (ReferenceCounted) msg;
+      if (referenceCounted.refCnt() > 0) {
+        referenceCounted.release(referenceCounted.refCnt());
+      }
     }
+  }
 
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) {
-        if (this.networkChannel == null) {
-            this.networkChannel = new DefaultNetworkChannel(ctx.channel());
-            this.networkChannel.setListener(this.channelListenerFactory.get());
-        }
+  @Override
+  public void channelActive(ChannelHandlerContext ctx) {
+    if (this.networkChannel == null) {
+      this.networkChannel = new DefaultNetworkChannel(ctx.channel());
+      this.networkChannel.setListener(this.channelListenerFactory.get());
     }
+  }
 
-    @Override
-    public void channelInactive(ChannelHandlerContext ctx) {
-        if (this.networkChannel != null) {
-            this.networkChannel.getListener().channelInactive(this.networkChannel);
-        }
+  @Override
+  public void channelInactive(ChannelHandlerContext ctx) {
+    if (this.networkChannel != null) {
+      this.networkChannel.getListener().channelInactive(this.networkChannel);
     }
+  }
 
-    @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        if (this.networkChannel != null && msg instanceof Packet) {
-            Packet packet = (Packet) msg;
-            if (this.networkChannel.getListener().shouldHandle(packet)) {
-                this.networkChannel.getListener().handle(packet);
-            }
-        } else {
-            release(msg);
-        }
+  @Override
+  public void channelRead(ChannelHandlerContext ctx, Object msg) {
+    if (this.networkChannel != null && msg instanceof Packet) {
+      Packet packet = (Packet) msg;
+      if (this.networkChannel.getListener().shouldHandle(packet)) {
+        this.networkChannel.getListener().handle(packet);
+      }
+    } else {
+      release(msg);
     }
+  }
 
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) {
-        if (this.networkChannel != null) {
-            this.networkChannel.getListener().readOperationCompleted(this.networkChannel);
-        }
+  @Override
+  public void channelReadComplete(ChannelHandlerContext ctx) {
+    if (this.networkChannel != null) {
+      this.networkChannel.getListener().readOperationCompleted(this.networkChannel);
     }
+  }
 
-    @Override
-    public void channelWritabilityChanged(ChannelHandlerContext ctx) {
-        if (this.networkChannel != null) {
-            this.networkChannel.getListener().channelWriteAbilityChanged(this.networkChannel);
-        }
+  @Override
+  public void channelWritabilityChanged(ChannelHandlerContext ctx) {
+    if (this.networkChannel != null) {
+      this.networkChannel.getListener().channelWriteAbilityChanged(this.networkChannel);
     }
+  }
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        if (this.networkChannel != null) {
-            this.networkChannel.getListener().exceptionCaught(this.networkChannel, cause);
-        }
+  @Override
+  public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+    if (this.networkChannel != null) {
+      this.networkChannel.getListener().exceptionCaught(this.networkChannel, cause);
     }
+  }
 }

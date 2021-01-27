@@ -37,58 +37,58 @@ import java.util.function.Supplier;
 
 public abstract class JsonFactories {
 
-    protected static final AtomicReference<JsonParser> DEFAULT_PARSER = new AtomicReference<>();
-    protected static final AtomicReference<Supplier<JsonAdapterBuilder>> BUILDER_FACTORY = new AtomicReference<>();
-    protected static final AtomicReference<Supplier<Object>> OBJECT_FACTORY = new AtomicReference<>();
-    protected static final AtomicReference<Supplier<Array>> ARRAY_FACTORY = new AtomicReference<>();
-    protected static final AtomicReference<Function<java.lang.Object, Primitive>> PRIMITIVE_FACTORY = new AtomicReference<>();
-    protected static final AtomicReference<Supplier<Null>> NULL_FACTORY = new AtomicReference<>();
+  protected static final AtomicReference<JsonParser> DEFAULT_PARSER = new AtomicReference<>();
+  protected static final AtomicReference<Supplier<JsonAdapterBuilder>> BUILDER_FACTORY = new AtomicReference<>();
+  protected static final AtomicReference<Supplier<Object>> OBJECT_FACTORY = new AtomicReference<>();
+  protected static final AtomicReference<Supplier<Array>> ARRAY_FACTORY = new AtomicReference<>();
+  protected static final AtomicReference<Function<java.lang.Object, Primitive>> PRIMITIVE_FACTORY = new AtomicReference<>();
+  protected static final AtomicReference<Supplier<Null>> NULL_FACTORY = new AtomicReference<>();
 
-    protected JsonFactories() {
-    }
+  protected JsonFactories() {
+  }
 
-    @NotNull
-    public static JsonParser defaultParser() {
-        return DEFAULT_PARSER.get();
-    }
+  @NotNull
+  public static JsonParser defaultParser() {
+    return DEFAULT_PARSER.get();
+  }
 
-    @NotNull
-    public static JsonAdapterBuilder newAdapterBuilder() {
-        return BUILDER_FACTORY.get().get();
-    }
+  @NotNull
+  public static JsonAdapterBuilder newAdapterBuilder() {
+    return BUILDER_FACTORY.get().get();
+  }
 
-    @NotNull
-    public static Object newObject() {
-        return OBJECT_FACTORY.get().get();
-    }
+  @NotNull
+  public static Object newObject() {
+    return OBJECT_FACTORY.get().get();
+  }
 
-    @NotNull
-    public static Array newArray() {
-        return ARRAY_FACTORY.get().get();
-    }
+  @NotNull
+  public static Array newArray() {
+    return ARRAY_FACTORY.get().get();
+  }
 
-    @NotNull
-    public static Primitive newPrimitive(@NotNull Character character) {
-        return PRIMITIVE_FACTORY.get().apply(character);
-    }
+  @NotNull
+  public static Primitive newPrimitive(@NotNull Character character) {
+    return PRIMITIVE_FACTORY.get().apply(character);
+  }
 
-    @NotNull
-    public static Primitive newPrimitive(@NotNull Boolean bool) {
-        return PRIMITIVE_FACTORY.get().apply(bool);
-    }
+  @NotNull
+  public static Primitive newPrimitive(@NotNull Boolean bool) {
+    return PRIMITIVE_FACTORY.get().apply(bool);
+  }
 
-    @NotNull
-    public static Primitive newPrimitive(@NotNull Number integer) {
-        return PRIMITIVE_FACTORY.get().apply(integer);
-    }
+  @NotNull
+  public static Primitive newPrimitive(@NotNull Number integer) {
+    return PRIMITIVE_FACTORY.get().apply(integer);
+  }
 
-    @NotNull
-    public static Primitive newPrimitive(@NotNull String string) {
-        return PRIMITIVE_FACTORY.get().apply(string);
-    }
+  @NotNull
+  public static Primitive newPrimitive(@NotNull String string) {
+    return PRIMITIVE_FACTORY.get().apply(string);
+  }
 
-    @NotNull
-    public static Null newNull() {
-        return NULL_FACTORY.get().get();
-    }
+  @NotNull
+  public static Null newNull() {
+    return NULL_FACTORY.get().get();
+  }
 }

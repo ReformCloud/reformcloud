@@ -37,5 +37,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Listener {
 
-    EventPriority priority() default EventPriority.NORMAL;
+  EventPriority priority() default EventPriority.NORMAL;
 }

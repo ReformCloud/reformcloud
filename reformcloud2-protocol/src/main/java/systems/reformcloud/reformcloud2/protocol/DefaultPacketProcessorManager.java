@@ -35,18 +35,18 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class DefaultPacketProcessorManager extends PacketProcessorManager {
 
-    private final Map<Class<? extends Packet>, PacketProcessor<? extends Packet>> processors = new ConcurrentHashMap<>();
+  private final Map<Class<? extends Packet>, PacketProcessor<? extends Packet>> processors = new ConcurrentHashMap<>();
 
-    @Override
-    public @NotNull <T extends Packet> PacketProcessorManager registerProcessor(@NotNull PacketProcessor<T> packetProcessor, @NotNull Class<T> packetClass) {
-        this.processors.put(packetClass, packetProcessor);
-        return this;
-    }
+  @Override
+  public @NotNull <T extends Packet> PacketProcessorManager registerProcessor(@NotNull PacketProcessor<T> packetProcessor, @NotNull Class<T> packetClass) {
+    this.processors.put(packetClass, packetProcessor);
+    return this;
+  }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public @NotNull <T extends Packet> Optional<PacketProcessor<T>> getPacketProcessor(@NotNull Class<T> packetClass) {
-        PacketProcessor<T> packetProcessor = (PacketProcessor<T>) this.processors.get(packetClass);
-        return Optional.ofNullable(packetProcessor);
-    }
+  @Override
+  @SuppressWarnings("unchecked")
+  public @NotNull <T extends Packet> Optional<PacketProcessor<T>> getPacketProcessor(@NotNull Class<T> packetClass) {
+    PacketProcessor<T> packetProcessor = (PacketProcessor<T>) this.processors.get(packetClass);
+    return Optional.ofNullable(packetProcessor);
+  }
 }

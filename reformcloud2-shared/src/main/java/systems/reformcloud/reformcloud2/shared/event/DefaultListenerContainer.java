@@ -34,40 +34,40 @@ import java.lang.reflect.Method;
 
 public final class DefaultListenerContainer implements ListenerContainer {
 
-    private final Class<?> eventClassTarget;
-    private final Object listenerInstance;
-    private final Method method;
-    private final EventPriority priority;
+  private final Class<?> eventClassTarget;
+  private final Object listenerInstance;
+  private final Method method;
+  private final EventPriority priority;
 
-    DefaultListenerContainer(Class<?> eventClassTarget, Object listenerInstance, Method method, EventPriority priority) {
-        this.eventClassTarget = eventClassTarget;
-        this.listenerInstance = listenerInstance;
-        this.method = method;
-        this.priority = priority;
+  DefaultListenerContainer(Class<?> eventClassTarget, Object listenerInstance, Method method, EventPriority priority) {
+    this.eventClassTarget = eventClassTarget;
+    this.listenerInstance = listenerInstance;
+    this.method = method;
+    this.priority = priority;
 
-        this.method.setAccessible(true);
-    }
+    this.method.setAccessible(true);
+  }
 
-    @NotNull
-    @Override
-    public Object getListenerInstance() {
-        return this.listenerInstance;
-    }
+  @NotNull
+  @Override
+  public Object getListenerInstance() {
+    return this.listenerInstance;
+  }
 
-    @NotNull
-    @Override
-    public Class<?> getTargetEventClass() {
-        return this.eventClassTarget;
-    }
+  @NotNull
+  @Override
+  public Class<?> getTargetEventClass() {
+    return this.eventClassTarget;
+  }
 
-    @NotNull
-    @Override
-    public EventPriority getPriority() {
-        return this.priority;
-    }
+  @NotNull
+  @Override
+  public EventPriority getPriority() {
+    return this.priority;
+  }
 
-    @Override
-    public void call(@NotNull Event event) throws InvocationTargetException, IllegalAccessException {
-        this.method.invoke(this.listenerInstance, event);
-    }
+  @Override
+  public void call(@NotNull Event event) throws InvocationTargetException, IllegalAccessException {
+    this.method.invoke(this.listenerInstance, event);
+  }
 }

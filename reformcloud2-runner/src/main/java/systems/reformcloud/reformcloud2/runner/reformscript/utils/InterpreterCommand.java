@@ -34,31 +34,31 @@ import java.util.Collection;
  */
 public abstract class InterpreterCommand {
 
-    private final String command;
+  private final String command;
 
-    /**
-     * Creates new interpreter command
-     *
-     * @param command The name of the command
-     */
-    public InterpreterCommand(@NotNull String command) {
-        this.command = command.toUpperCase();
-    }
+  /**
+   * Creates new interpreter command
+   *
+   * @param command The name of the command
+   */
+  public InterpreterCommand(@NotNull String command) {
+    this.command = command.toUpperCase();
+  }
 
-    /**
-     * @return The actual command name which is always upper-case
-     */
-    @NotNull
-    public String getCommand() {
-        return this.command;
-    }
+  /**
+   * @return The actual command name which is always upper-case
+   */
+  @NotNull
+  public String getCommand() {
+    return this.command;
+  }
 
-    /**
-     * Executes the current command
-     *
-     * @param cursorLine The current line of the cursor
-     * @param script     The script from which the command got executed
-     * @param allLines   All lines of the script
-     */
-    public abstract void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines);
+  /**
+   * Executes the current command
+   *
+   * @param cursorLine The current line of the cursor
+   * @param script     The script from which the command got executed
+   * @param allLines   All lines of the script
+   */
+  public abstract void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines);
 }

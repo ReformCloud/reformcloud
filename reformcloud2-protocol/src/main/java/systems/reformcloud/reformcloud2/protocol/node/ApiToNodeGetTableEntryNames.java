@@ -36,33 +36,33 @@ import java.util.Collection;
 
 public class ApiToNodeGetTableEntryNames extends ProtocolPacket {
 
-    private String tableName;
+  private String tableName;
 
-    public ApiToNodeGetTableEntryNames() {
-    }
+  public ApiToNodeGetTableEntryNames() {
+  }
 
-    public ApiToNodeGetTableEntryNames(String tableName) {
-        this.tableName = tableName;
-    }
+  public ApiToNodeGetTableEntryNames(String tableName) {
+    this.tableName = tableName;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 9;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 9;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        Collection<String> names = ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(this.tableName).getEntryNames();
-        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetTableEntryNamesResult(names));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    Collection<String> names = ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(this.tableName).getEntryNames();
+    channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetTableEntryNamesResult(names));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.tableName);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.tableName);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.tableName = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.tableName = buffer.readString();
+  }
 }

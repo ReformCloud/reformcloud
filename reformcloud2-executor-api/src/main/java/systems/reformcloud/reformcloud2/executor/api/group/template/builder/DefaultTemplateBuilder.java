@@ -37,147 +37,147 @@ import java.util.Collection;
 
 public class DefaultTemplateBuilder implements TemplateBuilder {
 
-    private String name;
-    private Version version;
-    private int priority;
-    private boolean global;
-    private boolean autoCopyOnClose;
-    private String backend = FILE_BACKEND;
-    private String serverNameSplitter = DEFAULT_SERVER_NAME_SPLITTER;
-    private RuntimeConfiguration runtimeConfiguration = DEFAULT_RUNTIME_CONFIGURATION;
-    private Collection<Inclusion> templateInclusions = new ArrayList<>();
-    private Collection<Inclusion> pathInclusions = new ArrayList<>();
-    private JsonConfiguration jsonData = JsonConfiguration.newJsonConfiguration();
+  private String name;
+  private Version version;
+  private int priority;
+  private boolean global;
+  private boolean autoCopyOnClose;
+  private String backend = FILE_BACKEND;
+  private String serverNameSplitter = DEFAULT_SERVER_NAME_SPLITTER;
+  private RuntimeConfiguration runtimeConfiguration = DEFAULT_RUNTIME_CONFIGURATION;
+  private Collection<Inclusion> templateInclusions = new ArrayList<>();
+  private Collection<Inclusion> pathInclusions = new ArrayList<>();
+  private JsonConfiguration jsonData = JsonConfiguration.newJsonConfiguration();
 
-    protected DefaultTemplateBuilder(String name, Version version) {
-        this.name = name;
-        this.version = version;
-    }
+  protected DefaultTemplateBuilder(String name, Version version) {
+    this.name = name;
+    this.version = version;
+  }
 
-    @Override
-    public @NotNull TemplateBuilder name(@NotNull String name) {
-        this.name = name;
-        return this;
-    }
+  @Override
+  public @NotNull TemplateBuilder name(@NotNull String name) {
+    this.name = name;
+    return this;
+  }
 
-    @Override
-    public @NotNull String name() {
-        return this.name;
-    }
+  @Override
+  public @NotNull String name() {
+    return this.name;
+  }
 
-    @Override
-    public @NotNull TemplateBuilder priority(int priority) {
-        this.priority = priority;
-        return this;
-    }
+  @Override
+  public @NotNull TemplateBuilder priority(int priority) {
+    this.priority = priority;
+    return this;
+  }
 
-    @Override
-    public int priority() {
-        return this.priority;
-    }
+  @Override
+  public int priority() {
+    return this.priority;
+  }
 
-    @Override
-    public @NotNull TemplateBuilder global(boolean global) {
-        this.global = global;
-        return this;
-    }
+  @Override
+  public @NotNull TemplateBuilder global(boolean global) {
+    this.global = global;
+    return this;
+  }
 
-    @Override
-    public boolean global() {
-        return this.global;
-    }
+  @Override
+  public boolean global() {
+    return this.global;
+  }
 
-    @Override
-    public @NotNull TemplateBuilder autoCopyOnClose(boolean autoCopyOnClose) {
-        this.autoCopyOnClose = autoCopyOnClose;
-        return this;
-    }
+  @Override
+  public @NotNull TemplateBuilder autoCopyOnClose(boolean autoCopyOnClose) {
+    this.autoCopyOnClose = autoCopyOnClose;
+    return this;
+  }
 
-    @Override
-    public boolean autoCopyOnClose() {
-        return this.autoCopyOnClose;
-    }
+  @Override
+  public boolean autoCopyOnClose() {
+    return this.autoCopyOnClose;
+  }
 
-    @Override
-    public @NotNull TemplateBuilder backend(@NotNull String backend) {
-        this.backend = backend;
-        return this;
-    }
+  @Override
+  public @NotNull TemplateBuilder backend(@NotNull String backend) {
+    this.backend = backend;
+    return this;
+  }
 
-    @Override
-    public @NotNull String backend() {
-        return this.backend;
-    }
+  @Override
+  public @NotNull String backend() {
+    return this.backend;
+  }
 
-    @Override
-    public @NotNull TemplateBuilder serverNameSplitter(@Nullable String serverNameSplitter) {
-        this.serverNameSplitter = serverNameSplitter == null ? DEFAULT_SERVER_NAME_SPLITTER : serverNameSplitter;
-        return this;
-    }
+  @Override
+  public @NotNull TemplateBuilder serverNameSplitter(@Nullable String serverNameSplitter) {
+    this.serverNameSplitter = serverNameSplitter == null ? DEFAULT_SERVER_NAME_SPLITTER : serverNameSplitter;
+    return this;
+  }
 
-    @Override
-    public @NotNull String serverNameSplitter() {
-        return this.serverNameSplitter;
-    }
+  @Override
+  public @NotNull String serverNameSplitter() {
+    return this.serverNameSplitter;
+  }
 
-    @Override
-    public @NotNull TemplateBuilder runtimeConfiguration(@NotNull RuntimeConfiguration runtimeConfiguration) {
-        this.runtimeConfiguration = runtimeConfiguration;
-        return this;
-    }
+  @Override
+  public @NotNull TemplateBuilder runtimeConfiguration(@NotNull RuntimeConfiguration runtimeConfiguration) {
+    this.runtimeConfiguration = runtimeConfiguration;
+    return this;
+  }
 
-    @Override
-    public @NotNull RuntimeConfiguration runtimeConfiguration() {
-        return this.runtimeConfiguration;
-    }
+  @Override
+  public @NotNull RuntimeConfiguration runtimeConfiguration() {
+    return this.runtimeConfiguration;
+  }
 
-    @Override
-    public @NotNull TemplateBuilder version(@NotNull Version version) {
-        this.version = version;
-        return this;
-    }
+  @Override
+  public @NotNull TemplateBuilder version(@NotNull Version version) {
+    this.version = version;
+    return this;
+  }
 
-    @Override
-    public @NotNull Version version() {
-        return this.version;
-    }
+  @Override
+  public @NotNull Version version() {
+    return this.version;
+  }
 
-    @Override
-    public @NotNull TemplateBuilder templateInclusions(@NotNull Collection<Inclusion> templateInclusions) {
-        this.templateInclusions = templateInclusions;
-        return this;
-    }
+  @Override
+  public @NotNull TemplateBuilder templateInclusions(@NotNull Collection<Inclusion> templateInclusions) {
+    this.templateInclusions = templateInclusions;
+    return this;
+  }
 
-    @Override
-    public @NotNull Collection<Inclusion> templateInclusions() {
-        return this.templateInclusions;
-    }
+  @Override
+  public @NotNull Collection<Inclusion> templateInclusions() {
+    return this.templateInclusions;
+  }
 
-    @Override
-    public @NotNull TemplateBuilder pathInclusions(@NotNull Collection<Inclusion> pathInclusions) {
-        this.pathInclusions = pathInclusions;
-        return this;
-    }
+  @Override
+  public @NotNull TemplateBuilder pathInclusions(@NotNull Collection<Inclusion> pathInclusions) {
+    this.pathInclusions = pathInclusions;
+    return this;
+  }
 
-    @Override
-    public @NotNull Collection<Inclusion> pathInclusions() {
-        return this.pathInclusions;
-    }
+  @Override
+  public @NotNull Collection<Inclusion> pathInclusions() {
+    return this.pathInclusions;
+  }
 
-    @Override
-    public @NotNull TemplateBuilder jsonData(@NotNull JsonConfiguration data) {
-        this.jsonData = data;
-        return this;
-    }
+  @Override
+  public @NotNull TemplateBuilder jsonData(@NotNull JsonConfiguration data) {
+    this.jsonData = data;
+    return this;
+  }
 
-    @Override
-    public @NotNull JsonConfiguration jsonData() {
-        return this.jsonData;
-    }
+  @Override
+  public @NotNull JsonConfiguration jsonData() {
+    return this.jsonData;
+  }
 
-    @Override
-    public @NotNull Template build() {
-        return new DefaultTemplate(this.priority, this.global, this.autoCopyOnClose, this.backend, this.serverNameSplitter, this.runtimeConfiguration,
-            this.version, this.templateInclusions, this.pathInclusions, this.name, this.jsonData);
-    }
+  @Override
+  public @NotNull Template build() {
+    return new DefaultTemplate(this.priority, this.global, this.autoCopyOnClose, this.backend, this.serverNameSplitter, this.runtimeConfiguration,
+      this.version, this.templateInclusions, this.pathInclusions, this.name, this.jsonData);
+  }
 }

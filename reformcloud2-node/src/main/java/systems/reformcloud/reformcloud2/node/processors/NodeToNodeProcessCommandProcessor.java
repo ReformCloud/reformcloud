@@ -38,10 +38,10 @@ import java.util.Collection;
 
 public class NodeToNodeProcessCommandProcessor implements PacketProcessor<NodeToNodeProcessCommand> {
 
-    @Override
-    public void process(@NotNull NetworkChannel channel, @NotNull NodeToNodeProcessCommand packet) {
-        Collection<String> result = new ArrayList<>();
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class).process(packet.getCommandLine(), new CachedCommandSender(result));
-        channel.sendQueryResult(packet.getQueryUniqueID(), new NodeToNodeProcessCommandResult(result));
-    }
+  @Override
+  public void process(@NotNull NetworkChannel channel, @NotNull NodeToNodeProcessCommand packet) {
+    Collection<String> result = new ArrayList<>();
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class).process(packet.getCommandLine(), new CachedCommandSender(result));
+    channel.sendQueryResult(packet.getQueryUniqueID(), new NodeToNodeProcessCommandResult(result));
+  }
 }

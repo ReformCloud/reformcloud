@@ -33,11 +33,11 @@ import systems.reformcloud.reformcloud2.protocol.processor.PacketProcessor;
 
 public class NodeToNodePublishChannelMessageProcessor implements PacketProcessor<NodeToNodePublishChannelMessage> {
 
-    @Override
-    public void process(@NotNull NetworkChannel channel, @NotNull NodeToNodePublishChannelMessage packet) {
-        ExecutorAPI.getInstance().getProcessProvider().getProcesses()
-            .stream()
-            .filter(processInformation -> processInformation.getId().getNodeName().equals(NodeExecutor.getInstance().getSelfName()))
-            .forEach(processInformation -> ExecutorAPI.getInstance().getChannelMessageProvider().sendChannelMessage(processInformation, packet.getChannel(), packet.getData()));
-    }
+  @Override
+  public void process(@NotNull NetworkChannel channel, @NotNull NodeToNodePublishChannelMessage packet) {
+    ExecutorAPI.getInstance().getProcessProvider().getProcesses()
+      .stream()
+      .filter(processInformation -> processInformation.getId().getNodeName().equals(NodeExecutor.getInstance().getSelfName()))
+      .forEach(processInformation -> ExecutorAPI.getInstance().getChannelMessageProvider().sendChannelMessage(processInformation, packet.getChannel(), packet.getData()));
+  }
 }

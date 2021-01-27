@@ -2,27 +2,27 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>reformcloud2</artifactId>
-        <groupId>systems.reformcloud.reformcloud2</groupId>
-        <version>2.11.0-SNAPSHOT</version>
-    </parent>
-    <packaging>pom</packaging>
-    <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>reformcloud2</artifactId>
+    <groupId>systems.reformcloud.reformcloud2</groupId>
+    <version>2.11.0-SNAPSHOT</version>
+  </parent>
+  <packaging>pom</packaging>
+  <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>reformcloud2-applications</artifactId>
+  <artifactId>reformcloud2-applications</artifactId>
 
-    <modules>
-        <module>reformcloud2-default-application-permissions</module>
-        <module>reformcloud2-default-application-commands</module>
-        <module>reformcloud2-default-application-signs</module>
-        <module>reformcloud2-default-application-proxy</module>
-        <module>reformcloud2-default-application-cloudflare</module>
-        <module>reformcloud2-default-application-template-backends</module>
-        <module>reformcloud2-default-application-database-mysql</module>
-        <module>reformcloud2-default-application-database-file</module>
-        <module>reformcloud2-default-application-database-mongo</module>
-        <module>reformcloud2-default-application-database-rethink</module>
-    </modules>
+  <modules>
+    <module>reformcloud2-default-application-permissions</module>
+    <module>reformcloud2-default-application-commands</module>
+    <module>reformcloud2-default-application-signs</module>
+    <module>reformcloud2-default-application-proxy</module>
+    <module>reformcloud2-default-application-cloudflare</module>
+    <module>reformcloud2-default-application-template-backends</module>
+    <module>reformcloud2-default-application-database-mysql</module>
+    <module>reformcloud2-default-application-database-file</module>
+    <module>reformcloud2-default-application-database-mongo</module>
+    <module>reformcloud2-default-application-database-rethink</module>
+  </modules>
 
 </project>

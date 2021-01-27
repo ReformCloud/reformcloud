@@ -29,6 +29,6 @@ import systems.reformcloud.reformcloud2.executor.api.configuration.json.Element;
 
 public interface Primitive extends Element, Cloneable {
 
-    @NotNull
-    Primitive clone();
+  @NotNull
+  Primitive clone();
 }

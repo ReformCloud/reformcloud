@@ -33,23 +33,23 @@ import java.util.Optional;
 
 public interface ChannelManager {
 
-    @NotNull
-    Optional<NetworkChannel> getChannel(@NotNull String name);
+  @NotNull
+  Optional<NetworkChannel> getChannel(@NotNull String name);
 
-    @NotNull
-    @UnmodifiableView Collection<NetworkChannel> getNetworkChannels(@NotNull String remoteAddress);
+  @NotNull
+  @UnmodifiableView Collection<NetworkChannel> getNetworkChannels(@NotNull String remoteAddress);
 
-    @NotNull
-    Optional<NetworkChannel> getFirstChannel();
+  @NotNull
+  Optional<NetworkChannel> getFirstChannel();
 
-    @NotNull
-    @UnmodifiableView Collection<NetworkChannel> getRegisteredChannels();
+  @NotNull
+  @UnmodifiableView Collection<NetworkChannel> getRegisteredChannels();
 
-    void registerChannel(@NotNull NetworkChannel channel);
+  void registerChannel(@NotNull NetworkChannel channel);
 
-    default void unregisterChannel(@NotNull NetworkChannel channel) {
-        this.unregisterChannel(channel.getName());
-    }
+  default void unregisterChannel(@NotNull NetworkChannel channel) {
+    this.unregisterChannel(channel.getName());
+  }
 
-    void unregisterChannel(@NotNull String name);
+  void unregisterChannel(@NotNull String name);
 }

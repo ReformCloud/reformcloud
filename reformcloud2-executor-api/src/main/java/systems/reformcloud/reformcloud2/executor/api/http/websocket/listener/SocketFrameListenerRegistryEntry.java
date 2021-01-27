@@ -35,26 +35,26 @@ import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrameT
  */
 public interface SocketFrameListenerRegistryEntry {
 
-    /**
-     * Get the actual listeners this entry is for.
-     *
-     * @return the actual listener.
-     */
-    @NotNull
-    SocketFrameListener getListener();
+  /**
+   * Get the actual listeners this entry is for.
+   *
+   * @return the actual listener.
+   */
+  @NotNull
+  SocketFrameListener getListener();
 
-    /**
-     * Get the socket frame types a socket listener handles.
-     *
-     * @return the socket frame types a socket listener handles.
-     */
-    @NotNull
-    SocketFrameType[] getHandlingFrameTypes();
+  /**
+   * Get the socket frame types a socket listener handles.
+   *
+   * @return the socket frame types a socket listener handles.
+   */
+  @NotNull
+  SocketFrameType[] getHandlingFrameTypes();
 
-    /**
-     * Get the priority of this listener.
-     *
-     * @return the priority of this listener.
-     */
-    int priority();
+  /**
+   * Get the priority of this listener.
+   *
+   * @return the priority of this listener.
+   */
+  int priority();
 }

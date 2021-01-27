@@ -43,11 +43,11 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequestMethods {
-    /**
-     * Get the request methods the listening method is handling.
-     *
-     * @return the request methods the listening method is handling.
-     */
-    @NotNull
-    RequestMethod[] value() default RequestMethod.GET;
+  /**
+   * Get the request methods the listening method is handling.
+   *
+   * @return the request methods the listening method is handling.
+   */
+  @NotNull
+  RequestMethod[] value() default RequestMethod.GET;
 }

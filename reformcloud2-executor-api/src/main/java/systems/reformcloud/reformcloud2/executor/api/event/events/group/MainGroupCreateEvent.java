@@ -28,7 +28,7 @@ import systems.reformcloud.reformcloud2.executor.api.group.main.MainGroup;
 
 public class MainGroupCreateEvent extends MainGroupEvent {
 
-    public MainGroupCreateEvent(MainGroup mainGroup) {
-        super(mainGroup);
-    }
+  public MainGroupCreateEvent(MainGroup mainGroup) {
+    super(mainGroup);
+  }
 }

@@ -28,23 +28,23 @@ import org.jetbrains.annotations.NotNull;
 
 public interface Sorted3<F, S, T> extends Comparable3<F, S, T> {
 
-    default boolean lt(@NotNull F f, @NotNull S s, @NotNull T t) {
-        return this.compareTo(f, s, t) < 0;
-    }
+  default boolean lt(@NotNull F f, @NotNull S s, @NotNull T t) {
+    return this.compareTo(f, s, t) < 0;
+  }
 
-    default boolean lte(@NotNull F f, @NotNull S s, @NotNull T t) {
-        return this.compareTo(f, s, t) <= 0;
-    }
+  default boolean lte(@NotNull F f, @NotNull S s, @NotNull T t) {
+    return this.compareTo(f, s, t) <= 0;
+  }
 
-    default boolean gt(@NotNull F f, @NotNull S s, @NotNull T t) {
-        return this.compareTo(f, s, t) > 0;
-    }
+  default boolean gt(@NotNull F f, @NotNull S s, @NotNull T t) {
+    return this.compareTo(f, s, t) > 0;
+  }
 
-    default boolean gte(@NotNull F f, @NotNull S s, @NotNull T t) {
-        return this.compareTo(f, s, t) >= 0;
-    }
+  default boolean gte(@NotNull F f, @NotNull S s, @NotNull T t) {
+    return this.compareTo(f, s, t) >= 0;
+  }
 
-    default boolean e(@NotNull F f, @NotNull S s, @NotNull T t) {
-        return this.compareTo(f, s, t) == 0;
-    }
+  default boolean e(@NotNull F f, @NotNull S s, @NotNull T t) {
+    return this.compareTo(f, s, t) == 0;
+  }
 }

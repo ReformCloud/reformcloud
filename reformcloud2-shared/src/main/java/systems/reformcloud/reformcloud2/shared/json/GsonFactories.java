@@ -31,28 +31,28 @@ import systems.reformcloud.reformcloud2.executor.api.configuration.json.JsonFact
 
 public class GsonFactories extends JsonFactories {
 
-    private GsonFactories() {
-        throw new UnsupportedOperationException();
-    }
+  private GsonFactories() {
+    throw new UnsupportedOperationException();
+  }
 
-    public static void init() {
-        DEFAULT_PARSER.set(new GsonParser());
-        BUILDER_FACTORY.set(GsonAdapterBuilder::new);
-        OBJECT_FACTORY.set(() -> new GsonObject(new JsonObject()));
-        ARRAY_FACTORY.set(() -> new GsonArray(new JsonArray()));
-        NULL_FACTORY.set(() -> GsonNull.INSTANCE);
-        PRIMITIVE_FACTORY.set(o -> {
-            if (o instanceof Character) {
-                return new GsonPrimitive(new JsonPrimitive((Character) o));
-            } else if (o instanceof String) {
-                return new GsonPrimitive(new JsonPrimitive((String) o));
-            } else if (o instanceof Number) {
-                return new GsonPrimitive(new JsonPrimitive((Number) o));
-            } else if (o instanceof Boolean) {
-                return new GsonPrimitive(new JsonPrimitive((Boolean) o));
-            } else {
-                throw new IllegalStateException("Unsupported object " + o.getClass().getName());
-            }
-        });
-    }
+  public static void init() {
+    DEFAULT_PARSER.set(new GsonParser());
+    BUILDER_FACTORY.set(GsonAdapterBuilder::new);
+    OBJECT_FACTORY.set(() -> new GsonObject(new JsonObject()));
+    ARRAY_FACTORY.set(() -> new GsonArray(new JsonArray()));
+    NULL_FACTORY.set(() -> GsonNull.INSTANCE);
+    PRIMITIVE_FACTORY.set(o -> {
+      if (o instanceof Character) {
+        return new GsonPrimitive(new JsonPrimitive((Character) o));
+      } else if (o instanceof String) {
+        return new GsonPrimitive(new JsonPrimitive((String) o));
+      } else if (o instanceof Number) {
+        return new GsonPrimitive(new JsonPrimitive((Number) o));
+      } else if (o instanceof Boolean) {
+        return new GsonPrimitive(new JsonPrimitive((Boolean) o));
+      } else {
+        throw new IllegalStateException("Unsupported object " + o.getClass().getName());
+      }
+    });
+  }
 }

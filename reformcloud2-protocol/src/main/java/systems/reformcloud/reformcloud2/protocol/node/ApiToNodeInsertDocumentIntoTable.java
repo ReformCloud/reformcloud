@@ -35,44 +35,44 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodeInsertDocumentIntoTable extends ProtocolPacket {
 
-    protected String tableName;
-    protected String key;
-    protected String id;
-    protected JsonConfiguration data;
+  protected String tableName;
+  protected String key;
+  protected String id;
+  protected JsonConfiguration data;
 
-    public ApiToNodeInsertDocumentIntoTable() {
-    }
+  public ApiToNodeInsertDocumentIntoTable() {
+  }
 
-    public ApiToNodeInsertDocumentIntoTable(String tableName, String key, String id, JsonConfiguration data) {
-        this.tableName = tableName;
-        this.key = key;
-        this.id = id;
-        this.data = data;
-    }
+  public ApiToNodeInsertDocumentIntoTable(String tableName, String key, String id, JsonConfiguration data) {
+    this.tableName = tableName;
+    this.key = key;
+    this.id = id;
+    this.data = data;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 4;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 4;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(this.tableName).insert(this.key, this.id, this.data);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(this.tableName).insert(this.key, this.id, this.data);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.tableName);
-        buffer.writeString(this.key);
-        buffer.writeString(this.id);
-        buffer.writeString(this.data.toPrettyString());
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.tableName);
+    buffer.writeString(this.key);
+    buffer.writeString(this.id);
+    buffer.writeString(this.data.toPrettyString());
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.tableName = buffer.readString();
-        this.key = buffer.readString();
-        this.id = buffer.readString();
-        this.data = JsonConfiguration.newJsonConfiguration(buffer.readString());
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.tableName = buffer.readString();
+    this.key = buffer.readString();
+    this.id = buffer.readString();
+    this.data = JsonConfiguration.newJsonConfiguration(buffer.readString());
+  }
 }

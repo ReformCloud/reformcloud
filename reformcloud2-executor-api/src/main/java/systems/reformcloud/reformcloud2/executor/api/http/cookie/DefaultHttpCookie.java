@@ -29,98 +29,98 @@ import org.jetbrains.annotations.Nullable;
 
 final class DefaultHttpCookie implements HttpCookie {
 
-    private final String name;
-    private String value;
-    private boolean wrap;
-    private String domain;
-    private String path;
-    private long maxAge = UNDEFINED_MAX_AGE;
-    private boolean secure;
-    private boolean httpOnly;
+  private final String name;
+  private String value;
+  private boolean wrap;
+  private String domain;
+  private String path;
+  private long maxAge = UNDEFINED_MAX_AGE;
+  private boolean secure;
+  private boolean httpOnly;
 
-    DefaultHttpCookie(String name) {
-        this.name = name;
-    }
+  DefaultHttpCookie(String name) {
+    this.name = name;
+  }
 
-    @Override
-    public @NotNull String name() {
-        return this.name;
-    }
+  @Override
+  public @NotNull String name() {
+    return this.name;
+  }
 
-    @Override
-    public @NotNull String value() {
-        return this.value;
-    }
+  @Override
+  public @NotNull String value() {
+    return this.value;
+  }
 
-    @Override
-    public @NotNull HttpCookie value(@NotNull String value) {
-        this.value = value;
-        return this;
-    }
+  @Override
+  public @NotNull HttpCookie value(@NotNull String value) {
+    this.value = value;
+    return this;
+  }
 
-    @Override
-    public boolean wrap() {
-        return this.wrap;
-    }
+  @Override
+  public boolean wrap() {
+    return this.wrap;
+  }
 
-    @Override
-    public @NotNull HttpCookie wrap(boolean wrap) {
-        this.wrap = wrap;
-        return this;
-    }
+  @Override
+  public @NotNull HttpCookie wrap(boolean wrap) {
+    this.wrap = wrap;
+    return this;
+  }
 
-    @Override
-    public @Nullable String domain() {
-        return this.domain;
-    }
+  @Override
+  public @Nullable String domain() {
+    return this.domain;
+  }
 
-    @Override
-    public @NotNull HttpCookie domain(@Nullable String domain) {
-        this.domain = domain;
-        return this;
-    }
+  @Override
+  public @NotNull HttpCookie domain(@Nullable String domain) {
+    this.domain = domain;
+    return this;
+  }
 
-    @Override
-    public @Nullable String path() {
-        return this.path;
-    }
+  @Override
+  public @Nullable String path() {
+    return this.path;
+  }
 
-    @Override
-    public @NotNull HttpCookie path(@Nullable String path) {
-        this.path = path;
-        return this;
-    }
+  @Override
+  public @NotNull HttpCookie path(@Nullable String path) {
+    this.path = path;
+    return this;
+  }
 
-    @Override
-    public long maxAge() {
-        return this.maxAge;
-    }
+  @Override
+  public long maxAge() {
+    return this.maxAge;
+  }
 
-    @Override
-    public @NotNull HttpCookie maxAge(long maxAge) {
-        this.maxAge = maxAge;
-        return this;
-    }
+  @Override
+  public @NotNull HttpCookie maxAge(long maxAge) {
+    this.maxAge = maxAge;
+    return this;
+  }
 
-    @Override
-    public boolean secure() {
-        return this.secure;
-    }
+  @Override
+  public boolean secure() {
+    return this.secure;
+  }
 
-    @Override
-    public @NotNull HttpCookie secure(boolean secure) {
-        this.secure = secure;
-        return this;
-    }
+  @Override
+  public @NotNull HttpCookie secure(boolean secure) {
+    this.secure = secure;
+    return this;
+  }
 
-    @Override
-    public boolean httpOnly() {
-        return this.httpOnly;
-    }
+  @Override
+  public boolean httpOnly() {
+    return this.httpOnly;
+  }
 
-    @Override
-    public @NotNull HttpCookie httpOnly(boolean httpOnly) {
-        this.httpOnly = httpOnly;
-        return this;
-    }
+  @Override
+  public @NotNull HttpCookie httpOnly(boolean httpOnly) {
+    this.httpOnly = httpOnly;
+    return this;
+  }
 }

@@ -35,31 +35,31 @@ import java.util.Collection;
 
 public class ApiToNodeGetProcessInformationObjectsResult extends QueryResultPacket {
 
-    private Collection<ProcessInformation> processInformation;
+  private Collection<ProcessInformation> processInformation;
 
-    public ApiToNodeGetProcessInformationObjectsResult() {
-    }
+  public ApiToNodeGetProcessInformationObjectsResult() {
+  }
 
-    public ApiToNodeGetProcessInformationObjectsResult(Collection<ProcessInformation> processInformation) {
-        this.processInformation = processInformation;
-    }
+  public ApiToNodeGetProcessInformationObjectsResult(Collection<ProcessInformation> processInformation) {
+    this.processInformation = processInformation;
+  }
 
-    public Collection<ProcessInformation> getProcessInformation() {
-        return this.processInformation;
-    }
+  public Collection<ProcessInformation> getProcessInformation() {
+    return this.processInformation;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 75;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 75;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObjects(this.processInformation);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObjects(this.processInformation);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.processInformation = buffer.readObjects(DefaultProcessInformation.class, ProcessInformation.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.processInformation = buffer.readObjects(DefaultProcessInformation.class, ProcessInformation.class);
+  }
 }

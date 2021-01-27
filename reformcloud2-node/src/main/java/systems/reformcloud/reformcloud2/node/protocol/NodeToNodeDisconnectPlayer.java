@@ -36,36 +36,36 @@ import java.util.UUID;
 
 public class NodeToNodeDisconnectPlayer extends ProtocolPacket {
 
-    private UUID playerUniqueId;
-    private String reason;
+  private UUID playerUniqueId;
+  private String reason;
 
-    public NodeToNodeDisconnectPlayer() {
-    }
+  public NodeToNodeDisconnectPlayer() {
+  }
 
-    public NodeToNodeDisconnectPlayer(UUID playerUniqueId, String reason) {
-        this.playerUniqueId = playerUniqueId;
-        this.reason = reason;
-    }
+  public NodeToNodeDisconnectPlayer(UUID playerUniqueId, String reason) {
+    this.playerUniqueId = playerUniqueId;
+    this.reason = reason;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 33;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 33;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.playerUniqueId).ifPresent(player -> player.disconnect(this.reason));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.playerUniqueId).ifPresent(player -> player.disconnect(this.reason));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.playerUniqueId);
-        buffer.writeString(this.reason);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.playerUniqueId);
+    buffer.writeString(this.reason);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.playerUniqueId = buffer.readUniqueId();
-        this.reason = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.playerUniqueId = buffer.readUniqueId();
+    this.reason = buffer.readString();
+  }
 }

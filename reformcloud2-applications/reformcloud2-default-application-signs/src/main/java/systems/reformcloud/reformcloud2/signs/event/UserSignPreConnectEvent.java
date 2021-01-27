@@ -32,35 +32,35 @@ import java.util.function.Function;
 
 public class UserSignPreConnectEvent extends Event {
 
-    private final UUID playerUniqueId;
-    private final Function<String, Boolean> permissionChecker;
-    private final CloudSign target;
-    private boolean allowConnection;
+  private final UUID playerUniqueId;
+  private final Function<String, Boolean> permissionChecker;
+  private final CloudSign target;
+  private boolean allowConnection;
 
-    public UserSignPreConnectEvent(UUID playerUniqueId, Function<String, Boolean> permissionChecker, CloudSign target, boolean allowConnection) {
-        this.playerUniqueId = playerUniqueId;
-        this.permissionChecker = permissionChecker;
-        this.target = target;
-        this.allowConnection = allowConnection;
-    }
+  public UserSignPreConnectEvent(UUID playerUniqueId, Function<String, Boolean> permissionChecker, CloudSign target, boolean allowConnection) {
+    this.playerUniqueId = playerUniqueId;
+    this.permissionChecker = permissionChecker;
+    this.target = target;
+    this.allowConnection = allowConnection;
+  }
 
-    public UUID getPlayerUniqueId() {
-        return this.playerUniqueId;
-    }
+  public UUID getPlayerUniqueId() {
+    return this.playerUniqueId;
+  }
 
-    public Function<String, Boolean> getPermissionChecker() {
-        return this.permissionChecker;
-    }
+  public Function<String, Boolean> getPermissionChecker() {
+    return this.permissionChecker;
+  }
 
-    public CloudSign getTarget() {
-        return this.target;
-    }
+  public CloudSign getTarget() {
+    return this.target;
+  }
 
-    public boolean isAllowConnection() {
-        return this.allowConnection;
-    }
+  public boolean isAllowConnection() {
+    return this.allowConnection;
+  }
 
-    public void setAllowConnection(boolean allowConnection) {
-        this.allowConnection = allowConnection;
-    }
+  public void setAllowConnection(boolean allowConnection) {
+    this.allowConnection = allowConnection;
+  }
 }

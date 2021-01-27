@@ -34,33 +34,33 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodeGetDatabaseEntryCount extends ProtocolPacket {
 
-    private String tableName;
+  private String tableName;
 
-    public ApiToNodeGetDatabaseEntryCount() {
-    }
+  public ApiToNodeGetDatabaseEntryCount() {
+  }
 
-    public ApiToNodeGetDatabaseEntryCount(String tableName) {
-        this.tableName = tableName;
-    }
+  public ApiToNodeGetDatabaseEntryCount(String tableName) {
+    this.tableName = tableName;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 11;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 11;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        long count = ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(this.tableName).count();
-        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetDatabaseEntryCountResult(count));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    long count = ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(this.tableName).count();
+    channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetDatabaseEntryCountResult(count));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.tableName);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.tableName);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.tableName = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.tableName = buffer.readString();
+  }
 }

@@ -38,57 +38,57 @@ import static systems.reformcloud.reformcloud2.shared.Constants.NUMBERS_AND_LETT
 
 public final class StringUtil {
 
-    private StringUtil() {
-        throw new UnsupportedOperationException();
+  private StringUtil() {
+    throw new UnsupportedOperationException();
+  }
+
+  @NotNull
+  @Contract(value = "_ -> new", pure = true)
+  public static String generateRandomString(int length) {
+    Conditions.isTrue(length > 0);
+
+    StringBuilder stringBuffer = new StringBuilder(length);
+    for (int i = 0; i < length; i++) {
+      stringBuffer.append(NUMBERS_AND_LETTERS[ThreadLocalFastRandom.current().nextInt(NUMBERS_AND_LETTERS.length)]);
     }
 
-    @NotNull
-    @Contract(value = "_ -> new", pure = true)
-    public static String generateRandomString(int length) {
-        Conditions.isTrue(length > 0);
+    return stringBuffer.toString();
+  }
 
-        StringBuilder stringBuffer = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
-            stringBuffer.append(NUMBERS_AND_LETTERS[ThreadLocalFastRandom.current().nextInt(NUMBERS_AND_LETTERS.length)]);
-        }
+  @NotNull
+  @Contract(pure = true)
+  public static String replaceLastEmpty(@NotNull String text, @NotNull String regex) {
+    return replaceLast(text, regex, EMPTY_STRING);
+  }
 
-        return stringBuffer.toString();
+  @NotNull
+  @Contract(pure = true)
+  public static String replaceLast(@NotNull String text, @NotNull String regex, @NotNull String replacement) {
+    return text.replaceFirst("(?s)(.*)" + regex, "$1" + replacement);
+  }
+
+  @NotNull
+  @Contract(value = "_, _ -> new", pure = true)
+  public static Properties parseProperties(@NonNls String[] strings, int from) {
+    Properties properties = new Properties();
+    if (strings.length < from) {
+      return properties;
     }
 
-    @NotNull
-    @Contract(pure = true)
-    public static String replaceLastEmpty(@NotNull String text, @NotNull String regex) {
-        return replaceLast(text, regex, EMPTY_STRING);
+    String[] copy = Arrays.copyOfRange(strings, from, strings.length);
+    for (String string : copy) {
+      if (!string.startsWith("--") && !string.contains("=")) {
+        continue;
+      }
+
+      String[] split = string.replaceFirst("--", "").split("=");
+      if (split.length != 2) {
+        continue;
+      }
+
+      properties.setProperty(split[0].toLowerCase(), split[1]);
     }
 
-    @NotNull
-    @Contract(pure = true)
-    public static String replaceLast(@NotNull String text, @NotNull String regex, @NotNull String replacement) {
-        return text.replaceFirst("(?s)(.*)" + regex, "$1" + replacement);
-    }
-
-    @NotNull
-    @Contract(value = "_, _ -> new", pure = true)
-    public static Properties parseProperties(@NonNls String[] strings, int from) {
-        Properties properties = new Properties();
-        if (strings.length < from) {
-            return properties;
-        }
-
-        String[] copy = Arrays.copyOfRange(strings, from, strings.length);
-        for (String string : copy) {
-            if (!string.startsWith("--") && !string.contains("=")) {
-                continue;
-            }
-
-            String[] split = string.replaceFirst("--", "").split("=");
-            if (split.length != 2) {
-                continue;
-            }
-
-            properties.setProperty(split[0].toLowerCase(), split[1]);
-        }
-
-        return properties;
-    }
+    return properties;
+  }
 }

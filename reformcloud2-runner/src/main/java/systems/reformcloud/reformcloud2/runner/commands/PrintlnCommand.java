@@ -32,13 +32,13 @@ import java.util.Collection;
 
 public final class PrintlnCommand extends InterpreterCommand {
 
-    public PrintlnCommand() {
-        super("println");
-    }
+  public PrintlnCommand() {
+    super("println");
+  }
 
-    @Override
-    public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
-        String line = cursorLine.replaceFirst(this.getCommand(), "");
-        System.out.println(line.trim().isEmpty() ? "" : line.replaceFirst(" ", ""));
-    }
+  @Override
+  public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
+    String line = cursorLine.replaceFirst(this.getCommand(), "");
+    System.out.println(line.trim().isEmpty() ? "" : line.replaceFirst(" ", ""));
+  }
 }

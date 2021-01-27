@@ -36,32 +36,32 @@ import systems.reformcloud.reformcloud2.shared.group.DefaultMainGroup;
 
 public class ApiToNodeUpdateMainGroup extends ProtocolPacket {
 
-    private MainGroup mainGroup;
+  private MainGroup mainGroup;
 
-    public ApiToNodeUpdateMainGroup() {
-    }
+  public ApiToNodeUpdateMainGroup() {
+  }
 
-    public ApiToNodeUpdateMainGroup(MainGroup mainGroup) {
-        this.mainGroup = mainGroup;
-    }
+  public ApiToNodeUpdateMainGroup(MainGroup mainGroup) {
+    this.mainGroup = mainGroup;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 51;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 51;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getMainGroupProvider().updateMainGroup(this.mainGroup);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getMainGroupProvider().updateMainGroup(this.mainGroup);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.mainGroup);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.mainGroup);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.mainGroup = buffer.readObject(DefaultMainGroup.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.mainGroup = buffer.readObject(DefaultMainGroup.class);
+  }
 }

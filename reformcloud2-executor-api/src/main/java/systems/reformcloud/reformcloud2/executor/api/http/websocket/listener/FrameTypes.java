@@ -43,11 +43,11 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FrameTypes {
-    /**
-     * Get the socket frame types a socket listener handles.
-     *
-     * @return the socket frame types a socket listener handles.
-     */
-    @NotNull
-    SocketFrameType[] value() default {};
+  /**
+   * Get the socket frame types a socket listener handles.
+   *
+   * @return the socket frame types a socket listener handles.
+   */
+  @NotNull
+  SocketFrameType[] value() default {};
 }

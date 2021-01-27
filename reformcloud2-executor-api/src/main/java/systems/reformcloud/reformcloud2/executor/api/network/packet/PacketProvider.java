@@ -32,32 +32,32 @@ import java.util.Optional;
 
 public interface PacketProvider {
 
-    default void registerPacketIgnored(@NotNull Class<? extends Packet> packetClass) {
-        try {
-            this.registerPacket(packetClass);
-        } catch (PacketAlreadyRegisteredException ignored) {
-        }
+  default void registerPacketIgnored(@NotNull Class<? extends Packet> packetClass) {
+    try {
+      this.registerPacket(packetClass);
+    } catch (PacketAlreadyRegisteredException ignored) {
     }
+  }
 
-    void registerPacket(@NotNull Class<? extends Packet> packetClass) throws PacketAlreadyRegisteredException;
+  void registerPacket(@NotNull Class<? extends Packet> packetClass) throws PacketAlreadyRegisteredException;
 
-    default void registerPacketIgnored(@NotNull Packet packet) {
-        try {
-            this.registerPacket(packet);
-        } catch (PacketAlreadyRegisteredException ignored) {
-        }
+  default void registerPacketIgnored(@NotNull Packet packet) {
+    try {
+      this.registerPacket(packet);
+    } catch (PacketAlreadyRegisteredException ignored) {
     }
+  }
 
-    void registerPacket(@NotNull Packet packet) throws PacketAlreadyRegisteredException;
+  void registerPacket(@NotNull Packet packet) throws PacketAlreadyRegisteredException;
 
-    void registerPackets(@NotNull Collection<Class<? extends Packet>> packetClasses) throws PacketAlreadyRegisteredException;
+  void registerPackets(@NotNull Collection<Class<? extends Packet>> packetClasses) throws PacketAlreadyRegisteredException;
 
-    void registerPacket(@NotNull Collection<Packet> packets) throws PacketAlreadyRegisteredException;
+  void registerPacket(@NotNull Collection<Packet> packets) throws PacketAlreadyRegisteredException;
 
-    void unregisterPacket(int id);
+  void unregisterPacket(int id);
 
-    @NotNull
-    Optional<Packet> getPacketById(int id);
+  @NotNull
+  Optional<Packet> getPacketById(int id);
 
-    void clearRegisteredPackets();
+  void clearRegisteredPackets();
 }

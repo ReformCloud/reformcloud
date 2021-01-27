@@ -38,43 +38,43 @@ import java.util.Collection;
  */
 public interface DependencyLoader {
 
-    /**
-     * Loads all provided dependencies.
-     *
-     * @param dependencies The dependencies which should get loaded
-     */
-    void load(@NotNull Collection<Dependency> dependencies);
+  /**
+   * Loads all provided dependencies.
+   *
+   * @param dependencies The dependencies which should get loaded
+   */
+  void load(@NotNull Collection<Dependency> dependencies);
 
-    /**
-     * Detects all {@link Dependency} annotations of a class and loads them.
-     *
-     * @param clazz the class to detect the dependencies of
-     */
-    void detectAndLoad(@NotNull Class<?> clazz);
+  /**
+   * Detects all {@link Dependency} annotations of a class and loads them.
+   *
+   * @param clazz the class to detect the dependencies of
+   */
+  void detectAndLoad(@NotNull Class<?> clazz);
 
-    /**
-     * Detects all {@link Dependency} annotations of a class and loads them.
-     *
-     * @param clazz the class to detect the dependencies of
-     * @see #detectAndLoad(Class)
-     */
-    void detectAndLoad(@NotNull Object clazz);
+  /**
+   * Detects all {@link Dependency} annotations of a class and loads them.
+   *
+   * @param clazz the class to detect the dependencies of
+   * @see #detectAndLoad(Class)
+   */
+  void detectAndLoad(@NotNull Object clazz);
 
-    /**
-     * Detects all dependencies a class is annotated with.
-     *
-     * @param clazz the class to detect the dependencies of
-     * @return a collection of all detected dependencies
-     */
-    @NotNull
-    @UnmodifiableView
-    Collection<Dependency> detectDependencies(@NotNull Class<?> clazz);
+  /**
+   * Detects all dependencies a class is annotated with.
+   *
+   * @param clazz the class to detect the dependencies of
+   * @return a collection of all detected dependencies
+   */
+  @NotNull
+  @UnmodifiableView
+  Collection<Dependency> detectDependencies(@NotNull Class<?> clazz);
 
-    /**
-     * Get the context class loader to load the dependencies from.
-     *
-     * @return the context class loader used to load dependencies.
-     */
-    @NotNull
-    URLClassLoader getContextClassLoader();
+  /**
+   * Get the context class loader to load the dependencies from.
+   *
+   * @return the context class loader used to load dependencies.
+   */
+  @NotNull
+  URLClassLoader getContextClassLoader();
 }

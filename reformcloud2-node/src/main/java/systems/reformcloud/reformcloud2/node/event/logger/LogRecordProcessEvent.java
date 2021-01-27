@@ -31,28 +31,28 @@ import java.util.logging.LogRecord;
 
 public class LogRecordProcessEvent extends Event implements Cancelable {
 
-    private LogRecord logRecord;
-    private boolean cancel;
+  private LogRecord logRecord;
+  private boolean cancel;
 
-    public LogRecordProcessEvent(LogRecord logRecord) {
-        this.logRecord = logRecord;
-    }
+  public LogRecordProcessEvent(LogRecord logRecord) {
+    this.logRecord = logRecord;
+  }
 
-    public LogRecord getLogRecord() {
-        return this.logRecord;
-    }
+  public LogRecord getLogRecord() {
+    return this.logRecord;
+  }
 
-    public void setLogRecord(LogRecord logRecord) {
-        this.logRecord = logRecord;
-    }
+  public void setLogRecord(LogRecord logRecord) {
+    this.logRecord = logRecord;
+  }
 
-    @Override
-    public boolean isCanceled() {
-        return this.cancel;
-    }
+  @Override
+  public boolean isCanceled() {
+    return this.cancel;
+  }
 
-    @Override
-    public void setCancelled(boolean cancel) {
-        this.cancel = cancel;
-    }
+  @Override
+  public void setCancelled(boolean cancel) {
+    this.cancel = cancel;
+  }
 }

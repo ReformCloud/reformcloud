@@ -26,13 +26,13 @@ package systems.reformcloud.reformcloud2.executor.api.network;
 
 public final class PacketIds {
 
-    public static final int AUTH_BUS = 2000;
-    public static final int EMBEDDED_BUS = 3000;
-    public static final int NODE_BUS = 4000;
-    public static final int API_BUS = 5000;
-    public static final int RESERVED_EXTRA_BUS = 6000;
+  public static final int AUTH_BUS = 2000;
+  public static final int EMBEDDED_BUS = 3000;
+  public static final int NODE_BUS = 4000;
+  public static final int API_BUS = 5000;
+  public static final int RESERVED_EXTRA_BUS = 6000;
 
-    private PacketIds() {
-        throw new UnsupportedOperationException();
-    }
+  private PacketIds() {
+    throw new UnsupportedOperationException();
+  }
 }

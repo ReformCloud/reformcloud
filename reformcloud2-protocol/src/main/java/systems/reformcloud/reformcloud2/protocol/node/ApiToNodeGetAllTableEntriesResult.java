@@ -35,38 +35,38 @@ import java.util.Collection;
 
 public class ApiToNodeGetAllTableEntriesResult extends QueryResultPacket {
 
-    private Collection<JsonConfiguration> all;
+  private Collection<JsonConfiguration> all;
 
-    public ApiToNodeGetAllTableEntriesResult() {
-    }
+  public ApiToNodeGetAllTableEntriesResult() {
+  }
 
-    public ApiToNodeGetAllTableEntriesResult(Collection<JsonConfiguration> all) {
-        this.all = all;
-    }
+  public ApiToNodeGetAllTableEntriesResult(Collection<JsonConfiguration> all) {
+    this.all = all;
+  }
 
-    public Collection<JsonConfiguration> getAll() {
-        return this.all;
-    }
+  public Collection<JsonConfiguration> getAll() {
+    return this.all;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 15;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 15;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeInt(this.all.size());
-        for (JsonConfiguration configuration : this.all) {
-            buffer.writeString(configuration.toPrettyString());
-        }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeInt(this.all.size());
+    for (JsonConfiguration configuration : this.all) {
+      buffer.writeString(configuration.toPrettyString());
     }
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        int size = buffer.readInt();
-        this.all = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            this.all.add(JsonConfiguration.newJsonConfiguration(buffer.readString()));
-        }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    int size = buffer.readInt();
+    this.all = new ArrayList<>(size);
+    for (int i = 0; i < size; i++) {
+      this.all.add(JsonConfiguration.newJsonConfiguration(buffer.readString()));
     }
+  }
 }

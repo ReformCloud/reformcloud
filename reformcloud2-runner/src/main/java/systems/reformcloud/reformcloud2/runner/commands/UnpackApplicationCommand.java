@@ -33,12 +33,12 @@ import java.util.Collection;
 
 public final class UnpackApplicationCommand extends InterpreterCommand {
 
-    public UnpackApplicationCommand() {
-        super("unpack_application");
-    }
+  public UnpackApplicationCommand() {
+    super("unpack_application");
+  }
 
-    @Override
-    public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
-        RunnerUtils.copyCompiledFile("files/executor.jar", RunnerUtils.EXECUTOR_PATH);
-    }
+  @Override
+  public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
+    RunnerUtils.copyCompiledFile("files/executor.jar", RunnerUtils.EXECUTOR_PATH);
+  }
 }

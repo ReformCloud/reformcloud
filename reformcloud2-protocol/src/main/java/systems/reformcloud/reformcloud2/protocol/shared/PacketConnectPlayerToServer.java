@@ -35,44 +35,44 @@ import java.util.UUID;
 
 public class PacketConnectPlayerToServer extends ProtocolPacket {
 
-    private UUID uniqueId;
-    private String server;
+  private UUID uniqueId;
+  private String server;
 
-    public PacketConnectPlayerToServer() {
-    }
+  public PacketConnectPlayerToServer() {
+  }
 
-    public PacketConnectPlayerToServer(UUID uniqueId, String server) {
-        this.uniqueId = uniqueId;
-        this.server = server;
-    }
+  public PacketConnectPlayerToServer(UUID uniqueId, String server) {
+    this.uniqueId = uniqueId;
+    this.server = server;
+  }
 
-    public UUID getUniqueId() {
-        return this.uniqueId;
-    }
+  public UUID getUniqueId() {
+    return this.uniqueId;
+  }
 
-    public String getServer() {
-        return this.server;
-    }
+  public String getServer() {
+    return this.server;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.API_BUS + 13;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.API_BUS + 13;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        super.post(channel, PacketConnectPlayerToServer.class, this);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    super.post(channel, PacketConnectPlayerToServer.class, this);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.uniqueId);
-        buffer.writeString(this.server);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.uniqueId);
+    buffer.writeString(this.server);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.uniqueId = buffer.readUniqueId();
-        this.server = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.uniqueId = buffer.readUniqueId();
+    this.server = buffer.readString();
+  }
 }

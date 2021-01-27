@@ -45,9 +45,9 @@ import java.util.function.BiFunction;
 public enum TransportType {
 
   EPOLL("Epoll", Epoll.isAvailable(), EpollServerSocketChannel::new,
-      EpollSocketChannel::new, (type, typeName) -> new EpollEventLoopGroup(Math.min(4, Runtime.getRuntime().availableProcessors() * 2), newThreadFactory(typeName, type))),
+    EpollSocketChannel::new, (type, typeName) -> new EpollEventLoopGroup(Math.min(4, Runtime.getRuntime().availableProcessors() * 2), newThreadFactory(typeName, type))),
   NIO("Nio", true, NioServerSocketChannel::new,
-      NioSocketChannel::new, (type, typeName) -> new NioEventLoopGroup(Math.min(4, Runtime.getRuntime().availableProcessors() * 2), newThreadFactory(typeName, type)));
+    NioSocketChannel::new, (type, typeName) -> new NioEventLoopGroup(Math.min(4, Runtime.getRuntime().availableProcessors() * 2), newThreadFactory(typeName, type)));
 
   public static final TransportType BEST_TYPE = TransportType.getBestType();
 

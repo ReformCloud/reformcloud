@@ -31,31 +31,31 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryR
 
 public class ApiToNodeIsNodePresentResult extends QueryResultPacket {
 
-    private boolean present;
+  private boolean present;
 
-    public ApiToNodeIsNodePresentResult() {
-    }
+  public ApiToNodeIsNodePresentResult() {
+  }
 
-    public ApiToNodeIsNodePresentResult(boolean present) {
-        this.present = present;
-    }
+  public ApiToNodeIsNodePresentResult(boolean present) {
+    this.present = present;
+  }
 
-    public boolean isPresent() {
-        return this.present;
-    }
+  public boolean isPresent() {
+    return this.present;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 33;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 33;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeBoolean(this.present);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeBoolean(this.present);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.present = buffer.readBoolean();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.present = buffer.readBoolean();
+  }
 }

@@ -35,42 +35,42 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodePublishNodeChannelMessage extends ProtocolPacket {
 
-    private String node;
-    private String channel;
-    private JsonConfiguration data;
+  private String node;
+  private String channel;
+  private JsonConfiguration data;
 
-    public ApiToNodePublishNodeChannelMessage() {
-    }
+  public ApiToNodePublishNodeChannelMessage() {
+  }
 
-    public ApiToNodePublishNodeChannelMessage(String node, String channel, JsonConfiguration data) {
-        this.node = node;
-        this.channel = channel;
-        this.data = data;
-    }
+  public ApiToNodePublishNodeChannelMessage(String node, String channel, JsonConfiguration data) {
+    this.node = node;
+    this.channel = channel;
+    this.data = data;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 23;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 23;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getChannelMessageProvider().publishChannelMessageToAll(
-            this.node, this.channel, this.data
-        );
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getChannelMessageProvider().publishChannelMessageToAll(
+      this.node, this.channel, this.data
+    );
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.node);
-        buffer.writeString(this.channel);
-        buffer.writeString(this.data.toString());
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.node);
+    buffer.writeString(this.channel);
+    buffer.writeString(this.data.toString());
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.node = buffer.readString();
-        this.channel = buffer.readString();
-        this.data = JsonConfiguration.newJsonConfiguration(buffer.readString());
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.node = buffer.readString();
+    this.channel = buffer.readString();
+    this.data = JsonConfiguration.newJsonConfiguration(buffer.readString());
+  }
 }

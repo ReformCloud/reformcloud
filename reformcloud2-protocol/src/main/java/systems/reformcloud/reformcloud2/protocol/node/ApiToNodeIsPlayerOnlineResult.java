@@ -31,31 +31,31 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryR
 
 public class ApiToNodeIsPlayerOnlineResult extends QueryResultPacket {
 
-    private boolean online;
+  private boolean online;
 
-    public ApiToNodeIsPlayerOnlineResult() {
-    }
+  public ApiToNodeIsPlayerOnlineResult() {
+  }
 
-    public ApiToNodeIsPlayerOnlineResult(boolean online) {
-        this.online = online;
-    }
+  public ApiToNodeIsPlayerOnlineResult(boolean online) {
+    this.online = online;
+  }
 
-    public boolean isOnline() {
-        return this.online;
-    }
+  public boolean isOnline() {
+    return this.online;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 43;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 43;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeBoolean(this.online);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeBoolean(this.online);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.online = buffer.readBoolean();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.online = buffer.readBoolean();
+  }
 }

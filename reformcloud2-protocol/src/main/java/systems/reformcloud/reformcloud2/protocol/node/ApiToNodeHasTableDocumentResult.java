@@ -31,31 +31,31 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryR
 
 public class ApiToNodeHasTableDocumentResult extends QueryResultPacket {
 
-    private boolean has;
+  private boolean has;
 
-    public ApiToNodeHasTableDocumentResult() {
-    }
+  public ApiToNodeHasTableDocumentResult() {
+  }
 
-    public ApiToNodeHasTableDocumentResult(boolean has) {
-        this.has = has;
-    }
+  public ApiToNodeHasTableDocumentResult(boolean has) {
+    this.has = has;
+  }
 
-    public boolean has() {
-        return this.has;
-    }
+  public boolean has() {
+    return this.has;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 17;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 17;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeBoolean(this.has);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeBoolean(this.has);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.has = buffer.readBoolean();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.has = buffer.readBoolean();
+  }
 }

@@ -26,25 +26,25 @@ package systems.reformcloud.reformcloud2.shared.collect;
 
 public class Entry3<F, S, T> {
 
-    private final F first;
-    private final S second;
-    private final T third;
+  private final F first;
+  private final S second;
+  private final T third;
 
-    public Entry3(F first, S second, T third) {
-        this.first = first;
-        this.second = second;
-        this.third = third;
-    }
+  public Entry3(F first, S second, T third) {
+    this.first = first;
+    this.second = second;
+    this.third = third;
+  }
 
-    public F getFirst() {
-        return this.first;
-    }
+  public F getFirst() {
+    return this.first;
+  }
 
-    public S getSecond() {
-        return this.second;
-    }
+  public S getSecond() {
+    return this.second;
+  }
 
-    public T getThird() {
-        return this.third;
-    }
+  public T getThird() {
+    return this.third;
+  }
 }

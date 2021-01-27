@@ -33,24 +33,24 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class NodeToApiRequestProcessInformationUpdate extends ProtocolPacket {
 
-    public NodeToApiRequestProcessInformationUpdate() {
-    }
+  public NodeToApiRequestProcessInformationUpdate() {
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.API_BUS + 17;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.API_BUS + 17;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        super.post(channel, NodeToApiRequestProcessInformationUpdate.class, this);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    super.post(channel, NodeToApiRequestProcessInformationUpdate.class, this);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+  }
 }

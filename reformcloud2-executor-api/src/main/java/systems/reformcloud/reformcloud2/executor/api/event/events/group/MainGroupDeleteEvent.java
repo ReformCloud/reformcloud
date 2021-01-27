@@ -28,7 +28,7 @@ import systems.reformcloud.reformcloud2.executor.api.group.main.MainGroup;
 
 public class MainGroupDeleteEvent extends MainGroupEvent {
 
-    public MainGroupDeleteEvent(MainGroup mainGroup) {
-        super(mainGroup);
-    }
+  public MainGroupDeleteEvent(MainGroup mainGroup) {
+    super(mainGroup);
+  }
 }

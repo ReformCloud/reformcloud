@@ -37,84 +37,84 @@ import java.util.List;
 
 public abstract class DefaultProcessGroupBuilder implements ProcessGroupBuilder {
 
-    protected String name;
+  protected String name;
 
-    protected boolean staticGroup = false;
-    protected boolean lobby = false;
-    protected boolean showId = true;
+  protected boolean staticGroup = false;
+  protected boolean lobby = false;
+  protected boolean showId = true;
 
-    protected List<Template> templates = new ArrayList<>();
-    protected PlayerAccessConfiguration playerAccessConfiguration = PlayerAccessConfiguration.disabled();
-    protected StartupConfiguration startupConfiguration = StartupConfiguration.newDefaultConfiguration();
+  protected List<Template> templates = new ArrayList<>();
+  protected PlayerAccessConfiguration playerAccessConfiguration = PlayerAccessConfiguration.disabled();
+  protected StartupConfiguration startupConfiguration = StartupConfiguration.newDefaultConfiguration();
 
-    @NotNull
-    @Override
-    public ProcessGroupBuilder name(@NotNull String name) {
-        this.name = name;
-        return this;
-    }
+  @NotNull
+  @Override
+  public ProcessGroupBuilder name(@NotNull String name) {
+    this.name = name;
+    return this;
+  }
 
-    @NotNull
-    @Override
-    public ProcessGroupBuilder staticGroup(boolean staticGroup) {
-        this.staticGroup = staticGroup;
-        return this;
-    }
+  @NotNull
+  @Override
+  public ProcessGroupBuilder staticGroup(boolean staticGroup) {
+    this.staticGroup = staticGroup;
+    return this;
+  }
 
-    @NotNull
-    @Override
-    public ProcessGroupBuilder lobby(boolean lobby) {
-        this.lobby = lobby;
-        return this;
-    }
+  @NotNull
+  @Override
+  public ProcessGroupBuilder lobby(boolean lobby) {
+    this.lobby = lobby;
+    return this;
+  }
 
-    @NotNull
-    @Override
-    public ProcessGroupBuilder templates(Template... templates) {
-        this.templates = Arrays.asList(templates);
-        return this;
-    }
+  @NotNull
+  @Override
+  public ProcessGroupBuilder templates(Template... templates) {
+    this.templates = Arrays.asList(templates);
+    return this;
+  }
 
-    @NotNull
-    @Override
-    public ProcessGroupBuilder templates(@NotNull List<Template> templates) {
-        this.templates = templates;
-        return this;
-    }
+  @NotNull
+  @Override
+  public ProcessGroupBuilder templates(@NotNull List<Template> templates) {
+    this.templates = templates;
+    return this;
+  }
 
-    @NotNull
-    @Override
-    public ProcessGroupBuilder playerAccessConfig(@NotNull PlayerAccessConfiguration configuration) {
-        this.playerAccessConfiguration = configuration;
-        return this;
-    }
+  @NotNull
+  @Override
+  public ProcessGroupBuilder playerAccessConfig(@NotNull PlayerAccessConfiguration configuration) {
+    this.playerAccessConfiguration = configuration;
+    return this;
+  }
 
-    @NotNull
-    @Override
-    public ProcessGroupBuilder startupConfiguration(@NotNull StartupConfiguration configuration) {
-        this.startupConfiguration = configuration;
-        return this;
-    }
+  @NotNull
+  @Override
+  public ProcessGroupBuilder startupConfiguration(@NotNull StartupConfiguration configuration) {
+    this.startupConfiguration = configuration;
+    return this;
+  }
 
-    @NotNull
-    @Override
-    public ProcessGroupBuilder showId(boolean showId) {
-        this.showId = showId;
-        return this;
-    }
+  @NotNull
+  @Override
+  public ProcessGroupBuilder showId(boolean showId) {
+    this.showId = showId;
+    return this;
+  }
 
-    @NotNull
-    @Override
-    public DefaultProcessGroup createTemporary() {
-        Conditions.nonNull(this.name, "Unable to create process group without a name");
-        return new DefaultProcessGroup(
-            this.startupConfiguration,
-            this.playerAccessConfiguration,
-            this.showId,
-            this.staticGroup,
-            this.lobby,
-            this.templates,
-            this.name
-        );
-    }
+  @NotNull
+  @Override
+  public DefaultProcessGroup createTemporary() {
+    Conditions.nonNull(this.name, "Unable to create process group without a name");
+    return new DefaultProcessGroup(
+      this.startupConfiguration,
+      this.playerAccessConfiguration,
+      this.showId,
+      this.staticGroup,
+      this.lobby,
+      this.templates,
+      this.name
+    );
+  }
 }

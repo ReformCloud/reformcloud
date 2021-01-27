@@ -29,7 +29,7 @@ import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
 public class LocalProcessPrePrepareEvent extends ProcessEvent {
 
-    public LocalProcessPrePrepareEvent(ProcessInformation processInformation) {
-        super(processInformation);
-    }
+  public LocalProcessPrePrepareEvent(ProcessInformation processInformation) {
+    super(processInformation);
+  }
 }

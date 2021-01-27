@@ -33,36 +33,36 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class NodeToNodeProcessCommand extends ProtocolPacket {
 
-    private String commandLine;
+  private String commandLine;
 
-    public NodeToNodeProcessCommand() {
-    }
+  public NodeToNodeProcessCommand() {
+  }
 
-    public NodeToNodeProcessCommand(String commandLine) {
-        this.commandLine = commandLine;
-    }
+  public NodeToNodeProcessCommand(String commandLine) {
+    this.commandLine = commandLine;
+  }
 
-    public String getCommandLine() {
-        return this.commandLine;
-    }
+  public String getCommandLine() {
+    return this.commandLine;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 5;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 5;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        super.post(channel, NodeToNodeProcessCommand.class, this);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    super.post(channel, NodeToNodeProcessCommand.class, this);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.commandLine);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.commandLine);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.commandLine = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.commandLine = buffer.readString();
+  }
 }

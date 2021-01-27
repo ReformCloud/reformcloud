@@ -28,8 +28,8 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
 
 public interface VersionInstaller extends Nameable {
-    String DOWNLOADING = "downloading:only";
-    String SPONGE = "zip:sponge";
+  String DOWNLOADING = "downloading:only";
+  String SPONGE = "zip:sponge";
 
-    boolean installVersion(@NotNull Version version);
+  boolean installVersion(@NotNull Version version);
 }

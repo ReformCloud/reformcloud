@@ -36,93 +36,93 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class DefaultNetworkChannel extends DefaultPacketSender implements NetworkChannel {
 
-    private NetworkAddress localAddress;
-    private NetworkAddress remoteAddress;
-    private Channel channel;
-    private String name = Constants.EMPTY_STRING;
-    private ChannelListener channelListener;
+  private NetworkAddress localAddress;
+  private NetworkAddress remoteAddress;
+  private Channel channel;
+  private String name = Constants.EMPTY_STRING;
+  private ChannelListener channelListener;
 
-    public DefaultNetworkChannel() {
-    }
+  public DefaultNetworkChannel() {
+  }
 
-    public DefaultNetworkChannel(Channel channel) {
-        super(channel);
-        this.setChannel(channel);
-    }
+  public DefaultNetworkChannel(Channel channel) {
+    super(channel);
+    this.setChannel(channel);
+  }
 
-    protected void setChannel(@NotNull Channel channel) {
-        this.channel = super.channel = channel;
-        this.localAddress = NetworkAddress.fromInetSocketAddress((InetSocketAddress) channel.localAddress());
-        this.remoteAddress = NetworkAddress.fromInetSocketAddress((InetSocketAddress) channel.remoteAddress());
-    }
+  protected void setChannel(@NotNull Channel channel) {
+    this.channel = super.channel = channel;
+    this.localAddress = NetworkAddress.fromInetSocketAddress((InetSocketAddress) channel.localAddress());
+    this.remoteAddress = NetworkAddress.fromInetSocketAddress((InetSocketAddress) channel.remoteAddress());
+  }
 
-    @Override
-    public @NotNull ScheduledExecutorService getEventLoop() {
-        return this.channel.eventLoop();
-    }
+  @Override
+  public @NotNull ScheduledExecutorService getEventLoop() {
+    return this.channel.eventLoop();
+  }
 
-    @Override
-    public @NotNull String getChannelId() {
-        return this.channel.id().asLongText();
-    }
+  @Override
+  public @NotNull String getChannelId() {
+    return this.channel.id().asLongText();
+  }
 
-    @Override
-    public boolean isOpen() {
-        return this.channel.isOpen();
-    }
+  @Override
+  public boolean isOpen() {
+    return this.channel.isOpen();
+  }
 
-    @Override
-    public boolean isRegistered() {
-        return this.channel.isRegistered();
-    }
+  @Override
+  public boolean isRegistered() {
+    return this.channel.isRegistered();
+  }
 
-    @Override
-    public boolean isActive() {
-        return this.channel.isActive();
-    }
+  @Override
+  public boolean isActive() {
+    return this.channel.isActive();
+  }
 
-    @Override
-    public boolean isWritable() {
-        return this.channel.isWritable();
-    }
+  @Override
+  public boolean isWritable() {
+    return this.channel.isWritable();
+  }
 
-    @Override
-    public @NotNull NetworkAddress getLocalAddress() {
-        return this.localAddress;
-    }
+  @Override
+  public @NotNull NetworkAddress getLocalAddress() {
+    return this.localAddress;
+  }
 
-    @Override
-    public @NotNull NetworkAddress getRemoteAddress() {
-        return this.remoteAddress;
-    }
+  @Override
+  public @NotNull NetworkAddress getRemoteAddress() {
+    return this.remoteAddress;
+  }
 
-    @Override
-    public void flush() {
-        this.channel.flush();
-    }
+  @Override
+  public void flush() {
+    this.channel.flush();
+  }
 
-    @Override
-    public int compareTo(@NotNull NetworkChannel channel) {
-        return this.getChannelId().compareTo(channel.getChannelId());
-    }
+  @Override
+  public int compareTo(@NotNull NetworkChannel channel) {
+    return this.getChannelId().compareTo(channel.getChannelId());
+  }
 
-    @Override
-    public @NotNull ChannelListener getListener() {
-        return this.channelListener;
-    }
+  @Override
+  public @NotNull ChannelListener getListener() {
+    return this.channelListener;
+  }
 
-    @Override
-    public void setListener(@NotNull ChannelListener listener) {
-        this.channelListener = listener;
-    }
+  @Override
+  public void setListener(@NotNull ChannelListener listener) {
+    this.channelListener = listener;
+  }
 
-    @Override
-    public @NotNull String getName() {
-        return this.name;
-    }
+  @Override
+  public @NotNull String getName() {
+    return this.name;
+  }
 
-    @Override
-    public void setName(@NotNull String newName) {
-        this.name = newName;
-    }
+  @Override
+  public void setName(@NotNull String newName) {
+    this.name = newName;
+  }
 }

@@ -29,37 +29,37 @@ import systems.reformcloud.reformcloud2.executor.api.registry.service.ServiceReg
 
 public class DefaultServiceRegistryEntry<T> implements ServiceRegistryEntry<T> {
 
-    private final Class<T> service;
-    private final T provider;
-    private final boolean immutable;
-    private final boolean needsReplacement;
+  private final Class<T> service;
+  private final T provider;
+  private final boolean immutable;
+  private final boolean needsReplacement;
 
-    DefaultServiceRegistryEntry(Class<T> service, T provider, boolean immutable, boolean needsReplacement) {
-        this.service = service;
-        this.provider = provider;
-        this.immutable = immutable;
-        this.needsReplacement = needsReplacement;
-    }
+  DefaultServiceRegistryEntry(Class<T> service, T provider, boolean immutable, boolean needsReplacement) {
+    this.service = service;
+    this.provider = provider;
+    this.immutable = immutable;
+    this.needsReplacement = needsReplacement;
+  }
 
-    @NotNull
-    @Override
-    public Class<T> getService() {
-        return this.service;
-    }
+  @NotNull
+  @Override
+  public Class<T> getService() {
+    return this.service;
+  }
 
-    @NotNull
-    @Override
-    public T getProvider() {
-        return this.provider;
-    }
+  @NotNull
+  @Override
+  public T getProvider() {
+    return this.provider;
+  }
 
-    @Override
-    public boolean isImmutable() {
-        return this.immutable;
-    }
+  @Override
+  public boolean isImmutable() {
+    return this.immutable;
+  }
 
-    @Override
-    public boolean needsReplacement() {
-        return this.needsReplacement;
-    }
+  @Override
+  public boolean needsReplacement() {
+    return this.needsReplacement;
+  }
 }

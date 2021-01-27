@@ -36,27 +36,27 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class ThreadLocalFastRandom extends Random {
 
-    private static final ThreadLocal<ThreadLocalFastRandom> RANDOM_THREAD_LOCAL = ThreadLocal.withInitial(ThreadLocalFastRandom::new);
-    private final AtomicLong seed;
+  private static final ThreadLocal<ThreadLocalFastRandom> RANDOM_THREAD_LOCAL = ThreadLocal.withInitial(ThreadLocalFastRandom::new);
+  private final AtomicLong seed;
 
-    protected ThreadLocalFastRandom() {
-        this.seed = new AtomicLong(System.nanoTime());
-    }
+  protected ThreadLocalFastRandom() {
+    this.seed = new AtomicLong(System.nanoTime());
+  }
 
-    @NotNull
-    public static Random current() {
-        return RANDOM_THREAD_LOCAL.get();
-    }
+  @NotNull
+  public static Random current() {
+    return RANDOM_THREAD_LOCAL.get();
+  }
 
-    @Override
-    protected int next(int bits) {
-        long x = this.seed.get();
-        x ^= (x << 21);
-        x ^= (x >>> 35);
-        x ^= (x << 4);
-        this.seed.set(x);
-        x &= ((1L << bits) - 1);
+  @Override
+  protected int next(int bits) {
+    long x = this.seed.get();
+    x ^= (x << 21);
+    x ^= (x >>> 35);
+    x ^= (x << 4);
+    this.seed.set(x);
+    x &= ((1L << bits) - 1);
 
-        return (int) x;
-    }
+    return (int) x;
+  }
 }

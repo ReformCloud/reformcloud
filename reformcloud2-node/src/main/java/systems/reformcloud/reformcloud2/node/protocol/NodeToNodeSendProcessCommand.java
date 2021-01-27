@@ -36,36 +36,36 @@ import java.util.UUID;
 
 public class NodeToNodeSendProcessCommand extends ProtocolPacket {
 
-    private UUID uniqueId;
-    private String command;
+  private UUID uniqueId;
+  private String command;
 
-    public NodeToNodeSendProcessCommand() {
-    }
+  public NodeToNodeSendProcessCommand() {
+  }
 
-    public NodeToNodeSendProcessCommand(UUID uniqueId, String command) {
-        this.uniqueId = uniqueId;
-        this.command = command;
-    }
+  public NodeToNodeSendProcessCommand(UUID uniqueId, String command) {
+    this.uniqueId = uniqueId;
+    this.command = command;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 24;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 24;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(this.uniqueId).ifPresent(process -> process.sendCommand(this.command));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(this.uniqueId).ifPresent(process -> process.sendCommand(this.command));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.uniqueId);
-        buffer.writeString(this.command);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.uniqueId);
+    buffer.writeString(this.command);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.uniqueId = buffer.readUniqueId();
-        this.command = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.uniqueId = buffer.readUniqueId();
+    this.command = buffer.readString();
+  }
 }

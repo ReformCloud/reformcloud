@@ -33,36 +33,36 @@ import java.util.Collection;
 
 public final class CheckForUpdatesCommand extends InterpreterCommand {
 
-    private final Runner runner;
+  private final Runner runner;
 
-    public CheckForUpdatesCommand(@NotNull Runner runner) {
-        super("check_for_updates");
-        this.runner = runner;
+  public CheckForUpdatesCommand(@NotNull Runner runner) {
+    super("check_for_updates");
+    this.runner = runner;
+  }
+
+  @Override
+  public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
+    if (Integer.getInteger("reformcloud.executor.type", 0) == 2
+      || !Boolean.getBoolean("reformcloud.auto.update")
+      || Boolean.getBoolean("reformcloud.indev.builds")
+      || Boolean.getBoolean("reformcloud.dev.mode")) {
+      System.out.println("Automatic apply of updates is disabled!");
+      return;
     }
 
-    @Override
-    public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
-        if (Integer.getInteger("reformcloud.executor.type", 0) == 2
-            || !Boolean.getBoolean("reformcloud.auto.update")
-            || Boolean.getBoolean("reformcloud.indev.builds")
-            || Boolean.getBoolean("reformcloud.dev.mode")) {
-            System.out.println("Automatic apply of updates is disabled!");
-            return;
-        }
+    System.out.println("Collecting information about updates...");
+    this.runner.getApplicationsUpdater().collectInformation();
+    this.runner.getCloudVersionUpdater().collectInformation();
+    System.out.println("Collected all needed information");
 
-        System.out.println("Collecting information about updates...");
-        this.runner.getApplicationsUpdater().collectInformation();
-        this.runner.getCloudVersionUpdater().collectInformation();
-        System.out.println("Collected all needed information");
-
-        if (this.runner.getCloudVersionUpdater().hasNewVersion()) {
-            System.out.println("The " + this.runner.getCloudVersionUpdater().getName() + " updater has a new version available");
-            this.runner.getCloudVersionUpdater().applyUpdates();
-        }
-
-        if (this.runner.getApplicationsUpdater().hasNewVersion()) {
-            System.out.println("The " + this.runner.getApplicationsUpdater().getName() + " updater has a new version available");
-            this.runner.getApplicationsUpdater().applyUpdates();
-        }
+    if (this.runner.getCloudVersionUpdater().hasNewVersion()) {
+      System.out.println("The " + this.runner.getCloudVersionUpdater().getName() + " updater has a new version available");
+      this.runner.getCloudVersionUpdater().applyUpdates();
     }
+
+    if (this.runner.getApplicationsUpdater().hasNewVersion()) {
+      System.out.println("The " + this.runner.getApplicationsUpdater().getName() + " updater has a new version available");
+      this.runner.getApplicationsUpdater().applyUpdates();
+    }
+  }
 }

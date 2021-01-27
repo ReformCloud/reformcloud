@@ -34,37 +34,37 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodeHasTableDocument extends ProtocolPacket {
 
-    private String tableName;
-    private String key;
+  private String tableName;
+  private String key;
 
-    public ApiToNodeHasTableDocument() {
-    }
+  public ApiToNodeHasTableDocument() {
+  }
 
-    public ApiToNodeHasTableDocument(String tableName, String key) {
-        this.tableName = tableName;
-        this.key = key;
-    }
+  public ApiToNodeHasTableDocument(String tableName, String key) {
+    this.tableName = tableName;
+    this.key = key;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 16;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 16;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        boolean has = ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(this.tableName).has(this.key);
-        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeHasTableDocumentResult(has));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    boolean has = ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(this.tableName).has(this.key);
+    channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeHasTableDocumentResult(has));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.tableName);
-        buffer.writeString(this.key);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.tableName);
+    buffer.writeString(this.key);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.tableName = buffer.readString();
-        this.key = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.tableName = buffer.readString();
+    this.key = buffer.readString();
+  }
 }

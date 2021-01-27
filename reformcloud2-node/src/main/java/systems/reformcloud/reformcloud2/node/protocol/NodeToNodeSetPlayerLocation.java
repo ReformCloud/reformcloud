@@ -35,21 +35,21 @@ import java.util.UUID;
 
 public class NodeToNodeSetPlayerLocation extends PacketSetPlayerLocation {
 
-    public NodeToNodeSetPlayerLocation() {
-    }
+  public NodeToNodeSetPlayerLocation() {
+  }
 
-    public NodeToNodeSetPlayerLocation(UUID uniqueId, String world, double x, double y, double z, float yaw, float pitch) {
-        super(uniqueId, world, x, y, z, yaw, pitch);
-    }
+  public NodeToNodeSetPlayerLocation(UUID uniqueId, String world, double x, double y, double z, float yaw, float pitch) {
+    super(uniqueId, world, x, y, z, yaw, pitch);
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 38;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 38;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.uniqueId)
-            .ifPresent(player -> player.setLocation(this.world, this.x, this.y, this.z, this.yaw, this.pitch));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.uniqueId)
+      .ifPresent(player -> player.setLocation(this.world, this.x, this.y, this.z, this.yaw, this.pitch));
+  }
 }

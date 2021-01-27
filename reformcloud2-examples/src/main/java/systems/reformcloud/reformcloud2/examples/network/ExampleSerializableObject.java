@@ -33,26 +33,26 @@ import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableOb
  */
 public class ExampleSerializableObject implements SerializableObject {
 
-    private String exampleString;
-    private int exampleInt;
-    private boolean exampleBoolean;
+  private String exampleString;
+  private int exampleInt;
+  private boolean exampleBoolean;
 
-    public ExampleSerializableObject() {
-        // The no args constructor is required in every serializable object for the decode process
-    }
+  public ExampleSerializableObject() {
+    // The no args constructor is required in every serializable object for the decode process
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.exampleString);
-        buffer.writeInt(this.exampleInt);
-        buffer.writeBoolean(this.exampleBoolean);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.exampleString);
+    buffer.writeInt(this.exampleInt);
+    buffer.writeBoolean(this.exampleBoolean);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        // Read the objects in the same order as written into the buffer by the write() method
-        this.exampleString = buffer.readString();
-        this.exampleInt = buffer.readInt();
-        this.exampleBoolean = buffer.readBoolean();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    // Read the objects in the same order as written into the buffer by the write() method
+    this.exampleString = buffer.readString();
+    this.exampleInt = buffer.readInt();
+    this.exampleBoolean = buffer.readBoolean();
+  }
 }

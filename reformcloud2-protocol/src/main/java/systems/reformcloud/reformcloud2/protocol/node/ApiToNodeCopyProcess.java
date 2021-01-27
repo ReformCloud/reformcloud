@@ -37,45 +37,45 @@ import java.util.UUID;
 
 public class ApiToNodeCopyProcess extends ProtocolPacket {
 
-    private UUID processUniqueId;
-    private String templateGroup;
-    private String templateName;
-    private String templateBackend;
+  private UUID processUniqueId;
+  private String templateGroup;
+  private String templateName;
+  private String templateBackend;
 
-    public ApiToNodeCopyProcess() {
-    }
+  public ApiToNodeCopyProcess() {
+  }
 
-    public ApiToNodeCopyProcess(ProcessInformation information, String templateGroup, String templateName, String templateBackend) {
-        this.processUniqueId = information.getId().getUniqueId();
-        this.templateGroup = templateGroup;
-        this.templateName = templateName;
-        this.templateBackend = templateBackend;
-    }
+  public ApiToNodeCopyProcess(ProcessInformation information, String templateGroup, String templateName, String templateBackend) {
+    this.processUniqueId = information.getId().getUniqueId();
+    this.templateGroup = templateGroup;
+    this.templateName = templateName;
+    this.templateBackend = templateBackend;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 86;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 86;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(this.processUniqueId)
-            .ifPresent(wrapper -> wrapper.copy(this.templateGroup, this.templateName, this.templateBackend));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(this.processUniqueId)
+      .ifPresent(wrapper -> wrapper.copy(this.templateGroup, this.templateName, this.templateBackend));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.processUniqueId);
-        buffer.writeString(this.templateGroup);
-        buffer.writeString(this.templateName);
-        buffer.writeString(this.templateBackend);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.processUniqueId);
+    buffer.writeString(this.templateGroup);
+    buffer.writeString(this.templateName);
+    buffer.writeString(this.templateBackend);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.processUniqueId = buffer.readUniqueId();
-        this.templateGroup = buffer.readString();
-        this.templateName = buffer.readString();
-        this.templateBackend = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.processUniqueId = buffer.readUniqueId();
+    this.templateGroup = buffer.readString();
+    this.templateName = buffer.readString();
+    this.templateBackend = buffer.readString();
+  }
 }

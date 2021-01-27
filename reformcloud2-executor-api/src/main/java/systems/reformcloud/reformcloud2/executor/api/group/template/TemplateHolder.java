@@ -33,22 +33,22 @@ import java.util.Optional;
 
 public interface TemplateHolder {
 
-    @NotNull
-    @UnmodifiableView
-    Collection<Template> getTemplates();
+  @NotNull
+  @UnmodifiableView
+  Collection<Template> getTemplates();
 
-    void setTemplates(@NotNull List<Template> templates);
+  void setTemplates(@NotNull List<Template> templates);
 
-    @NotNull
-    Optional<Template> getTemplate(@NotNull String name);
+  @NotNull
+  Optional<Template> getTemplate(@NotNull String name);
 
-    void addTemplate(@NotNull Template template);
+  void addTemplate(@NotNull Template template);
 
-    void removeTemplate(@NotNull Template template);
+  void removeTemplate(@NotNull Template template);
 
-    void removeTemplate(@NotNull String name);
+  void removeTemplate(@NotNull String name);
 
-    boolean isTemplatePresent(@NotNull String name);
+  boolean isTemplatePresent(@NotNull String name);
 
-    void removeAllTemplates();
+  void removeAllTemplates();
 }

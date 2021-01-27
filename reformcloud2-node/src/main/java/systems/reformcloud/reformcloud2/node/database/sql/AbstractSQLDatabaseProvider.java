@@ -41,65 +41,65 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractSQLDatabaseProvider implements DatabaseProvider {
 
-    protected final Map<String, DatabaseTableWrapper> wrapperCache = new ConcurrentHashMap<>();
+  protected final Map<String, DatabaseTableWrapper> wrapperCache = new ConcurrentHashMap<>();
 
-    @NotNull
-    @Override
-    public DatabaseTableWrapper createTable(@NotNull String tableName) {
-        return this.getDatabase(tableName);
-    }
+  @NotNull
+  @Override
+  public DatabaseTableWrapper createTable(@NotNull String tableName) {
+    return this.getDatabase(tableName);
+  }
 
-    @Override
-    public void deleteTable(@NotNull String tableName) {
-        this.executeUpdate("DROP TABLE " + tableName);
-    }
+  @Override
+  public void deleteTable(@NotNull String tableName) {
+    this.executeUpdate("DROP TABLE " + tableName);
+  }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Collection<String> getTableNames() {
-        return this.executeQuery(
-            "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA='PUBLIC'",
-            resultSet -> {
-                Collection<String> collection = new ArrayList<>();
-                while (resultSet.next()) {
-                    collection.add(resultSet.getString("table_name"));
-                }
-
-                return collection;
-            }, new ArrayList<>()
-        );
-    }
-
-    @NotNull
-    @Override
-    public DatabaseTableWrapper getDatabase(@NotNull String tableName) {
-        DatabaseTableWrapper wrapper = this.wrapperCache.get(tableName);
-        if (wrapper != null) {
-            return wrapper;
+  @NotNull
+  @Override
+  public @UnmodifiableView Collection<String> getTableNames() {
+    return this.executeQuery(
+      "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA='PUBLIC'",
+      resultSet -> {
+        Collection<String> collection = new ArrayList<>();
+        while (resultSet.next()) {
+          collection.add(resultSet.getString("table_name"));
         }
 
-        wrapper = new SQLDatabaseTableWrapper(tableName, this);
-        this.wrapperCache.put(tableName, wrapper);
-        return wrapper;
+        return collection;
+      }, new ArrayList<>()
+    );
+  }
+
+  @NotNull
+  @Override
+  public DatabaseTableWrapper getDatabase(@NotNull String tableName) {
+    DatabaseTableWrapper wrapper = this.wrapperCache.get(tableName);
+    if (wrapper != null) {
+      return wrapper;
     }
 
-    public abstract void executeUpdate(@NotNull String query, @NonNls Object... objects);
+    wrapper = new SQLDatabaseTableWrapper(tableName, this);
+    this.wrapperCache.put(tableName, wrapper);
+    return wrapper;
+  }
 
-    @NotNull
-    public abstract <T> T executeQuery(@NotNull String query, @NotNull SQLFunction<ResultSet, T> function, @NotNull T defaultValue, @NonNls Object... objects);
+  public abstract void executeUpdate(@NotNull String query, @NonNls Object... objects);
 
-    protected void appendObjectsToPreparedStatement(@NotNull PreparedStatement statement, @NonNls Object... objects) throws SQLException {
-        int i = 1;
-        for (Object object : objects) {
-            if (object == null) {
-                continue;
-            }
+  @NotNull
+  public abstract <T> T executeQuery(@NotNull String query, @NotNull SQLFunction<ResultSet, T> function, @NotNull T defaultValue, @NonNls Object... objects);
 
-            if (object instanceof byte[]) {
-                statement.setBytes(i++, (byte[]) object);
-            } else {
-                statement.setString(i++, object.toString());
-            }
-        }
+  protected void appendObjectsToPreparedStatement(@NotNull PreparedStatement statement, @NonNls Object... objects) throws SQLException {
+    int i = 1;
+    for (Object object : objects) {
+      if (object == null) {
+        continue;
+      }
+
+      if (object instanceof byte[]) {
+        statement.setBytes(i++, (byte[]) object);
+      } else {
+        statement.setString(i++, object.toString());
+      }
     }
+  }
 }

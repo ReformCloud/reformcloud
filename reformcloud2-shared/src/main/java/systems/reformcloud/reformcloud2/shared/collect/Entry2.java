@@ -31,37 +31,37 @@ import java.util.Map;
 
 public class Entry2<F, S> implements Map.Entry<F, S> {
 
-    private final F first;
-    private S second;
+  private final F first;
+  private S second;
 
-    public Entry2(@NotNull F first, @Nullable S second) {
-        this.first = first;
-        this.second = second;
-    }
+  public Entry2(@NotNull F first, @Nullable S second) {
+    this.first = first;
+    this.second = second;
+  }
 
-    @NotNull
-    public F getFirst() {
-        return this.first;
-    }
+  @NotNull
+  public F getFirst() {
+    return this.first;
+  }
 
-    public S getSecond() {
-        return this.second;
-    }
+  public S getSecond() {
+    return this.second;
+  }
 
-    @Override
-    public F getKey() {
-        return this.first;
-    }
+  @Override
+  public F getKey() {
+    return this.first;
+  }
 
-    @Override
-    public S getValue() {
-        return this.second;
-    }
+  @Override
+  public S getValue() {
+    return this.second;
+  }
 
-    @Override
-    public S setValue(S value) {
-        final S before = this.second;
-        this.second = value;
-        return before;
-    }
+  @Override
+  public S setValue(S value) {
+    final S before = this.second;
+    this.second = value;
+    return before;
+  }
 }

@@ -32,30 +32,30 @@ import java.util.Collection;
 
 public class CachedCommandSender implements CommandSender {
 
-    private final Collection<String> messageCache;
+  private final Collection<String> messageCache;
 
-    public CachedCommandSender(@NotNull Collection<String> messageCache) {
-        this.messageCache = messageCache;
-    }
+  public CachedCommandSender(@NotNull Collection<String> messageCache) {
+    this.messageCache = messageCache;
+  }
 
-    @Override
-    public void sendMessage(@NotNull String message) {
-        this.messageCache.add(message);
-    }
+  @Override
+  public void sendMessage(@NotNull String message) {
+    this.messageCache.add(message);
+  }
 
-    @Override
-    public void sendMessages(String[] messages) {
-        this.messageCache.addAll(Arrays.asList(messages));
-    }
+  @Override
+  public void sendMessages(String[] messages) {
+    this.messageCache.addAll(Arrays.asList(messages));
+  }
 
-    @Override
-    public boolean hasPermission(@NotNull String permission) {
-        return true;
-    }
+  @Override
+  public boolean hasPermission(@NotNull String permission) {
+    return true;
+  }
 
-    @NotNull
-    @Override
-    public String getName() {
-        return CachedCommandSender.class.getSimpleName();
-    }
+  @NotNull
+  @Override
+  public String getName() {
+    return CachedCommandSender.class.getSimpleName();
+  }
 }

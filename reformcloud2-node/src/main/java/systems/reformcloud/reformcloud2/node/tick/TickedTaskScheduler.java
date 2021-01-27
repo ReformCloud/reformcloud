@@ -42,123 +42,123 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class TickedTaskScheduler {
 
-    private final Queue<TickedTaskSchedulerTask<?>> queue = new ConcurrentLinkedQueue<>();
-    private final Collection<Runnable> permanentTasks = new CopyOnWriteArrayList<>();
+  private final Queue<TickedTaskSchedulerTask<?>> queue = new ConcurrentLinkedQueue<>();
+  private final Collection<Runnable> permanentTasks = new CopyOnWriteArrayList<>();
 
-    private boolean closed = false;
+  private boolean closed = false;
 
-    @NotNull
-    public <T> Task<T> queue(@NotNull Callable<T> callable) {
-        Task<T> task = new DefaultTask<>();
-        this.queue.add(new TickedTaskSchedulerTask<>(task, callable, -1));
-        return task;
+  @NotNull
+  public <T> Task<T> queue(@NotNull Callable<T> callable) {
+    Task<T> task = new DefaultTask<>();
+    this.queue.add(new TickedTaskSchedulerTask<>(task, callable, -1));
+    return task;
+  }
+
+  @NotNull
+  public <T> Task<T> queue(@NotNull Callable<T> callable, int delay) {
+    Task<T> task = new DefaultTask<>();
+    this.queue.add(new TickedTaskSchedulerTask<>(task, callable, CloudTickWorker.currentTick + delay));
+    return task;
+  }
+
+  @NotNull
+  public Task<Void> queue(@NotNull Runnable runnable) {
+    return this.queue(() -> {
+      runnable.run();
+      return null;
+    });
+  }
+
+  @NotNull
+  public Task<Void> queue(@NotNull Runnable runnable, int delay) {
+    return this.queue(() -> {
+      runnable.run();
+      return null;
+    }, delay);
+  }
+
+  public void addPermanentTask(@NotNull Runnable runnable) {
+    this.permanentTasks.add(runnable);
+  }
+
+  public void close() {
+    synchronized (this) {
+      if (this.closed) {
+        return;
+      }
+
+      this.closed = true;
+    }
+  }
+
+  void heartBeat() {
+    if (this.closed) {
+      return;
     }
 
-    @NotNull
-    public <T> Task<T> queue(@NotNull Callable<T> callable, int delay) {
-        Task<T> task = new DefaultTask<>();
-        this.queue.add(new TickedTaskSchedulerTask<>(task, callable, CloudTickWorker.currentTick + delay));
-        return task;
+    AsyncCatcher.ensureMainThread("scheduler heart beat");
+
+    TickedTaskSchedulerTask<?> next = this.element();
+    if (next != null) {
+      try {
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new SchedulerHeartBeatTaskExecuteEvent(next));
+        next.call();
+      } catch (Throwable throwable) {
+        throwable.printStackTrace();
+      }
+    }
+  }
+
+  void fullHeartBeat() {
+    if (this.closed) {
+      return;
     }
 
-    @NotNull
-    public Task<Void> queue(@NotNull Runnable runnable) {
-        return this.queue(() -> {
-            runnable.run();
-            return null;
-        });
+    AsyncCatcher.ensureMainThread("scheduler full heart beat");
+
+    for (Runnable permanentTask : this.permanentTasks) {
+      try {
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new SchedulerFullHeartBeatPermanentTaskExecuteEvent(permanentTask));
+        permanentTask.run();
+      } catch (final Throwable throwable) {
+        throwable.printStackTrace();
+      }
+    }
+  }
+
+  private @Nullable TickedTaskSchedulerTask<?> element() {
+    for (TickedTaskSchedulerTask<?> tickedTaskSchedulerTask : this.queue) {
+      if (tickedTaskSchedulerTask.getTargetTick() < 0 || tickedTaskSchedulerTask.getTargetTick() == CloudTickWorker.currentTick) {
+        this.queue.remove(tickedTaskSchedulerTask);
+        return tickedTaskSchedulerTask;
+      }
     }
 
-    @NotNull
-    public Task<Void> queue(@NotNull Runnable runnable, int delay) {
-        return this.queue(() -> {
-            runnable.run();
-            return null;
-        }, delay);
+    return null;
+  }
+
+  public static class TickedTaskSchedulerTask<T> {
+
+    private final Task<T> task;
+    private final Callable<T> callable;
+    private final long targetTick;
+
+    public TickedTaskSchedulerTask(Task<T> task, Callable<T> callable, long targetTick) {
+      this.task = task;
+      this.callable = callable;
+      this.targetTick = targetTick;
     }
 
-    public void addPermanentTask(@NotNull Runnable runnable) {
-        this.permanentTasks.add(runnable);
+    public long getTargetTick() {
+      return this.targetTick;
     }
 
-    public void close() {
-        synchronized (this) {
-            if (this.closed) {
-                return;
-            }
-
-            this.closed = true;
-        }
+    public void call() {
+      try {
+        this.task.complete(this.callable.call());
+      } catch (Throwable throwable) {
+        throwable.printStackTrace();
+      }
     }
-
-    void heartBeat() {
-        if (this.closed) {
-            return;
-        }
-
-        AsyncCatcher.ensureMainThread("scheduler heart beat");
-
-        TickedTaskSchedulerTask<?> next = this.element();
-        if (next != null) {
-            try {
-                ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new SchedulerHeartBeatTaskExecuteEvent(next));
-                next.call();
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
-        }
-    }
-
-    void fullHeartBeat() {
-        if (this.closed) {
-            return;
-        }
-
-        AsyncCatcher.ensureMainThread("scheduler full heart beat");
-
-        for (Runnable permanentTask : this.permanentTasks) {
-            try {
-                ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new SchedulerFullHeartBeatPermanentTaskExecuteEvent(permanentTask));
-                permanentTask.run();
-            } catch (final Throwable throwable) {
-                throwable.printStackTrace();
-            }
-        }
-    }
-
-    private @Nullable TickedTaskSchedulerTask<?> element() {
-        for (TickedTaskSchedulerTask<?> tickedTaskSchedulerTask : this.queue) {
-            if (tickedTaskSchedulerTask.getTargetTick() < 0 || tickedTaskSchedulerTask.getTargetTick() == CloudTickWorker.currentTick) {
-                this.queue.remove(tickedTaskSchedulerTask);
-                return tickedTaskSchedulerTask;
-            }
-        }
-
-        return null;
-    }
-
-    public static class TickedTaskSchedulerTask<T> {
-
-        private final Task<T> task;
-        private final Callable<T> callable;
-        private final long targetTick;
-
-        public TickedTaskSchedulerTask(Task<T> task, Callable<T> callable, long targetTick) {
-            this.task = task;
-            this.callable = callable;
-            this.targetTick = targetTick;
-        }
-
-        public long getTargetTick() {
-            return this.targetTick;
-        }
-
-        public void call() {
-            try {
-                this.task.complete(this.callable.call());
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
-        }
-    }
+  }
 }

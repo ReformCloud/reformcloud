@@ -37,63 +37,63 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultPacketProvider implements PacketProvider {
 
-    private final Map<Integer, Class<? extends Packet>> packetClasses = new ConcurrentHashMap<>();
+  private final Map<Integer, Class<? extends Packet>> packetClasses = new ConcurrentHashMap<>();
 
-    @Override
-    public void registerPacket(@NotNull Class<? extends Packet> packetClass) throws PacketAlreadyRegisteredException {
-        this.registerPacket(this.newInstanceFromClass(packetClass));
+  @Override
+  public void registerPacket(@NotNull Class<? extends Packet> packetClass) throws PacketAlreadyRegisteredException {
+    this.registerPacket(this.newInstanceFromClass(packetClass));
+  }
+
+  @Override
+  public void registerPacket(@NotNull Packet packet) throws PacketAlreadyRegisteredException {
+    Optional<Packet> packetOptional = this.getPacketById(packet.getId());
+    if (packetOptional.isPresent()) {
+      throw new PacketAlreadyRegisteredException(packet.getClass().getName(), packetOptional.get().getClass().getName(), packet.getId());
     }
 
-    @Override
-    public void registerPacket(@NotNull Packet packet) throws PacketAlreadyRegisteredException {
-        Optional<Packet> packetOptional = this.getPacketById(packet.getId());
-        if (packetOptional.isPresent()) {
-            throw new PacketAlreadyRegisteredException(packet.getClass().getName(), packetOptional.get().getClass().getName(), packet.getId());
-        }
+    this.packetClasses.put(packet.getId(), packet.getClass());
+  }
 
-        this.packetClasses.put(packet.getId(), packet.getClass());
+  @Override
+  public void registerPackets(@NotNull Collection<Class<? extends Packet>> packetClasses) throws PacketAlreadyRegisteredException {
+    for (Class<? extends Packet> packetClass : packetClasses) {
+      this.registerPacket(packetClass);
     }
+  }
 
-    @Override
-    public void registerPackets(@NotNull Collection<Class<? extends Packet>> packetClasses) throws PacketAlreadyRegisteredException {
-        for (Class<? extends Packet> packetClass : packetClasses) {
-            this.registerPacket(packetClass);
-        }
+  @Override
+  public void registerPacket(@NotNull Collection<Packet> packets) throws PacketAlreadyRegisteredException {
+    for (Packet packet : packets) {
+      this.registerPacket(packet);
     }
+  }
 
-    @Override
-    public void registerPacket(@NotNull Collection<Packet> packets) throws PacketAlreadyRegisteredException {
-        for (Packet packet : packets) {
-            this.registerPacket(packet);
-        }
-    }
+  @Override
+  public void unregisterPacket(int id) {
+    this.packetClasses.remove(id);
+  }
 
-    @Override
-    public void unregisterPacket(int id) {
-        this.packetClasses.remove(id);
-    }
+  @NotNull
+  @Override
+  public Optional<Packet> getPacketById(int id) {
+    Class<? extends Packet> packetClass = this.packetClasses.get(id);
+    return packetClass != null ? Optional.of(this.newInstanceFromClass(packetClass)) : Optional.empty();
+  }
 
-    @NotNull
-    @Override
-    public Optional<Packet> getPacketById(int id) {
-        Class<? extends Packet> packetClass = this.packetClasses.get(id);
-        return packetClass != null ? Optional.of(this.newInstanceFromClass(packetClass)) : Optional.empty();
-    }
+  @Override
+  public void clearRegisteredPackets() {
+    this.packetClasses.clear();
+  }
 
-    @Override
-    public void clearRegisteredPackets() {
-        this.packetClasses.clear();
+  private @NotNull Packet newInstanceFromClass(@NotNull Class<? extends Packet> packetClass) {
+    try {
+      return packetClass.getDeclaredConstructor().newInstance();
+    } catch (NoSuchMethodException exception) {
+      System.err.println("Unable to load packet " + packetClass.getName() + " -> NoArgsConstructor is missing");
+      System.err.println("Please report this or fix your application before running the system again");
+      throw new EmptyStackException();
+    } catch (Throwable throwable) {
+      throw new RuntimeException(throwable);
     }
-
-    private @NotNull Packet newInstanceFromClass(@NotNull Class<? extends Packet> packetClass) {
-        try {
-            return packetClass.getDeclaredConstructor().newInstance();
-        } catch (NoSuchMethodException exception) {
-            System.err.println("Unable to load packet " + packetClass.getName() + " -> NoArgsConstructor is missing");
-            System.err.println("Please report this or fix your application before running the system again");
-            throw new EmptyStackException();
-        } catch (Throwable throwable) {
-            throw new RuntimeException(throwable);
-        }
-    }
+  }
 }

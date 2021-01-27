@@ -40,10 +40,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Priority {
-    /**
-     * Get the priority of a listener method.
-     *
-     * @return the priority of a listener method.
-     */
-    int value() default 0;
+  /**
+   * Get the priority of a listener method.
+   *
+   * @return the priority of a listener method.
+   */
+  int value() default 0;
 }

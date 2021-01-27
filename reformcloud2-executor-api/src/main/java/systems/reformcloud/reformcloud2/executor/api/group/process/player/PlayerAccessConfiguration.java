@@ -30,54 +30,54 @@ import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableOb
 
 public interface PlayerAccessConfiguration extends SerializableObject, Cloneable {
 
-    String DEFAULT_FULL_JOIN_PERMISSION = "reformcloud.join.full";
-    String DEFAULT_MAINTENANCE_JOIN_PERMISSION = "reformcloud.join.maintenance";
-    String DEFAULT_JOIN_PERMISSION = "reformcloud.join";
-    int DEFAULT_MAX_PLAYERS = 20;
+  String DEFAULT_FULL_JOIN_PERMISSION = "reformcloud.join.full";
+  String DEFAULT_MAINTENANCE_JOIN_PERMISSION = "reformcloud.join.maintenance";
+  String DEFAULT_JOIN_PERMISSION = "reformcloud.join";
+  int DEFAULT_MAX_PLAYERS = 20;
 
-    @NotNull
-    @Contract(pure = true)
-    static PlayerAccessConfiguration enabled() {
-        return new DefaultPlayerAccessConfiguration(true, true, true);
-    }
+  @NotNull
+  @Contract(pure = true)
+  static PlayerAccessConfiguration enabled() {
+    return new DefaultPlayerAccessConfiguration(true, true, true);
+  }
 
-    @NotNull
-    @Contract(pure = true)
-    static PlayerAccessConfiguration disabled() {
-        return new DefaultPlayerAccessConfiguration(false, false, false);
-    }
+  @NotNull
+  @Contract(pure = true)
+  static PlayerAccessConfiguration disabled() {
+    return new DefaultPlayerAccessConfiguration(false, false, false);
+  }
 
-    @NotNull
-    String getFullJoinPermission();
+  @NotNull
+  String getFullJoinPermission();
 
-    void setFullJoinPermission(@NotNull String fullJoinPermission);
+  void setFullJoinPermission(@NotNull String fullJoinPermission);
 
-    boolean isMaintenance();
+  boolean isMaintenance();
 
-    void setMaintenance(boolean maintenance);
+  void setMaintenance(boolean maintenance);
 
-    @NotNull
-    String getMaintenanceJoinPermission();
+  @NotNull
+  String getMaintenanceJoinPermission();
 
-    void setMaintenanceJoinPermission(@NotNull String maintenanceJoinPermission);
+  void setMaintenanceJoinPermission(@NotNull String maintenanceJoinPermission);
 
-    boolean isJoinOnlyWithPermission();
+  boolean isJoinOnlyWithPermission();
 
-    void setJoinOnlyWithPermission(boolean joinOnlyWithPermission);
+  void setJoinOnlyWithPermission(boolean joinOnlyWithPermission);
 
-    @NotNull
-    String getJoinPermission();
+  @NotNull
+  String getJoinPermission();
 
-    void setJoinPermission(@NotNull String joinPermission);
+  void setJoinPermission(@NotNull String joinPermission);
 
-    boolean isUsePlayerLimit();
+  boolean isUsePlayerLimit();
 
-    void setUsePlayerLimit(boolean usePlayerLimit);
+  void setUsePlayerLimit(boolean usePlayerLimit);
 
-    int getMaxPlayers();
+  int getMaxPlayers();
 
-    void setMaxPlayers(int maxPlayers);
+  void setMaxPlayers(int maxPlayers);
 
-    @NotNull
-    PlayerAccessConfiguration clone();
+  @NotNull
+  PlayerAccessConfiguration clone();
 }

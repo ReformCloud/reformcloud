@@ -31,13 +31,13 @@ import java.util.function.Function;
 
 public interface SetupAnswer {
 
-    @NotNull String getOriginalAnswer();
+  @NotNull String getOriginalAnswer();
 
-    @Nullable Integer getAsInt();
+  @Nullable Integer getAsInt();
 
-    @Nullable Long getAsLong();
+  @Nullable Long getAsLong();
 
-    @Nullable Boolean getAsBoolean();
+  @Nullable Boolean getAsBoolean();
 
-    @Nullable <T> T getAsObject(@NotNull Function<String, T> mapper);
+  @Nullable <T> T getAsObject(@NotNull Function<String, T> mapper);
 }

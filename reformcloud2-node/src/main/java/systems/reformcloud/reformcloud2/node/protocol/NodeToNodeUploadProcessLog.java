@@ -36,35 +36,35 @@ import java.util.UUID;
 
 public class NodeToNodeUploadProcessLog extends ProtocolPacket {
 
-    private UUID uniqueId;
+  private UUID uniqueId;
 
-    public NodeToNodeUploadProcessLog() {
-    }
+  public NodeToNodeUploadProcessLog() {
+  }
 
-    public NodeToNodeUploadProcessLog(UUID uniqueId) {
-        this.uniqueId = uniqueId;
-    }
+  public NodeToNodeUploadProcessLog(UUID uniqueId) {
+    this.uniqueId = uniqueId;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 27;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 27;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(this.uniqueId).ifPresent(process -> {
-            String logUrl = process.uploadLog().orElse(null);
-            channel.sendQueryResult(this.getQueryUniqueID(), new NodeToNodeUploadProcessLogResult(logUrl));
-        });
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(this.uniqueId).ifPresent(process -> {
+      String logUrl = process.uploadLog().orElse(null);
+      channel.sendQueryResult(this.getQueryUniqueID(), new NodeToNodeUploadProcessLogResult(logUrl));
+    });
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
 
-    }
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
 
-    }
+  }
 }

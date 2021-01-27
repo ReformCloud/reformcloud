@@ -36,32 +36,32 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class NodeToNodeUpdateMainGroup extends ProtocolPacket {
 
-    private MainGroup mainGroup;
+  private MainGroup mainGroup;
 
-    public NodeToNodeUpdateMainGroup() {
-    }
+  public NodeToNodeUpdateMainGroup() {
+  }
 
-    public NodeToNodeUpdateMainGroup(MainGroup mainGroup) {
-        this.mainGroup = mainGroup;
-    }
+  public NodeToNodeUpdateMainGroup(MainGroup mainGroup) {
+    this.mainGroup = mainGroup;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 19;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 19;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleMainGroupUpdate(this.mainGroup);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleMainGroupUpdate(this.mainGroup);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.mainGroup);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.mainGroup);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.mainGroup = buffer.readObject(MainGroup.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.mainGroup = buffer.readObject(MainGroup.class);
+  }
 }

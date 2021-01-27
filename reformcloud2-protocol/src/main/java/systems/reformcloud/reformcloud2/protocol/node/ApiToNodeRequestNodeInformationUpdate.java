@@ -38,37 +38,37 @@ import java.util.UUID;
 
 public class ApiToNodeRequestNodeInformationUpdate extends ProtocolPacket {
 
-    private UUID nodeUniqueId;
+  private UUID nodeUniqueId;
 
-    public ApiToNodeRequestNodeInformationUpdate() {
-    }
+  public ApiToNodeRequestNodeInformationUpdate() {
+  }
 
-    public ApiToNodeRequestNodeInformationUpdate(UUID nodeUniqueId) {
-        this.nodeUniqueId = nodeUniqueId;
-    }
+  public ApiToNodeRequestNodeInformationUpdate(UUID nodeUniqueId) {
+    this.nodeUniqueId = nodeUniqueId;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 40;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 40;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        Optional<NodeProcessWrapper> wrapper = ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(this.nodeUniqueId);
-        if (wrapper.isPresent()) {
-            channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetNodeInformationResult(wrapper.get().getNodeInformation()));
-        } else {
-            channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetNodeInformationResult());
-        }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    Optional<NodeProcessWrapper> wrapper = ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(this.nodeUniqueId);
+    if (wrapper.isPresent()) {
+      channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetNodeInformationResult(wrapper.get().getNodeInformation()));
+    } else {
+      channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetNodeInformationResult());
     }
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.nodeUniqueId);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.nodeUniqueId);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.nodeUniqueId = buffer.readUniqueId();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.nodeUniqueId = buffer.readUniqueId();
+  }
 }

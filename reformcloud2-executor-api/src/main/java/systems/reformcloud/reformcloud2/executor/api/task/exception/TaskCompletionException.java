@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.task.exception;
 
 public final class TaskCompletionException extends RuntimeException {
 
-    public TaskCompletionException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public TaskCompletionException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

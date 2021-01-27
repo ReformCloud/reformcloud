@@ -36,29 +36,29 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface TextSocketFrame<T extends TextSocketFrame<T>> extends SocketFrame<T> {
 
-    /**
-     * Get the text data of this frame.
-     *
-     * @return the text data of this frame.
-     */
-    @NotNull
-    String text();
+  /**
+   * Get the text data of this frame.
+   *
+   * @return the text data of this frame.
+   */
+  @NotNull
+  String text();
 
-    /**
-     * Sets the text data of this frame.
-     *
-     * @param text the text data of this frame.
-     * @return the same instance of this class, for chaining
-     */
-    @NotNull
-    T text(@NotNull String text);
+  /**
+   * Sets the text data of this frame.
+   *
+   * @param text the text data of this frame.
+   * @return the same instance of this class, for chaining
+   */
+  @NotNull
+  T text(@NotNull String text);
 
-    /**
-     * {@inheritDoc}
-     */
-    @NotNull
-    @Override
-    default SocketFrameType type() {
-        return SocketFrameType.TEXT;
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @NotNull
+  @Override
+  default SocketFrameType type() {
+    return SocketFrameType.TEXT;
+  }
 }

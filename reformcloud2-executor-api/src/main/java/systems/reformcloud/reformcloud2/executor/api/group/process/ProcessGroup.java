@@ -40,44 +40,44 @@ import java.util.Optional;
 
 public interface ProcessGroup extends Nameable, TemplateHolder, JsonDataHolder<ProcessGroup>, SerializableObject, Cloneable {
 
-    @NotNull
-    @Contract(value = "_ -> new", pure = true)
-    static ProcessGroupBuilder builder(@NotNull String name) {
-        return ExecutorAPI.getInstance().getProcessGroupProvider().createProcessGroup(name);
-    }
+  @NotNull
+  @Contract(value = "_ -> new", pure = true)
+  static ProcessGroupBuilder builder(@NotNull String name) {
+    return ExecutorAPI.getInstance().getProcessGroupProvider().createProcessGroup(name);
+  }
 
-    @NotNull
-    static Optional<ProcessGroup> getByName(@NotNull String name) {
-        return ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(name);
-    }
+  @NotNull
+  static Optional<ProcessGroup> getByName(@NotNull String name) {
+    return ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(name);
+  }
 
-    @NotNull
-    StartupConfiguration getStartupConfiguration();
+  @NotNull
+  StartupConfiguration getStartupConfiguration();
 
-    void setStartupConfiguration(@NotNull StartupConfiguration startupConfiguration);
+  void setStartupConfiguration(@NotNull StartupConfiguration startupConfiguration);
 
-    @NotNull
-    PlayerAccessConfiguration getPlayerAccessConfiguration();
+  @NotNull
+  PlayerAccessConfiguration getPlayerAccessConfiguration();
 
-    void setPlayerAccessConfiguration(@NotNull PlayerAccessConfiguration playerAccessConfiguration);
+  void setPlayerAccessConfiguration(@NotNull PlayerAccessConfiguration playerAccessConfiguration);
 
-    boolean showIdInName();
+  boolean showIdInName();
 
-    void setShowIdInName(boolean showIdInName);
+  void setShowIdInName(boolean showIdInName);
 
-    boolean createsStaticProcesses();
+  boolean createsStaticProcesses();
 
-    void setCreatesStaticProcesses(boolean createsStaticProcesses);
+  void setCreatesStaticProcesses(boolean createsStaticProcesses);
 
-    boolean isLobbyGroup();
+  boolean isLobbyGroup();
 
-    void setLobbyGroup(boolean lobbyGroup);
+  void setLobbyGroup(boolean lobbyGroup);
 
-    @NotNull
-    ProcessBuilder newProcess();
+  @NotNull
+  ProcessBuilder newProcess();
 
-    void update();
+  void update();
 
-    @NotNull
-    ProcessGroup clone();
+  @NotNull
+  ProcessGroup clone();
 }

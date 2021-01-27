@@ -26,56 +26,56 @@ package systems.reformcloud.reformcloud2.node.application;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.application.config.ApplicationConfig;
 import systems.reformcloud.reformcloud2.executor.api.application.ApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.application.ApplicationStatus;
 import systems.reformcloud.reformcloud2.executor.api.application.LoadedApplication;
+import systems.reformcloud.reformcloud2.executor.api.application.config.ApplicationConfig;
 
 public final class DefaultLoadedApplication implements LoadedApplication {
 
-    private final ApplicationLoader loader;
-    private final Class<?> main;
-    private final ApplicationConfig application;
-    private ApplicationStatus applicationStatus;
+  private final ApplicationLoader loader;
+  private final Class<?> main;
+  private final ApplicationConfig application;
+  private ApplicationStatus applicationStatus;
 
-    public DefaultLoadedApplication(ApplicationLoader loader, ApplicationConfig application, Class<?> main) {
-        this.loader = loader;
-        this.application = application;
-        this.main = main;
-        this.applicationStatus = ApplicationStatus.LOADED;
-    }
+  public DefaultLoadedApplication(ApplicationLoader loader, ApplicationConfig application, Class<?> main) {
+    this.loader = loader;
+    this.application = application;
+    this.main = main;
+    this.applicationStatus = ApplicationStatus.LOADED;
+  }
 
-    @NotNull
-    @Override
-    public ApplicationLoader getApplicationLoader() {
-        return this.loader;
-    }
+  @NotNull
+  @Override
+  public ApplicationLoader getApplicationLoader() {
+    return this.loader;
+  }
 
-    @NotNull
-    @Override
-    public ExecutorAPI api() {
-        return ExecutorAPI.getInstance();
-    }
+  @NotNull
+  @Override
+  public ExecutorAPI api() {
+    return ExecutorAPI.getInstance();
+  }
 
-    @NotNull
-    @Override
-    public ApplicationConfig getApplicationConfig() {
-        return this.application;
-    }
+  @NotNull
+  @Override
+  public ApplicationConfig getApplicationConfig() {
+    return this.application;
+  }
 
-    @NotNull
-    @Override
-    public ApplicationStatus getApplicationStatus() {
-        return this.applicationStatus;
-    }
+  @NotNull
+  @Override
+  public ApplicationStatus getApplicationStatus() {
+    return this.applicationStatus;
+  }
 
-    @Override
-    public void setApplicationStatus(@NotNull ApplicationStatus status) {
-        this.applicationStatus = status;
-    }
+  @Override
+  public void setApplicationStatus(@NotNull ApplicationStatus status) {
+    this.applicationStatus = status;
+  }
 
-    @Override
-    public Class<?> getMainClass() {
-        return this.main;
-    }
+  @Override
+  public Class<?> getMainClass() {
+    return this.main;
+  }
 }

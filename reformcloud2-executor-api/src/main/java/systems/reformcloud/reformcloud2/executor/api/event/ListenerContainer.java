@@ -31,14 +31,14 @@ import java.lang.reflect.InvocationTargetException;
 
 public interface ListenerContainer {
 
-    @NotNull
-    Object getListenerInstance();
+  @NotNull
+  Object getListenerInstance();
 
-    @NotNull
-    Class<?> getTargetEventClass();
+  @NotNull
+  Class<?> getTargetEventClass();
 
-    @NotNull
-    EventPriority getPriority();
+  @NotNull
+  EventPriority getPriority();
 
-    void call(@NotNull Event event) throws InvocationTargetException, IllegalAccessException;
+  void call(@NotNull Event event) throws InvocationTargetException, IllegalAccessException;
 }

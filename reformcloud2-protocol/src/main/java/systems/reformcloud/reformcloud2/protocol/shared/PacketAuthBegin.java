@@ -34,51 +34,51 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class PacketAuthBegin extends ProtocolPacket {
 
-    private String connectionKey;
-    private int type;
-    private JsonConfiguration data;
+  private String connectionKey;
+  private int type;
+  private JsonConfiguration data;
 
-    public PacketAuthBegin() {
-    }
+  public PacketAuthBegin() {
+  }
 
-    public PacketAuthBegin(String connectionKey, int type, JsonConfiguration data) {
-        this.connectionKey = connectionKey;
-        this.type = type;
-        this.data = data;
-    }
+  public PacketAuthBegin(String connectionKey, int type, JsonConfiguration data) {
+    this.connectionKey = connectionKey;
+    this.type = type;
+    this.data = data;
+  }
 
-    public String getConnectionKey() {
-        return this.connectionKey;
-    }
+  public String getConnectionKey() {
+    return this.connectionKey;
+  }
 
-    public int getType() {
-        return this.type;
-    }
+  public int getType() {
+    return this.type;
+  }
 
-    public JsonConfiguration getData() {
-        return this.data;
-    }
+  public JsonConfiguration getData() {
+    return this.data;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.AUTH_BUS;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.AUTH_BUS;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.connectionKey);
-        buffer.writeInt(this.type);
-        buffer.writeString(this.data.toPrettyString());
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.connectionKey);
+    buffer.writeInt(this.type);
+    buffer.writeString(this.data.toPrettyString());
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.connectionKey = buffer.readString();
-        this.type = buffer.readInt();
-        this.data = JsonConfiguration.newJsonConfiguration(buffer.readString());
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.connectionKey = buffer.readString();
+    this.type = buffer.readInt();
+    this.data = JsonConfiguration.newJsonConfiguration(buffer.readString());
+  }
 }

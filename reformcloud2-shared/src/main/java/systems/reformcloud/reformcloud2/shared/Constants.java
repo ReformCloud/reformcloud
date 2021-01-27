@@ -26,7 +26,6 @@ package systems.reformcloud.reformcloud2.shared;
 
 import org.jetbrains.annotations.ApiStatus;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -40,21 +39,21 @@ import java.util.stream.IntStream;
 @ApiStatus.Internal
 public final class Constants {
 
-    public static final String EMPTY_STRING = "";
-    public static final long MEGABYTE = 1024 * 1024;
-    public static final String RUNNER_DOWNLOAD_URL = "https://internal.reformcloud.systems/runner.jar";
-    public static final String DEV_NULL_PATH = Paths.get("reformcloud/.bin/dev/null").toAbsolutePath().toString();
-    public static final ExecutorService CACHED_THREAD_POOL = Executors.newCachedThreadPool();
-    public static final ScheduledExecutorService SINGLE_THREAD_SCHEDULED_EXECUTOR = Executors.newSingleThreadScheduledExecutor();
-    public static final ArrayDeque<String> EMPTY_STRING_QUEUE = new ArrayDeque<>();
-    public static final DateFormat FULL_DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy kk:mm:ss");
-    public static final DecimalFormat TWO_POINT_THREE_DECIMAL_FORMAT = new DecimalFormat("##.###");
-    public static final Character[] NUMBERS_AND_LETTERS = IntStream.range(48, 123)
-        .filter(i -> Character.isDigit(i) || Character.isLetter(i))
-        .mapToObj(i -> (char) i)
-        .toArray(Character[]::new);
+  public static final String EMPTY_STRING = "";
+  public static final long MEGABYTE = 1024 * 1024;
+  public static final String RUNNER_DOWNLOAD_URL = "https://internal.reformcloud.systems/runner.jar";
+  public static final String DEV_NULL_PATH = Paths.get("reformcloud/.bin/dev/null").toAbsolutePath().toString();
+  public static final ExecutorService CACHED_THREAD_POOL = Executors.newCachedThreadPool();
+  public static final ScheduledExecutorService SINGLE_THREAD_SCHEDULED_EXECUTOR = Executors.newSingleThreadScheduledExecutor();
+  public static final ArrayDeque<String> EMPTY_STRING_QUEUE = new ArrayDeque<>();
+  public static final DateFormat FULL_DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy kk:mm:ss");
+  public static final DecimalFormat TWO_POINT_THREE_DECIMAL_FORMAT = new DecimalFormat("##.###");
+  public static final Character[] NUMBERS_AND_LETTERS = IntStream.range(48, 123)
+    .filter(i -> Character.isDigit(i) || Character.isLetter(i))
+    .mapToObj(i -> (char) i)
+    .toArray(Character[]::new);
 
-    private Constants() {
-        throw new UnsupportedOperationException();
-    }
+  private Constants() {
+    throw new UnsupportedOperationException();
+  }
 }

@@ -31,7 +31,7 @@ import systems.reformcloud.reformcloud2.protocol.processor.PacketProcessorManage
 
 public abstract class ProtocolPacket extends Packet {
 
-    protected <T extends Packet> void post(@NotNull NetworkChannel source, @NotNull Class<T> tClass, @NotNull T instance) {
-        PacketProcessorManager.getInstance().getPacketProcessor(tClass).ifPresent(packetProcessor -> packetProcessor.process(source, instance));
-    }
+  protected <T extends Packet> void post(@NotNull NetworkChannel source, @NotNull Class<T> tClass, @NotNull T instance) {
+    PacketProcessorManager.getInstance().getPacketProcessor(tClass).ifPresent(packetProcessor -> packetProcessor.process(source, instance));
+  }
 }

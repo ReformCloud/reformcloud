@@ -35,76 +35,76 @@ import java.lang.reflect.Type;
 
 public class GsonAdapter implements JsonAdapter {
 
-    private final Gson gson;
+  private final Gson gson;
 
-    public GsonAdapter(Gson gson) {
-        this.gson = gson;
-    }
+  public GsonAdapter(Gson gson) {
+    this.gson = gson;
+  }
 
-    @Override
-    public @NotNull Element toTree(@NotNull Object object) {
-        final JsonElement backing = this.gson.toJsonTree(object);
-        return ElementMapper.map(backing);
-    }
+  @Override
+  public @NotNull Element toTree(@NotNull Object object) {
+    final JsonElement backing = this.gson.toJsonTree(object);
+    return ElementMapper.map(backing);
+  }
 
-    @Override
-    public @NotNull Element toTree(@NotNull Object object, @NotNull Type type) {
-        final JsonElement backing = this.gson.toJsonTree(object, type);
-        return ElementMapper.map(backing);
-    }
+  @Override
+  public @NotNull Element toTree(@NotNull Object object, @NotNull Type type) {
+    final JsonElement backing = this.gson.toJsonTree(object, type);
+    return ElementMapper.map(backing);
+  }
 
-    @Override
-    public @NotNull String toJson(@NotNull Object object) {
-        return this.gson.toJson(object);
-    }
+  @Override
+  public @NotNull String toJson(@NotNull Object object) {
+    return this.gson.toJson(object);
+  }
 
-    @Override
-    public @NotNull String toJson(@NotNull Object object, @NotNull Type type) {
-        return this.gson.toJson(object, type);
-    }
+  @Override
+  public @NotNull String toJson(@NotNull Object object, @NotNull Type type) {
+    return this.gson.toJson(object, type);
+  }
 
-    @Override
-    public @NotNull String toJson(@NotNull Element element) {
-        return this.gson.toJson(ElementMapper.map(element));
-    }
+  @Override
+  public @NotNull String toJson(@NotNull Element element) {
+    return this.gson.toJson(ElementMapper.map(element));
+  }
 
-    @Override
-    public void toJson(@NotNull Element element, @NotNull Appendable writer) {
-        this.gson.toJson(ElementMapper.map(element), writer);
-    }
+  @Override
+  public void toJson(@NotNull Element element, @NotNull Appendable writer) {
+    this.gson.toJson(ElementMapper.map(element), writer);
+  }
 
-    @Override
-    public @NotNull String toJson(@NotNull Element element, @NotNull Type type) {
-        return this.gson.toJson(ElementMapper.map(element), type);
-    }
+  @Override
+  public @NotNull String toJson(@NotNull Element element, @NotNull Type type) {
+    return this.gson.toJson(ElementMapper.map(element), type);
+  }
 
-    @Override
-    public void toJson(@NotNull Object object, @NotNull Type type, @NotNull Appendable writer) {
-        this.gson.toJson(object, type, writer);
-    }
+  @Override
+  public void toJson(@NotNull Object object, @NotNull Type type, @NotNull Appendable writer) {
+    this.gson.toJson(object, type, writer);
+  }
 
-    @Override
-    public <T> @NotNull T fromJson(@NotNull String json, @NotNull Class<T> type) {
-        return this.gson.fromJson(json, type);
-    }
+  @Override
+  public <T> @NotNull T fromJson(@NotNull String json, @NotNull Class<T> type) {
+    return this.gson.fromJson(json, type);
+  }
 
-    @Override
-    public <T> @NotNull T fromJson(@NotNull String json, @NotNull Type type) {
-        return this.gson.fromJson(json, type);
-    }
+  @Override
+  public <T> @NotNull T fromJson(@NotNull String json, @NotNull Type type) {
+    return this.gson.fromJson(json, type);
+  }
 
-    @Override
-    public <T> @NotNull T fromJson(@NotNull Element element, @NotNull Class<T> type) {
-        return this.gson.fromJson(ElementMapper.map(element), type);
-    }
+  @Override
+  public <T> @NotNull T fromJson(@NotNull Element element, @NotNull Class<T> type) {
+    return this.gson.fromJson(ElementMapper.map(element), type);
+  }
 
-    @Override
-    public <T> @NotNull T fromJson(@NotNull Element element, @NotNull Type type) {
-        return this.gson.fromJson(ElementMapper.map(element), type);
-    }
+  @Override
+  public <T> @NotNull T fromJson(@NotNull Element element, @NotNull Type type) {
+    return this.gson.fromJson(ElementMapper.map(element), type);
+  }
 
-    @Override
-    public <T> @NotNull T fromJson(@NotNull Reader reader, @NotNull Type type) {
-        return this.gson.fromJson(reader, type);
-    }
+  @Override
+  public <T> @NotNull T fromJson(@NotNull Reader reader, @NotNull Type type) {
+    return this.gson.fromJson(reader, type);
+  }
 }

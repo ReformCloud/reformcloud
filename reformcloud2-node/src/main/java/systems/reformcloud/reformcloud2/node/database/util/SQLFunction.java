@@ -31,6 +31,6 @@ import java.sql.SQLException;
 @FunctionalInterface
 public interface SQLFunction<I, O> {
 
-    @NotNull
-    O apply(@NotNull I i) throws SQLException;
+  @NotNull
+  O apply(@NotNull I i) throws SQLException;
 }

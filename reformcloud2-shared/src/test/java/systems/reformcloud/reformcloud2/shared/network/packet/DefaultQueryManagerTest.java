@@ -13,15 +13,15 @@ import java.util.UUID;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DefaultQueryManagerTest {
 
-    private final QueryManager queryManager = new DefaultQueryManager();
+  private final QueryManager queryManager = new DefaultQueryManager();
 
-    @Test
-    public void testSendPacketQuery() {
-        NetworkChannel dummyChannel = Mockito.mock(NetworkChannel.class);
-        Packet dummyPacket = Mockito.mock(Packet.class);
-        UUID queryUniqueId = UUID.randomUUID();
+  @Test
+  public void testSendPacketQuery() {
+    NetworkChannel dummyChannel = Mockito.mock(NetworkChannel.class);
+    Packet dummyPacket = Mockito.mock(Packet.class);
+    UUID queryUniqueId = UUID.randomUUID();
 
-        this.queryManager.sendPacketQuery(dummyChannel, queryUniqueId, dummyPacket);
-        Assertions.assertTrue(this.queryManager.getWaitingQuery(queryUniqueId).isPresent());
-    }
+    this.queryManager.sendPacketQuery(dummyChannel, queryUniqueId, dummyPacket);
+    Assertions.assertTrue(this.queryManager.getWaitingQuery(queryUniqueId).isPresent());
+  }
 }

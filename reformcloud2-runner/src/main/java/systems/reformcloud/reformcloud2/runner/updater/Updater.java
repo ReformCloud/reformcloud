@@ -31,25 +31,25 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface Updater {
 
-    /**
-     * Collects the needed information for the updater to run
-     */
-    void collectInformation();
+  /**
+   * Collects the needed information for the updater to run
+   */
+  void collectInformation();
 
-    /**
-     * @return If the target of the updater has updates available
-     */
-    boolean hasNewVersion();
+  /**
+   * @return If the target of the updater has updates available
+   */
+  boolean hasNewVersion();
 
-    /**
-     * Applies the updates which are available
-     */
-    void applyUpdates();
+  /**
+   * Applies the updates which are available
+   */
+  void applyUpdates();
 
-    /**
-     * @return The name of the current updater
-     */
-    @NotNull
-    String getName();
+  /**
+   * @return The name of the current updater
+   */
+  @NotNull
+  String getName();
 
 }

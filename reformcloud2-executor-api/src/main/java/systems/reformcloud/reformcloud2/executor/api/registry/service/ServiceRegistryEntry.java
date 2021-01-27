@@ -28,13 +28,13 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ServiceRegistryEntry<T> {
 
-    @NotNull
-    Class<T> getService();
+  @NotNull
+  Class<T> getService();
 
-    @NotNull
-    T getProvider();
+  @NotNull
+  T getProvider();
 
-    boolean isImmutable();
+  boolean isImmutable();
 
-    boolean needsReplacement();
+  boolean needsReplacement();
 }

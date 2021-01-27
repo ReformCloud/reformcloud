@@ -33,22 +33,22 @@ import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 
 public final class ProcessEventHandler {
 
-    @Listener
-    public void handle(final @NotNull ProcessRegisterEvent event) {
-        this.getServerController().registerProcess(event.getProcessInformation());
-    }
+  @Listener
+  public void handle(final @NotNull ProcessRegisterEvent event) {
+    this.getServerController().registerProcess(event.getProcessInformation());
+  }
 
-    @Listener
-    public void handle(final @NotNull ProcessUpdateEvent event) {
-        this.getServerController().handleProcessUpdate(event.getProcessInformation());
-    }
+  @Listener
+  public void handle(final @NotNull ProcessUpdateEvent event) {
+    this.getServerController().handleProcessUpdate(event.getProcessInformation());
+  }
 
-    @Listener
-    public void handle(final @NotNull ProcessUnregisterEvent event) {
-        this.getServerController().unregisterProcess(event.getProcessInformation());
-    }
+  @Listener
+  public void handle(final @NotNull ProcessUnregisterEvent event) {
+    this.getServerController().unregisterProcess(event.getProcessInformation());
+  }
 
-    private @NotNull ProxyServerController getServerController() {
-        return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class);
-    }
+  private @NotNull ProxyServerController getServerController() {
+    return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class);
+  }
 }

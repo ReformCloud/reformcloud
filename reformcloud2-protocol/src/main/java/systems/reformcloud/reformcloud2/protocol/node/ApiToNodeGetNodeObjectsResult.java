@@ -35,31 +35,31 @@ import java.util.Collection;
 
 public class ApiToNodeGetNodeObjectsResult extends QueryResultPacket {
 
-    private Collection<NodeInformation> nodeInformation;
+  private Collection<NodeInformation> nodeInformation;
 
-    public ApiToNodeGetNodeObjectsResult() {
-    }
+  public ApiToNodeGetNodeObjectsResult() {
+  }
 
-    public ApiToNodeGetNodeObjectsResult(Collection<NodeInformation> nodeInformation) {
-        this.nodeInformation = nodeInformation;
-    }
+  public ApiToNodeGetNodeObjectsResult(Collection<NodeInformation> nodeInformation) {
+    this.nodeInformation = nodeInformation;
+  }
 
-    public Collection<NodeInformation> getNodeInformation() {
-        return this.nodeInformation;
-    }
+  public Collection<NodeInformation> getNodeInformation() {
+    return this.nodeInformation;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 30;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 30;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObjects(this.nodeInformation);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObjects(this.nodeInformation);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.nodeInformation = buffer.readObjects(DefaultNodeInformation.class, NodeInformation.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.nodeInformation = buffer.readObjects(DefaultNodeInformation.class, NodeInformation.class);
+  }
 }

@@ -37,37 +37,37 @@ import java.util.Optional;
 
 public class ApiToNodeGetNodeInformationByName extends ProtocolPacket {
 
-    private String name;
+  private String name;
 
-    public ApiToNodeGetNodeInformationByName() {
-    }
+  public ApiToNodeGetNodeInformationByName() {
+  }
 
-    public ApiToNodeGetNodeInformationByName(String name) {
-        this.name = name;
-    }
+  public ApiToNodeGetNodeInformationByName(String name) {
+    this.name = name;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 34;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 34;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        Optional<NodeProcessWrapper> wrapper = ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(this.name);
-        if (wrapper.isPresent()) {
-            channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetNodeInformationResult(wrapper.get().getNodeInformation()));
-        } else {
-            channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetNodeInformationResult());
-        }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    Optional<NodeProcessWrapper> wrapper = ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(this.name);
+    if (wrapper.isPresent()) {
+      channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetNodeInformationResult(wrapper.get().getNodeInformation()));
+    } else {
+      channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetNodeInformationResult());
     }
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.name);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.name);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.name = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.name = buffer.readString();
+  }
 }

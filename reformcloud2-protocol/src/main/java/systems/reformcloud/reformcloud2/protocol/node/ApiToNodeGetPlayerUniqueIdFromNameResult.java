@@ -33,31 +33,31 @@ import java.util.UUID;
 
 public class ApiToNodeGetPlayerUniqueIdFromNameResult extends QueryResultPacket {
 
-    private UUID uniqueId;
+  private UUID uniqueId;
 
-    public ApiToNodeGetPlayerUniqueIdFromNameResult() {
-    }
+  public ApiToNodeGetPlayerUniqueIdFromNameResult() {
+  }
 
-    public ApiToNodeGetPlayerUniqueIdFromNameResult(UUID uniqueId) {
-        this.uniqueId = uniqueId;
-    }
+  public ApiToNodeGetPlayerUniqueIdFromNameResult(UUID uniqueId) {
+    this.uniqueId = uniqueId;
+  }
 
-    public UUID getUniqueId() {
-        return this.uniqueId;
-    }
+  public UUID getUniqueId() {
+    return this.uniqueId;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 45;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 45;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.uniqueId);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.uniqueId);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.uniqueId = buffer.readUniqueId();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.uniqueId = buffer.readUniqueId();
+  }
 }

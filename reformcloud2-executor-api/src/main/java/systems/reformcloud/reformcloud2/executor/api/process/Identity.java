@@ -33,20 +33,20 @@ import java.util.UUID;
 
 public interface Identity extends Nameable, Sorted<Identity>, SerializableObject, Cloneable {
 
-    @NotNull
-    UUID getUniqueId();
+  @NotNull
+  UUID getUniqueId();
 
-    int getId();
+  int getId();
 
-    @NotNull
-    UUID getNodeUniqueId();
+  @NotNull
+  UUID getNodeUniqueId();
 
-    @NotNull
-    String getNodeName();
+  @NotNull
+  String getNodeName();
 
-    @NotNull
-    String getDisplayName();
+  @NotNull
+  String getDisplayName();
 
-    @NotNull
-    Identity clone();
+  @NotNull
+  Identity clone();
 }

@@ -37,12 +37,12 @@ import java.util.Collection;
 
 public class NodeToNodeTabCompleteCommandProcessor implements PacketProcessor<NodeToNodeTabCompleteCommand> {
 
-    @Override
-    public void process(@NotNull NetworkChannel channel, @NotNull NodeToNodeTabCompleteCommand packet) {
-        Collection<String> result = ExecutorAPI.getInstance()
-            .getServiceRegistry()
-            .getProviderUnchecked(CommandManager.class)
-            .suggest(packet.getCommandLine(), ConsoleCommandSender.INSTANCE);
-        channel.sendQueryResult(packet.getQueryUniqueID(), new NodeToNodeTabCompleteCommandResult(result));
-    }
+  @Override
+  public void process(@NotNull NetworkChannel channel, @NotNull NodeToNodeTabCompleteCommand packet) {
+    Collection<String> result = ExecutorAPI.getInstance()
+      .getServiceRegistry()
+      .getProviderUnchecked(CommandManager.class)
+      .suggest(packet.getCommandLine(), ConsoleCommandSender.INSTANCE);
+    channel.sendQueryResult(packet.getQueryUniqueID(), new NodeToNodeTabCompleteCommandResult(result));
+  }
 }

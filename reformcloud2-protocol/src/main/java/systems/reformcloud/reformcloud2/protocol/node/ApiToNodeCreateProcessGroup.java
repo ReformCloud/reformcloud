@@ -42,67 +42,67 @@ import java.util.List;
 
 public class ApiToNodeCreateProcessGroup extends ProtocolPacket {
 
-    private String name;
-    private boolean staticGroup;
-    private boolean lobby;
-    private boolean showId;
-    private List<Template> templates;
-    private PlayerAccessConfiguration playerAccessConfiguration;
-    private StartupConfiguration startupConfiguration;
+  private String name;
+  private boolean staticGroup;
+  private boolean lobby;
+  private boolean showId;
+  private List<Template> templates;
+  private PlayerAccessConfiguration playerAccessConfiguration;
+  private StartupConfiguration startupConfiguration;
 
-    public ApiToNodeCreateProcessGroup() {
-    }
+  public ApiToNodeCreateProcessGroup() {
+  }
 
-    public ApiToNodeCreateProcessGroup(String name, boolean staticGroup, boolean lobby, boolean showId,
-                                       List<Template> templates, PlayerAccessConfiguration playerAccessConfiguration,
-                                       StartupConfiguration startupConfiguration) {
-        this.name = name;
-        this.staticGroup = staticGroup;
-        this.lobby = lobby;
-        this.showId = showId;
-        this.templates = templates;
-        this.playerAccessConfiguration = playerAccessConfiguration;
-        this.startupConfiguration = startupConfiguration;
-    }
+  public ApiToNodeCreateProcessGroup(String name, boolean staticGroup, boolean lobby, boolean showId,
+                                     List<Template> templates, PlayerAccessConfiguration playerAccessConfiguration,
+                                     StartupConfiguration startupConfiguration) {
+    this.name = name;
+    this.staticGroup = staticGroup;
+    this.lobby = lobby;
+    this.showId = showId;
+    this.templates = templates;
+    this.playerAccessConfiguration = playerAccessConfiguration;
+    this.startupConfiguration = startupConfiguration;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 59;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 59;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ProcessGroup processGroup = ProcessGroup.builder(this.name)
-            .staticGroup(this.staticGroup)
-            .lobby(this.lobby)
-            .showId(this.showId)
-            .templates(this.templates)
-            .playerAccessConfig(this.playerAccessConfiguration)
-            .startupConfiguration(this.startupConfiguration)
-            .createPermanently()
-            .getUninterruptedly();
-        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeCreateProcessGroupResult(processGroup));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ProcessGroup processGroup = ProcessGroup.builder(this.name)
+      .staticGroup(this.staticGroup)
+      .lobby(this.lobby)
+      .showId(this.showId)
+      .templates(this.templates)
+      .playerAccessConfig(this.playerAccessConfiguration)
+      .startupConfiguration(this.startupConfiguration)
+      .createPermanently()
+      .getUninterruptedly();
+    channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeCreateProcessGroupResult(processGroup));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.name);
-        buffer.writeBoolean(this.staticGroup);
-        buffer.writeBoolean(this.lobby);
-        buffer.writeBoolean(this.showId);
-        buffer.writeObjects(this.templates);
-        buffer.writeObject(this.playerAccessConfiguration);
-        buffer.writeObject(this.startupConfiguration);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.name);
+    buffer.writeBoolean(this.staticGroup);
+    buffer.writeBoolean(this.lobby);
+    buffer.writeBoolean(this.showId);
+    buffer.writeObjects(this.templates);
+    buffer.writeObject(this.playerAccessConfiguration);
+    buffer.writeObject(this.startupConfiguration);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.name = buffer.readString();
-        this.staticGroup = buffer.readBoolean();
-        this.lobby = buffer.readBoolean();
-        this.showId = buffer.readBoolean();
-        this.templates = buffer.readObjects(DefaultTemplate.class, Template.class);
-        this.playerAccessConfiguration = buffer.readObject(DefaultPlayerAccessConfiguration.class);
-        this.startupConfiguration = buffer.readObject(DefaultStartupConfiguration.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.name = buffer.readString();
+    this.staticGroup = buffer.readBoolean();
+    this.lobby = buffer.readBoolean();
+    this.showId = buffer.readBoolean();
+    this.templates = buffer.readObjects(DefaultTemplate.class, Template.class);
+    this.playerAccessConfiguration = buffer.readObject(DefaultPlayerAccessConfiguration.class);
+    this.startupConfiguration = buffer.readObject(DefaultStartupConfiguration.class);
+  }
 }

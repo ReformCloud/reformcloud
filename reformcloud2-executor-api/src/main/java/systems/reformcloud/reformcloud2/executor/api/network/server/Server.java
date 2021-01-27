@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.network.server;
 
 public interface Server {
 
-    void close(int port);
+  void close(int port);
 
-    void closeAll();
+  void closeAll();
 }

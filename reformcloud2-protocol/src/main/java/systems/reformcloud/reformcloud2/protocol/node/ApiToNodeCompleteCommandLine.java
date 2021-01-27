@@ -39,41 +39,41 @@ import java.util.UUID;
 
 public class ApiToNodeCompleteCommandLine extends ProtocolPacket {
 
-    private UUID nodeUniqueId;
-    private String commandLine;
+  private UUID nodeUniqueId;
+  private String commandLine;
 
-    public ApiToNodeCompleteCommandLine() {
-    }
+  public ApiToNodeCompleteCommandLine() {
+  }
 
-    public ApiToNodeCompleteCommandLine(UUID nodeUniqueId, String commandLine) {
-        this.nodeUniqueId = nodeUniqueId;
-        this.commandLine = commandLine;
-    }
+  public ApiToNodeCompleteCommandLine(UUID nodeUniqueId, String commandLine) {
+    this.nodeUniqueId = nodeUniqueId;
+    this.commandLine = commandLine;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 39;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 39;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        Optional<NodeProcessWrapper> wrapper = ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(this.nodeUniqueId);
-        if (wrapper.isPresent()) {
-            channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetStringCollectionResult(wrapper.get().tabCompleteCommandLine(this.commandLine)));
-        } else {
-            channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetStringCollectionResult(new ArrayList<>()));
-        }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    Optional<NodeProcessWrapper> wrapper = ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(this.nodeUniqueId);
+    if (wrapper.isPresent()) {
+      channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetStringCollectionResult(wrapper.get().tabCompleteCommandLine(this.commandLine)));
+    } else {
+      channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetStringCollectionResult(new ArrayList<>()));
     }
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.nodeUniqueId);
-        buffer.writeString(this.commandLine);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.nodeUniqueId);
+    buffer.writeString(this.commandLine);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.nodeUniqueId = buffer.readUniqueId();
-        this.commandLine = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.nodeUniqueId = buffer.readUniqueId();
+    this.commandLine = buffer.readString();
+  }
 }

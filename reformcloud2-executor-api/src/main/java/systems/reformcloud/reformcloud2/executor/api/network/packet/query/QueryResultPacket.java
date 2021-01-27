@@ -31,7 +31,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 
 public abstract class QueryResultPacket extends Packet {
 
-    @Override
-    public final void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-    }
+  @Override
+  public final void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+  }
 }

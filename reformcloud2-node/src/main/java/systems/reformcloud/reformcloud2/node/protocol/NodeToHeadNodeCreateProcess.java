@@ -35,38 +35,38 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class NodeToHeadNodeCreateProcess extends ProtocolPacket {
 
-    private ProcessFactoryConfiguration configuration;
-    private String targetProcessFactory;
+  private ProcessFactoryConfiguration configuration;
+  private String targetProcessFactory;
 
-    public NodeToHeadNodeCreateProcess() {
-    }
+  public NodeToHeadNodeCreateProcess() {
+  }
 
-    public NodeToHeadNodeCreateProcess(ProcessFactoryConfiguration configuration, String targetProcessFactory) {
-        this.configuration = configuration;
-        this.targetProcessFactory = targetProcessFactory;
-    }
+  public NodeToHeadNodeCreateProcess(ProcessFactoryConfiguration configuration, String targetProcessFactory) {
+    this.configuration = configuration;
+    this.targetProcessFactory = targetProcessFactory;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 22;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 22;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ClusterAccessController.createProcessPrivileged(this.configuration, this.targetProcessFactory).thenAccept(
-            result -> channel.sendQueryResult(this.getQueryUniqueID(), new NodeToHeadNodeCreateProcessResult(result))
-        );
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ClusterAccessController.createProcessPrivileged(this.configuration, this.targetProcessFactory).thenAccept(
+      result -> channel.sendQueryResult(this.getQueryUniqueID(), new NodeToHeadNodeCreateProcessResult(result))
+    );
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.targetProcessFactory);
-        buffer.writeObject(this.configuration);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.targetProcessFactory);
+    buffer.writeObject(this.configuration);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.targetProcessFactory = buffer.readString();
-        this.configuration = buffer.readObject(ProcessFactoryConfiguration.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.targetProcessFactory = buffer.readString();
+    this.configuration = buffer.readObject(ProcessFactoryConfiguration.class);
+  }
 }

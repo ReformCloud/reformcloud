@@ -31,20 +31,20 @@ import systems.reformcloud.reformcloud2.node.http.InstanceHolder;
 
 public abstract class DefaultDecodeResultHolder<T extends DecodeResultHolder<T>> implements DecodeResultHolder<T>, InstanceHolder<T> {
 
-    protected DecodeResult decodeResult;
+  protected DecodeResult decodeResult;
 
-    protected DefaultDecodeResultHolder(DecodeResult decodeResult) {
-        this.decodeResult = decodeResult;
-    }
+  protected DefaultDecodeResultHolder(DecodeResult decodeResult) {
+    this.decodeResult = decodeResult;
+  }
 
-    @Override
-    public @NotNull DecodeResult result() {
-        return this.decodeResult;
-    }
+  @Override
+  public @NotNull DecodeResult result() {
+    return this.decodeResult;
+  }
 
-    @Override
-    public @NotNull T result(@NotNull DecodeResult decodeResult) {
-        this.decodeResult = decodeResult;
-        return this.self();
-    }
+  @Override
+  public @NotNull T result(@NotNull DecodeResult decodeResult) {
+    this.decodeResult = decodeResult;
+    return this.self();
+  }
 }

@@ -26,13 +26,13 @@ package systems.reformcloud.reformcloud2.executor.api.configuration.json;
 
 public class JsonParseException extends RuntimeException {
 
-    private static final long serialVersionUID = -6003796475226617736L;
+  private static final long serialVersionUID = -6003796475226617736L;
 
-    public JsonParseException(String message) {
-        super(message);
-    }
+  public JsonParseException(String message) {
+    super(message);
+  }
 
-    public JsonParseException(Throwable cause) {
-        super(cause);
-    }
+  public JsonParseException(Throwable cause) {
+    super(cause);
+  }
 }

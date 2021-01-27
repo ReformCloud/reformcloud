@@ -38,53 +38,53 @@ import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
  */
 public interface LoadedApplication extends Nameable {
 
-    /**
-     * @return The application loader which has loaded the application
-     */
-    @NotNull
-    ApplicationLoader getApplicationLoader();
+  /**
+   * @return The application loader which has loaded the application
+   */
+  @NotNull
+  ApplicationLoader getApplicationLoader();
 
-    /**
-     * @return The current instance of the {@link ExecutorAPI}
-     * @deprecated It makes no sense to have an accessor to the executor api in this class.
-     */
-    @NotNull
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.11.0-SNAPSHOT")
-    ExecutorAPI api();
+  /**
+   * @return The current instance of the {@link ExecutorAPI}
+   * @deprecated It makes no sense to have an accessor to the executor api in this class.
+   */
+  @NotNull
+  @Deprecated
+  @ApiStatus.ScheduledForRemoval(inVersion = "2.11.0-SNAPSHOT")
+  ExecutorAPI api();
 
-    /**
-     * @return The provided config of the application
-     */
-    @NotNull
-    ApplicationConfig getApplicationConfig();
+  /**
+   * @return The provided config of the application
+   */
+  @NotNull
+  ApplicationConfig getApplicationConfig();
 
-    /**
-     * @return The current lifecycle status of the application
-     */
-    @NotNull
-    ApplicationStatus getApplicationStatus();
+  /**
+   * @return The current lifecycle status of the application
+   */
+  @NotNull
+  ApplicationStatus getApplicationStatus();
 
-    /**
-     * Updates the application status
-     *
-     * @param status The new status of the application
-     */
-    void setApplicationStatus(@NotNull ApplicationStatus status);
+  /**
+   * Updates the application status
+   *
+   * @param status The new status of the application
+   */
+  void setApplicationStatus(@NotNull ApplicationStatus status);
 
-    /**
-     * @return The main class of the application
-     */
-    @Nullable
-    Class<?> getMainClass();
+  /**
+   * @return The main class of the application
+   */
+  @Nullable
+  Class<?> getMainClass();
 
-    /**
-     * @return The name of the application
-     * @see #getApplicationConfig()
-     */
-    @NotNull
-    @Override
-    default String getName() {
-        return this.getApplicationConfig().getName();
-    }
+  /**
+   * @return The name of the application
+   * @see #getApplicationConfig()
+   */
+  @NotNull
+  @Override
+  default String getName() {
+    return this.getApplicationConfig().getName();
+  }
 }

@@ -33,11 +33,11 @@ import systems.reformcloud.reformcloud2.shared.network.data.DefaultProtocolBuffe
 
 public class NettyPacketEncoder extends MessageToByteEncoder<Packet> {
 
-    @Override
-    protected void encode(ChannelHandlerContext channelHandlerContext, Packet packet, ByteBuf byteBuf) {
-        ProtocolBuffer buffer = new DefaultProtocolBuffer(byteBuf);
-        buffer.writeVarInt(packet.getId());
-        buffer.writeUniqueId(packet.getQueryUniqueID());
-        packet.write(buffer);
-    }
+  @Override
+  protected void encode(ChannelHandlerContext channelHandlerContext, Packet packet, ByteBuf byteBuf) {
+    ProtocolBuffer buffer = new DefaultProtocolBuffer(byteBuf);
+    buffer.writeVarInt(packet.getId());
+    buffer.writeUniqueId(packet.getQueryUniqueID());
+    packet.write(buffer);
+  }
 }

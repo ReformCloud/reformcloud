@@ -34,46 +34,46 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public final class LayoutUtil {
 
-    private LayoutUtil() {
-        throw new UnsupportedOperationException();
+  private LayoutUtil() {
+    throw new UnsupportedOperationException();
+  }
+
+  public static <T> Optional<T> getNextAndCheckFor(List<T> list, AtomicInteger atomicInteger) {
+    if (list.isEmpty()) {
+      return Optional.empty();
     }
 
-    public static <T> Optional<T> getNextAndCheckFor(List<T> list, AtomicInteger atomicInteger) {
-        if (list.isEmpty()) {
-            return Optional.empty();
-        }
-
-        if (list.size() == 1) {
-            return Optional.of(list.get(0));
-        }
-
-        return Optional.of(list.get(atomicInteger.get()));
+    if (list.size() == 1) {
+      return Optional.of(list.get(0));
     }
 
-    public static <T> void flush(@NotNull List<T> list, @NotNull AtomicInteger integer) {
-        if (list.isEmpty() || list.size() == 1) {
-            return;
-        }
+    return Optional.of(list.get(atomicInteger.get()));
+  }
 
-        if (integer.incrementAndGet() >= list.size()) {
-            integer.set(0);
-        }
+  public static <T> void flush(@NotNull List<T> list, @NotNull AtomicInteger integer) {
+    if (list.isEmpty() || list.size() == 1) {
+      return;
     }
 
-    @NotNull
-    public static Optional<SignLayout> getLayoutFor(@NotNull String group, @NotNull SignConfig config) {
-        SignLayout out = null;
-
-        for (SignLayout layout : config.getLayouts()) {
-            if (layout.getTarget() != null && layout.getTarget().equals(group)) {
-                return Optional.of(layout);
-            }
-
-            if (layout.getTarget() == null && out == null) {
-                out = layout;
-            }
-        }
-
-        return Optional.ofNullable(out);
+    if (integer.incrementAndGet() >= list.size()) {
+      integer.set(0);
     }
+  }
+
+  @NotNull
+  public static Optional<SignLayout> getLayoutFor(@NotNull String group, @NotNull SignConfig config) {
+    SignLayout out = null;
+
+    for (SignLayout layout : config.getLayouts()) {
+      if (layout.getTarget() != null && layout.getTarget().equals(group)) {
+        return Optional.of(layout);
+      }
+
+      if (layout.getTarget() == null && out == null) {
+        out = layout;
+      }
+    }
+
+    return Optional.ofNullable(out);
+  }
 }

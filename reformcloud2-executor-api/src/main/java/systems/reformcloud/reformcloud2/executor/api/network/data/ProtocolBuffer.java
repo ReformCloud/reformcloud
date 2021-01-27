@@ -34,109 +34,109 @@ import java.util.UUID;
 
 public interface ProtocolBuffer {
 
-    void writeString(@Nullable String stringToWrite);
+  void writeString(@Nullable String stringToWrite);
 
-    @Nullable String readString();
+  @Nullable String readString();
 
-    void writeArray(byte[] bytes);
+  void writeArray(byte[] bytes);
 
-    byte[] readArray();
+  byte[] readArray();
 
-    byte[] toByteArray();
+  byte[] toByteArray();
 
-    void writeStringArray(@NotNull Collection<String> list);
+  void writeStringArray(@NotNull Collection<String> list);
 
-    @NotNull List<String> readStringArray();
+  @NotNull List<String> readStringArray();
 
-    void writeStringMap(@NotNull Map<String, String> list);
+  void writeStringMap(@NotNull Map<String, String> list);
 
-    @NotNull Map<String, String> readStringMap();
+  @NotNull Map<String, String> readStringMap();
 
-    void writeStringArrays(@NotNull String[] strings);
+  void writeStringArrays(@NotNull String[] strings);
 
-    @NotNull String[] readStringArrays();
+  @NotNull String[] readStringArrays();
 
-    void writeLongArray(long[] longs);
+  void writeLongArray(long[] longs);
 
-    long[] readLongArray();
+  long[] readLongArray();
 
-    <T extends SerializableObject> void writeObject(@Nullable T object);
+  <T extends SerializableObject> void writeObject(@Nullable T object);
 
-    @Nullable <T extends SerializableObject> T readObject(@NotNull Class<T> tClass);
+  @Nullable <T extends SerializableObject> T readObject(@NotNull Class<T> tClass);
 
-    @Nullable <T extends SerializableObject, V extends T> T readObject(@NotNull Class<V> reader, @NotNull Class<T> type);
+  @Nullable <T extends SerializableObject, V extends T> T readObject(@NotNull Class<V> reader, @NotNull Class<T> type);
 
-    <T extends SerializableObject> void writeObjects(@NotNull Collection<T> objects);
+  <T extends SerializableObject> void writeObjects(@NotNull Collection<T> objects);
 
-    @NotNull <T extends SerializableObject> List<T> readObjects(@NotNull Class<T> tClass);
+  @NotNull <T extends SerializableObject> List<T> readObjects(@NotNull Class<T> tClass);
 
-    @NotNull <T extends SerializableObject, V extends T> List<T> readObjects(@NotNull Class<V> reader, @NotNull Class<T> type);
+  @NotNull <T extends SerializableObject, V extends T> List<T> readObjects(@NotNull Class<V> reader, @NotNull Class<T> type);
 
-    int readVarInt();
+  int readVarInt();
 
-    void writeVarInt(int value);
+  void writeVarInt(int value);
 
-    @Nullable UUID readUniqueId();
+  @Nullable UUID readUniqueId();
 
-    void writeUniqueId(@Nullable UUID uniqueId);
+  void writeUniqueId(@Nullable UUID uniqueId);
 
-    void writeInteger(@Nullable Integer integer);
+  void writeInteger(@Nullable Integer integer);
 
-    @Nullable Integer readInteger();
+  @Nullable Integer readInteger();
 
-    int readableBytes();
+  int readableBytes();
 
-    boolean readBoolean();
+  boolean readBoolean();
 
-    byte readByte();
+  byte readByte();
 
-    short readUnsignedByte();
+  short readUnsignedByte();
 
-    short readShort();
+  short readShort();
 
-    int readUnsignedShort();
+  int readUnsignedShort();
 
-    int readMedium();
+  int readMedium();
 
-    int readUnsignedMedium();
+  int readUnsignedMedium();
 
-    int readInt();
+  int readInt();
 
-    long readUnsignedInt();
+  long readUnsignedInt();
 
-    long readLong();
+  long readLong();
 
-    char readChar();
+  char readChar();
 
-    float readFloat();
+  float readFloat();
 
-    double readDouble();
+  double readDouble();
 
-    <E extends Enum<E>> E readEnum(@NotNull Class<E> enumClass);
+  <E extends Enum<E>> E readEnum(@NotNull Class<E> enumClass);
 
-    void readBytes(byte[] target);
+  void readBytes(byte[] target);
 
-    void skipBytes(int amount);
+  void skipBytes(int amount);
 
-    void writeBoolean(boolean b);
+  void writeBoolean(boolean b);
 
-    void writeByte(int b);
+  void writeByte(int b);
 
-    void writeShort(int s);
+  void writeShort(int s);
 
-    void writeMedium(int medium);
+  void writeMedium(int medium);
 
-    void writeInt(int i);
+  void writeInt(int i);
 
-    void writeLong(long l);
+  void writeLong(long l);
 
-    void writeChar(int c);
+  void writeChar(int c);
 
-    void writeFloat(float f);
+  void writeFloat(float f);
 
-    void writeDouble(double d);
+  void writeDouble(double d);
 
-    void writeBytes(byte[] bytes);
+  void writeBytes(byte[] bytes);
 
-    void writeEnum(@NotNull Enum<?> constant);
+  void writeEnum(@NotNull Enum<?> constant);
 }

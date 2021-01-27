@@ -37,57 +37,57 @@ import systems.reformcloud.reformcloud2.shared.command.sources.ConsoleCommandSen
 
 public class ConsoleReadThread extends Thread {
 
-    private final DefaultNodeConsole console;
-    private Task<String> currentTask;
+  private final DefaultNodeConsole console;
+  private Task<String> currentTask;
 
-    ConsoleReadThread(@NotNull DefaultNodeConsole console) {
-        super("ReformCloud console read thread");
-        this.console = console;
+  ConsoleReadThread(@NotNull DefaultNodeConsole console) {
+    super("ReformCloud console read thread");
+    this.console = console;
+  }
+
+  @Override
+  public void run() {
+    String line;
+    while (!super.isInterrupted() && (line = this.readLine()) != null) {
+      if (line.trim().isEmpty()) {
+        continue;
+      }
+
+      if (this.currentTask != null) {
+        this.currentTask.complete(line);
+        this.currentTask = null;
+        continue;
+      }
+
+      this.dispatchLine(line);
+    }
+  }
+
+  @Nullable
+  private String readLine() {
+    try {
+      return this.console.getLineReader().readLine(this.console.getPrompt());
+    } catch (EndOfFileException ignored) {
+    } catch (UserInterruptException exception) {
+      System.exit(-1);
     }
 
-    @Override
-    public void run() {
-        String line;
-        while (!super.isInterrupted() && (line = this.readLine()) != null) {
-            if (line.trim().isEmpty()) {
-                continue;
-            }
+    return null;
+  }
 
-            if (this.currentTask != null) {
-                this.currentTask.complete(line);
-                this.currentTask = null;
-                continue;
-            }
+  private void dispatchLine(@NotNull String line) {
+    CommandManager commandManager = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class);
+    if (!commandManager.process(line.trim(), ConsoleCommandSender.INSTANCE)) {
+      System.out.println(TranslationHolder.translate("command-help-use"));
+    }
+  }
 
-            this.dispatchLine(line);
-        }
+  @NotNull
+  protected Task<String> getCurrentTask() {
+    if (this.currentTask == null) {
+      return this.currentTask = new DefaultTask<>();
     }
 
-    @Nullable
-    private String readLine() {
-        try {
-            return this.console.getLineReader().readLine(this.console.getPrompt());
-        } catch (EndOfFileException ignored) {
-        } catch (UserInterruptException exception) {
-            System.exit(-1);
-        }
-
-        return null;
-    }
-
-    private void dispatchLine(@NotNull String line) {
-        CommandManager commandManager = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class);
-        if (!commandManager.process(line.trim(), ConsoleCommandSender.INSTANCE)) {
-            System.out.println(TranslationHolder.translate("command-help-use"));
-        }
-    }
-
-    @NotNull
-    protected Task<String> getCurrentTask() {
-        if (this.currentTask == null) {
-            return this.currentTask = new DefaultTask<>();
-        }
-
-        return this.currentTask;
-    }
+    return this.currentTask;
+  }
 }

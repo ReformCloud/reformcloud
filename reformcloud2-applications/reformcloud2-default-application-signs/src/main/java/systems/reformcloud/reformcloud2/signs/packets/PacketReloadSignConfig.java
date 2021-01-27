@@ -34,32 +34,32 @@ import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 
 public class PacketReloadSignConfig extends Packet {
 
-    private SignConfig signConfig;
+  private SignConfig signConfig;
 
-    public PacketReloadSignConfig() {
-    }
+  public PacketReloadSignConfig() {
+  }
 
-    public PacketReloadSignConfig(SignConfig signConfig) {
-        this.signConfig = signConfig;
-    }
+  public PacketReloadSignConfig(SignConfig signConfig) {
+    this.signConfig = signConfig;
+  }
 
-    @Override
-    public int getId() {
-        return PacketUtil.SIGN_BUS + 6;
-    }
+  @Override
+  public int getId() {
+    return PacketUtil.SIGN_BUS + 6;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        SignSystemAdapter.getInstance().handleSignConfigUpdate(this.signConfig);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    SignSystemAdapter.getInstance().handleSignConfigUpdate(this.signConfig);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.signConfig);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.signConfig);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.signConfig = buffer.readObject(SignConfig.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.signConfig = buffer.readObject(SignConfig.class);
+  }
 }

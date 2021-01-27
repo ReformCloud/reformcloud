@@ -34,77 +34,77 @@ import java.util.Optional;
 
 public interface NodeProcessWrapper {
 
-    /**
-     * @return The node information the wrapper is based on
-     */
-    @NotNull
-    NodeInformation getNodeInformation();
+  /**
+   * @return The node information the wrapper is based on
+   */
+  @NotNull
+  NodeInformation getNodeInformation();
 
-    /**
-     * Requests a node information update of the node the wrapper is based on
-     *
-     * @return An optional which is present if the node is still connected and sent an updated node information back
-     */
-    @NotNull
-    Optional<NodeInformation> requestNodeInformationUpdate();
+  /**
+   * Requests a node information update of the node the wrapper is based on
+   *
+   * @return An optional which is present if the node is still connected and sent an updated node information back
+   */
+  @NotNull
+  Optional<NodeInformation> requestNodeInformationUpdate();
 
-    /**
-     * Sends a command to the node this wrapper is based on
-     *
-     * @param commandLine The command which should get sent to the node
-     * @return The console message result of the command
-     */
-    @NotNull
-    @UnmodifiableView Collection<String> sendCommandLine(@NotNull String commandLine);
+  /**
+   * Sends a command to the node this wrapper is based on
+   *
+   * @param commandLine The command which should get sent to the node
+   * @return The console message result of the command
+   */
+  @NotNull
+  @UnmodifiableView Collection<String> sendCommandLine(@NotNull String commandLine);
 
-    /**
-     * Tab completes a command in the node the wrapper is based on
-     *
-     * @param commandLine The command line to tab complete
-     * @return The tab complete results of the request
-     */
-    @NotNull
-    @UnmodifiableView Collection<String> tabCompleteCommandLine(@NotNull String commandLine);
+  /**
+   * Tab completes a command in the node the wrapper is based on
+   *
+   * @param commandLine The command line to tab complete
+   * @return The tab complete results of the request
+   */
+  @NotNull
+  @UnmodifiableView Collection<String> tabCompleteCommandLine(@NotNull String commandLine);
 
-    /**
-     * This method does the same as {@link #getNodeInformation()} but asynchronously.
-     *
-     * @return The node information the wrapper is based on
-     */
-    @NotNull
-    default Task<NodeInformation> getNodeInformationAsync() {
-        return Task.supply(this::getNodeInformation);
-    }
+  /**
+   * This method does the same as {@link #getNodeInformation()} but asynchronously.
+   *
+   * @return The node information the wrapper is based on
+   */
+  @NotNull
+  default Task<NodeInformation> getNodeInformationAsync() {
+    return Task.supply(this::getNodeInformation);
+  }
 
-    /**
-     * This method does the same as {@link #requestNodeInformationUpdate()} but asynchronously.
-     *
-     * @return An optional which is present if the node is still connected and sent an updated node information back
-     */
-    @NotNull
-    default Task<Optional<NodeInformation>> requestNodeInformationUpdateAsync() {
-        return Task.supply(this::requestNodeInformationUpdate);
-    }
+  /**
+   * This method does the same as {@link #requestNodeInformationUpdate()} but asynchronously.
+   *
+   * @return An optional which is present if the node is still connected and sent an updated node information back
+   */
+  @NotNull
+  default Task<Optional<NodeInformation>> requestNodeInformationUpdateAsync() {
+    return Task.supply(this::requestNodeInformationUpdate);
+  }
 
-    /**
-     * This method does the same as {@link #sendCommandLine(String)} but asynchronously.
-     *
-     * @param commandLine The command which should get sent to the node
-     * @return The console message result of the command
-     */
-    @NotNull
-    default Task<Collection<String>> sendCommandLineAsync(@NotNull String commandLine) {
-        return Task.supply(() -> this.sendCommandLine(commandLine));
-    }
+  /**
+   * This method does the same as {@link #sendCommandLine(String)} but asynchronously.
+   *
+   * @param commandLine The command which should get sent to the node
+   * @return The console message result of the command
+   */
+  @NotNull
+  default Task<Collection<String>> sendCommandLineAsync(@NotNull String commandLine) {
+    return Task.supply(() -> this.sendCommandLine(commandLine));
+  }
 
-    /**
-     * This method does the same as {@link #tabCompleteCommandLine(String)} but asynchronously.
-     *
-     * @param commandLine The command line to tab complete
-     * @return The tab complete results of the request
-     */
-    @NotNull
-    default Task<Collection<String>> tabCompleteCommandLineAsync(@NotNull String commandLine) {
-        return Task.supply(() -> this.tabCompleteCommandLine(commandLine));
-    }
+  /**
+   * This method does the same as {@link #tabCompleteCommandLine(String)} but asynchronously.
+   *
+   * @param commandLine The command line to tab complete
+   * @return The tab complete results of the request
+   */
+  @NotNull
+  default Task<Collection<String>> tabCompleteCommandLineAsync(@NotNull String commandLine) {
+    return Task.supply(() -> this.tabCompleteCommandLine(commandLine));
+  }
 }

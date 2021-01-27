@@ -37,18 +37,18 @@ import java.util.concurrent.atomic.AtomicReference;
  * @since 27. October 2020
  */
 public abstract class ResponseSocketFrameFactory {
-    /**
-     * The default response factory.
-     */
-    @ApiStatus.Internal
-    protected static final AtomicReference<ResponseSocketFrameFactory> DEFAULT = new AtomicReference<>();
+  /**
+   * The default response factory.
+   */
+  @ApiStatus.Internal
+  protected static final AtomicReference<ResponseSocketFrameFactory> DEFAULT = new AtomicReference<>();
 
-    /**
-     * Creates a new response which uses as message the given socket frame.
-     *
-     * @param socketFrame the response frame which should be sent to the client.
-     * @return the created response frame.
-     */
-    @NotNull
-    public abstract ResponseFrameHolder<?> forFrame(@NotNull SocketFrame<?> socketFrame);
+  /**
+   * Creates a new response which uses as message the given socket frame.
+   *
+   * @param socketFrame the response frame which should be sent to the client.
+   * @return the created response frame.
+   */
+  @NotNull
+  public abstract ResponseFrameHolder<?> forFrame(@NotNull SocketFrame<?> socketFrame);
 }

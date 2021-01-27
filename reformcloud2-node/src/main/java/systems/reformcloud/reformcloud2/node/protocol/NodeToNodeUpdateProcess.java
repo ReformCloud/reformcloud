@@ -36,32 +36,32 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class NodeToNodeUpdateProcess extends ProtocolPacket {
 
-    private ProcessInformation processInformation;
+  private ProcessInformation processInformation;
 
-    public NodeToNodeUpdateProcess() {
-    }
+  public NodeToNodeUpdateProcess() {
+  }
 
-    public NodeToNodeUpdateProcess(ProcessInformation processInformation) {
-        this.processInformation = processInformation;
-    }
+  public NodeToNodeUpdateProcess(ProcessInformation processInformation) {
+    this.processInformation = processInformation;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 12;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 12;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleProcessUpdate(this.processInformation);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleProcessUpdate(this.processInformation);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.processInformation);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.processInformation);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.processInformation = buffer.readObject(ProcessInformation.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.processInformation = buffer.readObject(ProcessInformation.class);
+  }
 }

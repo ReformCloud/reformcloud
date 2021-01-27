@@ -33,21 +33,21 @@ import systems.reformcloud.reformcloud2.shared.dependency.DependencyFileLoader;
 
 public class TemplateBackendApplication extends Application {
 
-    @Override
-    public void onLoad() {
-        ExecutorAPI.getInstance().getDependencyLoader().load(
-            DependencyFileLoader.collectDependenciesFromFile(TemplateBackendApplication.class.getClassLoader().getResourceAsStream("dependencies.txt"))
-        );
+  @Override
+  public void onLoad() {
+    ExecutorAPI.getInstance().getDependencyLoader().load(
+      DependencyFileLoader.collectDependenciesFromFile(TemplateBackendApplication.class.getClassLoader().getResourceAsStream("dependencies.txt"))
+    );
 
-        FTPTemplateBackend.load(this.getDataDirectory().resolve("ftp.json"));
-        SFTPTemplateBackend.load(this.getDataDirectory().resolve("sftp.json"));
-        URLTemplateBackend.load(this.getDataDirectory().resolve("url.json"));
-    }
+    FTPTemplateBackend.load(this.getDataDirectory().resolve("ftp.json"));
+    SFTPTemplateBackend.load(this.getDataDirectory().resolve("sftp.json"));
+    URLTemplateBackend.load(this.getDataDirectory().resolve("url.json"));
+  }
 
-    @Override
-    public void onDisable() {
-        URLTemplateBackend.unload();
-        FTPTemplateBackend.unload();
-        SFTPTemplateBackend.unload();
-    }
+  @Override
+  public void onDisable() {
+    URLTemplateBackend.unload();
+    FTPTemplateBackend.unload();
+    SFTPTemplateBackend.unload();
+  }
 }

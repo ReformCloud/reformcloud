@@ -35,21 +35,21 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface DecodeResultHolder<T extends DecodeResultHolder<T>> {
 
-    /**
-     * Get the result of decoding this object.
-     *
-     * @return the result of decoding this object.
-     */
-    @NotNull
-    DecodeResult result();
+  /**
+   * Get the result of decoding this object.
+   *
+   * @return the result of decoding this object.
+   */
+  @NotNull
+  DecodeResult result();
 
-    /**
-     * Updates the decode result of this object. This method is not supposed to be used
-     * by directly and is not a supported api. You may use it if you know what you are doing.
-     *
-     * @param decodeResult the new decode result.
-     * @return the same instance of this class, for chaining
-     */
-    @NotNull
-    T result(@NotNull DecodeResult decodeResult);
+  /**
+   * Updates the decode result of this object. This method is not supposed to be used
+   * by directly and is not a supported api. You may use it if you know what you are doing.
+   *
+   * @param decodeResult the new decode result.
+   * @return the same instance of this class, for chaining
+   */
+  @NotNull
+  T result(@NotNull DecodeResult decodeResult);
 }

@@ -32,31 +32,31 @@ import systems.reformcloud.reformcloud2.shared.node.DefaultNodeInformation;
 
 public class NodeToNodeRequestNodeInformationUpdateResult extends QueryResultPacket {
 
-    private DefaultNodeInformation nodeInformation;
+  private DefaultNodeInformation nodeInformation;
 
-    public NodeToNodeRequestNodeInformationUpdateResult() {
-    }
+  public NodeToNodeRequestNodeInformationUpdateResult() {
+  }
 
-    public NodeToNodeRequestNodeInformationUpdateResult(DefaultNodeInformation nodeInformation) {
-        this.nodeInformation = nodeInformation;
-    }
+  public NodeToNodeRequestNodeInformationUpdateResult(DefaultNodeInformation nodeInformation) {
+    this.nodeInformation = nodeInformation;
+  }
 
-    public DefaultNodeInformation getNodeInformation() {
-        return this.nodeInformation;
-    }
+  public DefaultNodeInformation getNodeInformation() {
+    return this.nodeInformation;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 3;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 3;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.nodeInformation);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.nodeInformation);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.nodeInformation = buffer.readObject(DefaultNodeInformation.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.nodeInformation = buffer.readObject(DefaultNodeInformation.class);
+  }
 }

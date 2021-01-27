@@ -36,32 +36,32 @@ import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroup;
 
 public class ApiToNodeUpdateProcessGroup extends ProtocolPacket {
 
-    private ProcessGroup processGroup;
+  private ProcessGroup processGroup;
 
-    public ApiToNodeUpdateProcessGroup() {
-    }
+  public ApiToNodeUpdateProcessGroup() {
+  }
 
-    public ApiToNodeUpdateProcessGroup(ProcessGroup processGroup) {
-        this.processGroup = processGroup;
-    }
+  public ApiToNodeUpdateProcessGroup(ProcessGroup processGroup) {
+    this.processGroup = processGroup;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 62;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 62;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(this.processGroup);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(this.processGroup);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.processGroup);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.processGroup);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.processGroup = buffer.readObject(DefaultProcessGroup.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.processGroup = buffer.readObject(DefaultProcessGroup.class);
+  }
 }

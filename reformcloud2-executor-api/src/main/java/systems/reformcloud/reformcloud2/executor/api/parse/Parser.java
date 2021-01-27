@@ -29,6 +29,6 @@ import org.jetbrains.annotations.Nullable;
 
 public interface Parser<I, O> {
 
-    @Nullable
-    O parse(@NotNull I i);
+  @Nullable
+  O parse(@NotNull I i);
 }

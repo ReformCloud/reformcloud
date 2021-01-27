@@ -29,7 +29,6 @@ import systems.reformcloud.reformcloud2.cloudflare.config.CloudFlareConfig;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.configuration.json.Element;
-import systems.reformcloud.reformcloud2.executor.api.configuration.json.types.Array;
 import systems.reformcloud.reformcloud2.executor.api.configuration.json.types.Object;
 import systems.reformcloud.reformcloud2.executor.api.language.TranslationHolder;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;

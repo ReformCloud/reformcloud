@@ -40,49 +40,49 @@ import java.util.Map;
  */
 public interface HttpListenerRegistry {
 
-    /**
-     * Registers all given listeners as listeners for the given path.
-     *
-     * @param path          the path in the format {@code /a/b/c}. For more information see {@link HttpListener}.
-     * @param httpListeners the listeners to register.
-     * @return the same instance of this class, for chaining
-     */
-    @NotNull
-    HttpListenerRegistry registerListeners(@NotNull String path, @NotNull HttpListener... httpListeners);
+  /**
+   * Registers all given listeners as listeners for the given path.
+   *
+   * @param path          the path in the format {@code /a/b/c}. For more information see {@link HttpListener}.
+   * @param httpListeners the listeners to register.
+   * @return the same instance of this class, for chaining
+   */
+  @NotNull
+  HttpListenerRegistry registerListeners(@NotNull String path, @NotNull HttpListener... httpListeners);
 
-    /**
-     * Unregisters all given listeners.
-     *
-     * @param httpListener the listeners to unregister.
-     * @return the same instance of this class, for chaining
-     */
-    @NotNull
-    HttpListenerRegistry unregisterListeners(@NotNull HttpListener... httpListener);
+  /**
+   * Unregisters all given listeners.
+   *
+   * @param httpListener the listeners to unregister.
+   * @return the same instance of this class, for chaining
+   */
+  @NotNull
+  HttpListenerRegistry unregisterListeners(@NotNull HttpListener... httpListener);
 
-    /**
-     * Unregisters all listeners listening to the {@code path}.
-     *
-     * @param path the path of listeners to unregister.
-     * @return the same instance of this class, for chaining
-     */
-    @NotNull
-    HttpListenerRegistry unregisterListeners(@NotNull String path);
+  /**
+   * Unregisters all listeners listening to the {@code path}.
+   *
+   * @param path the path of listeners to unregister.
+   * @return the same instance of this class, for chaining
+   */
+  @NotNull
+  HttpListenerRegistry unregisterListeners(@NotNull String path);
 
-    /**
-     * Unregisters all known listeners.
-     *
-     * @return the same instance of this class, for chaining
-     */
-    @NotNull
-    HttpListenerRegistry clearListeners();
+  /**
+   * Unregisters all known listeners.
+   *
+   * @return the same instance of this class, for chaining
+   */
+  @NotNull
+  HttpListenerRegistry clearListeners();
 
-    /**
-     * Get all registered listeners. The keys of the map are the listening paths, the values
-     * all listeners listening to the path.
-     *
-     * @return all known listeners to this registry
-     */
-    @NotNull
-    @UnmodifiableView
-    Map<String, List<HttpListenerRegistryEntry>> getListeners();
+  /**
+   * Get all registered listeners. The keys of the map are the listening paths, the values
+   * all listeners listening to the path.
+   *
+   * @return all known listeners to this registry
+   */
+  @NotNull
+  @UnmodifiableView
+  Map<String, List<HttpListenerRegistryEntry>> getListeners();
 }

@@ -29,27 +29,27 @@ import java.util.UUID;
 
 public abstract class PlayerAPIExecutor {
 
-    private static PlayerAPIExecutor instance;
+  private static PlayerAPIExecutor instance;
 
-    public static PlayerAPIExecutor getInstance() {
-        return instance;
-    }
+  public static PlayerAPIExecutor getInstance() {
+    return instance;
+  }
 
-    public static void setInstance(PlayerAPIExecutor instance) {
-        PlayerAPIExecutor.instance = Objects.requireNonNull(instance);
-    }
+  public static void setInstance(PlayerAPIExecutor instance) {
+    PlayerAPIExecutor.instance = Objects.requireNonNull(instance);
+  }
 
-    public abstract void executeSendMessage(UUID player, String message);
+  public abstract void executeSendMessage(UUID player, String message);
 
-    public abstract void executeKickPlayer(UUID player, String message);
+  public abstract void executeKickPlayer(UUID player, String message);
 
-    public abstract void executePlaySound(UUID player, String sound, float f1, float f2);
+  public abstract void executePlaySound(UUID player, String sound, float f1, float f2);
 
-    public abstract void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut);
+  public abstract void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut);
 
-    public abstract void executePlayEffect(UUID player, String entityEffect);
+  public abstract void executePlayEffect(UUID player, String entityEffect);
 
-    public abstract void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch);
+  public abstract void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch);
 
-    public abstract void executeConnect(UUID player, String server);
+  public abstract void executeConnect(UUID player, String server);
 }

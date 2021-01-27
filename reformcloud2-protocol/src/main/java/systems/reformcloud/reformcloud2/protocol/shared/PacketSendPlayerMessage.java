@@ -35,44 +35,44 @@ import java.util.UUID;
 
 public class PacketSendPlayerMessage extends ProtocolPacket {
 
-    private UUID player;
-    private String message;
+  private UUID player;
+  private String message;
 
-    public PacketSendPlayerMessage() {
-    }
+  public PacketSendPlayerMessage() {
+  }
 
-    public PacketSendPlayerMessage(UUID player, String message) {
-        this.player = player;
-        this.message = message;
-    }
+  public PacketSendPlayerMessage(UUID player, String message) {
+    this.player = player;
+    this.message = message;
+  }
 
-    public UUID getPlayer() {
-        return this.player;
-    }
+  public UUID getPlayer() {
+    return this.player;
+  }
 
-    public String getMessage() {
-        return this.message;
-    }
+  public String getMessage() {
+    return this.message;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.API_BUS + 10;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.API_BUS + 10;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        super.post(channel, PacketSendPlayerMessage.class, this);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    super.post(channel, PacketSendPlayerMessage.class, this);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.player);
-        buffer.writeString(this.message);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.player);
+    buffer.writeString(this.message);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.player = buffer.readUniqueId();
-        this.message = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.player = buffer.readUniqueId();
+    this.message = buffer.readString();
+  }
 }

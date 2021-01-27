@@ -33,40 +33,40 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultProcessFactoryController implements ProcessFactoryController {
 
-    private final Map<String, ProcessFactory> factoriesByName = new ConcurrentHashMap<>();
+  private final Map<String, ProcessFactory> factoriesByName = new ConcurrentHashMap<>();
 
-    public DefaultProcessFactoryController(@NotNull DefaultNodeProcessProvider processProvider) {
-        this.registerProcessFactory(new DefaultProcessFactory(processProvider));
+  public DefaultProcessFactoryController(@NotNull DefaultNodeProcessProvider processProvider) {
+    this.registerProcessFactory(new DefaultProcessFactory(processProvider));
+  }
+
+  @Override
+  public void registerProcessFactory(@NotNull ProcessFactory factory) {
+    this.factoriesByName.put(factory.getName(), factory);
+  }
+
+  @Override
+  public void unregisterFactory(@NotNull ProcessFactory factory) {
+    this.unregisterFactoryByName(factory.getName());
+  }
+
+  @Override
+  public void unregisterFactoryByName(@NotNull String name) {
+    this.factoriesByName.remove(name);
+  }
+
+  @Override
+  public @NotNull Optional<ProcessFactory> getProcessFactoryByName(@NotNull String name) {
+    return Optional.ofNullable(this.factoriesByName.get(name));
+  }
+
+  @Override
+  public @NotNull ProcessFactory getDefaultProcessFactory() {
+    for (ProcessFactory value : this.factoriesByName.values()) {
+      if (value.isDefault()) {
+        return value;
+      }
     }
 
-    @Override
-    public void registerProcessFactory(@NotNull ProcessFactory factory) {
-        this.factoriesByName.put(factory.getName(), factory);
-    }
-
-    @Override
-    public void unregisterFactory(@NotNull ProcessFactory factory) {
-        this.unregisterFactoryByName(factory.getName());
-    }
-
-    @Override
-    public void unregisterFactoryByName(@NotNull String name) {
-        this.factoriesByName.remove(name);
-    }
-
-    @Override
-    public @NotNull Optional<ProcessFactory> getProcessFactoryByName(@NotNull String name) {
-        return Optional.ofNullable(this.factoriesByName.get(name));
-    }
-
-    @Override
-    public @NotNull ProcessFactory getDefaultProcessFactory() {
-        for (ProcessFactory value : this.factoriesByName.values()) {
-            if (value.isDefault()) {
-                return value;
-            }
-        }
-
-        throw new IllegalStateException("Default process factory not present anymore");
-    }
+    throw new IllegalStateException("Default process factory not present anymore");
+  }
 }

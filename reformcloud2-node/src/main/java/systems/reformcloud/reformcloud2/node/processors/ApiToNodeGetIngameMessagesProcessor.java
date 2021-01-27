@@ -33,10 +33,10 @@ import systems.reformcloud.reformcloud2.protocol.processor.PacketProcessor;
 
 public class ApiToNodeGetIngameMessagesProcessor implements PacketProcessor<ApiToNodeGetIngameMessages> {
 
-    @Override
-    public void process(@NotNull NetworkChannel channel, @NotNull ApiToNodeGetIngameMessages packet) {
-        channel.sendQueryResult(packet.getQueryUniqueID(), new ApiToNodeGetIngameMessagesResult(
-            NodeExecutor.getInstance().getNodeExecutorConfig().getIngameMessages()
-        ));
-    }
+  @Override
+  public void process(@NotNull NetworkChannel channel, @NotNull ApiToNodeGetIngameMessages packet) {
+    channel.sendQueryResult(packet.getQueryUniqueID(), new ApiToNodeGetIngameMessagesResult(
+      NodeExecutor.getInstance().getNodeExecutorConfig().getIngameMessages()
+    ));
+  }
 }

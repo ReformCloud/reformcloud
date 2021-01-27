@@ -44,58 +44,58 @@ import java.util.function.Supplier;
 @SuppressWarnings("deprecation") // 1.8 is too old to use the new channel factory
 public class DefaultNetworkServer implements NetworkServer {
 
-    private final Map<Integer, ChannelFuture> channelFutures = new ConcurrentHashMap<>();
-    private final EventLoopGroup boss = TransportType.BEST_TYPE.getEventLoopGroup(EventLoopGroupType.BOSS);
-    private final EventLoopGroup worker = TransportType.BEST_TYPE.getEventLoopGroup(EventLoopGroupType.WORKER);
+  private final Map<Integer, ChannelFuture> channelFutures = new ConcurrentHashMap<>();
+  private final EventLoopGroup boss = TransportType.BEST_TYPE.getEventLoopGroup(EventLoopGroupType.BOSS);
+  private final EventLoopGroup worker = TransportType.BEST_TYPE.getEventLoopGroup(EventLoopGroupType.WORKER);
 
-    @Override
-    public boolean bind(@NotNull String host, int port, @NotNull Supplier<ChannelListener> channelListenerFactory) {
-        if (!this.channelFutures.containsKey(port)) {
-            return new ServerBootstrap()
-                .channelFactory(TransportType.BEST_TYPE.getServerSocketChannelFactory())
-                .group(this.boss, this.worker)
-                .childOption(ChannelOption.SO_REUSEADDR, true)
-                .childOption(ChannelOption.SO_KEEPALIVE, true)
-                .childOption(ChannelOption.AUTO_READ, true)
-                .childOption(ChannelOption.IP_TOS, 24)
-                .childOption(ChannelOption.TCP_NODELAY, true)
-                .childHandler(new NettyChannelInitializer(channelListenerFactory))
-                .bind(host, port)
-                .addListener((ChannelFutureListener) channelFuture -> {
-                    if (channelFuture.isSuccess()) {
-                        DefaultNetworkServer.this.channelFutures.put(port, channelFuture);
-                    } else {
-                        channelFuture.cause().printStackTrace();
-                    }
-                })
-                .awaitUninterruptibly()
-                .isSuccess();
-        } else {
-            return true;
-        }
+  @Override
+  public boolean bind(@NotNull String host, int port, @NotNull Supplier<ChannelListener> channelListenerFactory) {
+    if (!this.channelFutures.containsKey(port)) {
+      return new ServerBootstrap()
+        .channelFactory(TransportType.BEST_TYPE.getServerSocketChannelFactory())
+        .group(this.boss, this.worker)
+        .childOption(ChannelOption.SO_REUSEADDR, true)
+        .childOption(ChannelOption.SO_KEEPALIVE, true)
+        .childOption(ChannelOption.AUTO_READ, true)
+        .childOption(ChannelOption.IP_TOS, 24)
+        .childOption(ChannelOption.TCP_NODELAY, true)
+        .childHandler(new NettyChannelInitializer(channelListenerFactory))
+        .bind(host, port)
+        .addListener((ChannelFutureListener) channelFuture -> {
+          if (channelFuture.isSuccess()) {
+            DefaultNetworkServer.this.channelFutures.put(port, channelFuture);
+          } else {
+            channelFuture.cause().printStackTrace();
+          }
+        })
+        .awaitUninterruptibly()
+        .isSuccess();
+    } else {
+      return true;
+    }
+  }
+
+  @Override
+  public boolean bind(@NotNull NetworkAddress address, @NotNull Supplier<ChannelListener> channelListenerFactory) {
+    return this.bind(address.getHost(), address.getPort(), channelListenerFactory);
+  }
+
+  @Override
+  public void close(int port) {
+    ChannelFuture channelFuture = this.channelFutures.remove(port);
+    if (channelFuture != null) {
+      channelFuture.cancel(true);
+    }
+  }
+
+  @Override
+  public void closeAll() {
+    for (ChannelFuture value : this.channelFutures.values()) {
+      value.cancel(true);
     }
 
-    @Override
-    public boolean bind(@NotNull NetworkAddress address, @NotNull Supplier<ChannelListener> channelListenerFactory) {
-        return this.bind(address.getHost(), address.getPort(), channelListenerFactory);
-    }
-
-    @Override
-    public void close(int port) {
-        ChannelFuture channelFuture = this.channelFutures.remove(port);
-        if (channelFuture != null) {
-            channelFuture.cancel(true);
-        }
-    }
-
-    @Override
-    public void closeAll() {
-        for (ChannelFuture value : this.channelFutures.values()) {
-            value.cancel(true);
-        }
-
-        this.channelFutures.clear();
-        this.worker.shutdownGracefully();
-        this.boss.shutdownGracefully();
-    }
+    this.channelFutures.clear();
+    this.worker.shutdownGracefully();
+    this.boss.shutdownGracefully();
+  }
 }

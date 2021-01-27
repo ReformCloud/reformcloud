@@ -36,45 +36,45 @@ import java.util.UUID;
 
 public class NodeToNodePlaySoundToPlayer extends ProtocolPacket {
 
-    private UUID uniqueId;
-    private String sound;
-    private float volume;
-    private float pitch;
+  private UUID uniqueId;
+  private String sound;
+  private float volume;
+  private float pitch;
 
-    public NodeToNodePlaySoundToPlayer() {
-    }
+  public NodeToNodePlaySoundToPlayer() {
+  }
 
-    public NodeToNodePlaySoundToPlayer(UUID uniqueId, String sound, float volume, float pitch) {
-        this.uniqueId = uniqueId;
-        this.sound = sound;
-        this.volume = volume;
-        this.pitch = pitch;
-    }
+  public NodeToNodePlaySoundToPlayer(UUID uniqueId, String sound, float volume, float pitch) {
+    this.uniqueId = uniqueId;
+    this.sound = sound;
+    this.volume = volume;
+    this.pitch = pitch;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 36;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 36;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.uniqueId)
-            .ifPresent(player -> player.playSound(this.sound, this.volume, this.pitch));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.uniqueId)
+      .ifPresent(player -> player.playSound(this.sound, this.volume, this.pitch));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.uniqueId);
-        buffer.writeString(this.sound);
-        buffer.writeFloat(this.volume);
-        buffer.writeFloat(this.pitch);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.uniqueId);
+    buffer.writeString(this.sound);
+    buffer.writeFloat(this.volume);
+    buffer.writeFloat(this.pitch);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.uniqueId = buffer.readUniqueId();
-        this.sound = buffer.readString();
-        this.volume = buffer.readFloat();
-        this.pitch = buffer.readFloat();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.uniqueId = buffer.readUniqueId();
+    this.sound = buffer.readString();
+    this.volume = buffer.readFloat();
+    this.pitch = buffer.readFloat();
+  }
 }

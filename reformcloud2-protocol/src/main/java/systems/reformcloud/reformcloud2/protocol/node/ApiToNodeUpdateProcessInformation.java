@@ -36,32 +36,32 @@ import systems.reformcloud.reformcloud2.shared.process.DefaultProcessInformation
 
 public class ApiToNodeUpdateProcessInformation extends ProtocolPacket {
 
-    private ProcessInformation processInformation;
+  private ProcessInformation processInformation;
 
-    public ApiToNodeUpdateProcessInformation() {
-    }
+  public ApiToNodeUpdateProcessInformation() {
+  }
 
-    public ApiToNodeUpdateProcessInformation(ProcessInformation processInformation) {
-        this.processInformation = processInformation;
-    }
+  public ApiToNodeUpdateProcessInformation(ProcessInformation processInformation) {
+    this.processInformation = processInformation;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 18;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 18;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getProcessProvider().updateProcessInformation(this.processInformation);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getProcessProvider().updateProcessInformation(this.processInformation);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.processInformation);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.processInformation);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.processInformation = buffer.readObject(DefaultProcessInformation.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.processInformation = buffer.readObject(DefaultProcessInformation.class);
+  }
 }

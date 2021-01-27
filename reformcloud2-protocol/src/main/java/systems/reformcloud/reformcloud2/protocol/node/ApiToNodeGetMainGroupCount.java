@@ -34,25 +34,25 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodeGetMainGroupCount extends ProtocolPacket {
 
-    public ApiToNodeGetMainGroupCount() {
-    }
+  public ApiToNodeGetMainGroupCount() {
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 56;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 56;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        long count = ExecutorAPI.getInstance().getMainGroupProvider().getMainGroupCount();
-        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetMainGroupCountResult(count));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    long count = ExecutorAPI.getInstance().getMainGroupProvider().getMainGroupCount();
+    channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetMainGroupCountResult(count));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+  }
 }

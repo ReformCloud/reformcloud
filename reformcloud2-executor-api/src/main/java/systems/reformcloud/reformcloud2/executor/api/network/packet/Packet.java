@@ -34,17 +34,17 @@ import java.util.UUID;
 
 public abstract class Packet implements SerializableObject {
 
-    protected UUID queryUniqueID;
+  protected UUID queryUniqueID;
 
-    public abstract int getId();
+  public abstract int getId();
 
-    public UUID getQueryUniqueID() {
-        return this.queryUniqueID;
-    }
+  public UUID getQueryUniqueID() {
+    return this.queryUniqueID;
+  }
 
-    public void setQueryUniqueID(@Nullable UUID queryUniqueID) {
-        this.queryUniqueID = queryUniqueID;
-    }
+  public void setQueryUniqueID(@Nullable UUID queryUniqueID) {
+    this.queryUniqueID = queryUniqueID;
+  }
 
-    public abstract void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel);
+  public abstract void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel);
 }

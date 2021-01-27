@@ -29,6 +29,6 @@ import org.jetbrains.annotations.NotNull;
 @FunctionalInterface
 public interface Function1E<I, O, T extends Throwable> {
 
-    @NotNull
-    O apply(@NotNull I i) throws T;
+  @NotNull
+  O apply(@NotNull I i) throws T;
 }

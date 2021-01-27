@@ -39,83 +39,83 @@ import java.util.Optional;
  */
 public interface HttpRequestSource extends Closeable {
 
-    /**
-     * Get the globally unique identifier of this request source.
-     *
-     * @return the globally unique identifier of this request source.
-     */
-    @NotNull
-    String id();
+  /**
+   * Get the globally unique identifier of this request source.
+   *
+   * @return the globally unique identifier of this request source.
+   */
+  @NotNull
+  String id();
 
-    /**
-     * Get if this source connection is open and may get active later.
-     *
-     * @return if this source connection is open and may get active later.
-     */
-    boolean isOpen();
+  /**
+   * Get if this source connection is open and may get active later.
+   *
+   * @return if this source connection is open and may get active later.
+   */
+  boolean isOpen();
 
-    /**
-     * Get if this source connection is still active and connected.
-     *
-     * @return if this source connection is still active and connected.
-     */
-    boolean isActive();
+  /**
+   * Get if this source connection is still active and connected.
+   *
+   * @return if this source connection is still active and connected.
+   */
+  boolean isActive();
 
-    /**
-     * Get if the I/O thread will perform any write action immediately.
-     *
-     * @return if the I/O thread will perform any write action immediately.
-     */
-    boolean isWritable();
+  /**
+   * Get if the I/O thread will perform any write action immediately.
+   *
+   * @return if the I/O thread will perform any write action immediately.
+   */
+  boolean isWritable();
 
-    /**
-     * Get the bytes before the channel is not writeable anymore so the I/O thread will
-     * not perform any write action immediately. If the channel is unwriteable this is
-     * {@code 0}.
-     *
-     * @return the bytes before the channel is not writeable anymore.
-     */
-    long bytesBeforeUnwritable();
+  /**
+   * Get the bytes before the channel is not writeable anymore so the I/O thread will
+   * not perform any write action immediately. If the channel is unwriteable this is
+   * {@code 0}.
+   *
+   * @return the bytes before the channel is not writeable anymore.
+   */
+  long bytesBeforeUnwritable();
 
-    /**
-     * Get the bytes before the channel is writeable again so the I/O thread will
-     * perform any write action immediately. If the channel is writeable this is
-     * {@code 0}.
-     *
-     * @return the bytes before the channel is writeable again.
-     */
-    long bytesBeforeWritable();
+  /**
+   * Get the bytes before the channel is writeable again so the I/O thread will
+   * perform any write action immediately. If the channel is writeable this is
+   * {@code 0}.
+   *
+   * @return the bytes before the channel is writeable again.
+   */
+  long bytesBeforeWritable();
 
-    /**
-     * Get the address the channel is bound to.
-     *
-     * @return the address the channel is bound to.
-     */
-    @NotNull
-    SocketAddress serverAddress();
+  /**
+   * Get the address the channel is bound to.
+   *
+   * @return the address the channel is bound to.
+   */
+  @NotNull
+  SocketAddress serverAddress();
 
-    /**
-     * Get the client address the connection is from.
-     *
-     * @return the client address the connection is from.
-     */
-    @NotNull
-    SocketAddress clientAddress();
+  /**
+   * Get the client address the connection is from.
+   *
+   * @return the client address the connection is from.
+   */
+  @NotNull
+  SocketAddress clientAddress();
 
-    /**
-     * Upgrades this HTTP request source to a socket frame source. If the client does not send
-     * a version header the version {@code 00} is assumed. If the client sends an unsupported
-     * version as header, this method will return an empty optional as we cannot decode the
-     * messages sent by the client.
-     *
-     * @return the upgraded socket frame source build on top of this HTTP request source.
-     */
-    @NotNull
-    Optional<SocketFrameSource> upgrade();
+  /**
+   * Upgrades this HTTP request source to a socket frame source. If the client does not send
+   * a version header the version {@code 00} is assumed. If the client sends an unsupported
+   * version as header, this method will return an empty optional as we cannot decode the
+   * messages sent by the client.
+   *
+   * @return the upgraded socket frame source build on top of this HTTP request source.
+   */
+  @NotNull
+  Optional<SocketFrameSource> upgrade();
 
-    /**
-     * Closes the connection to this source.
-     */
-    @Override
-    void close();
+  /**
+   * Closes the connection to this source.
+   */
+  @Override
+  void close();
 }

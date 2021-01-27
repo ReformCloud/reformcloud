@@ -32,55 +32,55 @@ import java.util.UUID;
 
 public class DefaultPlayer implements Player {
 
-    private UUID uniqueId;
-    private String name;
-    private long joinTime;
+  private UUID uniqueId;
+  private String name;
+  private long joinTime;
 
-    protected DefaultPlayer() {
-    }
+  protected DefaultPlayer() {
+  }
 
-    public DefaultPlayer(UUID uniqueId, String name, long joinTime) {
-        this.uniqueId = uniqueId;
-        this.name = name;
-        this.joinTime = joinTime;
-    }
+  public DefaultPlayer(UUID uniqueId, String name, long joinTime) {
+    this.uniqueId = uniqueId;
+    this.name = name;
+    this.joinTime = joinTime;
+  }
 
-    @Override
-    public @NotNull UUID getUniqueID() {
-        return this.uniqueId;
-    }
+  @Override
+  public @NotNull UUID getUniqueID() {
+    return this.uniqueId;
+  }
 
-    @Override
-    public @NotNull String getName() {
-        return this.name;
-    }
+  @Override
+  public @NotNull String getName() {
+    return this.name;
+  }
 
-    @Override
-    public long getJoined() {
-        return this.joinTime;
-    }
+  @Override
+  public long getJoined() {
+    return this.joinTime;
+  }
 
-    @Override
-    public @NotNull Player clone() {
-        return new DefaultPlayer(this.uniqueId, this.name, this.joinTime);
-    }
+  @Override
+  public @NotNull Player clone() {
+    return new DefaultPlayer(this.uniqueId, this.name, this.joinTime);
+  }
 
-    @Override
-    public int compareTo(@NotNull Player o) {
-        return Long.compare(this.joinTime, o.getJoined());
-    }
+  @Override
+  public int compareTo(@NotNull Player o) {
+    return Long.compare(this.joinTime, o.getJoined());
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.uniqueId);
-        buffer.writeString(this.name);
-        buffer.writeLong(this.joinTime);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.uniqueId);
+    buffer.writeString(this.name);
+    buffer.writeLong(this.joinTime);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.uniqueId = buffer.readUniqueId();
-        this.name = buffer.readString();
-        this.joinTime = buffer.readLong();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.uniqueId = buffer.readUniqueId();
+    this.name = buffer.readString();
+    this.joinTime = buffer.readLong();
+  }
 }

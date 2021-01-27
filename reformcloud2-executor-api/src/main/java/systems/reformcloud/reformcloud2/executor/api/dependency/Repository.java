@@ -43,27 +43,27 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Repository {
 
-    /**
-     * The id of the represented repository
-     *
-     * @return the id of the represented repository
-     */
-    @NotNull
-    String id();
+  /**
+   * The id of the represented repository
+   *
+   * @return the id of the represented repository
+   */
+  @NotNull
+  String id();
 
-    /**
-     * The name of the represented repository or empty if there is no name for the repository
-     *
-     * @return the name of the represented repository or empty if there is no name for the repository
-     */
-    @NotNull
-    String name() default "";
+  /**
+   * The name of the represented repository or empty if there is no name for the repository
+   *
+   * @return the name of the represented repository or empty if there is no name for the repository
+   */
+  @NotNull
+  String name() default "";
 
-    /**
-     * The root url of the repository
-     *
-     * @return the root url of the repository
-     */
-    @NotNull
-    String url();
+  /**
+   * The root url of the repository
+   *
+   * @return the root url of the repository
+   */
+  @NotNull
+  String url();
 }

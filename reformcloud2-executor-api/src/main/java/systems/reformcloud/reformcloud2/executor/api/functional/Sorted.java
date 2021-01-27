@@ -28,23 +28,23 @@ import org.jetbrains.annotations.NotNull;
 
 public interface Sorted<T> extends Comparable<T> {
 
-    default boolean lt(@NotNull T that) {
-        return this.compareTo(that) < 0;
-    }
+  default boolean lt(@NotNull T that) {
+    return this.compareTo(that) < 0;
+  }
 
-    default boolean lte(@NotNull T that) {
-        return this.compareTo(that) <= 0;
-    }
+  default boolean lte(@NotNull T that) {
+    return this.compareTo(that) <= 0;
+  }
 
-    default boolean gt(@NotNull T that) {
-        return this.compareTo(that) > 0;
-    }
+  default boolean gt(@NotNull T that) {
+    return this.compareTo(that) > 0;
+  }
 
-    default boolean gte(@NotNull T that) {
-        return this.compareTo(that) >= 0;
-    }
+  default boolean gte(@NotNull T that) {
+    return this.compareTo(that) >= 0;
+  }
 
-    default boolean e(@NotNull T that) {
-        return this.compareTo(that) == 0;
-    }
+  default boolean e(@NotNull T that) {
+    return this.compareTo(that) == 0;
+  }
 }

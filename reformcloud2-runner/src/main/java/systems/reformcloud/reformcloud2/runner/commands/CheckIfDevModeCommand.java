@@ -33,16 +33,16 @@ import java.util.Collection;
 
 public final class CheckIfDevModeCommand extends InterpreterCommand {
 
-    public CheckIfDevModeCommand() {
-        super("check_if_dev_mode");
-    }
+  public CheckIfDevModeCommand() {
+    super("check_if_dev_mode");
+  }
 
-    @Override
-    public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
-        if (Integer.getInteger("reformcloud.executor.type", 0) != 2 && Boolean.getBoolean("reformcloud.dev.mode")) {
-            RunnerUtils.deleteFileIfExists(RunnerUtils.EXECUTOR_PATH);
-            System.out.println("Automatically deleted executor file at " + RunnerUtils.EXECUTOR_PATH.toString() + " because of dev mode");
-            RunnerUtils.copyCompiledFile("files/executor.jar", RunnerUtils.EXECUTOR_PATH);
-        }
+  @Override
+  public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
+    if (Integer.getInteger("reformcloud.executor.type", 0) != 2 && Boolean.getBoolean("reformcloud.dev.mode")) {
+      RunnerUtils.deleteFileIfExists(RunnerUtils.EXECUTOR_PATH);
+      System.out.println("Automatically deleted executor file at " + RunnerUtils.EXECUTOR_PATH.toString() + " because of dev mode");
+      RunnerUtils.copyCompiledFile("files/executor.jar", RunnerUtils.EXECUTOR_PATH);
     }
+  }
 }

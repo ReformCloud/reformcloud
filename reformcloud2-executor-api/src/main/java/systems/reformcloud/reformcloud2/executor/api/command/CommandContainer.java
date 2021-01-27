@@ -30,12 +30,12 @@ import java.util.Collection;
 
 public interface CommandContainer {
 
-    @NotNull
-    Collection<String> getAliases();
+  @NotNull
+  Collection<String> getAliases();
 
-    @NotNull
-    String getDescription();
+  @NotNull
+  String getDescription();
 
-    @NotNull
-    Command getCommand();
+  @NotNull
+  Command getCommand();
 }

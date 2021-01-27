@@ -34,32 +34,32 @@ import systems.reformcloud.reformcloud2.shared.process.DefaultProcessInformation
 
 public class ApiToNodeGetProcessInformationResult extends QueryResultPacket {
 
-    private @Nullable ProcessInformation processInformation;
+  private @Nullable ProcessInformation processInformation;
 
-    public ApiToNodeGetProcessInformationResult() {
-    }
+  public ApiToNodeGetProcessInformationResult() {
+  }
 
-    public ApiToNodeGetProcessInformationResult(@Nullable ProcessInformation processInformation) {
-        this.processInformation = processInformation;
-    }
+  public ApiToNodeGetProcessInformationResult(@Nullable ProcessInformation processInformation) {
+    this.processInformation = processInformation;
+  }
 
-    @Nullable
-    public ProcessInformation getProcessInformation() {
-        return this.processInformation;
-    }
+  @Nullable
+  public ProcessInformation getProcessInformation() {
+    return this.processInformation;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 71;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 71;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.processInformation);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.processInformation);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.processInformation = buffer.readObject(DefaultProcessInformation.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.processInformation = buffer.readObject(DefaultProcessInformation.class);
+  }
 }

@@ -40,29 +40,29 @@ import java.util.concurrent.atomic.AtomicReference;
  * @since 26. October 2020
  */
 public abstract class HttpServerResponseFactory {
-    /**
-     * The default response factory.
-     */
-    @ApiStatus.Internal
-    protected static final AtomicReference<HttpServerResponseFactory> DEFAULT_FACTORY = new AtomicReference<>();
+  /**
+   * The default response factory.
+   */
+  @ApiStatus.Internal
+  protected static final AtomicReference<HttpServerResponseFactory> DEFAULT_FACTORY = new AtomicReference<>();
 
-    /**
-     * Creates a new server response to the given request.
-     *
-     * @param request the request to create a response for.
-     * @return the response for the given request
-     */
-    @NotNull
-    public abstract ListeningHttpServerResponse<?> response(@NotNull HttpRequest<?> request);
+  /**
+   * Creates a new server response to the given request.
+   *
+   * @param request the request to create a response for.
+   * @return the response for the given request
+   */
+  @NotNull
+  public abstract ListeningHttpServerResponse<?> response(@NotNull HttpRequest<?> request);
 
-    /**
-     * Creates a new server response for the given parameters.
-     *
-     * @param httpVersion  the version of the request.
-     * @param headers      the headers to use.
-     * @param decodeResult the decode result of the response.
-     * @return the response created for the given parameters.
-     */
-    @NotNull
-    public abstract ListeningHttpServerResponse<?> response(@NotNull HttpVersion httpVersion, @NotNull Headers headers, @NotNull DecodeResult decodeResult);
+  /**
+   * Creates a new server response for the given parameters.
+   *
+   * @param httpVersion  the version of the request.
+   * @param headers      the headers to use.
+   * @param decodeResult the decode result of the response.
+   * @return the response created for the given parameters.
+   */
+  @NotNull
+  public abstract ListeningHttpServerResponse<?> response(@NotNull HttpVersion httpVersion, @NotNull Headers headers, @NotNull DecodeResult decodeResult);
 }

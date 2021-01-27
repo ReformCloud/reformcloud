@@ -33,129 +33,129 @@ import java.util.Collection;
 
 public class DefaultStartupConfiguration implements StartupConfiguration {
 
-    private int maximumProcessAmount;
-    private int alwaysOnlineProcessAmount;
-    private int alwaysPreparedProcessAmount;
-    private String jvmCommand;
-    private AutomaticStartupConfiguration startupConfiguration;
-    private Collection<String> startingNodes;
+  private int maximumProcessAmount;
+  private int alwaysOnlineProcessAmount;
+  private int alwaysPreparedProcessAmount;
+  private String jvmCommand;
+  private AutomaticStartupConfiguration startupConfiguration;
+  private Collection<String> startingNodes;
 
-    protected DefaultStartupConfiguration() {
-    }
+  protected DefaultStartupConfiguration() {
+  }
 
-    protected DefaultStartupConfiguration(int maximumProcessAmount, int alwaysOnlineProcessAmount, int alwaysPreparedProcessAmount) {
-        this(maximumProcessAmount, alwaysOnlineProcessAmount, alwaysPreparedProcessAmount, "java", AutomaticStartupConfiguration.disabled(), new ArrayList<>());
-    }
+  protected DefaultStartupConfiguration(int maximumProcessAmount, int alwaysOnlineProcessAmount, int alwaysPreparedProcessAmount) {
+    this(maximumProcessAmount, alwaysOnlineProcessAmount, alwaysPreparedProcessAmount, "java", AutomaticStartupConfiguration.disabled(), new ArrayList<>());
+  }
 
-    protected DefaultStartupConfiguration(int maximumProcessAmount, int alwaysOnlineProcessAmount, int alwaysPreparedProcessAmount,
-                                          String jvmCommand, AutomaticStartupConfiguration startupConfiguration, Collection<String> startingNodes) {
-        this.maximumProcessAmount = maximumProcessAmount;
-        this.alwaysOnlineProcessAmount = alwaysOnlineProcessAmount;
-        this.alwaysPreparedProcessAmount = alwaysPreparedProcessAmount;
-        this.jvmCommand = jvmCommand;
-        this.startupConfiguration = startupConfiguration;
-        this.startingNodes = startingNodes;
-    }
+  protected DefaultStartupConfiguration(int maximumProcessAmount, int alwaysOnlineProcessAmount, int alwaysPreparedProcessAmount,
+                                        String jvmCommand, AutomaticStartupConfiguration startupConfiguration, Collection<String> startingNodes) {
+    this.maximumProcessAmount = maximumProcessAmount;
+    this.alwaysOnlineProcessAmount = alwaysOnlineProcessAmount;
+    this.alwaysPreparedProcessAmount = alwaysPreparedProcessAmount;
+    this.jvmCommand = jvmCommand;
+    this.startupConfiguration = startupConfiguration;
+    this.startingNodes = startingNodes;
+  }
 
-    @Override
-    public @Range(from = 0, to = Integer.MAX_VALUE) int getMaximumProcessAmount() {
-        return this.maximumProcessAmount;
-    }
+  @Override
+  public @Range(from = 0, to = Integer.MAX_VALUE) int getMaximumProcessAmount() {
+    return this.maximumProcessAmount;
+  }
 
-    @Override
-    public void setMaximumProcessAmount(@Range(from = 0, to = Integer.MAX_VALUE) int maximumProcessAmount) {
-        this.maximumProcessAmount = maximumProcessAmount;
-    }
+  @Override
+  public void setMaximumProcessAmount(@Range(from = 0, to = Integer.MAX_VALUE) int maximumProcessAmount) {
+    this.maximumProcessAmount = maximumProcessAmount;
+  }
 
-    @Override
-    public @Range(from = 0, to = Integer.MAX_VALUE) int getAlwaysOnlineProcessAmount() {
-        return this.alwaysOnlineProcessAmount;
-    }
+  @Override
+  public @Range(from = 0, to = Integer.MAX_VALUE) int getAlwaysOnlineProcessAmount() {
+    return this.alwaysOnlineProcessAmount;
+  }
 
-    @Override
-    public void setAlwaysOnlineProcessAmount(@Range(from = 0, to = Integer.MAX_VALUE) int alwaysOnlineProcessAmount) {
-        this.alwaysOnlineProcessAmount = alwaysOnlineProcessAmount;
-    }
+  @Override
+  public void setAlwaysOnlineProcessAmount(@Range(from = 0, to = Integer.MAX_VALUE) int alwaysOnlineProcessAmount) {
+    this.alwaysOnlineProcessAmount = alwaysOnlineProcessAmount;
+  }
 
-    @Override
-    public @Range(from = 0, to = Integer.MAX_VALUE) int getAlwaysPreparedProcessAmount() {
-        return this.alwaysPreparedProcessAmount;
-    }
+  @Override
+  public @Range(from = 0, to = Integer.MAX_VALUE) int getAlwaysPreparedProcessAmount() {
+    return this.alwaysPreparedProcessAmount;
+  }
 
-    @Override
-    public void setAlwaysPreparedProcessAmount(@Range(from = 0, to = Integer.MAX_VALUE) int alwaysPreparedProcessAmount) {
-        this.alwaysPreparedProcessAmount = alwaysPreparedProcessAmount;
-    }
+  @Override
+  public void setAlwaysPreparedProcessAmount(@Range(from = 0, to = Integer.MAX_VALUE) int alwaysPreparedProcessAmount) {
+    this.alwaysPreparedProcessAmount = alwaysPreparedProcessAmount;
+  }
 
-    @Override
-    public @NotNull String getJvmCommand() {
-        return this.jvmCommand;
-    }
+  @Override
+  public @NotNull String getJvmCommand() {
+    return this.jvmCommand;
+  }
 
-    @Override
-    public void setJvmCommand(@NotNull String jvmCommand) {
-        this.jvmCommand = jvmCommand;
-    }
+  @Override
+  public void setJvmCommand(@NotNull String jvmCommand) {
+    this.jvmCommand = jvmCommand;
+  }
 
-    @Override
-    public @NotNull AutomaticStartupConfiguration getAutomaticStartupConfiguration() {
-        return this.startupConfiguration;
-    }
+  @Override
+  public @NotNull AutomaticStartupConfiguration getAutomaticStartupConfiguration() {
+    return this.startupConfiguration;
+  }
 
-    @Override
-    public void setAutomaticStartupConfiguration(@NotNull AutomaticStartupConfiguration automaticStartupConfiguration) {
-        this.startupConfiguration = automaticStartupConfiguration;
-    }
+  @Override
+  public void setAutomaticStartupConfiguration(@NotNull AutomaticStartupConfiguration automaticStartupConfiguration) {
+    this.startupConfiguration = automaticStartupConfiguration;
+  }
 
-    @Override
-    public @NotNull Collection<String> getStartingNodes() {
-        return this.startingNodes;
-    }
+  @Override
+  public @NotNull Collection<String> getStartingNodes() {
+    return this.startingNodes;
+  }
 
-    @Override
-    public void setStartingNodes(@NotNull Collection<String> startingNodes) {
-        this.startingNodes = startingNodes;
-    }
+  @Override
+  public void setStartingNodes(@NotNull Collection<String> startingNodes) {
+    this.startingNodes = startingNodes;
+  }
 
-    @Override
-    public void addStartingNode(@NotNull String node) {
-        this.startingNodes.add(node);
-    }
+  @Override
+  public void addStartingNode(@NotNull String node) {
+    this.startingNodes.add(node);
+  }
 
-    @Override
-    public void removeStartingNode(@NotNull String node) {
-        this.startingNodes.remove(node);
-    }
+  @Override
+  public void removeStartingNode(@NotNull String node) {
+    this.startingNodes.remove(node);
+  }
 
-    @Override
-    public @NotNull StartupConfiguration clone() {
-        return new DefaultStartupConfiguration(
-            this.maximumProcessAmount,
-            this.alwaysOnlineProcessAmount,
-            this.alwaysPreparedProcessAmount,
-            this.jvmCommand,
-            this.startupConfiguration.clone(),
-            new ArrayList<>(this.startingNodes)
-        );
-    }
+  @Override
+  public @NotNull StartupConfiguration clone() {
+    return new DefaultStartupConfiguration(
+      this.maximumProcessAmount,
+      this.alwaysOnlineProcessAmount,
+      this.alwaysPreparedProcessAmount,
+      this.jvmCommand,
+      this.startupConfiguration.clone(),
+      new ArrayList<>(this.startingNodes)
+    );
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeInt(this.maximumProcessAmount);
-        buffer.writeInt(this.alwaysOnlineProcessAmount);
-        buffer.writeInt(this.alwaysPreparedProcessAmount);
-        buffer.writeString(this.jvmCommand);
-        buffer.writeObject(this.startupConfiguration);
-        buffer.writeStringArray(this.startingNodes);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeInt(this.maximumProcessAmount);
+    buffer.writeInt(this.alwaysOnlineProcessAmount);
+    buffer.writeInt(this.alwaysPreparedProcessAmount);
+    buffer.writeString(this.jvmCommand);
+    buffer.writeObject(this.startupConfiguration);
+    buffer.writeStringArray(this.startingNodes);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.maximumProcessAmount = buffer.readInt();
-        this.alwaysOnlineProcessAmount = buffer.readInt();
-        this.alwaysPreparedProcessAmount = buffer.readInt();
-        this.jvmCommand = buffer.readString();
-        this.startupConfiguration = buffer.readObject(null);
-        this.startingNodes = buffer.readStringArray();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.maximumProcessAmount = buffer.readInt();
+    this.alwaysOnlineProcessAmount = buffer.readInt();
+    this.alwaysPreparedProcessAmount = buffer.readInt();
+    this.jvmCommand = buffer.readString();
+    this.startupConfiguration = buffer.readObject(null);
+    this.startingNodes = buffer.readStringArray();
+  }
 }

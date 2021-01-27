@@ -33,8 +33,8 @@ import java.nio.file.Path;
  */
 public final class JarFileDirectoryStreamFilter implements DirectoryStream.Filter<Path> {
 
-    @Override
-    public boolean accept(Path entry) {
-        return Files.isRegularFile(entry) && entry.getFileName().toString().endsWith(".jar");
-    }
+  @Override
+  public boolean accept(Path entry) {
+    return Files.isRegularFile(entry) && entry.getFileName().toString().endsWith(".jar");
+  }
 }

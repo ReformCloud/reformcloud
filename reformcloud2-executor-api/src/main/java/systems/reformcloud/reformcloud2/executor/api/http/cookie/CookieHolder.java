@@ -41,47 +41,47 @@ import java.util.Optional;
  */
 public interface CookieHolder<T extends CookieHolder<T>> extends HttpInformation<T> {
 
-    /**
-     * Get a cookie by it's name.
-     *
-     * @param name the name of the cookie to get.
-     * @return the cookie or an empty optional if a cookie by the {@code name} does not exists.
-     */
-    @NotNull
-    Optional<HttpCookie> cookie(@NotNull String name);
+  /**
+   * Get a cookie by it's name.
+   *
+   * @param name the name of the cookie to get.
+   * @return the cookie or an empty optional if a cookie by the {@code name} does not exists.
+   */
+  @NotNull
+  Optional<HttpCookie> cookie(@NotNull String name);
 
-    /**
-     * Get all cookies known to this holder.
-     *
-     * @return all cookies known to this holder.
-     */
-    @NotNull
-    Collection<HttpCookie> cookies();
+  /**
+   * Get all cookies known to this holder.
+   *
+   * @return all cookies known to this holder.
+   */
+  @NotNull
+  Collection<HttpCookie> cookies();
 
-    /**
-     * Adds a cookie to the known cookies of this holder.
-     *
-     * @param cookie the cookie to add.
-     * @return the same instance of the providing type, for chaining
-     */
-    @NotNull
-    T cookie(@NotNull HttpCookie cookie);
+  /**
+   * Adds a cookie to the known cookies of this holder.
+   *
+   * @param cookie the cookie to add.
+   * @return the same instance of the providing type, for chaining
+   */
+  @NotNull
+  T cookie(@NotNull HttpCookie cookie);
 
-    /**
-     * Adds cookies to the known cookies of this holder.
-     *
-     * @param cookies the cookies to add.
-     * @return the same instance of the providing type, for chaining
-     */
-    @NotNull
-    T cookies(@NonNls HttpCookie... cookies);
+  /**
+   * Adds cookies to the known cookies of this holder.
+   *
+   * @param cookies the cookies to add.
+   * @return the same instance of the providing type, for chaining
+   */
+  @NotNull
+  T cookies(@NonNls HttpCookie... cookies);
 
-    /**
-     * Adds cookies to the known cookies of this holder.
-     *
-     * @param cookies the cookies to add.
-     * @return the same instance of the providing type, for chaining
-     */
-    @NotNull
-    T cookies(@NotNull Collection<HttpCookie> cookies);
+  /**
+   * Adds cookies to the known cookies of this holder.
+   *
+   * @param cookies the cookies to add.
+   * @return the same instance of the providing type, for chaining
+   */
+  @NotNull
+  T cookies(@NotNull Collection<HttpCookie> cookies);
 }

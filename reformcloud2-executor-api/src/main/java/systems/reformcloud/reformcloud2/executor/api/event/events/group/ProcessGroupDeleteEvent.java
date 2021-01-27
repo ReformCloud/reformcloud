@@ -28,7 +28,7 @@ import systems.reformcloud.reformcloud2.executor.api.group.process.ProcessGroup;
 
 public class ProcessGroupDeleteEvent extends ProcessGroupEvent {
 
-    public ProcessGroupDeleteEvent(ProcessGroup processGroup) {
-        super(processGroup);
-    }
+  public ProcessGroupDeleteEvent(ProcessGroup processGroup) {
+    super(processGroup);
+  }
 }

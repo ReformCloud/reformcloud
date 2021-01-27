@@ -31,15 +31,15 @@ import systems.reformcloud.reformcloud2.signs.util.ConfigRequesterUtil;
 
 public class NukkitPlugin extends PluginBase {
 
-    @Override
-    public void onEnable() {
-        ConfigRequesterUtil.requestSignConfigAsync(
-            e -> Server.getInstance().getScheduler().scheduleTask(this, () -> new NukkitSignSystemAdapter(e, this))
-        );
-    }
+  @Override
+  public void onEnable() {
+    ConfigRequesterUtil.requestSignConfigAsync(
+      e -> Server.getInstance().getScheduler().scheduleTask(this, () -> new NukkitSignSystemAdapter(e, this))
+    );
+  }
 
-    @Override
-    public void onDisable() {
-        Server.getInstance().getScheduler().cancelTask(this);
-    }
+  @Override
+  public void onDisable() {
+    Server.getInstance().getScheduler().cancelTask(this);
+  }
 }

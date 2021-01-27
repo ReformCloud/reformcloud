@@ -33,31 +33,31 @@ import java.util.Collection;
 
 public class ApiToNodeGetStringCollectionResult extends QueryResultPacket {
 
-    private Collection<String> result;
+  private Collection<String> result;
 
-    public ApiToNodeGetStringCollectionResult() {
-    }
+  public ApiToNodeGetStringCollectionResult() {
+  }
 
-    public ApiToNodeGetStringCollectionResult(Collection<String> result) {
-        this.result = result;
-    }
+  public ApiToNodeGetStringCollectionResult(Collection<String> result) {
+    this.result = result;
+  }
 
-    public Collection<String> getResult() {
-        return this.result;
-    }
+  public Collection<String> getResult() {
+    return this.result;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 37;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 37;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeStringArray(this.result);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeStringArray(this.result);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.result = buffer.readStringArray();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.result = buffer.readStringArray();
+  }
 }

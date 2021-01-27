@@ -31,11 +31,11 @@ import java.util.Collection;
 
 public interface Setup {
 
-    @NotNull Setup addQuestion(@NotNull SetupQuestion setupQuestion);
+  @NotNull Setup addQuestion(@NotNull SetupQuestion setupQuestion);
 
-    @NotNull @UnmodifiableView Collection<SetupQuestion> getQuestions();
+  @NotNull @UnmodifiableView Collection<SetupQuestion> getQuestions();
 
-    void runSetup();
+  void runSetup();
 
-    void clear();
+  void clear();
 }

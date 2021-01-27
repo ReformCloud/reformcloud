@@ -30,32 +30,32 @@ import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableOb
 
 public interface Inclusion extends SerializableObject, Cloneable {
 
-    @NotNull
-    @Contract(value = "_, _, _ -> new", pure = true)
-    static Inclusion inclusion(@NotNull String key, @NotNull String backend, @NotNull InclusionLoadType inclusionLoadType) {
-        return new DefaultInclusion(key, backend, inclusionLoadType);
-    }
+  @NotNull
+  @Contract(value = "_, _, _ -> new", pure = true)
+  static Inclusion inclusion(@NotNull String key, @NotNull String backend, @NotNull InclusionLoadType inclusionLoadType) {
+    return new DefaultInclusion(key, backend, inclusionLoadType);
+  }
 
-    @NotNull
-    String getKey();
+  @NotNull
+  String getKey();
 
-    void setKey(@NotNull String key);
+  void setKey(@NotNull String key);
 
-    @NotNull
-    String getBackend();
+  @NotNull
+  String getBackend();
 
-    void setBackend(@NotNull String backend);
+  void setBackend(@NotNull String backend);
 
-    @NotNull
-    InclusionLoadType getInclusionLoadType();
+  @NotNull
+  InclusionLoadType getInclusionLoadType();
 
-    void setInclusionLoadType(@NotNull InclusionLoadType inclusionLoadType);
+  void setInclusionLoadType(@NotNull InclusionLoadType inclusionLoadType);
 
-    @NotNull
-    Inclusion clone();
+  @NotNull
+  Inclusion clone();
 
-    enum InclusionLoadType {
-        PRE,
-        PAST
-    }
+  enum InclusionLoadType {
+    PRE,
+    PAST
+  }
 }

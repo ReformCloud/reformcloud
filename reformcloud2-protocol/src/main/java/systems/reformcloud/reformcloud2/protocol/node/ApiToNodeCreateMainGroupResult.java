@@ -34,31 +34,31 @@ import systems.reformcloud.reformcloud2.shared.group.DefaultMainGroup;
 
 public class ApiToNodeCreateMainGroupResult extends QueryResultPacket {
 
-    private @Nullable MainGroup mainGroup;
+  private @Nullable MainGroup mainGroup;
 
-    public ApiToNodeCreateMainGroupResult() {
-    }
+  public ApiToNodeCreateMainGroupResult() {
+  }
 
-    public ApiToNodeCreateMainGroupResult(@Nullable MainGroup mainGroup) {
-        this.mainGroup = mainGroup;
-    }
+  public ApiToNodeCreateMainGroupResult(@Nullable MainGroup mainGroup) {
+    this.mainGroup = mainGroup;
+  }
 
-    public @Nullable MainGroup getMainGroup() {
-        return this.mainGroup;
-    }
+  public @Nullable MainGroup getMainGroup() {
+    return this.mainGroup;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 50;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 50;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.mainGroup);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.mainGroup);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.mainGroup = buffer.readObject(DefaultMainGroup.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.mainGroup = buffer.readObject(DefaultMainGroup.class);
+  }
 }

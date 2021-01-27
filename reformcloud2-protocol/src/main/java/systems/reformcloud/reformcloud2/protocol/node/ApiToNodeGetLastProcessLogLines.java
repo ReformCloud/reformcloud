@@ -39,35 +39,35 @@ import java.util.UUID;
 
 public class ApiToNodeGetLastProcessLogLines extends ProtocolPacket {
 
-    private UUID uniqueId;
+  private UUID uniqueId;
 
-    public ApiToNodeGetLastProcessLogLines() {
-    }
+  public ApiToNodeGetLastProcessLogLines() {
+  }
 
-    public ApiToNodeGetLastProcessLogLines(ProcessInformation information) {
-        this.uniqueId = information.getId().getUniqueId();
-    }
+  public ApiToNodeGetLastProcessLogLines(ProcessInformation information) {
+    this.uniqueId = information.getId().getUniqueId();
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 87;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 87;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(this.uniqueId).ifPresent(wrapper -> {
-            @UnmodifiableView Queue<String> lastLogLines = wrapper.getLastLogLines();
-            channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetStringCollectionResult(lastLogLines));
-        });
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(this.uniqueId).ifPresent(wrapper -> {
+      @UnmodifiableView Queue<String> lastLogLines = wrapper.getLastLogLines();
+      channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetStringCollectionResult(lastLogLines));
+    });
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.uniqueId);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.uniqueId);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.uniqueId = buffer.readUniqueId();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.uniqueId = buffer.readUniqueId();
+  }
 }

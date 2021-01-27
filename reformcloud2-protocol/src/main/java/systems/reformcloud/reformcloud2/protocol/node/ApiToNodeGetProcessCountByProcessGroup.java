@@ -34,33 +34,33 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodeGetProcessCountByProcessGroup extends ProtocolPacket {
 
-    private String processGroup;
+  private String processGroup;
 
-    public ApiToNodeGetProcessCountByProcessGroup() {
-    }
+  public ApiToNodeGetProcessCountByProcessGroup() {
+  }
 
-    public ApiToNodeGetProcessCountByProcessGroup(String processGroup) {
-        this.processGroup = processGroup;
-    }
+  public ApiToNodeGetProcessCountByProcessGroup(String processGroup) {
+    this.processGroup = processGroup;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 83;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 83;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        long count = ExecutorAPI.getInstance().getProcessProvider().getProcessCount(this.processGroup);
-        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetProcessCountResult(count));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    long count = ExecutorAPI.getInstance().getProcessProvider().getProcessCount(this.processGroup);
+    channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetProcessCountResult(count));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.processGroup);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.processGroup);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.processGroup = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.processGroup = buffer.readString();
+  }
 }

@@ -34,63 +34,63 @@ import java.util.Properties;
 
 public final class CloudVersionUpdater implements Updater {
 
-    private final Path globalReformScriptFile;
-    private boolean versionAvailable = false;
+  private final Path globalReformScriptFile;
+  private boolean versionAvailable = false;
 
-    /**
-     * Creates a new cloud version updater instance
-     *
-     * @param globalReformScriptFile The location of the reform script
-     */
-    public CloudVersionUpdater(@NotNull Path globalReformScriptFile) {
-        this.globalReformScriptFile = globalReformScriptFile;
+  /**
+   * Creates a new cloud version updater instance
+   *
+   * @param globalReformScriptFile The location of the reform script
+   */
+  public CloudVersionUpdater(@NotNull Path globalReformScriptFile) {
+    this.globalReformScriptFile = globalReformScriptFile;
+  }
+
+  @Override
+  public void collectInformation() {
+    String currentVersion = System.getProperty("reformcloud.runner.version");
+    if (currentVersion == null) {
+      currentVersion = CloudVersionUpdater.class.getPackage().getImplementationVersion();
+      this.rewriteGlobalFile(currentVersion);
     }
 
-    @Override
-    public void collectInformation() {
-        String currentVersion = System.getProperty("reformcloud.runner.version");
-        if (currentVersion == null) {
-            currentVersion = CloudVersionUpdater.class.getPackage().getImplementationVersion();
-            this.rewriteGlobalFile(currentVersion);
-        }
-
-        Properties properties = RunnerUtils.loadProperties(
-            System.getProperty("reformcloud.version.url", "https://internal.reformcloud.systems/version.properties")
-        );
-        if (properties.containsKey("version")) {
-            this.versionAvailable = !properties.getProperty("version").equals(currentVersion);
-        }
+    Properties properties = RunnerUtils.loadProperties(
+      System.getProperty("reformcloud.version.url", "https://internal.reformcloud.systems/version.properties")
+    );
+    if (properties.containsKey("version")) {
+      this.versionAvailable = !properties.getProperty("version").equals(currentVersion);
     }
+  }
 
-    @Override
-    public boolean hasNewVersion() {
-        return this.versionAvailable;
+  @Override
+  public boolean hasNewVersion() {
+    return this.versionAvailable;
+  }
+
+  @Override
+  public void applyUpdates() {
+    RunnerUtils.downloadFile("https://internal.reformcloud.systems/executor.jar", RunnerUtils.EXECUTOR_PATH);
+
+    if (Files.exists(RunnerUtils.RUNNER_FILES_FILE)) {
+      RunnerUtils.downloadFile("https://internal.reformcloud.systems/runner.jar", RunnerUtils.RUNNER_FILES_FILE);
     }
+  }
 
-    @Override
-    public void applyUpdates() {
-        RunnerUtils.downloadFile("https://internal.reformcloud.systems/executor.jar", RunnerUtils.EXECUTOR_PATH);
+  @NotNull
+  @Override
+  public String getName() {
+    return "cloud";
+  }
 
-        if (Files.exists(RunnerUtils.RUNNER_FILES_FILE)) {
-            RunnerUtils.downloadFile("https://internal.reformcloud.systems/runner.jar", RunnerUtils.RUNNER_FILES_FILE);
-        }
-    }
+  private void rewriteGlobalFile(@NotNull String currentVersion) {
+    System.setProperty("reformcloud.runner.version", currentVersion);
 
-    @NotNull
-    @Override
-    public String getName() {
-        return "cloud";
-    }
+    RunnerUtils.rewriteFile(this.globalReformScriptFile, s -> {
+      if (s.startsWith("# VARIABLE reformcloud.runner.version=") || s.startsWith("VARIABLE reformcloud.runner.version=")) {
+        s = "VARIABLE reformcloud.runner.version=" + currentVersion;
+      }
 
-    private void rewriteGlobalFile(@NotNull String currentVersion) {
-        System.setProperty("reformcloud.runner.version", currentVersion);
-
-        RunnerUtils.rewriteFile(this.globalReformScriptFile, s -> {
-            if (s.startsWith("# VARIABLE reformcloud.runner.version=") || s.startsWith("VARIABLE reformcloud.runner.version=")) {
-                s = "VARIABLE reformcloud.runner.version=" + currentVersion;
-            }
-
-            return s;
-        });
-    }
+      return s;
+    });
+  }
 }

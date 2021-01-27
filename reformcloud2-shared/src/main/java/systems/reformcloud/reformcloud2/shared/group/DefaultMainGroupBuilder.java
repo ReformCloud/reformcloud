@@ -33,27 +33,27 @@ import java.util.Collection;
 
 public abstract class DefaultMainGroupBuilder implements MainGroupBuilder {
 
-    protected String name;
-    protected Collection<String> subGroups = new ArrayList<>();
+  protected String name;
+  protected Collection<String> subGroups = new ArrayList<>();
 
-    @NotNull
-    @Override
-    public MainGroupBuilder name(@NotNull String name) {
-        this.name = name;
-        return this;
-    }
+  @NotNull
+  @Override
+  public MainGroupBuilder name(@NotNull String name) {
+    this.name = name;
+    return this;
+  }
 
-    @NotNull
-    @Override
-    public MainGroupBuilder subGroups(String... subGroups) {
-        this.subGroups = Arrays.asList(subGroups);
-        return this;
-    }
+  @NotNull
+  @Override
+  public MainGroupBuilder subGroups(String... subGroups) {
+    this.subGroups = Arrays.asList(subGroups);
+    return this;
+  }
 
-    @NotNull
-    @Override
-    public MainGroupBuilder subGroups(@NotNull Collection<String> subGroups) {
-        this.subGroups = subGroups;
-        return this;
-    }
+  @NotNull
+  @Override
+  public MainGroupBuilder subGroups(@NotNull Collection<String> subGroups) {
+    this.subGroups = subGroups;
+    return this;
+  }
 }

@@ -37,33 +37,33 @@ import java.util.Collection;
 
 public class ApiToNodeGetProcessInformationObjectsByMainGroup extends ProtocolPacket {
 
-    private String mainGroup;
+  private String mainGroup;
 
-    public ApiToNodeGetProcessInformationObjectsByMainGroup() {
-    }
+  public ApiToNodeGetProcessInformationObjectsByMainGroup() {
+  }
 
-    public ApiToNodeGetProcessInformationObjectsByMainGroup(String mainGroup) {
-        this.mainGroup = mainGroup;
-    }
+  public ApiToNodeGetProcessInformationObjectsByMainGroup(String mainGroup) {
+    this.mainGroup = mainGroup;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 77;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 77;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        Collection<ProcessInformation> processes = ExecutorAPI.getInstance().getProcessProvider().getProcessesByMainGroup(this.mainGroup);
-        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetProcessInformationObjectsResult(processes));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    Collection<ProcessInformation> processes = ExecutorAPI.getInstance().getProcessProvider().getProcessesByMainGroup(this.mainGroup);
+    channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetProcessInformationObjectsResult(processes));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.mainGroup);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.mainGroup);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.mainGroup = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.mainGroup = buffer.readString();
+  }
 }

@@ -34,43 +34,43 @@ import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
  */
 public interface ChannelMessageProvider {
 
-    /**
-     * Sends a channel message to a specific process specified by the information of it
-     *
-     * @param receiver The process information of the receiver the channel message should get sent to
-     * @param channel  The name of the channel which can easily identify the message instead of always
-     *                 checking the content of it
-     * @param data     The data as json which should get sent to the process
-     */
-    void sendChannelMessage(@NotNull ProcessInformation receiver, @NotNull String channel, @NotNull JsonConfiguration data);
+  /**
+   * Sends a channel message to a specific process specified by the information of it
+   *
+   * @param receiver The process information of the receiver the channel message should get sent to
+   * @param channel  The name of the channel which can easily identify the message instead of always
+   *                 checking the content of it
+   * @param data     The data as json which should get sent to the process
+   */
+  void sendChannelMessage(@NotNull ProcessInformation receiver, @NotNull String channel, @NotNull JsonConfiguration data);
 
-    /**
-     * Sends a channel message to all processes of the specified process group
-     *
-     * @param processGroup The name of a process group. All of the processes which are started based on
-     *                     that group will receive the given channel message
-     * @param channel      The name of the channel which can easily identify the message instead of always
-     *                     checking the content of it
-     * @param data         The data as json which should get sent to all processes of the specified group
-     */
-    void sendChannelMessage(@NotNull String processGroup, @NotNull String channel, @NotNull JsonConfiguration data);
+  /**
+   * Sends a channel message to all processes of the specified process group
+   *
+   * @param processGroup The name of a process group. All of the processes which are started based on
+   *                     that group will receive the given channel message
+   * @param channel      The name of the channel which can easily identify the message instead of always
+   *                     checking the content of it
+   * @param data         The data as json which should get sent to all processes of the specified group
+   */
+  void sendChannelMessage(@NotNull String processGroup, @NotNull String channel, @NotNull JsonConfiguration data);
 
-    /**
-     * Sends a channel message to all processes which are connected to the given node
-     *
-     * @param node    A name of a node. All connected channels to this node will receive the channel message
-     * @param channel The name of the channel which can easily identify the message instead of always
-     *                checking the content of it
-     * @param data    The data as json which should get sent to all processes connected to the specified node
-     */
-    void publishChannelMessageToAll(@NotNull String node, @NotNull String channel, @NotNull JsonConfiguration data);
+  /**
+   * Sends a channel message to all processes which are connected to the given node
+   *
+   * @param node    A name of a node. All connected channels to this node will receive the channel message
+   * @param channel The name of the channel which can easily identify the message instead of always
+   *                checking the content of it
+   * @param data    The data as json which should get sent to all processes connected to the specified node
+   */
+  void publishChannelMessageToAll(@NotNull String node, @NotNull String channel, @NotNull JsonConfiguration data);
 
-    /**
-     * Publish a channel message to all processes on all nodes
-     *
-     * @param channel The name of the channel which can easily identify the message instead of always
-     *                checking the content of it
-     * @param data    The data as json which should get sent to all processes
-     */
-    void publishChannelMessage(@NotNull String channel, @NotNull JsonConfiguration data);
+  /**
+   * Publish a channel message to all processes on all nodes
+   *
+   * @param channel The name of the channel which can easily identify the message instead of always
+   *                checking the content of it
+   * @param data    The data as json which should get sent to all processes
+   */
+  void publishChannelMessage(@NotNull String channel, @NotNull JsonConfiguration data);
 }

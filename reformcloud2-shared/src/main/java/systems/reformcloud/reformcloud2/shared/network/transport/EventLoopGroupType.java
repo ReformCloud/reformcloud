@@ -26,16 +26,16 @@ package systems.reformcloud.reformcloud2.shared.network.transport;
 
 public enum EventLoopGroupType {
 
-    BOSS("Boss"),
-    WORKER("Worker");
+  BOSS("Boss"),
+  WORKER("Worker");
 
-    private final String name;
+  private final String name;
 
-    EventLoopGroupType(String name) {
-        this.name = name;
-    }
+  EventLoopGroupType(String name) {
+    this.name = name;
+  }
 
-    public String getName() {
-        return this.name;
-    }
+  public String getName() {
+    return this.name;
+  }
 }

@@ -34,14 +34,14 @@ import java.util.UUID;
 
 public interface QueryManager {
 
-    @NotNull
-    Optional<Task<Packet>> getWaitingQuery(@NotNull UUID queryUniqueId);
+  @NotNull
+  Optional<Task<Packet>> getWaitingQuery(@NotNull UUID queryUniqueId);
 
-    @NotNull
-    default Task<Packet> sendPacketQuery(@NotNull NetworkChannel channel, @NotNull Packet packet) {
-        return this.sendPacketQuery(channel, UUID.randomUUID(), packet);
-    }
+  @NotNull
+  default Task<Packet> sendPacketQuery(@NotNull NetworkChannel channel, @NotNull Packet packet) {
+    return this.sendPacketQuery(channel, UUID.randomUUID(), packet);
+  }
 
-    @NotNull
-    Task<Packet> sendPacketQuery(@NotNull NetworkChannel channel, @NotNull UUID queryUniqueId, @NotNull Packet packet);
+  @NotNull
+  Task<Packet> sendPacketQuery(@NotNull NetworkChannel channel, @NotNull UUID queryUniqueId, @NotNull Packet packet);
 }

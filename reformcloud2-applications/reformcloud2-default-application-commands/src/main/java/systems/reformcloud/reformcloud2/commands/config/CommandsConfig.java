@@ -33,51 +33,51 @@ import java.util.List;
 
 public class CommandsConfig implements SerializableObject {
 
-    private boolean leaveCommandEnabled;
-    private List<String> leaveCommands;
-    private boolean reformCloudCommandEnabled;
-    private List<String> reformCloudCommands;
+  private boolean leaveCommandEnabled;
+  private List<String> leaveCommands;
+  private boolean reformCloudCommandEnabled;
+  private List<String> reformCloudCommands;
 
-    @ApiStatus.Internal
-    public CommandsConfig() {
-    }
+  @ApiStatus.Internal
+  public CommandsConfig() {
+  }
 
-    public CommandsConfig(boolean leaveCommandEnabled, List<String> leaveCommands, boolean reformCloudCommandEnabled, List<String> reformCloudCommands) {
-        this.leaveCommandEnabled = leaveCommandEnabled;
-        this.leaveCommands = leaveCommands;
-        this.reformCloudCommandEnabled = reformCloudCommandEnabled;
-        this.reformCloudCommands = reformCloudCommands;
-    }
+  public CommandsConfig(boolean leaveCommandEnabled, List<String> leaveCommands, boolean reformCloudCommandEnabled, List<String> reformCloudCommands) {
+    this.leaveCommandEnabled = leaveCommandEnabled;
+    this.leaveCommands = leaveCommands;
+    this.reformCloudCommandEnabled = reformCloudCommandEnabled;
+    this.reformCloudCommands = reformCloudCommands;
+  }
 
-    public boolean isLeaveCommandEnabled() {
-        return this.leaveCommandEnabled;
-    }
+  public boolean isLeaveCommandEnabled() {
+    return this.leaveCommandEnabled;
+  }
 
-    public List<String> getLeaveCommands() {
-        return this.leaveCommands;
-    }
+  public List<String> getLeaveCommands() {
+    return this.leaveCommands;
+  }
 
-    public boolean isReformCloudCommandEnabled() {
-        return this.reformCloudCommandEnabled;
-    }
+  public boolean isReformCloudCommandEnabled() {
+    return this.reformCloudCommandEnabled;
+  }
 
-    public List<String> getReformCloudCommands() {
-        return this.reformCloudCommands;
-    }
+  public List<String> getReformCloudCommands() {
+    return this.reformCloudCommands;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeBoolean(this.leaveCommandEnabled);
-        buffer.writeStringArray(this.leaveCommands);
-        buffer.writeBoolean(this.reformCloudCommandEnabled);
-        buffer.writeStringArray(this.reformCloudCommands);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeBoolean(this.leaveCommandEnabled);
+    buffer.writeStringArray(this.leaveCommands);
+    buffer.writeBoolean(this.reformCloudCommandEnabled);
+    buffer.writeStringArray(this.reformCloudCommands);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.leaveCommandEnabled = buffer.readBoolean();
-        this.leaveCommands = buffer.readStringArray();
-        this.reformCloudCommandEnabled = buffer.readBoolean();
-        this.reformCloudCommands = buffer.readStringArray();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.leaveCommandEnabled = buffer.readBoolean();
+    this.leaveCommands = buffer.readStringArray();
+    this.reformCloudCommandEnabled = buffer.readBoolean();
+    this.reformCloudCommands = buffer.readStringArray();
+  }
 }

@@ -39,54 +39,54 @@ import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrame;
  */
 public interface ResponseFrameHolder<T extends ResponseFrameHolder<T>> {
 
-    /**
-     * Creates a new response which uses as message the given socket frame.
-     *
-     * @param responseFrame the response frame which should be sent to the client.
-     * @return the created response frame.
-     */
-    @Contract(value = "_ -> new", pure = true)
-    static @NotNull ResponseFrameHolder<?> response(@NotNull SocketFrame<?> responseFrame) {
-        return ResponseSocketFrameFactory.DEFAULT.get().forFrame(responseFrame);
-    }
+  /**
+   * Creates a new response which uses as message the given socket frame.
+   *
+   * @param responseFrame the response frame which should be sent to the client.
+   * @return the created response frame.
+   */
+  @Contract(value = "_ -> new", pure = true)
+  static @NotNull ResponseFrameHolder<?> response(@NotNull SocketFrame<?> responseFrame) {
+    return ResponseSocketFrameFactory.DEFAULT.get().forFrame(responseFrame);
+  }
 
-    /**
-     * Get the response which should be sent to the client.
-     *
-     * @return the response which should be sent to the client.
-     */
-    @NotNull
-    SocketFrame<?> response();
+  /**
+   * Get the response which should be sent to the client.
+   *
+   * @return the response which should be sent to the client.
+   */
+  @NotNull
+  SocketFrame<?> response();
 
-    /**
-     * Get if this response is the last handled and this response is directly sent.
-     *
-     * @return if this response is the last handled.
-     */
-    boolean lastHandler();
+  /**
+   * Get if this response is the last handled and this response is directly sent.
+   *
+   * @return if this response is the last handled.
+   */
+  boolean lastHandler();
 
-    /**
-     * Sets if this response is the last handled and this response is directly sent.
-     *
-     * @param lastHandler if the handler is the last handled.
-     * @return the same instance of this class, for chaining
-     */
-    @NotNull
-    T lastHandler(boolean lastHandler);
+  /**
+   * Sets if this response is the last handled and this response is directly sent.
+   *
+   * @param lastHandler if the handler is the last handled.
+   * @return the same instance of this class, for chaining
+   */
+  @NotNull
+  T lastHandler(boolean lastHandler);
 
-    /**
-     * Get if the connection to the client should be closed after the send to the client.
-     *
-     * @return if the connection to the client should be closed after the send to the client.
-     */
-    boolean closeAfterSent();
+  /**
+   * Get if the connection to the client should be closed after the send to the client.
+   *
+   * @return if the connection to the client should be closed after the send to the client.
+   */
+  boolean closeAfterSent();
 
-    /**
-     * Sets if the connection to the client should be closed after the send to the client.
-     *
-     * @param close if the connection to the client should be closed after the send to the client.
-     * @return the same instance of this class, for chaining
-     */
-    @NotNull
-    T closeAfterSent(boolean close);
+  /**
+   * Sets if the connection to the client should be closed after the send to the client.
+   *
+   * @param close if the connection to the client should be closed after the send to the client.
+   * @return the same instance of this class, for chaining
+   */
+  @NotNull
+  T closeAfterSent(boolean close);
 }

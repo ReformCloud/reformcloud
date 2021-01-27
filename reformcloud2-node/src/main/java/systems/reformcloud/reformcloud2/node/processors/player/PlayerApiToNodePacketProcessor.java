@@ -32,7 +32,7 @@ import systems.reformcloud.reformcloud2.protocol.processor.PacketProcessor;
 
 abstract class PlayerApiToNodePacketProcessor<T extends Packet> implements PacketProcessor<T> {
 
-    protected @NotNull PlayerProvider getPlayerProvider() {
-        return ExecutorAPI.getInstance().getPlayerProvider();
-    }
+  protected @NotNull PlayerProvider getPlayerProvider() {
+    return ExecutorAPI.getInstance().getPlayerProvider();
+  }
 }

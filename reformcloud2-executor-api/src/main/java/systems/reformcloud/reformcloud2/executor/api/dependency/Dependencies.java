@@ -43,11 +43,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Dependencies {
 
-    /**
-     * The dependencies which should get loaded
-     *
-     * @return the dependencies which should get loaded
-     */
-    @NonNls
-    Dependency[] value();
+  /**
+   * The dependencies which should get loaded
+   *
+   * @return the dependencies which should get loaded
+   */
+  @NonNls
+  Dependency[] value();
 }

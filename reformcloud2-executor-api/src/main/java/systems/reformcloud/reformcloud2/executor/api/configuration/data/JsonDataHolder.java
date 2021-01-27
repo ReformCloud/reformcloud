@@ -32,24 +32,24 @@ import java.util.Optional;
 
 public interface JsonDataHolder<T extends JsonDataHolder<T>> extends SerializableObject, Cloneable {
 
-    @NotNull <V> Optional<V> get(@NotNull String key, @NotNull Class<V> type);
+  @NotNull <V> Optional<V> get(@NotNull String key, @NotNull Class<V> type);
 
-    @NotNull <V> T add(@NotNull String key, @NotNull V value);
+  @NotNull <V> T add(@NotNull String key, @NotNull V value);
 
-    @NotNull <V> T set(@NotNull String key, @NotNull V value);
+  @NotNull <V> T set(@NotNull String key, @NotNull V value);
 
-    @NotNull
-    T remove(@NotNull String key);
+  @NotNull
+  T remove(@NotNull String key);
 
-    boolean has(@NotNull String key);
+  boolean has(@NotNull String key);
 
-    @NotNull
-    JsonConfiguration getData();
+  @NotNull
+  JsonConfiguration getData();
 
-    void setData(@NotNull JsonConfiguration data);
+  void setData(@NotNull JsonConfiguration data);
 
-    void clearData();
+  void clearData();
 
-    @NotNull
-    T clone();
+  @NotNull
+  T clone();
 }

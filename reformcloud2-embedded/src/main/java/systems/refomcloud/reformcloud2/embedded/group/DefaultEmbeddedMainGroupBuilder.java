@@ -37,16 +37,16 @@ import java.util.Optional;
 
 class DefaultEmbeddedMainGroupBuilder extends DefaultMainGroupBuilder {
 
-    @NotNull
-    @Override
-    public Task<MainGroup> create() {
-        return Task.supply(() -> {
-            Optional<Packet> result = Embedded.getInstance().sendSyncQuery(new ApiToNodeCreateMainGroup(super.name, super.subGroups));
-            if (!result.isPresent() || !(result.get() instanceof ApiToNodeCreateMainGroupResult)) {
-                return null;
-            }
+  @NotNull
+  @Override
+  public Task<MainGroup> create() {
+    return Task.supply(() -> {
+      Optional<Packet> result = Embedded.getInstance().sendSyncQuery(new ApiToNodeCreateMainGroup(super.name, super.subGroups));
+      if (!result.isPresent() || !(result.get() instanceof ApiToNodeCreateMainGroupResult)) {
+        return null;
+      }
 
-            return ((ApiToNodeCreateMainGroupResult) result.get()).getMainGroup();
-        });
-    }
+      return ((ApiToNodeCreateMainGroupResult) result.get()).getMainGroup();
+    });
+  }
 }

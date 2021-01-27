@@ -35,42 +35,42 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodeSendChannelMessageToProcessGroup extends ProtocolPacket {
 
-    private String processGroup;
-    private String channel;
-    private JsonConfiguration data;
+  private String processGroup;
+  private String channel;
+  private JsonConfiguration data;
 
-    public ApiToNodeSendChannelMessageToProcessGroup() {
-    }
+  public ApiToNodeSendChannelMessageToProcessGroup() {
+  }
 
-    public ApiToNodeSendChannelMessageToProcessGroup(String processGroup, String channel, JsonConfiguration data) {
-        this.processGroup = processGroup;
-        this.channel = channel;
-        this.data = data;
-    }
+  public ApiToNodeSendChannelMessageToProcessGroup(String processGroup, String channel, JsonConfiguration data) {
+    this.processGroup = processGroup;
+    this.channel = channel;
+    this.data = data;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 22;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 22;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getChannelMessageProvider().sendChannelMessage(
-            this.processGroup, this.channel, this.data
-        );
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getChannelMessageProvider().sendChannelMessage(
+      this.processGroup, this.channel, this.data
+    );
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.processGroup);
-        buffer.writeString(this.channel);
-        buffer.writeString(this.data.toPrettyString());
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.processGroup);
+    buffer.writeString(this.channel);
+    buffer.writeString(this.data.toPrettyString());
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.processGroup = buffer.readString();
-        this.channel = buffer.readString();
-        this.data = JsonConfiguration.newJsonConfiguration(buffer.readString());
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.processGroup = buffer.readString();
+    this.channel = buffer.readString();
+    this.data = JsonConfiguration.newJsonConfiguration(buffer.readString());
+  }
 }

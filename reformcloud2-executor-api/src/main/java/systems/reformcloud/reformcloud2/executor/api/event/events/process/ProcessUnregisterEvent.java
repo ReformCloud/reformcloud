@@ -28,7 +28,7 @@ import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
 public class ProcessUnregisterEvent extends ProcessEvent {
 
-    public ProcessUnregisterEvent(ProcessInformation processInformation) {
-        super(processInformation);
-    }
+  public ProcessUnregisterEvent(ProcessInformation processInformation) {
+    super(processInformation);
+  }
 }

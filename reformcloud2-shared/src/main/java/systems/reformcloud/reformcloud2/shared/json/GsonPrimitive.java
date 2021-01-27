@@ -30,15 +30,15 @@ import systems.reformcloud.reformcloud2.executor.api.configuration.json.types.Pr
 
 public class GsonPrimitive extends GsonElement implements Primitive {
 
-    private final JsonPrimitive gsonPrimitive;
+  private final JsonPrimitive gsonPrimitive;
 
-    public GsonPrimitive(JsonPrimitive primitive) {
-        super(primitive);
-        this.gsonPrimitive = primitive;
-    }
+  public GsonPrimitive(JsonPrimitive primitive) {
+    super(primitive);
+    this.gsonPrimitive = primitive;
+  }
 
-    @Override
-    public @NotNull Primitive clone() {
-        return new GsonPrimitive(this.gsonPrimitive.deepCopy());
-    }
+  @Override
+  public @NotNull Primitive clone() {
+    return new GsonPrimitive(this.gsonPrimitive.deepCopy());
+  }
 }

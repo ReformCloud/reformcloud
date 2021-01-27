@@ -36,33 +36,33 @@ import java.util.UUID;
 
 public class ApiToNodeIsNodePresentByUniqueId extends ProtocolPacket {
 
-    private UUID uniqueId;
+  private UUID uniqueId;
 
-    public ApiToNodeIsNodePresentByUniqueId() {
-    }
+  public ApiToNodeIsNodePresentByUniqueId() {
+  }
 
-    public ApiToNodeIsNodePresentByUniqueId(UUID uniqueId) {
-        this.uniqueId = uniqueId;
-    }
+  public ApiToNodeIsNodePresentByUniqueId(UUID uniqueId) {
+    this.uniqueId = uniqueId;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 32;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 32;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        boolean present = ExecutorAPI.getInstance().getNodeInformationProvider().isNodePresent(this.uniqueId);
-        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeIsNodePresentResult(present));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    boolean present = ExecutorAPI.getInstance().getNodeInformationProvider().isNodePresent(this.uniqueId);
+    channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeIsNodePresentResult(present));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.uniqueId);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.uniqueId);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.uniqueId = buffer.readUniqueId();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.uniqueId = buffer.readUniqueId();
+  }
 }

@@ -32,13 +32,13 @@ import java.util.List;
 
 public interface ProxyServerController {
 
-    void registerProcess(@NotNull ProcessInformation processInformation);
+  void registerProcess(@NotNull ProcessInformation processInformation);
 
-    void handleProcessUpdate(@NotNull ProcessInformation processInformation);
+  void handleProcessUpdate(@NotNull ProcessInformation processInformation);
 
-    void unregisterProcess(@NotNull ProcessInformation processInformation);
+  void unregisterProcess(@NotNull ProcessInformation processInformation);
 
-    @NotNull @UnmodifiableView List<ProcessInformation> getCachedLobbyServers();
+  @NotNull @UnmodifiableView List<ProcessInformation> getCachedLobbyServers();
 
-    @NotNull @UnmodifiableView List<ProcessInformation> getCachedProxies();
+  @NotNull @UnmodifiableView List<ProcessInformation> getCachedProxies();
 }

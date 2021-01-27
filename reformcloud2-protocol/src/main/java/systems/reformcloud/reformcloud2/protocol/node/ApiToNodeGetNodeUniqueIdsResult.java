@@ -35,38 +35,38 @@ import java.util.UUID;
 
 public class ApiToNodeGetNodeUniqueIdsResult extends QueryResultPacket {
 
-    private Collection<UUID> uniqueIds;
+  private Collection<UUID> uniqueIds;
 
-    public ApiToNodeGetNodeUniqueIdsResult() {
-    }
+  public ApiToNodeGetNodeUniqueIdsResult() {
+  }
 
-    public ApiToNodeGetNodeUniqueIdsResult(Collection<UUID> uniqueIds) {
-        this.uniqueIds = uniqueIds;
-    }
+  public ApiToNodeGetNodeUniqueIdsResult(Collection<UUID> uniqueIds) {
+    this.uniqueIds = uniqueIds;
+  }
 
-    public Collection<UUID> getUniqueIds() {
-        return this.uniqueIds;
-    }
+  public Collection<UUID> getUniqueIds() {
+    return this.uniqueIds;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 28;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 28;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeInt(this.uniqueIds.size());
-        for (UUID uniqueId : this.uniqueIds) {
-            buffer.writeUniqueId(uniqueId);
-        }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeInt(this.uniqueIds.size());
+    for (UUID uniqueId : this.uniqueIds) {
+      buffer.writeUniqueId(uniqueId);
     }
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        int size = buffer.readInt();
-        this.uniqueIds = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            this.uniqueIds.add(buffer.readUniqueId());
-        }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    int size = buffer.readInt();
+    this.uniqueIds = new ArrayList<>(size);
+    for (int i = 0; i < size; i++) {
+      this.uniqueIds.add(buffer.readUniqueId());
     }
+  }
 }

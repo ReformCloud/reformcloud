@@ -32,14 +32,14 @@ import java.util.UUID;
 
 public interface Player extends SerializableObject, Sorted<Player>, Cloneable {
 
-    @NotNull
-    UUID getUniqueID();
+  @NotNull
+  UUID getUniqueID();
 
-    @NotNull
-    String getName();
+  @NotNull
+  String getName();
 
-    long getJoined();
+  long getJoined();
 
-    @NotNull
-    Player clone();
+  @NotNull
+  Player clone();
 }

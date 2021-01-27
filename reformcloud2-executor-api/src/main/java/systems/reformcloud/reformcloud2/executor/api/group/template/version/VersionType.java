@@ -25,16 +25,16 @@
 package systems.reformcloud.reformcloud2.executor.api.group.template.version;
 
 public enum VersionType {
-    JAVA_SERVER,
-    JAVA_PROXY,
-    POCKET_SERVER,
-    POCKET_PROXY;
+  JAVA_SERVER,
+  JAVA_PROXY,
+  POCKET_SERVER,
+  POCKET_PROXY;
 
-    public boolean isServer() {
-        return this == JAVA_SERVER || this == POCKET_SERVER;
-    }
+  public boolean isServer() {
+    return this == JAVA_SERVER || this == POCKET_SERVER;
+  }
 
-    public boolean isProxy() {
-        return this == JAVA_PROXY || this == POCKET_PROXY;
-    }
+  public boolean isProxy() {
+    return this == JAVA_PROXY || this == POCKET_PROXY;
+  }
 }

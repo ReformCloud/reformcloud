@@ -34,50 +34,50 @@ import java.util.UUID;
 @ApiStatus.Internal
 public final class Parsers {
 
-    public static final Parser<String, Long> LONG = numberParser(Long::parseLong);
-    public static final Parser<String, Float> FLOAT = numberParser(Float::parseFloat);
-    public static final Parser<String, Short> SHORT = numberParser(Short::parseShort);
-    public static final Parser<String, Integer> INT = numberParser(Integer::parseInt);
-    public static final Parser<String, UUID> UNIQUE_ID = generalParser(UUID::fromString);
-    public static final Parser<String, Double> DOUBLE = numberParser(Double::parseDouble);
-    public static final Parser<String, Boolean> BOOLEAN = s -> {
-        if (s.equalsIgnoreCase("true") || s.equalsIgnoreCase("false")) {
-            return s.equalsIgnoreCase("true");
-        } else {
-            return null;
-        }
+  public static final Parser<String, Long> LONG = numberParser(Long::parseLong);
+  public static final Parser<String, Float> FLOAT = numberParser(Float::parseFloat);
+  public static final Parser<String, Short> SHORT = numberParser(Short::parseShort);
+  public static final Parser<String, Integer> INT = numberParser(Integer::parseInt);
+  public static final Parser<String, UUID> UNIQUE_ID = generalParser(UUID::fromString);
+  public static final Parser<String, Double> DOUBLE = numberParser(Double::parseDouble);
+  public static final Parser<String, Boolean> BOOLEAN = s -> {
+    if (s.equalsIgnoreCase("true") || s.equalsIgnoreCase("false")) {
+      return s.equalsIgnoreCase("true");
+    } else {
+      return null;
+    }
+  };
+  public static final Parser<Long, Integer> LONG_TO_INT = l -> l > Integer.MAX_VALUE ? Integer.MAX_VALUE : l < Integer.MIN_VALUE ? Integer.MIN_VALUE : l.intValue();
+  public static final Parser<Throwable, String> EXCEPTION_FORMAT = throwable -> {
+    StackTraceElement[] trace = throwable.getStackTrace();
+    return throwable.getClass().getSimpleName() + " : " + throwable.getMessage() + (trace.length > 0
+      ? " @ " + trace[0].getClassName() + ":" + trace[0].getLineNumber() : ""
+    );
+  };
+
+  private Parsers() {
+    throw new UnsupportedOperationException();
+  }
+
+  @NotNull
+  private static <T> Parser<String, T> numberParser(@NotNull Function1E<String, T, NumberFormatException> parser) {
+    return s -> {
+      try {
+        return parser.apply(s);
+      } catch (NumberFormatException exception) {
+        return null;
+      }
     };
-    public static final Parser<Long, Integer> LONG_TO_INT = l -> l > Integer.MAX_VALUE ? Integer.MAX_VALUE : l < Integer.MIN_VALUE ? Integer.MIN_VALUE : l.intValue();
-    public static final Parser<Throwable, String> EXCEPTION_FORMAT = throwable -> {
-        StackTraceElement[] trace = throwable.getStackTrace();
-        return throwable.getClass().getSimpleName() + " : " + throwable.getMessage() + (trace.length > 0
-            ? " @ " + trace[0].getClassName() + ":" + trace[0].getLineNumber() : ""
-        );
+  }
+
+  @NotNull
+  private static <T> Parser<String, T> generalParser(@NotNull Function1E<String, T, Throwable> parser) {
+    return s -> {
+      try {
+        return parser.apply(s);
+      } catch (Throwable exception) {
+        return null;
+      }
     };
-
-    private Parsers() {
-        throw new UnsupportedOperationException();
-    }
-
-    @NotNull
-    private static <T> Parser<String, T> numberParser(@NotNull Function1E<String, T, NumberFormatException> parser) {
-        return s -> {
-            try {
-                return parser.apply(s);
-            } catch (NumberFormatException exception) {
-                return null;
-            }
-        };
-    }
-
-    @NotNull
-    private static <T> Parser<String, T> generalParser(@NotNull Function1E<String, T, Throwable> parser) {
-        return s -> {
-            try {
-                return parser.apply(s);
-            } catch (Throwable exception) {
-                return null;
-            }
-        };
-    }
+  }
 }

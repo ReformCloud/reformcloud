@@ -57,132 +57,132 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class NukkitSignSystemAdapter extends SharedSignSystemAdapter<BlockEntitySign> {
 
-    private static final Map<String, Integer> BLOCKS = new ConcurrentHashMap<>();
-    private static NukkitSignSystemAdapter instance;
+  private static final Map<String, Integer> BLOCKS = new ConcurrentHashMap<>();
+  private static NukkitSignSystemAdapter instance;
 
-    static {
-        Arrays.stream(Block.fullList).forEach(e -> BLOCKS.put(e.getName(), e.getId()));
+  static {
+    Arrays.stream(Block.fullList).forEach(e -> BLOCKS.put(e.getName(), e.getId()));
+  }
+
+  private final PluginBase plugin;
+
+  public NukkitSignSystemAdapter(@NotNull SignConfig signConfig, @NotNull PluginBase plugin) {
+    super(signConfig);
+
+    instance = this;
+    this.plugin = plugin;
+
+    Server.getInstance().getPluginManager().registerEvents(new NukkitListener(), plugin);
+
+    PluginCommand command = (PluginCommand) plugin.getCommand("signs");
+    command.setExecutor(new NukkitCommandSigns());
+    command.setPermission("reformcloud.command.signs");
+  }
+
+  public static NukkitSignSystemAdapter getInstance() {
+    return instance;
+  }
+
+  @Override
+  protected void setSignLines(@NotNull CloudSign cloudSign, @NotNull String[] lines) {
+    BlockEntitySign blockEntitySign = this.getSignConverter().from(cloudSign);
+    if (blockEntitySign == null) {
+      return;
     }
 
-    private final PluginBase plugin;
+    blockEntitySign.setText(lines);
+  }
 
-    public NukkitSignSystemAdapter(@NotNull SignConfig signConfig, @NotNull PluginBase plugin) {
-        super(signConfig);
+  @Override
+  protected void runTasks() {
+    Server.getInstance().getScheduler().scheduleRepeatingTask(
+      this.plugin,
+      this::updateSigns,
+      Objects.requireNonNull(Parsers.LONG_TO_INT.parse(Math.round(20 / super.signConfig.getUpdateInterval())))
+    );
 
-        instance = this;
-        this.plugin = plugin;
-
-        Server.getInstance().getPluginManager().registerEvents(new NukkitListener(), plugin);
-
-        PluginCommand command = (PluginCommand) plugin.getCommand("signs");
-        command.setExecutor(new NukkitCommandSigns());
-        command.setPermission("reformcloud.command.signs");
-    }
-
-    public static NukkitSignSystemAdapter getInstance() {
-        return instance;
-    }
-
-    @Override
-    protected void setSignLines(@NotNull CloudSign cloudSign, @NotNull String[] lines) {
-        BlockEntitySign blockEntitySign = this.getSignConverter().from(cloudSign);
-        if (blockEntitySign == null) {
-            return;
-        }
-
-        blockEntitySign.setText(lines);
-    }
-
-    @Override
-    protected void runTasks() {
-        Server.getInstance().getScheduler().scheduleRepeatingTask(
-            this.plugin,
-            this::updateSigns,
-            Objects.requireNonNull(Parsers.LONG_TO_INT.parse(Math.round(20 / super.signConfig.getUpdateInterval())))
-        );
-
-        double distance = super.signConfig.getKnockBackDistance();
-        Server.getInstance().getScheduler().scheduleDelayedRepeatingTask(this.plugin, () -> {
-            for (CloudSign sign : this.signs) {
-                BlockEntitySign blockEntitySign = this.getSignConverter().from(sign);
-                if (blockEntitySign == null) {
-                    continue;
-                }
-
-                Location location = blockEntitySign.getLocation();
-                AxisAlignedBB alignedBB = new SimpleAxisAlignedBB(location, location)
-                    .expand(distance, distance, distance);
-
-                for (Entity entity : location.getLevel().getNearbyEntities(alignedBB)) {
-                    if (!(entity instanceof Player)) {
-                        continue;
-                    }
-
-                    Player player = (Player) entity;
-                    if (player.hasPermission(super.signConfig.getKnockBackBypassPermission())) {
-                        continue;
-                    }
-
-                    Vector3 vector = player.getPosition()
-                        .subtract(location)
-                        .normalize()
-                        .multiply(super.signConfig.getKnockBackStrength());
-                    vector.y = 0.2D;
-                    player.setMotion(vector);
-                }
-            }
-        }, 20, 5);
-    }
-
-    @Override
-    protected @NotNull String replaceAll(@NotNull String line, @NotNull String group, @Nullable ProcessInformation processInformation) {
-        if (processInformation == null) {
-            line = line.replace("%group%", group);
-            return TextFormat.colorize('&', line);
-        }
-
-        return PlaceHolderUtil.format(line, group, processInformation, s -> TextFormat.colorize('&', s));
-    }
-
-    @Override
-    public void changeBlock(@NotNull CloudSign sign, @NotNull SignSubLayout layout) {
+    double distance = super.signConfig.getKnockBackDistance();
+    Server.getInstance().getScheduler().scheduleDelayedRepeatingTask(this.plugin, () -> {
+      for (CloudSign sign : this.signs) {
         BlockEntitySign blockEntitySign = this.getSignConverter().from(sign);
         if (blockEntitySign == null) {
-            return;
+          continue;
         }
 
-        this.changeBlock0(blockEntitySign, layout);
-    }
+        Location location = blockEntitySign.getLocation();
+        AxisAlignedBB alignedBB = new SimpleAxisAlignedBB(location, location)
+          .expand(distance, distance, distance);
 
-    @Override
-    public @NotNull SignConverter<BlockEntitySign> getSignConverter() {
-        return NukkitSignConverter.INSTANCE;
-    }
+        for (Entity entity : location.getLevel().getNearbyEntities(alignedBB)) {
+          if (!(entity instanceof Player)) {
+            continue;
+          }
 
-    @Override
-    public void handleSignConfigUpdate(@NotNull SignConfig config) {
-        super.signConfig = config;
-        this.restartTasks();
-    }
+          Player player = (Player) entity;
+          if (player.hasPermission(super.signConfig.getKnockBackBypassPermission())) {
+            continue;
+          }
 
-    private void changeBlock0(@NotNull BlockEntitySign sign, @NotNull SignSubLayout layout) {
-        if (!(sign.getBlock() instanceof BlockSignPost)) {
-            return;
+          Vector3 vector = player.getPosition()
+            .subtract(location)
+            .normalize()
+            .multiply(super.signConfig.getKnockBackStrength());
+          vector.y = 0.2D;
+          player.setMotion(vector);
         }
+      }
+    }, 20, 5);
+  }
 
-        BlockSignPost post = (BlockSignPost) sign.getBlock();
-        Location location = post.getSide(post.getBlockFace().getOpposite()).getLocation();
-        Integer block = BLOCKS.get(layout.getBlock());
-        if (block == null) {
-            return;
-        }
-
-        Block nukkitBlock = Block.fullList[(block << 4) + layout.getSubID()].clone();
-        location.getLevel().setBlock(location, nukkitBlock, true, true);
+  @Override
+  protected @NotNull String replaceAll(@NotNull String line, @NotNull String group, @Nullable ProcessInformation processInformation) {
+    if (processInformation == null) {
+      line = line.replace("%group%", group);
+      return TextFormat.colorize('&', line);
     }
 
-    private void restartTasks() {
-        Server.getInstance().getScheduler().cancelTask(this.plugin);
-        this.runTasks();
+    return PlaceHolderUtil.format(line, group, processInformation, s -> TextFormat.colorize('&', s));
+  }
+
+  @Override
+  public void changeBlock(@NotNull CloudSign sign, @NotNull SignSubLayout layout) {
+    BlockEntitySign blockEntitySign = this.getSignConverter().from(sign);
+    if (blockEntitySign == null) {
+      return;
     }
+
+    this.changeBlock0(blockEntitySign, layout);
+  }
+
+  @Override
+  public @NotNull SignConverter<BlockEntitySign> getSignConverter() {
+    return NukkitSignConverter.INSTANCE;
+  }
+
+  @Override
+  public void handleSignConfigUpdate(@NotNull SignConfig config) {
+    super.signConfig = config;
+    this.restartTasks();
+  }
+
+  private void changeBlock0(@NotNull BlockEntitySign sign, @NotNull SignSubLayout layout) {
+    if (!(sign.getBlock() instanceof BlockSignPost)) {
+      return;
+    }
+
+    BlockSignPost post = (BlockSignPost) sign.getBlock();
+    Location location = post.getSide(post.getBlockFace().getOpposite()).getLocation();
+    Integer block = BLOCKS.get(layout.getBlock());
+    if (block == null) {
+      return;
+    }
+
+    Block nukkitBlock = Block.fullList[(block << 4) + layout.getSubID()].clone();
+    location.getLevel().setBlock(location, nukkitBlock, true, true);
+  }
+
+  private void restartTasks() {
+    Server.getInstance().getScheduler().cancelTask(this.plugin);
+    this.runTasks();
+  }
 }

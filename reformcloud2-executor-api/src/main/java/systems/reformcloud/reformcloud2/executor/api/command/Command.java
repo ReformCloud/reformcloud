@@ -32,14 +32,14 @@ import java.util.List;
 
 public interface Command {
 
-    void process(@NotNull CommandSender sender, @NonNls String[] strings, @NotNull String commandLine);
+  void process(@NotNull CommandSender sender, @NonNls String[] strings, @NotNull String commandLine);
 
-    default boolean canAccess(@NotNull CommandSender commandSender) {
-        return true;
-    }
+  default boolean canAccess(@NotNull CommandSender commandSender) {
+    return true;
+  }
 
-    @NotNull
-    default List<String> suggest(@NotNull CommandSender commandSender, @NonNls String[] strings, int bufferIndex, @NotNull String commandLine) {
-        return new ArrayList<>();
-    }
+  @NotNull
+  default List<String> suggest(@NotNull CommandSender commandSender, @NonNls String[] strings, int bufferIndex, @NotNull String commandLine) {
+    return new ArrayList<>();
+  }
 }

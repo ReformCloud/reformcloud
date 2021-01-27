@@ -39,54 +39,54 @@ import java.math.BigDecimal;
 
 public class NukkitSignConverter implements SignConverter<BlockEntitySign> {
 
-    static final NukkitSignConverter INSTANCE = new NukkitSignConverter();
+  static final NukkitSignConverter INSTANCE = new NukkitSignConverter();
 
-    @Nullable
-    @Override
-    public BlockEntitySign from(@NotNull CloudSign cloudSign) {
-        Location location = this.accumulate(cloudSign.getLocation());
-        return location != null && location.getLevel().getBlockEntity(location) instanceof BlockEntitySign
-            ? (BlockEntitySign) location.getLevel().getBlockEntity(location)
-            : null;
+  @Nullable
+  @Override
+  public BlockEntitySign from(@NotNull CloudSign cloudSign) {
+    Location location = this.accumulate(cloudSign.getLocation());
+    return location != null && location.getLevel().getBlockEntity(location) instanceof BlockEntitySign
+      ? (BlockEntitySign) location.getLevel().getBlockEntity(location)
+      : null;
+  }
+
+  @NotNull
+  @Override
+  public CloudSign to(@NotNull BlockEntitySign blockEntitySign, @NotNull String group) {
+    return new CloudSign(group, this.accumulate(blockEntitySign.getLocation().clone()));
+  }
+
+  @NotNull
+  @Override
+  public CloudLocation to(@NotNull BlockEntitySign blockEntitySign) {
+    return this.accumulate(blockEntitySign.getLocation().clone());
+  }
+
+  private Location accumulate(CloudLocation cloudLocation) {
+    if (Server.getInstance().getLevelByName(cloudLocation.getWorld()) == null) {
+      return null;
     }
 
-    @NotNull
-    @Override
-    public CloudSign to(@NotNull BlockEntitySign blockEntitySign, @NotNull String group) {
-        return new CloudSign(group, this.accumulate(blockEntitySign.getLocation().clone()));
-    }
+    return new Location(
+      cloudLocation.getX(),
+      cloudLocation.getY(),
+      cloudLocation.getZ(),
+      cloudLocation.getYaw(),
+      cloudLocation.getPitch(),
+      Server.getInstance().getLevelByName(cloudLocation.getWorld())
+    );
+  }
 
-    @NotNull
-    @Override
-    public CloudLocation to(@NotNull BlockEntitySign blockEntitySign) {
-        return this.accumulate(blockEntitySign.getLocation().clone());
-    }
-
-    private Location accumulate(CloudLocation cloudLocation) {
-        if (Server.getInstance().getLevelByName(cloudLocation.getWorld()) == null) {
-            return null;
-        }
-
-        return new Location(
-            cloudLocation.getX(),
-            cloudLocation.getY(),
-            cloudLocation.getZ(),
-            cloudLocation.getYaw(),
-            cloudLocation.getPitch(),
-            Server.getInstance().getLevelByName(cloudLocation.getWorld())
-        );
-    }
-
-    private CloudLocation accumulate(Location location) {
-        Conditions.isTrue(location.getLevel() != null);
-        return new CloudLocation(
-            location.getLevel().getName(),
-            Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
-            location.getX(),
-            location.getY(),
-            location.getZ(),
-            BigDecimal.valueOf(location.getYaw()).floatValue(),
-            BigDecimal.valueOf(location.getPitch()).floatValue()
-        );
-    }
+  private CloudLocation accumulate(Location location) {
+    Conditions.isTrue(location.getLevel() != null);
+    return new CloudLocation(
+      location.getLevel().getName(),
+      Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
+      location.getX(),
+      location.getY(),
+      location.getZ(),
+      BigDecimal.valueOf(location.getYaw()).floatValue(),
+      BigDecimal.valueOf(location.getPitch()).floatValue()
+    );
+  }
 }

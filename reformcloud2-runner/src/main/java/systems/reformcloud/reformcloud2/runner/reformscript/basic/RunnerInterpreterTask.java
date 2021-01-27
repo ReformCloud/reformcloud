@@ -34,24 +34,24 @@ import java.util.Map;
 
 public final class RunnerInterpreterTask extends InterpreterTask {
 
-    private final String name;
-    private final Map<String, InterpreterCommand> commands;
+  private final String name;
+  private final Map<String, InterpreterCommand> commands;
 
-    public RunnerInterpreterTask(@NotNull String name, @NotNull Map<String, InterpreterCommand> commands) {
-        this.name = name;
-        this.commands = commands;
-    }
+  public RunnerInterpreterTask(@NotNull String name, @NotNull Map<String, InterpreterCommand> commands) {
+    this.name = name;
+    this.commands = commands;
+  }
 
-    @NotNull
-    @Override
-    public String getName() {
-        return this.name;
-    }
+  @NotNull
+  @Override
+  public String getName() {
+    return this.name;
+  }
 
-    @Override
-    public void executeTask(@NotNull String callerLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
-        for (Map.Entry<String, InterpreterCommand> commandEntry : this.commands.entrySet()) {
-            commandEntry.getValue().execute(commandEntry.getKey(), script, allLines);
-        }
+  @Override
+  public void executeTask(@NotNull String callerLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
+    for (Map.Entry<String, InterpreterCommand> commandEntry : this.commands.entrySet()) {
+      commandEntry.getValue().execute(commandEntry.getKey(), script, allLines);
     }
+  }
 }

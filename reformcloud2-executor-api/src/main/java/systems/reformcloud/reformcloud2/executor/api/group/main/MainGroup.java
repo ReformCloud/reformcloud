@@ -38,33 +38,33 @@ import java.util.Optional;
 
 public interface MainGroup extends Nameable, JsonDataHolder<MainGroup>, SerializableObject, Cloneable {
 
-    @NotNull
-    @Contract(value = "_ -> new", pure = true)
-    static MainGroupBuilder builder(@NotNull String name) {
-        return ExecutorAPI.getInstance().getMainGroupProvider().createMainGroup(name);
-    }
+  @NotNull
+  @Contract(value = "_ -> new", pure = true)
+  static MainGroupBuilder builder(@NotNull String name) {
+    return ExecutorAPI.getInstance().getMainGroupProvider().createMainGroup(name);
+  }
 
-    @NotNull
-    static Optional<MainGroup> getByName(@NotNull String name) {
-        return ExecutorAPI.getInstance().getMainGroupProvider().getMainGroup(name);
-    }
+  @NotNull
+  static Optional<MainGroup> getByName(@NotNull String name) {
+    return ExecutorAPI.getInstance().getMainGroupProvider().getMainGroup(name);
+  }
 
-    @NotNull
-    @UnmodifiableView
-    Collection<String> getSubGroups();
+  @NotNull
+  @UnmodifiableView
+  Collection<String> getSubGroups();
 
-    void setSubGroups(@NotNull Collection<String> subGroups);
+  void setSubGroups(@NotNull Collection<String> subGroups);
 
-    void addSubGroup(@NotNull String subGroup);
+  void addSubGroup(@NotNull String subGroup);
 
-    void removeSubGroup(@NotNull String subGroup);
+  void removeSubGroup(@NotNull String subGroup);
 
-    boolean hasSubGroup(@NotNull String name);
+  boolean hasSubGroup(@NotNull String name);
 
-    void removeAllSubGroups();
+  void removeAllSubGroups();
 
-    void update();
+  void update();
 
-    @NotNull
-    MainGroup clone();
+  @NotNull
+  MainGroup clone();
 }

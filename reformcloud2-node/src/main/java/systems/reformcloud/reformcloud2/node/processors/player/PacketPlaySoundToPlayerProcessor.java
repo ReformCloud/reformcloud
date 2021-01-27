@@ -30,8 +30,8 @@ import systems.reformcloud.reformcloud2.protocol.shared.PacketPlaySoundToPlayer;
 
 public class PacketPlaySoundToPlayerProcessor extends PlayerApiToNodePacketProcessor<PacketPlaySoundToPlayer> {
 
-    @Override
-    public void process(@NotNull NetworkChannel channel, @NotNull PacketPlaySoundToPlayer packet) {
-        this.getPlayerProvider().getPlayer(packet.getUniqueId()).ifPresent(wrapper -> wrapper.playSound(packet.getSound(), packet.getVolume(), packet.getPitch()));
-    }
+  @Override
+  public void process(@NotNull NetworkChannel channel, @NotNull PacketPlaySoundToPlayer packet) {
+    this.getPlayerProvider().getPlayer(packet.getUniqueId()).ifPresent(wrapper -> wrapper.playSound(packet.getSound(), packet.getVolume(), packet.getPitch()));
+  }
 }

@@ -28,8 +28,8 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ChannelListenerHolder {
 
-    @NotNull
-    ChannelListener getListener();
+  @NotNull
+  ChannelListener getListener();
 
-    void setListener(@NotNull ChannelListener listener);
+  void setListener(@NotNull ChannelListener listener);
 }

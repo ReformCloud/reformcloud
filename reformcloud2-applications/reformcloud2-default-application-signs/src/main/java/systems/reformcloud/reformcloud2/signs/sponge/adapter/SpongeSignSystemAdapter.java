@@ -61,159 +61,159 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SpongeSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
 
-    private static final Map<String, BlockType> BLOCK_TYPES = new ConcurrentHashMap<>();
-    private static SpongeSignSystemAdapter instance;
+  private static final Map<String, BlockType> BLOCK_TYPES = new ConcurrentHashMap<>();
+  private static SpongeSignSystemAdapter instance;
 
-    static {
-        Arrays.stream(BlockTypes.class.getDeclaredFields()).filter(
-            e -> Modifier.isFinal(e.getModifiers()) && Modifier.isStatic(e.getModifiers())
-        ).forEach(e -> {
-            try {
-                BLOCK_TYPES.put(e.getName(), (BlockType) e.get(BlockTypes.class));
-            } catch (final IllegalAccessException ex) {
-                ex.printStackTrace();
-            }
-        });
+  static {
+    Arrays.stream(BlockTypes.class.getDeclaredFields()).filter(
+      e -> Modifier.isFinal(e.getModifiers()) && Modifier.isStatic(e.getModifiers())
+    ).forEach(e -> {
+      try {
+        BLOCK_TYPES.put(e.getName(), (BlockType) e.get(BlockTypes.class));
+      } catch (final IllegalAccessException ex) {
+        ex.printStackTrace();
+      }
+    });
+  }
+
+  private final Object plugin;
+
+  public SpongeSignSystemAdapter(@NotNull SignConfig signConfig, @NotNull Object plugin) {
+    super(signConfig);
+
+    instance = this;
+
+    this.plugin = plugin;
+    Sponge.getEventManager().registerListeners(plugin, new SpongeListener());
+
+    CommandSpec signs = CommandSpec
+      .builder()
+      .description(Text.of("The default signs command of the cloud system"))
+      .permission("reformcloud.command.signs")
+      .arguments(
+        GenericArguments.optional(GenericArguments.string(Text.of("Execute type"))),
+        GenericArguments.optional(GenericArguments.string(Text.of("Target group")))
+      )
+      .executor(new SpongeCommandSigns())
+      .build();
+    Sponge.getCommandManager().register(plugin, signs, "signs");
+  }
+
+  public static SpongeSignSystemAdapter getInstance() {
+    return instance;
+  }
+
+  @Override
+  protected void setSignLines(@NotNull CloudSign cloudSign, @NotNull String[] lines) {
+    Sign sign = this.getSignConverter().from(cloudSign);
+    if (sign == null) {
+      return;
     }
 
-    private final Object plugin;
-
-    public SpongeSignSystemAdapter(@NotNull SignConfig signConfig, @NotNull Object plugin) {
-        super(signConfig);
-
-        instance = this;
-
-        this.plugin = plugin;
-        Sponge.getEventManager().registerListeners(plugin, new SpongeListener());
-
-        CommandSpec signs = CommandSpec
-            .builder()
-            .description(Text.of("The default signs command of the cloud system"))
-            .permission("reformcloud.command.signs")
-            .arguments(
-                GenericArguments.optional(GenericArguments.string(Text.of("Execute type"))),
-                GenericArguments.optional(GenericArguments.string(Text.of("Target group")))
-            )
-            .executor(new SpongeCommandSigns())
-            .build();
-        Sponge.getCommandManager().register(plugin, signs, "signs");
+    SignData data = sign.getSignData();
+    for (int i = 0; i <= 3; i++) {
+      data.setElement(i, Text.of(lines[i]));
     }
 
-    public static SpongeSignSystemAdapter getInstance() {
-        return instance;
-    }
+    sign.offer(data);
+  }
 
-    @Override
-    protected void setSignLines(@NotNull CloudSign cloudSign, @NotNull String[] lines) {
-        Sign sign = this.getSignConverter().from(cloudSign);
-        if (sign == null) {
-            return;
-        }
+  @Override
+  protected void runTasks() {
+    Sponge.getScheduler()
+      .createTaskBuilder()
+      .execute(this::updateSigns)
+      .delayTicks(0)
+      .intervalTicks(Math.round(20 / super.signConfig.getUpdateInterval()))
+      .submit(this.plugin);
 
-        SignData data = sign.getSignData();
-        for (int i = 0; i <= 3; i++) {
-            data.setElement(i, Text.of(lines[i]));
-        }
+    double distance = super.signConfig.getKnockBackDistance();
+    Sponge.getScheduler()
+      .createTaskBuilder()
+      .execute(() -> {
+        for (CloudSign sign : this.signs) {
+          Sign spongeSign = this.getSignConverter().from(sign);
+          if (spongeSign == null) {
+            continue;
+          }
 
-        sign.offer(data);
-    }
-
-    @Override
-    protected void runTasks() {
-        Sponge.getScheduler()
-            .createTaskBuilder()
-            .execute(this::updateSigns)
-            .delayTicks(0)
-            .intervalTicks(Math.round(20 / super.signConfig.getUpdateInterval()))
-            .submit(this.plugin);
-
-        double distance = super.signConfig.getKnockBackDistance();
-        Sponge.getScheduler()
-            .createTaskBuilder()
-            .execute(() -> {
-                for (CloudSign sign : this.signs) {
-                    Sign spongeSign = this.getSignConverter().from(sign);
-                    if (spongeSign == null) {
-                        continue;
-                    }
-
-                    Vector3d vector = spongeSign.getLocation().getPosition();
-                    for (Entity entity : spongeSign.getWorld().getNearbyEntities(vector, distance)) {
-                        if (!(entity instanceof Player)) {
-                            continue;
-                        }
-
-                        Player player = (Player) entity;
-                        if (player.hasPermission(super.signConfig.getKnockBackBypassPermission())) {
-                            continue;
-                        }
-
-                        Vector3d vector3d = player
-                            .getLocation()
-                            .getPosition()
-                            .sub(vector)
-                            .normalize()
-                            .mul(super.signConfig.getKnockBackStrength());
-                        player.setVelocity(new Vector3d(vector3d.getX(), 0.2D, vector3d.getZ()));
-                    }
-                }
-            })
-            .delayTicks(20)
-            .intervalTicks(5)
-            .submit(this.plugin);
-    }
-
-    @Override
-    protected @NotNull String replaceAll(@NotNull String line, @NotNull String group, @Nullable ProcessInformation processInformation) {
-        if (processInformation == null) {
-            line = line.replace("%group%", group);
-            return TextSerializers.FORMATTING_CODE.deserialize(line).toPlain();
-        }
-
-        return PlaceHolderUtil.format(line, group, processInformation, TextSerializers.FORMATTING_CODE::deserialize).toPlain();
-    }
-
-    @Override
-    public void changeBlock(@NotNull CloudSign sign, @NotNull SignSubLayout layout) {
-        Sign spongeSign = this.getSignConverter().from(sign);
-        if (spongeSign == null) {
-            return;
-        }
-
-        this.changeBlock0(spongeSign, layout);
-    }
-
-    @Override
-    public @NotNull SignConverter<Sign> getSignConverter() {
-        return SpongeSignConverter.INSTANCE;
-    }
-
-    @Override
-    public void handleSignConfigUpdate(@NotNull SignConfig config) {
-        super.signConfig = config;
-        this.restartTasks();
-    }
-
-    private void changeBlock0(@NotNull Sign sign, @NotNull SignSubLayout layout) {
-        Optional<DirectionalData> directionalData = sign.getLocation().get(DirectionalData.class);
-        if (!directionalData.isPresent()) {
-            return;
-        }
-
-        DirectionalData data = directionalData.get();
-        data.get(Keys.DIRECTION).ifPresent(e -> {
-            Location<World> blockRelative = sign.getLocation().getBlockRelative(e.getOpposite());
-            BlockType blockType = BLOCK_TYPES.get(layout.getBlock());
-            if (blockType == null) {
-                return;
+          Vector3d vector = spongeSign.getLocation().getPosition();
+          for (Entity entity : spongeSign.getWorld().getNearbyEntities(vector, distance)) {
+            if (!(entity instanceof Player)) {
+              continue;
             }
 
-            blockRelative.setBlockType(blockType);
-        });
+            Player player = (Player) entity;
+            if (player.hasPermission(super.signConfig.getKnockBackBypassPermission())) {
+              continue;
+            }
+
+            Vector3d vector3d = player
+              .getLocation()
+              .getPosition()
+              .sub(vector)
+              .normalize()
+              .mul(super.signConfig.getKnockBackStrength());
+            player.setVelocity(new Vector3d(vector3d.getX(), 0.2D, vector3d.getZ()));
+          }
+        }
+      })
+      .delayTicks(20)
+      .intervalTicks(5)
+      .submit(this.plugin);
+  }
+
+  @Override
+  protected @NotNull String replaceAll(@NotNull String line, @NotNull String group, @Nullable ProcessInformation processInformation) {
+    if (processInformation == null) {
+      line = line.replace("%group%", group);
+      return TextSerializers.FORMATTING_CODE.deserialize(line).toPlain();
     }
 
-    private void restartTasks() {
-        Sponge.getScheduler().getScheduledTasks().forEach(Task::cancel);
-        this.runTasks();
+    return PlaceHolderUtil.format(line, group, processInformation, TextSerializers.FORMATTING_CODE::deserialize).toPlain();
+  }
+
+  @Override
+  public void changeBlock(@NotNull CloudSign sign, @NotNull SignSubLayout layout) {
+    Sign spongeSign = this.getSignConverter().from(sign);
+    if (spongeSign == null) {
+      return;
     }
+
+    this.changeBlock0(spongeSign, layout);
+  }
+
+  @Override
+  public @NotNull SignConverter<Sign> getSignConverter() {
+    return SpongeSignConverter.INSTANCE;
+  }
+
+  @Override
+  public void handleSignConfigUpdate(@NotNull SignConfig config) {
+    super.signConfig = config;
+    this.restartTasks();
+  }
+
+  private void changeBlock0(@NotNull Sign sign, @NotNull SignSubLayout layout) {
+    Optional<DirectionalData> directionalData = sign.getLocation().get(DirectionalData.class);
+    if (!directionalData.isPresent()) {
+      return;
+    }
+
+    DirectionalData data = directionalData.get();
+    data.get(Keys.DIRECTION).ifPresent(e -> {
+      Location<World> blockRelative = sign.getLocation().getBlockRelative(e.getOpposite());
+      BlockType blockType = BLOCK_TYPES.get(layout.getBlock());
+      if (blockType == null) {
+        return;
+      }
+
+      blockRelative.setBlockType(blockType);
+    });
+  }
+
+  private void restartTasks() {
+    Sponge.getScheduler().getScheduledTasks().forEach(Task::cancel);
+    this.runTasks();
+  }
 }

@@ -44,19 +44,19 @@ import systems.reformcloud.reformcloud2.executor.api.http.websocket.response.Res
  */
 public interface SocketFrameListener {
 
-    /**
-     * Handles a web socket frame and can be casted to the correct type after receiving. The answer
-     * (if there is one) to the message can be build by using {@link ResponseFrameHolder#response(SocketFrame)}
-     * which creates a new {@link ResponseFrameHolder} holding the socket frame of the response for example
-     * created by {@link SocketFrame#textFrame(String)} and some listener information which can change the
-     * way how the next listeners are called/the connection is handled. The invocation of {@link ResponseFrameHolder#closeAfterSent(boolean)}
-     * causes the connection to be closed after sending the response to the message. The invocation of
-     * {@link ResponseFrameHolder#lastHandler(boolean)} causes that the handler is the last handler and afterwards
-     * no more listeners are called.
-     *
-     * @param frame the received frame from the client.
-     * @return the response to the received frame or {@code null} if there is no response.
-     */
-    @Nullable
-    ResponseFrameHolder<?> handleFrame(@NotNull RequestFrameHolder frame);
+  /**
+   * Handles a web socket frame and can be casted to the correct type after receiving. The answer
+   * (if there is one) to the message can be build by using {@link ResponseFrameHolder#response(SocketFrame)}
+   * which creates a new {@link ResponseFrameHolder} holding the socket frame of the response for example
+   * created by {@link SocketFrame#textFrame(String)} and some listener information which can change the
+   * way how the next listeners are called/the connection is handled. The invocation of {@link ResponseFrameHolder#closeAfterSent(boolean)}
+   * causes the connection to be closed after sending the response to the message. The invocation of
+   * {@link ResponseFrameHolder#lastHandler(boolean)} causes that the handler is the last handler and afterwards
+   * no more listeners are called.
+   *
+   * @param frame the received frame from the client.
+   * @return the response to the received frame or {@code null} if there is no response.
+   */
+  @Nullable
+  ResponseFrameHolder<?> handleFrame(@NotNull RequestFrameHolder frame);
 }

@@ -30,7 +30,7 @@ import java.io.Serializable;
 
 public interface SerializableObject extends Serializable {
 
-    void write(@NotNull ProtocolBuffer buffer);
+  void write(@NotNull ProtocolBuffer buffer);
 
-    void read(@NotNull ProtocolBuffer buffer);
+  void read(@NotNull ProtocolBuffer buffer);
 }

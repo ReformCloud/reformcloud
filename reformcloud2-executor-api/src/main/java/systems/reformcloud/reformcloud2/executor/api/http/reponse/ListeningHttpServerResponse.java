@@ -39,59 +39,59 @@ import systems.reformcloud.reformcloud2.executor.api.http.request.HttpRequest;
  */
 public interface ListeningHttpServerResponse<T extends ListeningHttpServerResponse<T>> extends HttpServerResponse<T> {
 
-    /**
-     * Creates a default response to a http request.
-     *
-     * @param request the request to create a response for.
-     * @return the response for the given request
-     */
-    @NotNull
-    static ListeningHttpServerResponse<?> response(@NotNull HttpRequest<?> request) {
-        return HttpServerResponseFactory.DEFAULT_FACTORY.get().response(request);
-    }
+  /**
+   * Creates a default response to a http request.
+   *
+   * @param request the request to create a response for.
+   * @return the response for the given request
+   */
+  @NotNull
+  static ListeningHttpServerResponse<?> response(@NotNull HttpRequest<?> request) {
+    return HttpServerResponseFactory.DEFAULT_FACTORY.get().response(request);
+  }
 
-    /**
-     * Creates a new server response for the given parameters.
-     *
-     * @param httpVersion  the version of the request.
-     * @param headers      the headers to use.
-     * @param decodeResult the decode result of the response.
-     * @return the response created for the given parameters.
-     */
-    @NotNull
-    static ListeningHttpServerResponse<?> response(@NotNull HttpVersion httpVersion, @NotNull Headers headers, @NotNull DecodeResult decodeResult) {
-        return HttpServerResponseFactory.DEFAULT_FACTORY.get().response(httpVersion, headers, decodeResult);
-    }
+  /**
+   * Creates a new server response for the given parameters.
+   *
+   * @param httpVersion  the version of the request.
+   * @param headers      the headers to use.
+   * @param decodeResult the decode result of the response.
+   * @return the response created for the given parameters.
+   */
+  @NotNull
+  static ListeningHttpServerResponse<?> response(@NotNull HttpVersion httpVersion, @NotNull Headers headers, @NotNull DecodeResult decodeResult) {
+    return HttpServerResponseFactory.DEFAULT_FACTORY.get().response(httpVersion, headers, decodeResult);
+  }
 
-    /**
-     * Get if this response is the last handled and this response is directly sent.
-     *
-     * @return if this response is the last handled.
-     */
-    boolean lastHandler();
+  /**
+   * Get if this response is the last handled and this response is directly sent.
+   *
+   * @return if this response is the last handled.
+   */
+  boolean lastHandler();
 
-    /**
-     * Sets if this response is the last handled and this response is directly sent.
-     *
-     * @param lastHandler if the handler is the last handled.
-     * @return the same instance of this class, for chaining
-     */
-    @NotNull
-    T lastHandler(boolean lastHandler);
+  /**
+   * Sets if this response is the last handled and this response is directly sent.
+   *
+   * @param lastHandler if the handler is the last handled.
+   * @return the same instance of this class, for chaining
+   */
+  @NotNull
+  T lastHandler(boolean lastHandler);
 
-    /**
-     * Get if the connection to the client should be closed after the send to the client.
-     *
-     * @return if the connection to the client should be closed after the send to the client.
-     */
-    boolean closeAfterSent();
+  /**
+   * Get if the connection to the client should be closed after the send to the client.
+   *
+   * @return if the connection to the client should be closed after the send to the client.
+   */
+  boolean closeAfterSent();
 
-    /**
-     * Sets if the connection to the client should be closed after the send to the client.
-     *
-     * @param close if the connection to the client should be closed after the send to the client.
-     * @return the same instance of this class, for chaining
-     */
-    @NotNull
-    T closeAfterSent(boolean close);
+  /**
+   * Sets if the connection to the client should be closed after the send to the client.
+   *
+   * @param close if the connection to the client should be closed after the send to the client.
+   * @return the same instance of this class, for chaining
+   */
+  @NotNull
+  T closeAfterSent(boolean close);
 }

@@ -30,13 +30,13 @@ import java.util.Optional;
 
 public interface ProcessFactoryController {
 
-    void registerProcessFactory(@NotNull ProcessFactory factory);
+  void registerProcessFactory(@NotNull ProcessFactory factory);
 
-    void unregisterFactory(@NotNull ProcessFactory factory);
+  void unregisterFactory(@NotNull ProcessFactory factory);
 
-    void unregisterFactoryByName(@NotNull String name);
+  void unregisterFactoryByName(@NotNull String name);
 
-    @NotNull Optional<ProcessFactory> getProcessFactoryByName(@NotNull String name);
+  @NotNull Optional<ProcessFactory> getProcessFactoryByName(@NotNull String name);
 
-    @NotNull ProcessFactory getDefaultProcessFactory();
+  @NotNull ProcessFactory getDefaultProcessFactory();
 }

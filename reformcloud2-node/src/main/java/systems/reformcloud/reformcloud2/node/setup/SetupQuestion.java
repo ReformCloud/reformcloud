@@ -30,11 +30,11 @@ import java.util.function.Function;
 
 public interface SetupQuestion {
 
-    //  -> return value: true - continue setup
-    //                   false - invalid input
-    @NotNull Function<SetupAnswer, Boolean> getAnswerHandler();
+  //  -> return value: true - continue setup
+  //                   false - invalid input
+  @NotNull Function<SetupAnswer, Boolean> getAnswerHandler();
 
-    @NotNull String getInvalidInputMessage();
+  @NotNull String getInvalidInputMessage();
 
-    @NotNull String getOriginalQuestion();
+  @NotNull String getOriginalQuestion();
 }

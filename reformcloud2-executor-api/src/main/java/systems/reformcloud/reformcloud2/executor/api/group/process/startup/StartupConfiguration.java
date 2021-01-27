@@ -32,56 +32,56 @@ import java.util.Collection;
 
 public interface StartupConfiguration extends SerializableObject, Cloneable {
 
-    @NotNull
-    static StartupConfiguration newDefaultConfiguration() {
-        return new DefaultStartupConfiguration(-1, 1, 1);
-    }
+  @NotNull
+  static StartupConfiguration newDefaultConfiguration() {
+    return new DefaultStartupConfiguration(-1, 1, 1);
+  }
 
-    @NotNull
-    static StartupConfiguration configuration(int maximumProcessAmount, int alwaysOnlineProcessAmount, int alwaysPreparedProcessAmount) {
-        return new DefaultStartupConfiguration(maximumProcessAmount, alwaysOnlineProcessAmount, alwaysPreparedProcessAmount);
-    }
+  @NotNull
+  static StartupConfiguration configuration(int maximumProcessAmount, int alwaysOnlineProcessAmount, int alwaysPreparedProcessAmount) {
+    return new DefaultStartupConfiguration(maximumProcessAmount, alwaysOnlineProcessAmount, alwaysPreparedProcessAmount);
+  }
 
-    @NotNull
-    static StartupConfiguration configuration(int maximumProcessAmount, int alwaysOnlineProcessAmount, int alwaysPreparedProcessAmount,
-                                              @NotNull String jvmCommand, @NotNull AutomaticStartupConfiguration startupConfiguration, @NotNull Collection<String> startingNodes) {
-        return new DefaultStartupConfiguration(maximumProcessAmount, alwaysOnlineProcessAmount, alwaysPreparedProcessAmount, jvmCommand, startupConfiguration, startingNodes);
-    }
+  @NotNull
+  static StartupConfiguration configuration(int maximumProcessAmount, int alwaysOnlineProcessAmount, int alwaysPreparedProcessAmount,
+                                            @NotNull String jvmCommand, @NotNull AutomaticStartupConfiguration startupConfiguration, @NotNull Collection<String> startingNodes) {
+    return new DefaultStartupConfiguration(maximumProcessAmount, alwaysOnlineProcessAmount, alwaysPreparedProcessAmount, jvmCommand, startupConfiguration, startingNodes);
+  }
 
-    @Range(from = -1, to = Integer.MAX_VALUE)
-    int getMaximumProcessAmount();
+  @Range(from = -1, to = Integer.MAX_VALUE)
+  int getMaximumProcessAmount();
 
-    void setMaximumProcessAmount(@Range(from = -1, to = Integer.MAX_VALUE) int maximumProcessAmount);
+  void setMaximumProcessAmount(@Range(from = -1, to = Integer.MAX_VALUE) int maximumProcessAmount);
 
-    @Range(from = 0, to = Integer.MAX_VALUE)
-    int getAlwaysOnlineProcessAmount();
+  @Range(from = 0, to = Integer.MAX_VALUE)
+  int getAlwaysOnlineProcessAmount();
 
-    void setAlwaysOnlineProcessAmount(@Range(from = 0, to = Integer.MAX_VALUE) int alwaysOnlineProcessAmount);
+  void setAlwaysOnlineProcessAmount(@Range(from = 0, to = Integer.MAX_VALUE) int alwaysOnlineProcessAmount);
 
-    @Range(from = 0, to = Integer.MAX_VALUE)
-    int getAlwaysPreparedProcessAmount();
+  @Range(from = 0, to = Integer.MAX_VALUE)
+  int getAlwaysPreparedProcessAmount();
 
-    void setAlwaysPreparedProcessAmount(@Range(from = 0, to = Integer.MAX_VALUE) int alwaysPreparedProcessAmount);
+  void setAlwaysPreparedProcessAmount(@Range(from = 0, to = Integer.MAX_VALUE) int alwaysPreparedProcessAmount);
 
-    @NotNull
-    String getJvmCommand();
+  @NotNull
+  String getJvmCommand();
 
-    void setJvmCommand(@NotNull String jvmCommand);
+  void setJvmCommand(@NotNull String jvmCommand);
 
-    @NotNull
-    AutomaticStartupConfiguration getAutomaticStartupConfiguration();
+  @NotNull
+  AutomaticStartupConfiguration getAutomaticStartupConfiguration();
 
-    void setAutomaticStartupConfiguration(@NotNull AutomaticStartupConfiguration automaticStartupConfiguration);
+  void setAutomaticStartupConfiguration(@NotNull AutomaticStartupConfiguration automaticStartupConfiguration);
 
-    @NotNull
-    Collection<String> getStartingNodes();
+  @NotNull
+  Collection<String> getStartingNodes();
 
-    void setStartingNodes(@NotNull Collection<String> startingNodes);
+  void setStartingNodes(@NotNull Collection<String> startingNodes);
 
-    void addStartingNode(@NotNull String node);
+  void addStartingNode(@NotNull String node);
 
-    void removeStartingNode(@NotNull String node);
+  void removeStartingNode(@NotNull String node);
 
-    @NotNull
-    StartupConfiguration clone();
+  @NotNull
+  StartupConfiguration clone();
 }

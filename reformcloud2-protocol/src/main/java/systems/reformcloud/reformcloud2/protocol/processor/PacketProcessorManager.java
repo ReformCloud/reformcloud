@@ -32,23 +32,23 @@ import java.util.Optional;
 
 public abstract class PacketProcessorManager {
 
-    private static PacketProcessorManager instance;
+  private static PacketProcessorManager instance;
 
-    public static PacketProcessorManager getInstance() {
-        if (instance == null) {
-            instance = new DefaultPacketProcessorManager();
-        }
-
-        return instance;
+  public static PacketProcessorManager getInstance() {
+    if (instance == null) {
+      instance = new DefaultPacketProcessorManager();
     }
 
-    public static void setInstance(PacketProcessorManager instance) {
-        PacketProcessorManager.instance = instance;
-    }
+    return instance;
+  }
 
-    @NotNull
-    public abstract <T extends Packet> PacketProcessorManager registerProcessor(@NotNull PacketProcessor<T> packetProcessor, @NotNull Class<T> packetClass);
+  public static void setInstance(PacketProcessorManager instance) {
+    PacketProcessorManager.instance = instance;
+  }
 
-    @NotNull
-    public abstract <T extends Packet> Optional<PacketProcessor<T>> getPacketProcessor(@NotNull Class<T> packetClass);
+  @NotNull
+  public abstract <T extends Packet> PacketProcessorManager registerProcessor(@NotNull PacketProcessor<T> packetProcessor, @NotNull Class<T> packetClass);
+
+  @NotNull
+  public abstract <T extends Packet> Optional<PacketProcessor<T>> getPacketProcessor(@NotNull Class<T> packetClass);
 }

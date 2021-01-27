@@ -38,47 +38,47 @@ import java.util.List;
  */
 public interface SocketFrameListenerRegistry {
 
-    /**
-     * Registers all given listeners.
-     *
-     * @param frameListeners the listeners to register.
-     * @return the same instance of this class, for chaining
-     */
-    @NotNull
-    SocketFrameListenerRegistry registerListeners(@NotNull SocketFrameListener... frameListeners);
+  /**
+   * Registers all given listeners.
+   *
+   * @param frameListeners the listeners to register.
+   * @return the same instance of this class, for chaining
+   */
+  @NotNull
+  SocketFrameListenerRegistry registerListeners(@NotNull SocketFrameListener... frameListeners);
 
-    /**
-     * Unregisters all given listeners.
-     *
-     * @param frameListeners the listeners to unregister.
-     * @return the same instance of this class, for chaining
-     */
-    @NotNull
-    SocketFrameListenerRegistry unregisterListeners(@NotNull SocketFrameListener... frameListeners);
+  /**
+   * Unregisters all given listeners.
+   *
+   * @param frameListeners the listeners to unregister.
+   * @return the same instance of this class, for chaining
+   */
+  @NotNull
+  SocketFrameListenerRegistry unregisterListeners(@NotNull SocketFrameListener... frameListeners);
 
-    /**
-     * Unregisters all listeners listening to the given {@code frameType}.
-     *
-     * @param frameType the frame type of the listeners to unregister
-     * @return the same instance of this class, for chaining
-     */
-    @NotNull
-    SocketFrameListenerRegistry unregisterListeners(@NotNull SocketFrameType frameType);
+  /**
+   * Unregisters all listeners listening to the given {@code frameType}.
+   *
+   * @param frameType the frame type of the listeners to unregister
+   * @return the same instance of this class, for chaining
+   */
+  @NotNull
+  SocketFrameListenerRegistry unregisterListeners(@NotNull SocketFrameType frameType);
 
-    /**
-     * Unregisters all known listeners.
-     *
-     * @return the same instance of this class, for chaining
-     */
-    @NotNull
-    SocketFrameListenerRegistry clearListeners();
+  /**
+   * Unregisters all known listeners.
+   *
+   * @return the same instance of this class, for chaining
+   */
+  @NotNull
+  SocketFrameListenerRegistry clearListeners();
 
-    /**
-     * Get all known listeners to this registry
-     *
-     * @return all known listeners to this registry
-     */
-    @NotNull
-    @UnmodifiableView
-    List<SocketFrameListenerRegistryEntry> getListeners();
+  /**
+   * Get all known listeners to this registry
+   *
+   * @return all known listeners to this registry
+   */
+  @NotNull
+  @UnmodifiableView
+  List<SocketFrameListenerRegistryEntry> getListeners();
 }

@@ -26,25 +26,25 @@ package systems.reformcloud.reformcloud2.executor.api.process;
 
 public enum ProcessState {
 
-    CREATED,
-    PREPARED,
-    STARTED,
-    READY,
-    FULL,
-    INVISIBLE,
-    RESTARTING,
-    PAUSED,
-    STOPPED;
+  CREATED,
+  PREPARED,
+  STARTED,
+  READY,
+  FULL,
+  INVISIBLE,
+  RESTARTING,
+  PAUSED,
+  STOPPED;
 
-    public boolean isStartedOrOnline() {
-        return this == STARTED || this.isOnline();
-    }
+  public boolean isStartedOrOnline() {
+    return this == STARTED || this.isOnline();
+  }
 
-    public boolean isOnline() {
-        return this == READY || this == FULL || this == INVISIBLE;
-    }
+  public boolean isOnline() {
+    return this == READY || this == FULL || this == INVISIBLE;
+  }
 
-    public boolean isRuntimeState() {
-        return this == STARTED || this == RESTARTING || this == PAUSED || this == STOPPED;
-    }
+  public boolean isRuntimeState() {
+    return this == STARTED || this == RESTARTING || this == PAUSED || this == STOPPED;
+  }
 }

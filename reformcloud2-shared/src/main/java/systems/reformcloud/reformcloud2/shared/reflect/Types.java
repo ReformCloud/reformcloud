@@ -34,106 +34,106 @@ import java.lang.reflect.WildcardType;
 
 public final class Types {
 
-    private static final Type[] EMPTY_TYPE_ARRAY = new Type[0];
+  private static final Type[] EMPTY_TYPE_ARRAY = new Type[0];
 
-    private Types() {
-        throw new UnsupportedOperationException();
+  private Types() {
+    throw new UnsupportedOperationException();
+  }
+
+  public static Type fromClass(@NotNull Class<?> clazz) {
+    final Type superclass = clazz.getGenericSuperclass();
+    if (!(superclass instanceof Class)) {
+      return fromActualTypeArgument(((ParameterizedType) superclass).getActualTypeArguments()[0]);
+    } else {
+      throw new IllegalStateException("Missing type parameter");
+    }
+  }
+
+  private static Type fromActualTypeArgument(@NotNull Type type) {
+    if (type instanceof Class) {
+      final Class<?> clazz = (Class<?>) type;
+      return clazz.isArray() ? new GenericArrayTypeImplementation(fromActualTypeArgument(clazz.getComponentType())) : clazz;
+    } else if (type instanceof WildcardType) {
+      final WildcardType wildcardType = (WildcardType) type;
+      return new WildcardTypeImplementation(wildcardType.getUpperBounds(), wildcardType.getLowerBounds());
+    } else if (type instanceof GenericArrayType) {
+      return new GenericArrayTypeImplementation(((GenericArrayType) type).getGenericComponentType());
+    } else if (type instanceof ParameterizedType) {
+      final ParameterizedType parameterizedType = (ParameterizedType) type;
+      return new ParameterizedTypeImplementation(parameterizedType.getActualTypeArguments(), parameterizedType.getRawType(), parameterizedType.getOwnerType());
+    } else {
+      return type;
+    }
+  }
+
+  private static final class GenericArrayTypeImplementation implements GenericArrayType, Serializable {
+    private static final long serialVersionUID = 0;
+    private final Type genericComponentType;
+
+    private GenericArrayTypeImplementation(Type genericComponentType) {
+      this.genericComponentType = genericComponentType;
     }
 
-    public static Type fromClass(@NotNull Class<?> clazz) {
-        final Type superclass = clazz.getGenericSuperclass();
-        if (!(superclass instanceof Class)) {
-            return fromActualTypeArgument(((ParameterizedType) superclass).getActualTypeArguments()[0]);
-        } else {
-            throw new IllegalStateException("Missing type parameter");
-        }
+    @Override
+    public Type getGenericComponentType() {
+      return this.genericComponentType;
+    }
+  }
+
+  private static final class WildcardTypeImplementation implements WildcardType, Serializable {
+    private static final long serialVersionUID = 0;
+    private final Type[] upperBounds;
+    private final Type[] lowerBounds;
+
+    private WildcardTypeImplementation(Type[] upperBounds, Type[] lowerBounds) {
+      if (lowerBounds.length == 1) {
+        this.upperBounds = new Type[]{Object.class};
+        this.lowerBounds = new Type[]{fromActualTypeArgument(lowerBounds[0])};
+      } else {
+        this.upperBounds = new Type[]{fromActualTypeArgument(upperBounds[0])};
+        this.lowerBounds = EMPTY_TYPE_ARRAY;
+      }
     }
 
-    private static Type fromActualTypeArgument(@NotNull Type type) {
-        if (type instanceof Class) {
-            final Class<?> clazz = (Class<?>) type;
-            return clazz.isArray() ? new GenericArrayTypeImplementation(fromActualTypeArgument(clazz.getComponentType())) : clazz;
-        } else if (type instanceof WildcardType) {
-            final WildcardType wildcardType = (WildcardType) type;
-            return new WildcardTypeImplementation(wildcardType.getUpperBounds(), wildcardType.getLowerBounds());
-        } else if (type instanceof GenericArrayType) {
-            return new GenericArrayTypeImplementation(((GenericArrayType) type).getGenericComponentType());
-        } else if (type instanceof ParameterizedType) {
-            final ParameterizedType parameterizedType = (ParameterizedType) type;
-            return new ParameterizedTypeImplementation(parameterizedType.getActualTypeArguments(), parameterizedType.getRawType(), parameterizedType.getOwnerType());
-        } else {
-            return type;
-        }
+    @Override
+    public Type[] getUpperBounds() {
+      return this.upperBounds;
     }
 
-    private static final class GenericArrayTypeImplementation implements GenericArrayType, Serializable {
-        private static final long serialVersionUID = 0;
-        private final Type genericComponentType;
+    @Override
+    public Type[] getLowerBounds() {
+      return this.lowerBounds;
+    }
+  }
 
-        private GenericArrayTypeImplementation(Type genericComponentType) {
-            this.genericComponentType = genericComponentType;
-        }
+  private static final class ParameterizedTypeImplementation implements ParameterizedType, Serializable {
+    private final Type[] typeArguments;
+    private final Type rawType;
+    private final Type ownerType;
 
-        @Override
-        public Type getGenericComponentType() {
-            return this.genericComponentType;
-        }
+    public ParameterizedTypeImplementation(Type[] typeArguments, Type rawType, Type ownerType) {
+      this.rawType = fromActualTypeArgument(rawType);
+      this.ownerType = ownerType == null ? null : fromActualTypeArgument(ownerType);
+
+      this.typeArguments = new Type[typeArguments.length];
+      for (int i = 0; i < typeArguments.length; i++) {
+        this.typeArguments[i] = fromActualTypeArgument(typeArguments[i]);
+      }
     }
 
-    private static final class WildcardTypeImplementation implements WildcardType, Serializable {
-        private static final long serialVersionUID = 0;
-        private final Type[] upperBounds;
-        private final Type[] lowerBounds;
-
-        private WildcardTypeImplementation(Type[] upperBounds, Type[] lowerBounds) {
-            if (lowerBounds.length == 1) {
-                this.upperBounds = new Type[]{Object.class};
-                this.lowerBounds = new Type[]{fromActualTypeArgument(lowerBounds[0])};
-            } else {
-                this.upperBounds = new Type[]{fromActualTypeArgument(upperBounds[0])};
-                this.lowerBounds = EMPTY_TYPE_ARRAY;
-            }
-        }
-
-        @Override
-        public Type[] getUpperBounds() {
-            return this.upperBounds;
-        }
-
-        @Override
-        public Type[] getLowerBounds() {
-            return this.lowerBounds;
-        }
+    @Override
+    public Type[] getActualTypeArguments() {
+      return this.typeArguments;
     }
 
-    private static final class ParameterizedTypeImplementation implements ParameterizedType, Serializable {
-        private final Type[] typeArguments;
-        private final Type rawType;
-        private final Type ownerType;
-
-        public ParameterizedTypeImplementation(Type[] typeArguments, Type rawType, Type ownerType) {
-            this.rawType = fromActualTypeArgument(rawType);
-            this.ownerType = ownerType == null ? null : fromActualTypeArgument(ownerType);
-
-            this.typeArguments = new Type[typeArguments.length];
-            for (int i = 0; i < typeArguments.length; i++) {
-                this.typeArguments[i] = fromActualTypeArgument(typeArguments[i]);
-            }
-        }
-
-        @Override
-        public Type[] getActualTypeArguments() {
-            return this.typeArguments;
-        }
-
-        @Override
-        public Type getRawType() {
-            return this.rawType;
-        }
-
-        @Override
-        public Type getOwnerType() {
-            return this.ownerType;
-        }
+    @Override
+    public Type getRawType() {
+      return this.rawType;
     }
+
+    @Override
+    public Type getOwnerType() {
+      return this.ownerType;
+    }
+  }
 }

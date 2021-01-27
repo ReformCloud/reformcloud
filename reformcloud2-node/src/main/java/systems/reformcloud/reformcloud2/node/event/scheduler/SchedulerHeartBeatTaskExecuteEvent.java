@@ -29,13 +29,13 @@ import systems.reformcloud.reformcloud2.node.tick.TickedTaskScheduler;
 
 public class SchedulerHeartBeatTaskExecuteEvent extends Event {
 
-    private final TickedTaskScheduler.TickedTaskSchedulerTask<?> task;
+  private final TickedTaskScheduler.TickedTaskSchedulerTask<?> task;
 
-    public SchedulerHeartBeatTaskExecuteEvent(TickedTaskScheduler.TickedTaskSchedulerTask<?> task) {
-        this.task = task;
-    }
+  public SchedulerHeartBeatTaskExecuteEvent(TickedTaskScheduler.TickedTaskSchedulerTask<?> task) {
+    this.task = task;
+  }
 
-    public TickedTaskScheduler.TickedTaskSchedulerTask<?> getTask() {
-        return this.task;
-    }
+  public TickedTaskScheduler.TickedTaskSchedulerTask<?> getTask() {
+    return this.task;
+  }
 }

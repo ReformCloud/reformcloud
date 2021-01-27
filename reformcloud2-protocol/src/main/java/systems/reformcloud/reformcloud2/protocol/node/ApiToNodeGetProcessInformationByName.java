@@ -36,33 +36,33 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodeGetProcessInformationByName extends ProtocolPacket {
 
-    private String name;
+  private String name;
 
-    public ApiToNodeGetProcessInformationByName() {
-    }
+  public ApiToNodeGetProcessInformationByName() {
+  }
 
-    public ApiToNodeGetProcessInformationByName(String name) {
-        this.name = name;
-    }
+  public ApiToNodeGetProcessInformationByName(String name) {
+    this.name = name;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 72;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 72;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ProcessInformation information = ExecutorAPI.getInstance().getProcessProvider().getProcessByName(this.name).map(ProcessWrapper::getProcessInformation).orElse(null);
-        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetProcessInformationResult(information));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ProcessInformation information = ExecutorAPI.getInstance().getProcessProvider().getProcessByName(this.name).map(ProcessWrapper::getProcessInformation).orElse(null);
+    channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetProcessInformationResult(information));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.name);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.name);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.name = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.name = buffer.readString();
+  }
 }

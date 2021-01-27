@@ -37,37 +37,37 @@ import java.util.Collection;
 
 public class ApiToNodeCreateMainGroup extends ProtocolPacket {
 
-    private String name;
-    private Collection<String> subGroups;
+  private String name;
+  private Collection<String> subGroups;
 
-    public ApiToNodeCreateMainGroup() {
-    }
+  public ApiToNodeCreateMainGroup() {
+  }
 
-    public ApiToNodeCreateMainGroup(String name, Collection<String> subGroups) {
-        this.name = name;
-        this.subGroups = subGroups;
-    }
+  public ApiToNodeCreateMainGroup(String name, Collection<String> subGroups) {
+    this.name = name;
+    this.subGroups = subGroups;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 49;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 49;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroupProvider().createMainGroup(this.name).subGroups(this.subGroups).create().getUninterruptedly();
-        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeCreateMainGroupResult(mainGroup));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroupProvider().createMainGroup(this.name).subGroups(this.subGroups).create().getUninterruptedly();
+    channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeCreateMainGroupResult(mainGroup));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.name);
-        buffer.writeStringArray(this.subGroups);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.name);
+    buffer.writeStringArray(this.subGroups);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.name = buffer.readString();
-        this.subGroups = buffer.readStringArray();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.name = buffer.readString();
+    this.subGroups = buffer.readStringArray();
+  }
 }

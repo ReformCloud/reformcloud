@@ -38,33 +38,33 @@ import java.util.Collection;
 
 public class DefaultEmbeddedDatabaseProvider implements DatabaseProvider {
 
-    @NotNull
-    @Override
-    public DatabaseTableWrapper createTable(@NotNull String tableName) {
-        return new DefaultEmbeddedDatabaseTableWrapper(tableName);
-    }
+  @NotNull
+  @Override
+  public DatabaseTableWrapper createTable(@NotNull String tableName) {
+    return new DefaultEmbeddedDatabaseTableWrapper(tableName);
+  }
 
-    @Override
-    public void deleteTable(@NotNull String tableName) {
-        Embedded.getInstance().sendPacket(new ApiToNodeDeleteDatabaseTable(tableName));
-    }
+  @Override
+  public void deleteTable(@NotNull String tableName) {
+    Embedded.getInstance().sendPacket(new ApiToNodeDeleteDatabaseTable(tableName));
+  }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Collection<String> getTableNames() {
-        return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetDatabaseNames())
-            .map(result -> {
-                if (result instanceof ApiToNodeGetDatabaseNamesResult) {
-                    return ((ApiToNodeGetDatabaseNamesResult) result).getNames();
-                }
+  @NotNull
+  @Override
+  public @UnmodifiableView Collection<String> getTableNames() {
+    return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetDatabaseNames())
+      .map(result -> {
+        if (result instanceof ApiToNodeGetDatabaseNamesResult) {
+          return ((ApiToNodeGetDatabaseNamesResult) result).getNames();
+        }
 
-                return new ArrayList<String>();
-            }).orElseGet(ArrayList::new);
-    }
+        return new ArrayList<String>();
+      }).orElseGet(ArrayList::new);
+  }
 
-    @NotNull
-    @Override
-    public DatabaseTableWrapper getDatabase(@NotNull String tableName) {
-        return new DefaultEmbeddedDatabaseTableWrapper(tableName);
-    }
+  @NotNull
+  @Override
+  public DatabaseTableWrapper getDatabase(@NotNull String tableName) {
+    return new DefaultEmbeddedDatabaseTableWrapper(tableName);
+  }
 }

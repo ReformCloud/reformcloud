@@ -32,15 +32,15 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.AvailableSince("2.11.0-SNAPSHOT-SNAPSHOT")
 public interface Cancelable {
 
-    /**
-     * @return If the current will get cancelled
-     */
-    boolean isCanceled();
+  /**
+   * @return If the current will get cancelled
+   */
+  boolean isCanceled();
 
-    /**
-     * Sets if the event will get cancelled or not
-     *
-     * @param cancel If the event should get cancelled
-     */
-    void setCancelled(boolean cancel);
+  /**
+   * Sets if the event will get cancelled or not
+   *
+   * @param cancel If the event should get cancelled
+   */
+  void setCancelled(boolean cancel);
 }

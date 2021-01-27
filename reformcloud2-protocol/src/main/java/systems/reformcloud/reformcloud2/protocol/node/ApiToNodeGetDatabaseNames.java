@@ -36,22 +36,22 @@ import java.util.Collection;
 
 public class ApiToNodeGetDatabaseNames extends ProtocolPacket {
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 2;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 2;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        Collection<String> tableNames = ExecutorAPI.getInstance().getDatabaseProvider().getTableNames();
-        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetDatabaseNamesResult(tableNames));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    Collection<String> tableNames = ExecutorAPI.getInstance().getDatabaseProvider().getTableNames();
+    channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetDatabaseNamesResult(tableNames));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+  }
 }

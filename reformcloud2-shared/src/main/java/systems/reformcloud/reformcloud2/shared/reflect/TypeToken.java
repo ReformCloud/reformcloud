@@ -31,26 +31,26 @@ import java.lang.reflect.Type;
 @SuppressWarnings("unused")
 public class TypeToken<T> {
 
-    private final Type type;
-    private final int hashCode;
+  private final Type type;
+  private final int hashCode;
 
-    protected TypeToken() {
-        this.type = Types.fromClass(this.getClass());
-        this.hashCode = this.type.hashCode();
-    }
+  protected TypeToken() {
+    this.type = Types.fromClass(this.getClass());
+    this.hashCode = this.type.hashCode();
+  }
 
-    public TypeToken(Type type) {
-        this.type = type;
-        this.hashCode = type.hashCode();
-    }
+  public TypeToken(Type type) {
+    this.type = type;
+    this.hashCode = type.hashCode();
+  }
 
-    @NotNull
-    public Type getType() {
-        return this.type;
-    }
+  @NotNull
+  public Type getType() {
+    return this.type;
+  }
 
-    @Override
-    public int hashCode() {
-        return this.hashCode;
-    }
+  @Override
+  public int hashCode() {
+    return this.hashCode;
+  }
 }

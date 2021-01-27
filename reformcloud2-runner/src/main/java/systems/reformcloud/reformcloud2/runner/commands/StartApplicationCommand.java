@@ -33,15 +33,15 @@ import java.util.Collection;
 
 public final class StartApplicationCommand extends InterpreterCommand {
 
-    private final Runner runner;
+  private final Runner runner;
 
-    public StartApplicationCommand(@NotNull Runner runner) {
-        super("start_application");
-        this.runner = runner;
-    }
+  public StartApplicationCommand(@NotNull Runner runner) {
+    super("start_application");
+    this.runner = runner;
+  }
 
-    @Override
-    public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
-        this.runner.startApplication();
-    }
+  @Override
+  public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
+    this.runner.startApplication();
+  }
 }

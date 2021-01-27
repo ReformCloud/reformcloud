@@ -31,33 +31,33 @@ import systems.reformcloud.reformcloud2.executor.api.configuration.json.Element;
 
 final class ElementMapper {
 
-    private ElementMapper() {
-        throw new UnsupportedOperationException();
-    }
+  private ElementMapper() {
+    throw new UnsupportedOperationException();
+  }
 
-    @NotNull
-    static Element map(@Nullable JsonElement element) {
-        if (element == null || element.isJsonNull()) {
-            return GsonNull.INSTANCE;
-        } else if (element.isJsonArray()) {
-            return new GsonArray(element.getAsJsonArray());
-        } else if (element.isJsonObject()) {
-            return new GsonElement(element.getAsJsonObject());
-        } else if (element.isJsonPrimitive()) {
-            return new GsonPrimitive(element.getAsJsonPrimitive());
-        } else {
-            throw new IllegalStateException("Unsupported json element: " + element);
-        }
+  @NotNull
+  static Element map(@Nullable JsonElement element) {
+    if (element == null || element.isJsonNull()) {
+      return GsonNull.INSTANCE;
+    } else if (element.isJsonArray()) {
+      return new GsonArray(element.getAsJsonArray());
+    } else if (element.isJsonObject()) {
+      return new GsonElement(element.getAsJsonObject());
+    } else if (element.isJsonPrimitive()) {
+      return new GsonPrimitive(element.getAsJsonPrimitive());
+    } else {
+      throw new IllegalStateException("Unsupported json element: " + element);
     }
+  }
 
-    @NotNull
-    static JsonElement map(@Nullable Element element) {
-        if (element instanceof GsonElement) {
-            return ((GsonElement) element).getGsonElement();
-        } else if (element == null) {
-            return GsonNull.INSTANCE.getGsonElement();
-        } else {
-            throw new IllegalStateException("Unable to map non GsonElement to a JsonElement");
-        }
+  @NotNull
+  static JsonElement map(@Nullable Element element) {
+    if (element instanceof GsonElement) {
+      return ((GsonElement) element).getGsonElement();
+    } else if (element == null) {
+      return GsonNull.INSTANCE.getGsonElement();
+    } else {
+      throw new IllegalStateException("Unable to map non GsonElement to a JsonElement");
     }
+  }
 }

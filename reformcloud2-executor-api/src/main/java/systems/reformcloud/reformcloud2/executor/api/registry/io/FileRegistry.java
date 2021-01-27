@@ -38,50 +38,50 @@ import java.util.function.Function;
  */
 public interface FileRegistry {
 
-    /**
-     * Creates a new key in the registry
-     *
-     * @param keyName The name of the key
-     * @param t       The object which should get inserted in a json config
-     * @param <T>     The type of the object
-     * @return The object which should get inserted or the value which is already inserted
-     */
-    @NotNull <T> T createKey(@NotNull String keyName, @NotNull T t);
+  /**
+   * Creates a new key in the registry
+   *
+   * @param keyName The name of the key
+   * @param t       The object which should get inserted in a json config
+   * @param <T>     The type of the object
+   * @return The object which should get inserted or the value which is already inserted
+   */
+  @NotNull <T> T createKey(@NotNull String keyName, @NotNull T t);
 
-    /**
-     * Gets a key from the registry
-     *
-     * @param keyName The name of the key which should get
-     * @param <T>     The type of the object
-     * @return The key in the registry or {@code null}
-     */
-    @NotNull <T> Optional<T> getKey(@NotNull String keyName);
+  /**
+   * Gets a key from the registry
+   *
+   * @param keyName The name of the key which should get
+   * @param <T>     The type of the object
+   * @return The key in the registry or {@code null}
+   */
+  @NotNull <T> Optional<T> getKey(@NotNull String keyName);
 
-    /**
-     * Deletes a key from the registry
-     *
-     * @param key The key which should get deleted
-     */
-    void deleteKey(@NotNull String key);
+  /**
+   * Deletes a key from the registry
+   *
+   * @param key The key which should get deleted
+   */
+  void deleteKey(@NotNull String key);
 
-    /**
-     * Updates a key in the registry
-     *
-     * @param key      The key which should get updates
-     * @param newValue The value which should get updated
-     * @param <T>      The type of the new value
-     */
-    <T> void updateKey(@NotNull String key, @NotNull T newValue);
+  /**
+   * Updates a key in the registry
+   *
+   * @param key      The key which should get updates
+   * @param newValue The value which should get updated
+   * @param <T>      The type of the new value
+   */
+  <T> void updateKey(@NotNull String key, @NotNull T newValue);
 
-    /**
-     * Reads all keys from the registry
-     *
-     * @param mapper         The function which should apply a json config to the object
-     * @param failureHandler The handler which get all paths applied which return {@code null}
-     *                       when applied to the mapper
-     * @param <T>            The type of the object
-     * @return A collection of all objects in the database
-     */
-    @NotNull <T> Collection<T> readKeys(@NotNull Function<JsonConfiguration, T> mapper,
-                                        @NotNull Consumer<Path> failureHandler);
+  /**
+   * Reads all keys from the registry
+   *
+   * @param mapper         The function which should apply a json config to the object
+   * @param failureHandler The handler which get all paths applied which return {@code null}
+   *                       when applied to the mapper
+   * @param <T>            The type of the object
+   * @return A collection of all objects in the database
+   */
+  @NotNull <T> Collection<T> readKeys(@NotNull Function<JsonConfiguration, T> mapper,
+                                      @NotNull Consumer<Path> failureHandler);
 }

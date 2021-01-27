@@ -38,32 +38,32 @@ import java.util.Collection;
 
 public class NodeToNodeSetMainGroups extends ProtocolPacket {
 
-    private Collection<MainGroup> mainGroups;
+  private Collection<MainGroup> mainGroups;
 
-    public NodeToNodeSetMainGroups() {
-    }
+  public NodeToNodeSetMainGroups() {
+  }
 
-    public NodeToNodeSetMainGroups(Collection<MainGroup> mainGroups) {
-        this.mainGroups = mainGroups;
-    }
+  public NodeToNodeSetMainGroups(Collection<MainGroup> mainGroups) {
+    this.mainGroups = mainGroups;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 21;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 21;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleMainGroupSet(this.mainGroups);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleMainGroupSet(this.mainGroups);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObjects(this.mainGroups);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObjects(this.mainGroups);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.mainGroups = buffer.readObjects(MainGroup.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.mainGroups = buffer.readObjects(MainGroup.class);
+  }
 }

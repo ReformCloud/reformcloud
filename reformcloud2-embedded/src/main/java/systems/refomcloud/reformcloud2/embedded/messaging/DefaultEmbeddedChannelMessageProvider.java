@@ -36,23 +36,23 @@ import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeSendGlobalChannel
 
 public class DefaultEmbeddedChannelMessageProvider implements ChannelMessageProvider {
 
-    @Override
-    public void sendChannelMessage(@NotNull ProcessInformation receiver, @NotNull String channel, @NotNull JsonConfiguration data) {
-        Embedded.getInstance().sendPacket(new ApiToNodeSendChannelMessageToProcess(receiver, channel, data));
-    }
+  @Override
+  public void sendChannelMessage(@NotNull ProcessInformation receiver, @NotNull String channel, @NotNull JsonConfiguration data) {
+    Embedded.getInstance().sendPacket(new ApiToNodeSendChannelMessageToProcess(receiver, channel, data));
+  }
 
-    @Override
-    public void sendChannelMessage(@NotNull String processGroup, @NotNull String channel, @NotNull JsonConfiguration data) {
-        Embedded.getInstance().sendPacket(new ApiToNodeSendChannelMessageToProcessGroup(processGroup, channel, data));
-    }
+  @Override
+  public void sendChannelMessage(@NotNull String processGroup, @NotNull String channel, @NotNull JsonConfiguration data) {
+    Embedded.getInstance().sendPacket(new ApiToNodeSendChannelMessageToProcessGroup(processGroup, channel, data));
+  }
 
-    @Override
-    public void publishChannelMessageToAll(@NotNull String node, @NotNull String channel, @NotNull JsonConfiguration data) {
-        Embedded.getInstance().sendPacket(new ApiToNodePublishNodeChannelMessage(node, channel, data));
-    }
+  @Override
+  public void publishChannelMessageToAll(@NotNull String node, @NotNull String channel, @NotNull JsonConfiguration data) {
+    Embedded.getInstance().sendPacket(new ApiToNodePublishNodeChannelMessage(node, channel, data));
+  }
 
-    @Override
-    public void publishChannelMessage(@NotNull String channel, @NotNull JsonConfiguration data) {
-        Embedded.getInstance().sendPacket(new ApiToNodeSendGlobalChannelMessage(channel, data));
-    }
+  @Override
+  public void publishChannelMessage(@NotNull String channel, @NotNull JsonConfiguration data) {
+    Embedded.getInstance().sendPacket(new ApiToNodeSendGlobalChannelMessage(channel, data));
+  }
 }

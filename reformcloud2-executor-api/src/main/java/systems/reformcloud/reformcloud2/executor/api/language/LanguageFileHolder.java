@@ -35,22 +35,22 @@ import java.util.Properties;
 
 public interface LanguageFileHolder extends Nameable {
 
-    @NotNull
-    @Contract("_, _ -> new")
-    static LanguageFileHolder properties(@NotNull String languageCode, @NotNull Properties properties) {
-        return new PropertiesLanguageFileHolder(languageCode, properties);
-    }
+  @NotNull
+  @Contract("_, _ -> new")
+  static LanguageFileHolder properties(@NotNull String languageCode, @NotNull Properties properties) {
+    return new PropertiesLanguageFileHolder(languageCode, properties);
+  }
 
-    @NotNull
-    Optional<String> getTranslation(@NotNull String key);
+  @NotNull
+  Optional<String> getTranslation(@NotNull String key);
 
-    @NotNull
-    LanguageFileHolder registerTranslation(@NotNull String key, @NotNull String translation);
+  @NotNull
+  LanguageFileHolder registerTranslation(@NotNull String key, @NotNull String translation);
 
-    @NotNull
-    LanguageFileHolder unregisterTranslation(@NotNull String key, @NotNull String translation);
+  @NotNull
+  LanguageFileHolder unregisterTranslation(@NotNull String key, @NotNull String translation);
 
-    @NotNull
-    @Unmodifiable
-    Map<String, String> getTranslations();
+  @NotNull
+  @Unmodifiable
+  Map<String, String> getTranslations();
 }

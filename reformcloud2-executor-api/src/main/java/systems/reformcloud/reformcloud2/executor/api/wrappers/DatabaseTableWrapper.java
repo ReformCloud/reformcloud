@@ -34,81 +34,81 @@ import java.util.Optional;
 
 public interface DatabaseTableWrapper {
 
-    void insert(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration data);
+  void insert(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration data);
 
-    void update(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration newData);
+  void update(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration newData);
 
-    void remove(@NotNull String key, @NotNull String id);
+  void remove(@NotNull String key, @NotNull String id);
 
-    @NotNull
-    Optional<JsonConfiguration> get(@NotNull String key, @NotNull String id);
+  @NotNull
+  Optional<JsonConfiguration> get(@NotNull String key, @NotNull String id);
 
-    @NotNull
-    @UnmodifiableView Collection<String> getEntryNames();
+  @NotNull
+  @UnmodifiableView Collection<String> getEntryNames();
 
-    long count();
+  long count();
 
-    void clear();
+  void clear();
 
-    @NotNull
-    @UnmodifiableView Collection<JsonConfiguration> getAll();
+  @NotNull
+  @UnmodifiableView Collection<JsonConfiguration> getAll();
 
-    boolean has(@NotNull String key);
+  boolean has(@NotNull String key);
 
-    @NotNull
-    default Task<Void> insertAsync(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration data) {
-        return Task.supply(() -> {
-            this.insert(key, id, data);
-            return null;
-        });
-    }
+  @NotNull
+  default Task<Void> insertAsync(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration data) {
+    return Task.supply(() -> {
+      this.insert(key, id, data);
+      return null;
+    });
+  }
 
-    @NotNull
-    default Task<Void> updateAsync(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration newData) {
-        return Task.supply(() -> {
-            this.update(key, id, newData);
-            return null;
-        });
-    }
+  @NotNull
+  default Task<Void> updateAsync(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration newData) {
+    return Task.supply(() -> {
+      this.update(key, id, newData);
+      return null;
+    });
+  }
 
-    @NotNull
-    default Task<Void> removeAsync(@NotNull String key, @NotNull String id) {
-        return Task.supply(() -> {
-            this.remove(key, id);
-            return null;
-        });
-    }
+  @NotNull
+  default Task<Void> removeAsync(@NotNull String key, @NotNull String id) {
+    return Task.supply(() -> {
+      this.remove(key, id);
+      return null;
+    });
+  }
 
-    @NotNull
-    default Task<Optional<JsonConfiguration>> getAsync(@NotNull String key, @NotNull String id) {
-        return Task.supply(() -> this.get(key, id));
-    }
+  @NotNull
+  default Task<Optional<JsonConfiguration>> getAsync(@NotNull String key, @NotNull String id) {
+    return Task.supply(() -> this.get(key, id));
+  }
 
-    @NotNull
-    default Task<Collection<String>> getEntryNamesAsync() {
-        return Task.supply(this::getEntryNames);
-    }
+  @NotNull
+  default Task<Collection<String>> getEntryNamesAsync() {
+    return Task.supply(this::getEntryNames);
+  }
 
-    @NotNull
-    default Task<Long> countAsync() {
-        return Task.supply(this::count);
-    }
+  @NotNull
+  default Task<Long> countAsync() {
+    return Task.supply(this::count);
+  }
 
-    @NotNull
-    default Task<Void> clearAsync() {
-        return Task.supply(() -> {
-            this.clear();
-            return null;
-        });
-    }
+  @NotNull
+  default Task<Void> clearAsync() {
+    return Task.supply(() -> {
+      this.clear();
+      return null;
+    });
+  }
 
-    @NotNull
-    default Task<Collection<JsonConfiguration>> getAllAsync() {
-        return Task.supply(this::getAll);
-    }
+  @NotNull
+  default Task<Collection<JsonConfiguration>> getAllAsync() {
+    return Task.supply(this::getAll);
+  }
 
-    @NotNull
-    default Task<Boolean> hasAsync(@NotNull String key) {
-        return Task.supply(() -> this.has(key));
-    }
+  @NotNull
+  default Task<Boolean> hasAsync(@NotNull String key) {
+    return Task.supply(() -> this.has(key));
+  }
 }

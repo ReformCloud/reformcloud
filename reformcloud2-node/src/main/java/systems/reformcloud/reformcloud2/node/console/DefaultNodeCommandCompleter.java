@@ -39,31 +39,31 @@ import java.util.stream.Collectors;
 
 public class DefaultNodeCommandCompleter implements Completer {
 
-    @Override
-    public void complete(LineReader lineReader, ParsedLine parsedLine, List<Candidate> list) {
-        CommandManager commandManager = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class);
-        String buffer = parsedLine.line();
+  @Override
+  public void complete(LineReader lineReader, ParsedLine parsedLine, List<Candidate> list) {
+    CommandManager commandManager = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class);
+    String buffer = parsedLine.line();
 
-        if (buffer.lastIndexOf(' ') == -1) {
-            list.addAll(commandManager.getCommands()
-                .stream()
-                .map(CommandContainer::getAliases)
-                .flatMap(Collection::stream)
-                .filter(candidate -> buffer.isEmpty() || candidate.startsWith(buffer))
-                .sorted()
-                .map(Candidate::new)
-                .collect(Collectors.toList()));
-            return;
-        }
-
-        String[] split = buffer.split(" ");
-        String beginTypeArgument = split.length <= 1 || buffer.endsWith(" ") ? null : split[split.length - 1].toLowerCase().trim();
-
-        list.addAll(commandManager.suggest(buffer, ConsoleCommandSender.INSTANCE)
-            .stream()
-            .filter(candidate -> beginTypeArgument == null || candidate.toLowerCase().startsWith(beginTypeArgument))
-            .sorted()
-            .map(Candidate::new)
-            .collect(Collectors.toList()));
+    if (buffer.lastIndexOf(' ') == -1) {
+      list.addAll(commandManager.getCommands()
+        .stream()
+        .map(CommandContainer::getAliases)
+        .flatMap(Collection::stream)
+        .filter(candidate -> buffer.isEmpty() || candidate.startsWith(buffer))
+        .sorted()
+        .map(Candidate::new)
+        .collect(Collectors.toList()));
+      return;
     }
+
+    String[] split = buffer.split(" ");
+    String beginTypeArgument = split.length <= 1 || buffer.endsWith(" ") ? null : split[split.length - 1].toLowerCase().trim();
+
+    list.addAll(commandManager.suggest(buffer, ConsoleCommandSender.INSTANCE)
+      .stream()
+      .filter(candidate -> beginTypeArgument == null || candidate.toLowerCase().startsWith(beginTypeArgument))
+      .sorted()
+      .map(Candidate::new)
+      .collect(Collectors.toList()));
+  }
 }

@@ -38,33 +38,33 @@ import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroup;
 
 public class NodeToApiProcessGroupDelete extends ProtocolPacket {
 
-    private ProcessGroup processGroup;
+  private ProcessGroup processGroup;
 
-    public NodeToApiProcessGroupDelete() {
-    }
+  public NodeToApiProcessGroupDelete() {
+  }
 
-    public NodeToApiProcessGroupDelete(ProcessGroup processGroup) {
-        this.processGroup = processGroup;
-    }
+  public NodeToApiProcessGroupDelete(ProcessGroup processGroup) {
+    this.processGroup = processGroup;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.API_BUS + 6;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.API_BUS + 6;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class)
-            .callEvent(new ProcessGroupDeleteEvent(this.processGroup));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class)
+      .callEvent(new ProcessGroupDeleteEvent(this.processGroup));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.processGroup);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.processGroup);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.processGroup = buffer.readObject(DefaultProcessGroup.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.processGroup = buffer.readObject(DefaultProcessGroup.class);
+  }
 }

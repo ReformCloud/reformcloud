@@ -33,31 +33,31 @@ import java.util.Collection;
 
 public class ApiToNodeGetDatabaseNamesResult extends QueryResultPacket {
 
-    private Collection<String> names;
+  private Collection<String> names;
 
-    public ApiToNodeGetDatabaseNamesResult() {
-    }
+  public ApiToNodeGetDatabaseNamesResult() {
+  }
 
-    public ApiToNodeGetDatabaseNamesResult(Collection<String> names) {
-        this.names = names;
-    }
+  public ApiToNodeGetDatabaseNamesResult(Collection<String> names) {
+    this.names = names;
+  }
 
-    public Collection<String> getNames() {
-        return this.names;
-    }
+  public Collection<String> getNames() {
+    return this.names;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 3;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 3;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeStringArray(this.names);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeStringArray(this.names);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.names = buffer.readStringArray();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.names = buffer.readStringArray();
+  }
 }

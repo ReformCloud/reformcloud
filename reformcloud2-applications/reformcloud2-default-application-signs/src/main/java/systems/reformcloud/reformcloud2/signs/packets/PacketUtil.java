@@ -26,9 +26,9 @@ package systems.reformcloud.reformcloud2.signs.packets;
 
 public final class PacketUtil {
 
-    public static final int SIGN_BUS = 7000;
+  public static final int SIGN_BUS = 7000;
 
-    private PacketUtil() {
-        throw new UnsupportedOperationException();
-    }
+  private PacketUtil() {
+    throw new UnsupportedOperationException();
+  }
 }

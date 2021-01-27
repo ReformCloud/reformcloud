@@ -33,7 +33,7 @@ import java.util.function.Supplier;
 
 public interface NetworkClient extends NetworkChannel {
 
-    boolean connect(@NotNull String host, int port, @NotNull Supplier<ChannelListener> channelListenerFactory);
+  boolean connect(@NotNull String host, int port, @NotNull Supplier<ChannelListener> channelListenerFactory);
 
-    boolean connect(@NotNull NetworkAddress address, @NotNull Supplier<ChannelListener> channelListenerFactory);
+  boolean connect(@NotNull NetworkAddress address, @NotNull Supplier<ChannelListener> channelListenerFactory);
 }

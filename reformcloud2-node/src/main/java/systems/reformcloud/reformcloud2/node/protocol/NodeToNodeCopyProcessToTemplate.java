@@ -36,46 +36,46 @@ import java.util.UUID;
 
 public class NodeToNodeCopyProcessToTemplate extends ProtocolPacket {
 
-    private UUID uniqueId;
-    private String group;
-    private String name;
-    private String backend;
+  private UUID uniqueId;
+  private String group;
+  private String name;
+  private String backend;
 
-    public NodeToNodeCopyProcessToTemplate() {
-    }
+  public NodeToNodeCopyProcessToTemplate() {
+  }
 
-    public NodeToNodeCopyProcessToTemplate(UUID uniqueId, String group, String name, String backend) {
-        this.uniqueId = uniqueId;
-        this.group = group;
-        this.name = name;
-        this.backend = backend;
-    }
+  public NodeToNodeCopyProcessToTemplate(UUID uniqueId, String group, String name, String backend) {
+    this.uniqueId = uniqueId;
+    this.group = group;
+    this.name = name;
+    this.backend = backend;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 26;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 26;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getProcessProvider()
-            .getProcessByUniqueId(this.uniqueId)
-            .ifPresent(process -> process.copy(this.group, this.name, this.backend));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getProcessProvider()
+      .getProcessByUniqueId(this.uniqueId)
+      .ifPresent(process -> process.copy(this.group, this.name, this.backend));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.uniqueId);
-        buffer.writeString(this.group);
-        buffer.writeString(this.name);
-        buffer.writeString(this.backend);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.uniqueId);
+    buffer.writeString(this.group);
+    buffer.writeString(this.name);
+    buffer.writeString(this.backend);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.uniqueId = buffer.readUniqueId();
-        this.group = buffer.readString();
-        this.name = buffer.readString();
-        this.backend = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.uniqueId = buffer.readUniqueId();
+    this.group = buffer.readString();
+    this.name = buffer.readString();
+    this.backend = buffer.readString();
+  }
 }

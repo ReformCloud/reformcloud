@@ -33,31 +33,31 @@ import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroup;
 
 public class ApiToNodeCreateProcessGroupResult extends QueryResultPacket {
 
-    private ProcessGroup processGroup;
+  private ProcessGroup processGroup;
 
-    public ApiToNodeCreateProcessGroupResult() {
-    }
+  public ApiToNodeCreateProcessGroupResult() {
+  }
 
-    public ApiToNodeCreateProcessGroupResult(ProcessGroup processGroup) {
-        this.processGroup = processGroup;
-    }
+  public ApiToNodeCreateProcessGroupResult(ProcessGroup processGroup) {
+    this.processGroup = processGroup;
+  }
 
-    public ProcessGroup getProcessGroup() {
-        return this.processGroup;
-    }
+  public ProcessGroup getProcessGroup() {
+    return this.processGroup;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 60;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 60;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.processGroup);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.processGroup);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.processGroup = buffer.readObject(DefaultProcessGroup.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.processGroup = buffer.readObject(DefaultProcessGroup.class);
+  }
 }

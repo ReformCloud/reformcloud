@@ -37,37 +37,37 @@ import java.util.Optional;
 
 public class ApiToNodeGetMainGroup extends ProtocolPacket {
 
-    private String name;
+  private String name;
 
-    public ApiToNodeGetMainGroup() {
-    }
+  public ApiToNodeGetMainGroup() {
+  }
 
-    public ApiToNodeGetMainGroup(String name) {
-        this.name = name;
-    }
+  public ApiToNodeGetMainGroup(String name) {
+    this.name = name;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 52;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 52;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        Optional<MainGroup> mainGroup = ExecutorAPI.getInstance().getMainGroupProvider().getMainGroup(this.name);
-        if (mainGroup.isPresent()) {
-            channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetMainGroupResult(mainGroup.get()));
-        } else {
-            channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetMainGroupResult());
-        }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    Optional<MainGroup> mainGroup = ExecutorAPI.getInstance().getMainGroupProvider().getMainGroup(this.name);
+    if (mainGroup.isPresent()) {
+      channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetMainGroupResult(mainGroup.get()));
+    } else {
+      channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetMainGroupResult());
     }
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.name);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.name);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.name = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.name = buffer.readString();
+  }
 }

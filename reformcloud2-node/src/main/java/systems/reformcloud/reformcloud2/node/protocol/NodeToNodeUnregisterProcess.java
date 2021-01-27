@@ -35,32 +35,32 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class NodeToNodeUnregisterProcess extends ProtocolPacket {
 
-    private String name;
+  private String name;
 
-    public NodeToNodeUnregisterProcess() {
-    }
+  public NodeToNodeUnregisterProcess() {
+  }
 
-    public NodeToNodeUnregisterProcess(String name) {
-        this.name = name;
-    }
+  public NodeToNodeUnregisterProcess(String name) {
+    this.name = name;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 11;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 11;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleProcessUnregister(this.name);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleProcessUnregister(this.name);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.name);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.name);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.name = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.name = buffer.readString();
+  }
 }

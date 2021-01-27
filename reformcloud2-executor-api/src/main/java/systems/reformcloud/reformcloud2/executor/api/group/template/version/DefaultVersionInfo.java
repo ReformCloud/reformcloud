@@ -29,81 +29,81 @@ import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer
 
 public final class DefaultVersionInfo implements VersionInfo {
 
-    private int major;
-    private int minor;
-    private int patch;
+  private int major;
+  private int minor;
+  private int patch;
 
-    DefaultVersionInfo() {
-    }
+  DefaultVersionInfo() {
+  }
 
-    DefaultVersionInfo(int major, int minor, int patch) {
-        this.major = major;
-        this.minor = minor;
-        this.patch = patch;
-    }
+  DefaultVersionInfo(int major, int minor, int patch) {
+    this.major = major;
+    this.minor = minor;
+    this.patch = patch;
+  }
 
-    @Override
-    public int getMajor() {
-        return this.major;
-    }
+  @Override
+  public int getMajor() {
+    return this.major;
+  }
 
-    @Override
-    public int getMinor() {
-        return this.minor;
-    }
+  @Override
+  public int getMinor() {
+    return this.minor;
+  }
 
-    @Override
-    public int getPatch() {
-        return this.patch;
-    }
+  @Override
+  public int getPatch() {
+    return this.patch;
+  }
 
-    @Override
-    public @NotNull VersionInfo clone() {
-        return VersionInfo.info(this.major, this.minor, this.patch);
-    }
+  @Override
+  public @NotNull VersionInfo clone() {
+    return VersionInfo.info(this.major, this.minor, this.patch);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeInt(this.major);
-        buffer.writeInt(this.minor);
-        buffer.writeInt(this.patch);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeInt(this.major);
+    buffer.writeInt(this.minor);
+    buffer.writeInt(this.patch);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.major = buffer.readInt();
-        this.minor = buffer.readInt();
-        this.patch = buffer.readInt();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.major = buffer.readInt();
+    this.minor = buffer.readInt();
+    this.patch = buffer.readInt();
+  }
 
-    @Override
-    public @NotNull String toString() {
-        return this.major + "." + this.minor + "." + this.patch;
-    }
+  @Override
+  public @NotNull String toString() {
+    return this.major + "." + this.minor + "." + this.patch;
+  }
 
-    @Override
-    public int compareTo(@NotNull VersionInfo info) {
-        return this.compareTo(info.getMajor(), info.getMinor(), info.getPatch());
-    }
+  @Override
+  public int compareTo(@NotNull VersionInfo info) {
+    return this.compareTo(info.getMajor(), info.getMinor(), info.getPatch());
+  }
 
-    @Override
-    public int compareTo(@NotNull Integer major, @NotNull Integer minor, @NotNull Integer patch) {
-        if (major > minor) {
-            if (major.equals(patch)) {
-                return 0;
-            } else if (major > patch) {
-                return 1;
-            } else {
-                return -1;
-            }
-        } else {
-            if (major.equals(minor)) {
-                return 0;
-            } else if (minor > patch) {
-                return -1;
-            } else {
-                return 1;
-            }
-        }
+  @Override
+  public int compareTo(@NotNull Integer major, @NotNull Integer minor, @NotNull Integer patch) {
+    if (major > minor) {
+      if (major.equals(patch)) {
+        return 0;
+      } else if (major > patch) {
+        return 1;
+      } else {
+        return -1;
+      }
+    } else {
+      if (major.equals(minor)) {
+        return 0;
+      } else if (minor > patch) {
+        return -1;
+      } else {
+        return 1;
+      }
     }
+  }
 }

@@ -32,80 +32,80 @@ import java.util.Optional;
 
 public abstract class DefaultJsonDataHolder<T extends JsonDataHolder<T>> implements JsonDataHolder<T> {
 
-    protected JsonConfiguration dataHolder;
+  protected JsonConfiguration dataHolder;
 
-    protected DefaultJsonDataHolder() {
-        this(JsonConfiguration.newJsonConfiguration());
+  protected DefaultJsonDataHolder() {
+    this(JsonConfiguration.newJsonConfiguration());
+  }
+
+  protected DefaultJsonDataHolder(JsonConfiguration dataHolder) {
+    this.dataHolder = dataHolder;
+  }
+
+  @Override
+  public @NotNull <V> Optional<V> get(@NotNull String key, @NotNull Class<V> type) {
+    return Optional.ofNullable(this.dataHolder.get(key, type));
+  }
+
+  @Override
+  public @NotNull <V> T add(@NotNull String key, @NotNull V value) {
+    if (!this.has(key)) {
+      this.dataHolder.add(key, value);
     }
+    return this.self();
+  }
 
-    protected DefaultJsonDataHolder(JsonConfiguration dataHolder) {
-        this.dataHolder = dataHolder;
+  @Override
+  public @NotNull <V> T set(@NotNull String key, @NotNull V value) {
+    this.dataHolder.add(key, value);
+    return this.self();
+  }
+
+  @Override
+  public @NotNull T remove(@NotNull String key) {
+    this.dataHolder.remove(key);
+    return this.self();
+  }
+
+  @Override
+  public boolean has(@NotNull String key) {
+    return this.dataHolder.has(key);
+  }
+
+  @Override
+  public @NotNull JsonConfiguration getData() {
+    return this.dataHolder;
+  }
+
+  @Override
+  public void setData(@NotNull JsonConfiguration data) {
+    this.dataHolder = data;
+  }
+
+  @Override
+  public void clearData() {
+    this.dataHolder.clear();
+  }
+
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.dataHolder.toPrettyString());
+  }
+
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    final String json = buffer.readString();
+    if (json == null) {
+      this.dataHolder = JsonConfiguration.newJsonConfiguration();
+    } else {
+      this.dataHolder = JsonConfiguration.newJsonConfiguration(json);
     }
+  }
 
-    @Override
-    public @NotNull <V> Optional<V> get(@NotNull String key, @NotNull Class<V> type) {
-        return Optional.ofNullable(this.dataHolder.get(key, type));
-    }
+  @NotNull
+  public abstract T self();
 
-    @Override
-    public @NotNull <V> T add(@NotNull String key, @NotNull V value) {
-        if (!this.has(key)) {
-            this.dataHolder.add(key, value);
-        }
-        return this.self();
-    }
-
-    @Override
-    public @NotNull <V> T set(@NotNull String key, @NotNull V value) {
-        this.dataHolder.add(key, value);
-        return this.self();
-    }
-
-    @Override
-    public @NotNull T remove(@NotNull String key) {
-        this.dataHolder.remove(key);
-        return this.self();
-    }
-
-    @Override
-    public boolean has(@NotNull String key) {
-        return this.dataHolder.has(key);
-    }
-
-    @Override
-    public @NotNull JsonConfiguration getData() {
-        return this.dataHolder;
-    }
-
-    @Override
-    public void setData(@NotNull JsonConfiguration data) {
-        this.dataHolder = data;
-    }
-
-    @Override
-    public void clearData() {
-        this.dataHolder.clear();
-    }
-
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.dataHolder.toPrettyString());
-    }
-
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        final String json = buffer.readString();
-        if (json == null) {
-            this.dataHolder = JsonConfiguration.newJsonConfiguration();
-        } else {
-            this.dataHolder = JsonConfiguration.newJsonConfiguration(json);
-        }
-    }
-
-    @NotNull
-    public abstract T self();
-
-    @NotNull
-    @Override
-    public abstract T clone();
+  @NotNull
+  @Override
+  public abstract T clone();
 }

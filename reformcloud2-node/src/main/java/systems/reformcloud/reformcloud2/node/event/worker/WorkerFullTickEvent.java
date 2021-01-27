@@ -28,8 +28,8 @@ import systems.reformcloud.reformcloud2.executor.api.event.Event;
 
 public final class WorkerFullTickEvent extends Event {
 
-    public static final WorkerFullTickEvent INSTANCE = new WorkerFullTickEvent();
+  public static final WorkerFullTickEvent INSTANCE = new WorkerFullTickEvent();
 
-    private WorkerFullTickEvent() {
-    }
+  private WorkerFullTickEvent() {
+  }
 }

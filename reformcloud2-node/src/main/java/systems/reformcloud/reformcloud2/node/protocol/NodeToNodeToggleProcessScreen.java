@@ -37,39 +37,39 @@ import java.util.UUID;
 
 public class NodeToNodeToggleProcessScreen extends ProtocolPacket {
 
-    private UUID processUniqueId;
+  private UUID processUniqueId;
 
-    public NodeToNodeToggleProcessScreen() {
-    }
+  public NodeToNodeToggleProcessScreen() {
+  }
 
-    public NodeToNodeToggleProcessScreen(UUID processUniqueId) {
-        this.processUniqueId = processUniqueId;
-    }
+  public NodeToNodeToggleProcessScreen(UUID processUniqueId) {
+    this.processUniqueId = processUniqueId;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 40;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 40;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ProcessScreenController controller = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProcessScreenController.class);
-        controller.getScreen(this.processUniqueId).ifPresent(screen -> {
-            if (screen.getListeningNodes().contains(channel.getName())) {
-                screen.removeListeningNode(channel.getName());
-            } else {
-                screen.addListeningNode(channel.getName());
-            }
-        });
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ProcessScreenController controller = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProcessScreenController.class);
+    controller.getScreen(this.processUniqueId).ifPresent(screen -> {
+      if (screen.getListeningNodes().contains(channel.getName())) {
+        screen.removeListeningNode(channel.getName());
+      } else {
+        screen.addListeningNode(channel.getName());
+      }
+    });
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.processUniqueId);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.processUniqueId);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.processUniqueId = buffer.readUniqueId();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.processUniqueId = buffer.readUniqueId();
+  }
 }

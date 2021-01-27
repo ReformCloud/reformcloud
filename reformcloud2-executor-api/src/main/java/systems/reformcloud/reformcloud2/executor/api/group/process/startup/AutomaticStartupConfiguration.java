@@ -33,55 +33,55 @@ import java.util.concurrent.TimeUnit;
 
 public interface AutomaticStartupConfiguration extends SerializableObject, Cloneable {
 
-    @NotNull
-    @Contract(pure = true)
-    static AutomaticStartupConfiguration enabled() {
-        return new DefaultAutomaticStartupConfiguration(true, true);
-    }
+  @NotNull
+  @Contract(pure = true)
+  static AutomaticStartupConfiguration enabled() {
+    return new DefaultAutomaticStartupConfiguration(true, true);
+  }
 
-    @NotNull
-    @Contract(pure = true)
-    static AutomaticStartupConfiguration disabled() {
-        return new DefaultAutomaticStartupConfiguration(false, false);
-    }
+  @NotNull
+  @Contract(pure = true)
+  static AutomaticStartupConfiguration disabled() {
+    return new DefaultAutomaticStartupConfiguration(false, false);
+  }
 
-    @NotNull
-    @Contract(pure = true)
-    static AutomaticStartupConfiguration onlyAutomaticStartup() {
-        return new DefaultAutomaticStartupConfiguration(true, false);
-    }
+  @NotNull
+  @Contract(pure = true)
+  static AutomaticStartupConfiguration onlyAutomaticStartup() {
+    return new DefaultAutomaticStartupConfiguration(true, false);
+  }
 
-    @NotNull
-    @Contract(pure = true)
-    static AutomaticStartupConfiguration onlyAutomaticShutdown() {
-        return new DefaultAutomaticStartupConfiguration(false, true);
-    }
+  @NotNull
+  @Contract(pure = true)
+  static AutomaticStartupConfiguration onlyAutomaticShutdown() {
+    return new DefaultAutomaticStartupConfiguration(false, true);
+  }
 
-    boolean isAutomaticStartupEnabled();
+  boolean isAutomaticStartupEnabled();
 
-    void setAutomaticStartupEnabled(boolean automaticStartupEnabled);
+  void setAutomaticStartupEnabled(boolean automaticStartupEnabled);
 
-    boolean isAutomaticShutdownEnabled();
+  boolean isAutomaticShutdownEnabled();
 
-    void setAutomaticShutdownEnabled(boolean automaticShutdownEnabled);
+  void setAutomaticShutdownEnabled(boolean automaticShutdownEnabled);
 
-    @Range(from = 0, to = 100)
-    int getMaxPercentOfPlayersToStart();
+  @Range(from = 0, to = 100)
+  int getMaxPercentOfPlayersToStart();
 
-    void setMaxPercentOfPlayersToStart(@Range(from = 0, to = 100) int maxPercentOfPlayersToStart);
+  void setMaxPercentOfPlayersToStart(@Range(from = 0, to = 100) int maxPercentOfPlayersToStart);
 
-    @Range(from = 0, to = 100)
-    int getMaxPercentOfPlayersToStop();
+  @Range(from = 0, to = 100)
+  int getMaxPercentOfPlayersToStop();
 
-    void setMaxPercentOfPlayersToStop(@Range(from = 0, to = 100) int maxPercentOfPlayersToStop);
+  void setMaxPercentOfPlayersToStop(@Range(from = 0, to = 100) int maxPercentOfPlayersToStop);
 
-    @Range(from = 0, to = Long.MAX_VALUE)
-    long getCheckIntervalInSeconds();
+  @Range(from = 0, to = Long.MAX_VALUE)
+  long getCheckIntervalInSeconds();
 
-    void setCheckIntervalInSeconds(@Range(from = 0, to = Long.MAX_VALUE) long checkIntervalInSeconds);
+  void setCheckIntervalInSeconds(@Range(from = 0, to = Long.MAX_VALUE) long checkIntervalInSeconds);
 
-    void setCheckInterval(@NotNull TimeUnit timeUnit, @Range(from = 0, to = Long.MAX_VALUE) long checkInterval);
+  void setCheckInterval(@NotNull TimeUnit timeUnit, @Range(from = 0, to = Long.MAX_VALUE) long checkInterval);
 
-    @NotNull
-    AutomaticStartupConfiguration clone();
+  @NotNull
+  AutomaticStartupConfiguration clone();
 }

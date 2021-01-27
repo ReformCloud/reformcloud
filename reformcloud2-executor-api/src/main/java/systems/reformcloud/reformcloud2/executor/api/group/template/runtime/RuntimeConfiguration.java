@@ -35,71 +35,71 @@ import java.util.Map;
 
 public interface RuntimeConfiguration extends SerializableObject, Cloneable {
 
-    @NotNull
-    @Contract(value = "_, _, _ -> new", pure = true)
-    static RuntimeConfiguration configuration(int initialJvmMemoryAllocation, int maximumJvmMemoryAllocation, int dynamicMemory) {
-        return configuration(initialJvmMemoryAllocation, maximumJvmMemoryAllocation, dynamicMemory, new ArrayList<>());
-    }
+  @NotNull
+  @Contract(value = "_, _, _ -> new", pure = true)
+  static RuntimeConfiguration configuration(int initialJvmMemoryAllocation, int maximumJvmMemoryAllocation, int dynamicMemory) {
+    return configuration(initialJvmMemoryAllocation, maximumJvmMemoryAllocation, dynamicMemory, new ArrayList<>());
+  }
 
-    @NotNull
-    @Contract(value = "_, _, _, _ -> new", pure = true)
-    static RuntimeConfiguration configuration(int initialJvmMemoryAllocation, int maximumJvmMemoryAllocation, int dynamicMemory,
-                                              @NotNull Collection<String> processParameters
-    ) {
-        return configuration(initialJvmMemoryAllocation, maximumJvmMemoryAllocation, dynamicMemory, processParameters, new ArrayList<>());
-    }
+  @NotNull
+  @Contract(value = "_, _, _, _ -> new", pure = true)
+  static RuntimeConfiguration configuration(int initialJvmMemoryAllocation, int maximumJvmMemoryAllocation, int dynamicMemory,
+                                            @NotNull Collection<String> processParameters
+  ) {
+    return configuration(initialJvmMemoryAllocation, maximumJvmMemoryAllocation, dynamicMemory, processParameters, new ArrayList<>());
+  }
 
-    @NotNull
-    @Contract(value = "_, _, _, _, _ -> new", pure = true)
-    static RuntimeConfiguration configuration(int initialJvmMemoryAllocation, int maximumJvmMemoryAllocation, int dynamicMemory,
-                                              @NotNull Collection<String> processParameters, @NotNull Collection<String> jvmOptions
-    ) {
-        return configuration(initialJvmMemoryAllocation, maximumJvmMemoryAllocation, dynamicMemory, processParameters, jvmOptions, new HashMap<>());
-    }
+  @NotNull
+  @Contract(value = "_, _, _, _, _ -> new", pure = true)
+  static RuntimeConfiguration configuration(int initialJvmMemoryAllocation, int maximumJvmMemoryAllocation, int dynamicMemory,
+                                            @NotNull Collection<String> processParameters, @NotNull Collection<String> jvmOptions
+  ) {
+    return configuration(initialJvmMemoryAllocation, maximumJvmMemoryAllocation, dynamicMemory, processParameters, jvmOptions, new HashMap<>());
+  }
 
-    @NotNull
-    @Contract(value = "_, _, _, _, _, _ -> new", pure = true)
-    static RuntimeConfiguration configuration(int initialJvmMemoryAllocation, int maximumJvmMemoryAllocation, int dynamicMemory,
-                                              @NotNull Collection<String> processParameters, @NotNull Collection<String> jvmOptions,
-                                              @NotNull Map<String, String> systemProperties
-    ) {
-        return configuration(initialJvmMemoryAllocation, maximumJvmMemoryAllocation, dynamicMemory, processParameters, jvmOptions, systemProperties, new ArrayList<>());
-    }
+  @NotNull
+  @Contract(value = "_, _, _, _, _, _ -> new", pure = true)
+  static RuntimeConfiguration configuration(int initialJvmMemoryAllocation, int maximumJvmMemoryAllocation, int dynamicMemory,
+                                            @NotNull Collection<String> processParameters, @NotNull Collection<String> jvmOptions,
+                                            @NotNull Map<String, String> systemProperties
+  ) {
+    return configuration(initialJvmMemoryAllocation, maximumJvmMemoryAllocation, dynamicMemory, processParameters, jvmOptions, systemProperties, new ArrayList<>());
+  }
 
-    @NotNull
-    @Contract(value = "_, _, _, _, _, _, _ -> new", pure = true)
-    static RuntimeConfiguration configuration(int initialJvmMemoryAllocation, int maximumJvmMemoryAllocation, int dynamicMemory,
-                                              @NotNull Collection<String> processParameters, @NotNull Collection<String> jvmOptions,
-                                              @NotNull Map<String, String> systemProperties, @NotNull Collection<String> shutdownCommands
-    ) {
-        return new DefaultRuntimeConfiguration(initialJvmMemoryAllocation, maximumJvmMemoryAllocation, dynamicMemory,
-            processParameters, jvmOptions, systemProperties, shutdownCommands);
-    }
+  @NotNull
+  @Contract(value = "_, _, _, _, _, _, _ -> new", pure = true)
+  static RuntimeConfiguration configuration(int initialJvmMemoryAllocation, int maximumJvmMemoryAllocation, int dynamicMemory,
+                                            @NotNull Collection<String> processParameters, @NotNull Collection<String> jvmOptions,
+                                            @NotNull Map<String, String> systemProperties, @NotNull Collection<String> shutdownCommands
+  ) {
+    return new DefaultRuntimeConfiguration(initialJvmMemoryAllocation, maximumJvmMemoryAllocation, dynamicMemory,
+      processParameters, jvmOptions, systemProperties, shutdownCommands);
+  }
 
-    int getInitialJvmMemoryAllocation();
+  int getInitialJvmMemoryAllocation();
 
-    void setInitialJvmMemoryAllocation(int initialJvmMemoryAllocation);
+  void setInitialJvmMemoryAllocation(int initialJvmMemoryAllocation);
 
-    int getMaximumJvmMemoryAllocation();
+  int getMaximumJvmMemoryAllocation();
 
-    void setMaximumJvmMemoryAllocation(int maximumJvmMemoryAllocation);
+  void setMaximumJvmMemoryAllocation(int maximumJvmMemoryAllocation);
 
-    int getDynamicMemory();
+  int getDynamicMemory();
 
-    void setDynamicMemory(int dynamicMemory);
+  void setDynamicMemory(int dynamicMemory);
 
-    @NotNull
-    Collection<String> getProcessParameters();
+  @NotNull
+  Collection<String> getProcessParameters();
 
-    @NotNull
-    Collection<String> getJvmOptions();
+  @NotNull
+  Collection<String> getJvmOptions();
 
-    @NotNull
-    Map<String, String> getSystemProperties();
+  @NotNull
+  Map<String, String> getSystemProperties();
 
-    @NotNull
-    Collection<String> getShutdownCommands();
+  @NotNull
+  Collection<String> getShutdownCommands();
 
-    @NotNull
-    RuntimeConfiguration clone();
+  @NotNull
+  RuntimeConfiguration clone();
 }

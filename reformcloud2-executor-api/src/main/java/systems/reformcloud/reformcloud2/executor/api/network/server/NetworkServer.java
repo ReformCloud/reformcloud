@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 
 public interface NetworkServer extends Server {
 
-    boolean bind(@NotNull String host, int port, @NotNull Supplier<ChannelListener> channelListenerFactory);
+  boolean bind(@NotNull String host, int port, @NotNull Supplier<ChannelListener> channelListenerFactory);
 
-    boolean bind(@NotNull NetworkAddress address, @NotNull Supplier<ChannelListener> channelListenerFactory);
+  boolean bind(@NotNull NetworkAddress address, @NotNull Supplier<ChannelListener> channelListenerFactory);
 }

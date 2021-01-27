@@ -35,44 +35,44 @@ import java.util.UUID;
 
 public class PacketDisconnectPlayer extends ProtocolPacket {
 
-    private UUID player;
-    private String reason;
+  private UUID player;
+  private String reason;
 
-    public PacketDisconnectPlayer() {
-    }
+  public PacketDisconnectPlayer() {
+  }
 
-    public PacketDisconnectPlayer(UUID player, String reason) {
-        this.player = player;
-        this.reason = reason;
-    }
+  public PacketDisconnectPlayer(UUID player, String reason) {
+    this.player = player;
+    this.reason = reason;
+  }
 
-    public UUID getPlayer() {
-        return this.player;
-    }
+  public UUID getPlayer() {
+    return this.player;
+  }
 
-    public String getReason() {
-        return this.reason;
-    }
+  public String getReason() {
+    return this.reason;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.API_BUS + 11;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.API_BUS + 11;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        super.post(channel, PacketDisconnectPlayer.class, this);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    super.post(channel, PacketDisconnectPlayer.class, this);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.player);
-        buffer.writeString(this.reason);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.player);
+    buffer.writeString(this.reason);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.player = buffer.readUniqueId();
-        this.reason = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.player = buffer.readUniqueId();
+    this.reason = buffer.readString();
+  }
 }

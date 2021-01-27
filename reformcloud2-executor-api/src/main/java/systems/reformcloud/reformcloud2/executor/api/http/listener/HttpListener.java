@@ -46,19 +46,19 @@ import systems.reformcloud.reformcloud2.executor.api.http.request.HttpRequest;
  */
 public interface HttpListener {
 
-    /**
-     * Handles the request and returns the answer to the request. The answer can directly be build
-     * by invoking the {@link ListeningHttpServerResponse#response(HttpRequest)} method by using the
-     * given {@code request} to build a response to the request. You may ensure that you are the last
-     * listener handling the request by calling the {@link ListeningHttpServerResponse#lastHandler(boolean)}
-     * method which will cancel the handle of all other listeners and sends the request returned by the
-     * method. Note that you have to use {@link ListeningHttpServerResponse#closeAfterSent(boolean)} if you
-     * are the last handling which provides the response, as the client waits for the remote connection to close
-     * before handling the received result.
-     *
-     * @param request the request sent by the client.
-     * @return the response to the request of the client, never {@code null}.
-     */
-    @NotNull
-    ListeningHttpServerResponse<?> handleRequest(@NotNull HttpRequest<?> request);
+  /**
+   * Handles the request and returns the answer to the request. The answer can directly be build
+   * by invoking the {@link ListeningHttpServerResponse#response(HttpRequest)} method by using the
+   * given {@code request} to build a response to the request. You may ensure that you are the last
+   * listener handling the request by calling the {@link ListeningHttpServerResponse#lastHandler(boolean)}
+   * method which will cancel the handle of all other listeners and sends the request returned by the
+   * method. Note that you have to use {@link ListeningHttpServerResponse#closeAfterSent(boolean)} if you
+   * are the last handling which provides the response, as the client waits for the remote connection to close
+   * before handling the received result.
+   *
+   * @param request the request sent by the client.
+   * @return the response to the request of the client, never {@code null}.
+   */
+  @NotNull
+  ListeningHttpServerResponse<?> handleRequest(@NotNull HttpRequest<?> request);
 }

@@ -38,37 +38,37 @@ import systems.reformcloud.reformcloud2.shared.group.DefaultMainGroup;
 
 public class NodeToApiMainGroupDelete extends ProtocolPacket {
 
-    private MainGroup mainGroup;
+  private MainGroup mainGroup;
 
-    public NodeToApiMainGroupDelete() {
-    }
+  public NodeToApiMainGroupDelete() {
+  }
 
-    public NodeToApiMainGroupDelete(MainGroup mainGroup) {
-        this.mainGroup = mainGroup;
-    }
+  public NodeToApiMainGroupDelete(MainGroup mainGroup) {
+    this.mainGroup = mainGroup;
+  }
 
-    public MainGroup getMainGroup() {
-        return this.mainGroup;
-    }
+  public MainGroup getMainGroup() {
+    return this.mainGroup;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.API_BUS + 9;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.API_BUS + 9;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class)
-            .callEvent(new MainGroupDeleteEvent(this.mainGroup));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class)
+      .callEvent(new MainGroupDeleteEvent(this.mainGroup));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.mainGroup);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.mainGroup);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.mainGroup = buffer.readObject(DefaultMainGroup.class, MainGroup.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.mainGroup = buffer.readObject(DefaultMainGroup.class, MainGroup.class);
+  }
 }

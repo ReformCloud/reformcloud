@@ -55,10 +55,10 @@ import java.util.stream.Collectors;
 public class JsonConfiguration implements Configurable<Element, JsonConfiguration> {
 
   public static final JsonAdapter DEFAULT_ADAPTER = JsonAdapter.builder()
-      .disableHtmlEscaping()
-      .enablePrettyPrinting()
-      .enableNullSerialisation()
-      .build();
+    .disableHtmlEscaping()
+    .enablePrettyPrinting()
+    .enableNullSerialisation()
+    .build();
   protected static final Predicate<?> ALWAYS_TRUE = ignored -> true;
   protected static final Collector<Map.Entry<String, Element>, ?, Map<String, Element>> TO_MAP_COLLECTOR = Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue);
 

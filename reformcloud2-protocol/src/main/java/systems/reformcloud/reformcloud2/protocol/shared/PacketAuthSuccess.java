@@ -34,35 +34,35 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class PacketAuthSuccess extends ProtocolPacket {
 
-    private JsonConfiguration data;
+  private JsonConfiguration data;
 
-    public PacketAuthSuccess() {
-    }
+  public PacketAuthSuccess() {
+  }
 
-    public PacketAuthSuccess(JsonConfiguration data) {
-        this.data = data;
-    }
+  public PacketAuthSuccess(JsonConfiguration data) {
+    this.data = data;
+  }
 
-    public JsonConfiguration getData() {
-        return this.data;
-    }
+  public JsonConfiguration getData() {
+    return this.data;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.AUTH_BUS + 1;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.AUTH_BUS + 1;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.data.toPrettyString());
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.data.toPrettyString());
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.data = JsonConfiguration.newJsonConfiguration(buffer.readString());
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.data = JsonConfiguration.newJsonConfiguration(buffer.readString());
+  }
 }

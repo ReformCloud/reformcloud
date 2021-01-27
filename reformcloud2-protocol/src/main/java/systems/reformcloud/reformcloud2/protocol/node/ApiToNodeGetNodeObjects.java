@@ -37,25 +37,25 @@ import java.util.Collection;
 
 public class ApiToNodeGetNodeObjects extends ProtocolPacket {
 
-    public ApiToNodeGetNodeObjects() {
-    }
+  public ApiToNodeGetNodeObjects() {
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 29;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 29;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        Collection<NodeInformation> nodes = ExecutorAPI.getInstance().getNodeInformationProvider().getNodes();
-        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetNodeObjectsResult(nodes));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    Collection<NodeInformation> nodes = ExecutorAPI.getInstance().getNodeInformationProvider().getNodes();
+    channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetNodeObjectsResult(nodes));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+  }
 }

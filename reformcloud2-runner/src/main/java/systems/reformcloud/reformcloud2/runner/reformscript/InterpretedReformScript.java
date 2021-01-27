@@ -35,26 +35,26 @@ import java.util.Collection;
  */
 public interface InterpretedReformScript {
 
-    /**
-     * @return The interpreter which interpreted the current script
-     */
-    @NotNull
-    ReformScriptInterpreter getInterpreter();
+  /**
+   * @return The interpreter which interpreted the current script
+   */
+  @NotNull
+  ReformScriptInterpreter getInterpreter();
 
-    /**
-     * @return All tasks of the current script
-     */
-    @NotNull
-    Collection<InterpreterTask> getAllTasks();
+  /**
+   * @return All tasks of the current script
+   */
+  @NotNull
+  Collection<InterpreterTask> getAllTasks();
 
-    /**
-     * @return The path to the file which contains the script
-     */
-    @NotNull
-    Path getScriptPath();
+  /**
+   * @return The path to the file which contains the script
+   */
+  @NotNull
+  Path getScriptPath();
 
-    /**
-     * Executes the current script completely with all commands and variables which are in it
-     */
-    void execute();
+  /**
+   * Executes the current script completely with all commands and variables which are in it
+   */
+  void execute();
 }

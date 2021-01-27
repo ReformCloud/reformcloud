@@ -30,5 +30,5 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 
 public interface PacketProcessor<T extends Packet> {
 
-    void process(@NotNull NetworkChannel channel, @NotNull T packet);
+  void process(@NotNull NetworkChannel channel, @NotNull T packet);
 }

@@ -32,15 +32,15 @@ import java.util.Collection;
 
 public final class SetSystemPropertiesCommand extends InterpreterCommand {
 
-    public SetSystemPropertiesCommand() {
-        super("set_system_properties");
-    }
+  public SetSystemPropertiesCommand() {
+    super("set_system_properties");
+  }
 
-    @Override
-    public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
-        System.setProperty(
-            "reformcloud.runner.specification",
-            System.getProperty("reformcloud.runner.version").endsWith("-SNAPSHOT") ? "SNAPSHOT" : "RELEASE"
-        );
-    }
+  @Override
+  public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
+    System.setProperty(
+      "reformcloud.runner.specification",
+      System.getProperty("reformcloud.runner.version").endsWith("-SNAPSHOT") ? "SNAPSHOT" : "RELEASE"
+    );
+  }
 }

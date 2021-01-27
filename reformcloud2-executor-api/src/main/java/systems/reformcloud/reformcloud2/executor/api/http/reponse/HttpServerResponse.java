@@ -37,36 +37,36 @@ import systems.reformcloud.reformcloud2.executor.api.http.cookie.CookieHolder;
  */
 public interface HttpServerResponse<T extends HttpServerResponse<T>> extends CookieHolder<T> {
 
-    /**
-     * Get the response status.
-     *
-     * @return the response status.
-     */
-    @NotNull
-    HttpStatusCode status();
+  /**
+   * Get the response status.
+   *
+   * @return the response status.
+   */
+  @NotNull
+  HttpStatusCode status();
 
-    /**
-     * Sets the response status.
-     *
-     * @param httpStatusCode the new response status.
-     * @return the same instance of this class, for chaining
-     */
-    @NotNull
-    T status(@NotNull HttpStatusCode httpStatusCode);
+  /**
+   * Sets the response status.
+   *
+   * @param httpStatusCode the new response status.
+   * @return the same instance of this class, for chaining
+   */
+  @NotNull
+  T status(@NotNull HttpStatusCode httpStatusCode);
 
-    /**
-     * Get the response body sent to the client.
-     *
-     * @return the response body sent to the client.
-     */
-    byte[] body();
+  /**
+   * Get the response body sent to the client.
+   *
+   * @return the response body sent to the client.
+   */
+  byte[] body();
 
-    /**
-     * Sets the body of the result sent to the client.
-     *
-     * @param response the body response to send to the client.
-     * @return the same instance of this class, for chaining
-     */
-    @NotNull
-    T body(byte[] response);
+  /**
+   * Sets the body of the result sent to the client.
+   *
+   * @param response the body response to send to the client.
+   * @return the same instance of this class, for chaining
+   */
+  @NotNull
+  T body(byte[] response);
 }

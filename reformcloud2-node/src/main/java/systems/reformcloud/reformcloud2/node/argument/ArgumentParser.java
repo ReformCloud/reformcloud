@@ -32,19 +32,19 @@ import java.util.function.Function;
 
 public interface ArgumentParser {
 
-    boolean has(@NotNull String key);
+  boolean has(@NotNull String key);
 
-    @NotNull Optional<String> getArgumentRaw(@NotNull String key);
+  @NotNull Optional<String> getArgumentRaw(@NotNull String key);
 
-    boolean getBoolean(@NotNull String key);
+  boolean getBoolean(@NotNull String key);
 
-    int getInt(@NotNull String key);
+  int getInt(@NotNull String key);
 
-    long getLong(@NotNull String key);
+  long getLong(@NotNull String key);
 
-    float getFloat(@NotNull String key);
+  float getFloat(@NotNull String key);
 
-    double getDouble(@NotNull String key);
+  double getDouble(@NotNull String key);
 
-    @NotNull <T> Optional<T> get(@NotNull String key, @NotNull Function<String, T> function, @Nullable T defaultValue);
+  @NotNull <T> Optional<T> get(@NotNull String key, @NotNull Function<String, T> function, @Nullable T defaultValue);
 }

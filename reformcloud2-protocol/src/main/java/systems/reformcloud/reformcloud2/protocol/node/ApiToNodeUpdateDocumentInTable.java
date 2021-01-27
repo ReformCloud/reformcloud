@@ -33,20 +33,20 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.Ch
 
 public class ApiToNodeUpdateDocumentInTable extends ApiToNodeInsertDocumentIntoTable {
 
-    public ApiToNodeUpdateDocumentInTable() {
-    }
+  public ApiToNodeUpdateDocumentInTable() {
+  }
 
-    public ApiToNodeUpdateDocumentInTable(String tableName, String key, String id, JsonConfiguration data) {
-        super(tableName, key, id, data);
-    }
+  public ApiToNodeUpdateDocumentInTable(String tableName, String key, String id, JsonConfiguration data) {
+    super(tableName, key, id, data);
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 5;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 5;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(this.tableName).update(this.key, this.id, this.data);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(this.tableName).update(this.key, this.id, this.data);
+  }
 }

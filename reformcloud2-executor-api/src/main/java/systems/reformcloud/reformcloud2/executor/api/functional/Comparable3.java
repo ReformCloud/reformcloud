@@ -29,5 +29,5 @@ import org.jetbrains.annotations.NotNull;
 @FunctionalInterface
 public interface Comparable3<F, S, T> {
 
-    int compareTo(@NotNull F f, @NotNull S s, @NotNull T t);
+  int compareTo(@NotNull F f, @NotNull S s, @NotNull T t);
 }

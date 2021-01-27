@@ -43,62 +43,62 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Dependency {
 
-    /**
-     * The group id of this dependency artifact
-     *
-     * @return the group id of this dependency artifact
-     */
-    @NotNull
-    String groupId();
+  /**
+   * The group id of this dependency artifact
+   *
+   * @return the group id of this dependency artifact
+   */
+  @NotNull
+  String groupId();
 
-    /**
-     * The artifact id of this dependency
-     *
-     * @return the artifact id of this dependency
-     */
-    @NotNull
-    String artifactId();
+  /**
+   * The artifact id of this dependency
+   *
+   * @return the artifact id of this dependency
+   */
+  @NotNull
+  String artifactId();
 
-    /**
-     * The version of this dependency artifact
-     *
-     * @return the version of this dependency artifact
-     */
-    @NotNull
-    String version();
+  /**
+   * The version of this dependency artifact
+   *
+   * @return the version of this dependency artifact
+   */
+  @NotNull
+  String version();
 
-    /**
-     * Indicates that this dependency is optional and there is no need to load it. This means if we fail to download
-     * this dependency the loading process will not be interrupted.
-     *
-     * @return if this dependency is optional
-     */
-    boolean optional() default false;
+  /**
+   * Indicates that this dependency is optional and there is no need to load it. This means if we fail to download
+   * this dependency the loading process will not be interrupted.
+   *
+   * @return if this dependency is optional
+   */
+  boolean optional() default false;
 
-    /**
-     * Defines the type of this dependency, this defaults to {@code jar}. This defines the file extension of this file.
-     * Some examples are {@code jar} or {@code war}. This means the dependency artifact is loaded
-     * using {@link #artifactId()}.{@code jar}.
-     *
-     * @return The file extension type of this dependency.
-     */
-    @NotNull
-    String type() default "jar";
+  /**
+   * Defines the type of this dependency, this defaults to {@code jar}. This defines the file extension of this file.
+   * Some examples are {@code jar} or {@code war}. This means the dependency artifact is loaded
+   * using {@link #artifactId()}.{@code jar}.
+   *
+   * @return The file extension type of this dependency.
+   */
+  @NotNull
+  String type() default "jar";
 
-    /**
-     * Represents the system path where the dependency is copied to in runtime. This path does not allow any {@code ../} and
-     * {@code ..\} operations. If the path is empty (default case) the system path will be defined automatically.
-     *
-     * @return the system path this dependency will be located in
-     */
-    @NotNull
-    String systemPath() default "";
+  /**
+   * Represents the system path where the dependency is copied to in runtime. This path does not allow any {@code ../} and
+   * {@code ..\} operations. If the path is empty (default case) the system path will be defined automatically.
+   *
+   * @return the system path this dependency will be located in
+   */
+  @NotNull
+  String systemPath() default "";
 
-    /**
-     * The repository in which this dependency is located.
-     *
-     * @return the repository in which this dependency is located
-     */
-    @NotNull
-    Repository repository();
+  /**
+   * The repository in which this dependency is located.
+   *
+   * @return the repository in which this dependency is located
+   */
+  @NotNull
+  Repository repository();
 }

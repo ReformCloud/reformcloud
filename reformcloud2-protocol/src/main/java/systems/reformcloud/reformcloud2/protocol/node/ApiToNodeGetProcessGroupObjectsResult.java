@@ -35,31 +35,31 @@ import java.util.Collection;
 
 public class ApiToNodeGetProcessGroupObjectsResult extends QueryResultPacket {
 
-    private Collection<ProcessGroup> processGroups;
+  private Collection<ProcessGroup> processGroups;
 
-    public ApiToNodeGetProcessGroupObjectsResult() {
-    }
+  public ApiToNodeGetProcessGroupObjectsResult() {
+  }
 
-    public ApiToNodeGetProcessGroupObjectsResult(Collection<ProcessGroup> processGroups) {
-        this.processGroups = processGroups;
-    }
+  public ApiToNodeGetProcessGroupObjectsResult(Collection<ProcessGroup> processGroups) {
+    this.processGroups = processGroups;
+  }
 
-    public Collection<ProcessGroup> getProcessGroups() {
-        return this.processGroups;
-    }
+  public Collection<ProcessGroup> getProcessGroups() {
+    return this.processGroups;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 66;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 66;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObjects(this.processGroups);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObjects(this.processGroups);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.processGroups = buffer.readObjects(DefaultProcessGroup.class, ProcessGroup.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.processGroups = buffer.readObjects(DefaultProcessGroup.class, ProcessGroup.class);
+  }
 }

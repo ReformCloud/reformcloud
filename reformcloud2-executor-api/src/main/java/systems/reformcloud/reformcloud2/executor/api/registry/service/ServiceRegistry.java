@@ -36,32 +36,32 @@ import java.util.Optional;
 
 public interface ServiceRegistry {
 
-    default <T> void setProvider(@NotNull Class<T> service, @NotNull T provider) throws ProviderImmutableException {
-        this.setProvider(service, provider, false);
-    }
+  default <T> void setProvider(@NotNull Class<T> service, @NotNull T provider) throws ProviderImmutableException {
+    this.setProvider(service, provider, false);
+  }
 
-    default <T> void setProvider(@NotNull Class<T> service, @NotNull T provider, boolean immutable) throws ProviderImmutableException {
-        this.setProvider(service, provider, immutable, false);
-    }
+  default <T> void setProvider(@NotNull Class<T> service, @NotNull T provider, boolean immutable) throws ProviderImmutableException {
+    this.setProvider(service, provider, immutable, false);
+  }
 
-    <T> void setProvider(@NotNull Class<T> service, @NotNull T provider, boolean immutable, boolean needsReplacement) throws ProviderImmutableException;
+  <T> void setProvider(@NotNull Class<T> service, @NotNull T provider, boolean immutable, boolean needsReplacement) throws ProviderImmutableException;
 
-    @NotNull <T> Optional<T> getProvider(@NotNull Class<T> service);
+  @NotNull <T> Optional<T> getProvider(@NotNull Class<T> service);
 
-    @NotNull <T> Optional<ServiceRegistryEntry<T>> getRegisteredEntry(@NotNull Class<T> service);
+  @NotNull <T> Optional<ServiceRegistryEntry<T>> getRegisteredEntry(@NotNull Class<T> service);
 
-    @NotNull <T> T getProviderUnchecked(@NotNull Class<T> service) throws ProviderNotRegisteredException;
+  @NotNull <T> T getProviderUnchecked(@NotNull Class<T> service) throws ProviderNotRegisteredException;
 
-    @NotNull
-    @UnmodifiableView Collection<ServiceRegistryEntry<?>> getRegisteredServices();
+  @NotNull
+  @UnmodifiableView Collection<ServiceRegistryEntry<?>> getRegisteredServices();
 
-    default <T> void unregisterService(@NotNull Class<T> service) throws ProviderNotRegisteredException, ProviderImmutableException, ProviderNeedsReplacementException {
-        this.unregisterService(service, null);
-    }
+  default <T> void unregisterService(@NotNull Class<T> service) throws ProviderNotRegisteredException, ProviderImmutableException, ProviderNeedsReplacementException {
+    this.unregisterService(service, null);
+  }
 
-    <T> void unregisterService(@NotNull Class<T> service, @Nullable T replacement) throws ProviderNotRegisteredException, ProviderImmutableException, ProviderNeedsReplacementException;
+  <T> void unregisterService(@NotNull Class<T> service, @Nullable T replacement) throws ProviderNotRegisteredException, ProviderImmutableException, ProviderNeedsReplacementException;
 
-    default boolean isRegistered(@NotNull Class<?> service) {
-        return this.getProvider(service).isPresent();
-    }
+  default boolean isRegistered(@NotNull Class<?> service) {
+    return this.getProvider(service).isPresent();
+  }
 }

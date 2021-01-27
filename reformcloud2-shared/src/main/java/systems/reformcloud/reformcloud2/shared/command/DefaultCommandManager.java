@@ -43,105 +43,105 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DefaultCommandManager implements CommandManager {
 
-    private final Collection<CommandContainer> commands = new CopyOnWriteArrayList<>();
+  private final Collection<CommandContainer> commands = new CopyOnWriteArrayList<>();
 
-    @Override
-    public @NotNull CommandManager registerCommand(@NotNull Command command, @NotNull String description, @NotNull List<String> aliases) {
-        for (String alias : aliases) {
-            Optional<CommandContainer> registeredCommand = this.getCommand(alias.toLowerCase());
-            if (registeredCommand.isPresent()) {
-                throw new RuntimeException("Command " + registeredCommand.get().getCommand().getClass().getName() + " clashes with "
-                    + command.getClass().getName() + " because of alias '" + alias + "'");
-            }
+  @Override
+  public @NotNull CommandManager registerCommand(@NotNull Command command, @NotNull String description, @NotNull List<String> aliases) {
+    for (String alias : aliases) {
+      Optional<CommandContainer> registeredCommand = this.getCommand(alias.toLowerCase());
+      if (registeredCommand.isPresent()) {
+        throw new RuntimeException("Command " + registeredCommand.get().getCommand().getClass().getName() + " clashes with "
+          + command.getClass().getName() + " because of alias '" + alias + "'");
+      }
+    }
+
+    this.commands.add(new DefaultCommandContainer(aliases, description, command));
+    return this;
+  }
+
+  @Override
+  public void unregisterCommand(@NotNull CommandContainer command) {
+    this.commands.removeIf(commandContainer -> {
+      for (String alias : commandContainer.getAliases()) {
+        if (command.getAliases().stream().anyMatch(alias::equals)) {
+          return true;
         }
+      }
 
-        this.commands.add(new DefaultCommandContainer(aliases, description, command));
-        return this;
+      return false;
+    });
+  }
+
+  @Override
+  public void unregisterCommand(@NotNull String... aliases) {
+    Collection<String> toUnregister = MoreCollections.toLowerCase(Arrays.asList(aliases));
+    this.commands.removeIf(command -> MoreCollections.hasMatch(command.getAliases(), toUnregister::contains));
+  }
+
+  @NotNull
+  @Override
+  public Optional<CommandContainer> getCommand(@NotNull String anyAlias) {
+    for (CommandContainer command : this.commands) {
+      if (command.getAliases().contains(anyAlias.toLowerCase())) {
+        return Optional.of(command);
+      }
     }
 
-    @Override
-    public void unregisterCommand(@NotNull CommandContainer command) {
-        this.commands.removeIf(commandContainer -> {
-            for (String alias : commandContainer.getAliases()) {
-                if (command.getAliases().stream().anyMatch(alias::equals)) {
-                    return true;
-                }
-            }
+    return Optional.empty();
+  }
 
-            return false;
-        });
+  @NotNull
+  @Override
+  public @UnmodifiableView Collection<CommandContainer> getCommands() {
+    return Collections.unmodifiableCollection(this.commands);
+  }
+
+  @Override
+  public boolean process(@NotNull String commandLine, @NotNull CommandSender commandSender) {
+    String[] split = commandLine.split(" ");
+    CommandContainer command = this.getCommand(commandSender, split);
+    if (command == null) {
+      return false;
     }
 
-    @Override
-    public void unregisterCommand(@NotNull String... aliases) {
-        Collection<String> toUnregister = MoreCollections.toLowerCase(Arrays.asList(aliases));
-        this.commands.removeIf(command -> MoreCollections.hasMatch(command.getAliases(), toUnregister::contains));
+    String[] args = split.length > 1 ? Arrays.copyOfRange(split, 1, split.length) : new String[0];
+    try {
+      command.getCommand().process(commandSender, args, commandLine);
+    } catch (Throwable throwable) {
+      System.err.println("Exception handling command \"" + split[0] + "\" with arguments " + String.join(", ", args));
+      throwable.printStackTrace();
     }
 
-    @NotNull
-    @Override
-    public Optional<CommandContainer> getCommand(@NotNull String anyAlias) {
-        for (CommandContainer command : this.commands) {
-            if (command.getAliases().contains(anyAlias.toLowerCase())) {
-                return Optional.of(command);
-            }
-        }
+    return true;
+  }
 
-        return Optional.empty();
+  @NotNull
+  @Override
+  public List<String> suggest(@NotNull String commandLine, @NotNull CommandSender commandSender) {
+    String[] split = commandLine.split(" ");
+    CommandContainer command = this.getCommand(commandSender, split);
+    if (command == null) {
+      return new ArrayList<>();
     }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Collection<CommandContainer> getCommands() {
-        return Collections.unmodifiableCollection(this.commands);
+    int argumentIndex = (commandLine.length() - commandLine.replace(" ", "").length()) - 1;
+    String[] args = split.length > 1 ? Arrays.copyOfRange(split, 1, split.length) : new String[0];
+    try {
+      return command.getCommand().suggest(commandSender, args, argumentIndex, commandLine);
+    } catch (Throwable throwable) {
+      System.err.println("Exception tab completing command \"" + split[0] + "\" with arguments " + String.join(", ", args));
+      throwable.printStackTrace();
     }
 
-    @Override
-    public boolean process(@NotNull String commandLine, @NotNull CommandSender commandSender) {
-        String[] split = commandLine.split(" ");
-        CommandContainer command = this.getCommand(commandSender, split);
-        if (command == null) {
-            return false;
-        }
+    return new ArrayList<>();
+  }
 
-        String[] args = split.length > 1 ? Arrays.copyOfRange(split, 1, split.length) : new String[0];
-        try {
-            command.getCommand().process(commandSender, args, commandLine);
-        } catch (Throwable throwable) {
-            System.err.println("Exception handling command \"" + split[0] + "\" with arguments " + String.join(", ", args));
-            throwable.printStackTrace();
-        }
-
-        return true;
+  private @Nullable CommandContainer getCommand(@NotNull CommandSender commandSender, @NotNull String[] split) {
+    if (split.length == 0) {
+      return null;
     }
 
-    @NotNull
-    @Override
-    public List<String> suggest(@NotNull String commandLine, @NotNull CommandSender commandSender) {
-        String[] split = commandLine.split(" ");
-        CommandContainer command = this.getCommand(commandSender, split);
-        if (command == null) {
-            return new ArrayList<>();
-        }
-
-        int argumentIndex = (commandLine.length() - commandLine.replace(" ", "").length()) - 1;
-        String[] args = split.length > 1 ? Arrays.copyOfRange(split, 1, split.length) : new String[0];
-        try {
-            return command.getCommand().suggest(commandSender, args, argumentIndex, commandLine);
-        } catch (Throwable throwable) {
-            System.err.println("Exception tab completing command \"" + split[0] + "\" with arguments " + String.join(", ", args));
-            throwable.printStackTrace();
-        }
-
-        return new ArrayList<>();
-    }
-
-    private @Nullable CommandContainer getCommand(@NotNull CommandSender commandSender, @NotNull String[] split) {
-        if (split.length == 0) {
-            return null;
-        }
-
-        Optional<CommandContainer> command = this.getCommand(split[0]);
-        return command.filter(commandContainer -> commandContainer.getCommand().canAccess(commandSender)).orElse(null);
-    }
+    Optional<CommandContainer> command = this.getCommand(split[0]);
+    return command.filter(commandContainer -> commandContainer.getCommand().canAccess(commandSender)).orElse(null);
+  }
 }

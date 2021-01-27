@@ -34,32 +34,32 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodeClearDatabaseTable extends ProtocolPacket {
 
-    private String tableName;
+  private String tableName;
 
-    public ApiToNodeClearDatabaseTable() {
-    }
+  public ApiToNodeClearDatabaseTable() {
+  }
 
-    public ApiToNodeClearDatabaseTable(String tableName) {
-        this.tableName = tableName;
-    }
+  public ApiToNodeClearDatabaseTable(String tableName) {
+    this.tableName = tableName;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 13;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 13;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(this.tableName).clear();
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(this.tableName).clear();
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.tableName);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.tableName);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.tableName = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.tableName = buffer.readString();
+  }
 }

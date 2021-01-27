@@ -29,14 +29,14 @@ import systems.reformcloud.reformcloud2.executor.api.network.data.SerializableOb
 
 public interface ProcessInclusion extends SerializableObject, Cloneable {
 
-    @NotNull
-    static ProcessInclusion inclusion(@NotNull String name, @NotNull String downloadUrl) {
-        return new DefaultProcessInclusion(name, downloadUrl);
-    }
+  @NotNull
+  static ProcessInclusion inclusion(@NotNull String name, @NotNull String downloadUrl) {
+    return new DefaultProcessInclusion(name, downloadUrl);
+  }
 
-    @NotNull
-    String getName();
+  @NotNull
+  String getName();
 
-    @NotNull
-    String getDownloadUrl();
+  @NotNull
+  String getDownloadUrl();
 }

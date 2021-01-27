@@ -37,79 +37,79 @@ import java.util.Collection;
 
 public interface TemplateBuilder {
 
-    String FILE_BACKEND = "FILE";
-    String DEFAULT_SERVER_NAME_SPLITTER = "-";
-    RuntimeConfiguration DEFAULT_RUNTIME_CONFIGURATION = RuntimeConfiguration.configuration(256, 512, 0);
+  String FILE_BACKEND = "FILE";
+  String DEFAULT_SERVER_NAME_SPLITTER = "-";
+  RuntimeConfiguration DEFAULT_RUNTIME_CONFIGURATION = RuntimeConfiguration.configuration(256, 512, 0);
 
-    @NotNull
-    @Contract(value = "_, _ -> new", pure = true)
-    static TemplateBuilder newBuilder(@NotNull String name, @NotNull Version version) {
-        return new DefaultTemplateBuilder(name, version);
-    }
+  @NotNull
+  @Contract(value = "_, _ -> new", pure = true)
+  static TemplateBuilder newBuilder(@NotNull String name, @NotNull Version version) {
+    return new DefaultTemplateBuilder(name, version);
+  }
 
-    @NotNull
-    TemplateBuilder name(@NotNull String name);
+  @NotNull
+  TemplateBuilder name(@NotNull String name);
 
-    @NotNull
-    String name();
+  @NotNull
+  String name();
 
-    @NotNull
-    TemplateBuilder priority(int priority);
+  @NotNull
+  TemplateBuilder priority(int priority);
 
-    int priority();
+  int priority();
 
-    @NotNull
-    TemplateBuilder global(boolean global);
+  @NotNull
+  TemplateBuilder global(boolean global);
 
-    boolean global();
+  boolean global();
 
-    @NotNull
-    TemplateBuilder autoCopyOnClose(boolean autoCopyOnClose);
+  @NotNull
+  TemplateBuilder autoCopyOnClose(boolean autoCopyOnClose);
 
-    boolean autoCopyOnClose();
+  boolean autoCopyOnClose();
 
-    @NotNull
-    TemplateBuilder backend(@NotNull String backend);
+  @NotNull
+  TemplateBuilder backend(@NotNull String backend);
 
-    @NotNull
-    String backend();
+  @NotNull
+  String backend();
 
-    @NotNull
-    TemplateBuilder serverNameSplitter(@Nullable String serverNameSplitter);
+  @NotNull
+  TemplateBuilder serverNameSplitter(@Nullable String serverNameSplitter);
 
-    @NotNull
-    String serverNameSplitter();
+  @NotNull
+  String serverNameSplitter();
 
-    @NotNull
-    TemplateBuilder runtimeConfiguration(@NotNull RuntimeConfiguration runtimeConfiguration);
+  @NotNull
+  TemplateBuilder runtimeConfiguration(@NotNull RuntimeConfiguration runtimeConfiguration);
 
-    @NotNull
-    RuntimeConfiguration runtimeConfiguration();
+  @NotNull
+  RuntimeConfiguration runtimeConfiguration();
 
-    @NotNull
-    TemplateBuilder version(@NotNull Version version);
+  @NotNull
+  TemplateBuilder version(@NotNull Version version);
 
-    @NotNull
-    Version version();
+  @NotNull
+  Version version();
 
-    @NotNull
-    TemplateBuilder templateInclusions(@NotNull Collection<Inclusion> templateInclusions);
+  @NotNull
+  TemplateBuilder templateInclusions(@NotNull Collection<Inclusion> templateInclusions);
 
-    @NotNull
-    Collection<Inclusion> templateInclusions();
+  @NotNull
+  Collection<Inclusion> templateInclusions();
 
-    @NotNull
-    TemplateBuilder pathInclusions(@NotNull Collection<Inclusion> pathInclusions);
+  @NotNull
+  TemplateBuilder pathInclusions(@NotNull Collection<Inclusion> pathInclusions);
 
-    @NotNull
-    Collection<Inclusion> pathInclusions();
+  @NotNull
+  Collection<Inclusion> pathInclusions();
 
-    @NotNull
-    TemplateBuilder jsonData(@NotNull JsonConfiguration data);
+  @NotNull
+  TemplateBuilder jsonData(@NotNull JsonConfiguration data);
 
-    @NotNull
-    JsonConfiguration jsonData();
+  @NotNull
+  JsonConfiguration jsonData();
 
-    @NotNull
-    Template build();
+  @NotNull
+  Template build();
 }

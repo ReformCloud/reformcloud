@@ -39,55 +39,55 @@ import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
 public class SpongeSignConverter implements SignConverter<Sign> {
 
-    static final SpongeSignConverter INSTANCE = new SpongeSignConverter();
+  static final SpongeSignConverter INSTANCE = new SpongeSignConverter();
 
-    @Nullable
-    @Override
-    public Sign from(@NotNull CloudSign cloudSign) {
-        Location<World> sponge = this.accumulate(cloudSign.getLocation());
-        if (sponge == null) {
-            return null;
-        }
-
-        if (sponge.getBlock().getType().equals(BlockTypes.STANDING_SIGN)
-            || sponge.getBlock().getType().equals(BlockTypes.WALL_SIGN)) {
-            TileEntity entity = sponge.getTileEntity().orElse(null);
-            return entity instanceof Sign ? (Sign) entity : null;
-        }
-
-        return null;
+  @Nullable
+  @Override
+  public Sign from(@NotNull CloudSign cloudSign) {
+    Location<World> sponge = this.accumulate(cloudSign.getLocation());
+    if (sponge == null) {
+      return null;
     }
 
-    @NotNull
-    @Override
-    public CloudSign to(@NotNull Sign sign, @NotNull String group) {
-        return new CloudSign(group, this.accumulate(sign.getLocation()));
+    if (sponge.getBlock().getType().equals(BlockTypes.STANDING_SIGN)
+      || sponge.getBlock().getType().equals(BlockTypes.WALL_SIGN)) {
+      TileEntity entity = sponge.getTileEntity().orElse(null);
+      return entity instanceof Sign ? (Sign) entity : null;
     }
 
-    @NotNull
-    @Override
-    public CloudLocation to(@NotNull Sign sign) {
-        return this.accumulate(sign.getLocation());
+    return null;
+  }
+
+  @NotNull
+  @Override
+  public CloudSign to(@NotNull Sign sign, @NotNull String group) {
+    return new CloudSign(group, this.accumulate(sign.getLocation()));
+  }
+
+  @NotNull
+  @Override
+  public CloudLocation to(@NotNull Sign sign) {
+    return this.accumulate(sign.getLocation());
+  }
+
+  private Location<World> accumulate(CloudLocation location) {
+    World world = Sponge.getServer().getWorld(location.getWorld()).orElse(null);
+    if (world == null) {
+      return null;
     }
 
-    private Location<World> accumulate(CloudLocation location) {
-        World world = Sponge.getServer().getWorld(location.getWorld()).orElse(null);
-        if (world == null) {
-            return null;
-        }
+    return new Location<>(world, location.getX(), location.getY(), location.getZ());
+  }
 
-        return new Location<>(world, location.getX(), location.getY(), location.getZ());
-    }
-
-    private CloudLocation accumulate(Location<World> location) {
-        return new CloudLocation(
-            location.getExtent().getName(),
-            Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
-            location.getX(),
-            location.getY(),
-            location.getZ(),
-            -1,
-            -1
-        );
-    }
+  private CloudLocation accumulate(Location<World> location) {
+    return new CloudLocation(
+      location.getExtent().getName(),
+      Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
+      location.getX(),
+      location.getY(),
+      location.getZ(),
+      -1,
+      -1
+    );
+  }
 }

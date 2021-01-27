@@ -32,13 +32,13 @@ import systems.reformcloud.reformcloud2.protocol.EmptyProtocolPacket;
 
 public class NodeToNodeRequestNodeInformationUpdate extends EmptyProtocolPacket {
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 2;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 2;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        super.post(channel, NodeToNodeRequestNodeInformationUpdate.class, this);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    super.post(channel, NodeToNodeRequestNodeInformationUpdate.class, this);
+  }
 }

@@ -29,9 +29,9 @@ import systems.reformcloud.reformcloud2.executor.api.configuration.json.types.Nu
 
 public final class GsonNull extends GsonElement implements Null {
 
-    public static final GsonNull INSTANCE = new GsonNull(JsonNull.INSTANCE);
+  public static final GsonNull INSTANCE = new GsonNull(JsonNull.INSTANCE);
 
-    private GsonNull(JsonNull jsonNull) {
-        super(jsonNull);
-    }
+  private GsonNull(JsonNull jsonNull) {
+    super(jsonNull);
+  }
 }

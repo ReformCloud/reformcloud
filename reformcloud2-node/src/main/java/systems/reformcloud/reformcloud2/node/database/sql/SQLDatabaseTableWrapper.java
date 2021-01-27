@@ -38,135 +38,135 @@ import java.util.Optional;
 
 public final class SQLDatabaseTableWrapper implements DatabaseTableWrapper {
 
-    private final String name;
-    private final AbstractSQLDatabaseProvider provider;
+  private final String name;
+  private final AbstractSQLDatabaseProvider provider;
 
-    protected SQLDatabaseTableWrapper(@NotNull String name, @NotNull AbstractSQLDatabaseProvider provider) {
-        this.name = name;
-        this.provider = provider;
+  protected SQLDatabaseTableWrapper(@NotNull String name, @NotNull AbstractSQLDatabaseProvider provider) {
+    this.name = name;
+    this.provider = provider;
 
-        provider.executeUpdate("CREATE TABLE IF NOT EXISTS `" + name + "` (`key` TEXT, `identifier` TEXT, `data` LONGBLOB);");
+    provider.executeUpdate("CREATE TABLE IF NOT EXISTS `" + name + "` (`key` TEXT, `identifier` TEXT, `data` LONGBLOB);");
+  }
+
+  @Override
+  public void insert(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration data) {
+    if (this.has(key)) {
+      this.update(key, id, data);
+    } else {
+      this.provider.executeUpdate(
+        "INSERT INTO `" + this.name + "` (`key`, `identifier`, `data`) VALUES (?, ?, ?);",
+        key, id, data.toPrettyBytes()
+      );
     }
+  }
 
-    @Override
-    public void insert(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration data) {
-        if (this.has(key)) {
-            this.update(key, id, data);
-        } else {
-            this.provider.executeUpdate(
-                "INSERT INTO `" + this.name + "` (`key`, `identifier`, `data`) VALUES (?, ?, ?);",
-                key, id, data.toPrettyBytes()
-            );
+  @Override
+  public void update(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration newData) {
+    this.provider.executeUpdate(
+      "UPDATE `" + this.name + "` SET `data` = ? WHERE `key` = ? AND (`identifier` = ? OR `identifier` IS NULL)",
+      newData.toPrettyBytes(), key, id
+    );
+  }
+
+  @Override
+  public void remove(@NotNull String key, @NotNull String id) {
+    this.provider.executeUpdate(
+      "DELETE FROM `" + this.name + "` WHERE `key` = ?" + (id.isEmpty() ? "" : " AND (`identifier` = ? OR `identifier` IS NULL)"),
+      key, id.isEmpty() ? null : id
+    );
+  }
+
+  @NotNull
+  @Override
+  public Optional<JsonConfiguration> get(@NotNull String key, @NotNull String id) {
+    return this.provider.executeQuery(
+      "SELECT `data` FROM `" + this.name + "` WHERE `key` = ?" + (id.isEmpty() ? "" : " AND (`identifier` = ? OR `identifier` IS NULL)"),
+      resultSet -> {
+        if (!resultSet.next()) {
+          return Optional.empty();
         }
-    }
 
-    @Override
-    public void update(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration newData) {
-        this.provider.executeUpdate(
-            "UPDATE `" + this.name + "` SET `data` = ? WHERE `key` = ? AND (`identifier` = ? OR `identifier` IS NULL)",
-            newData.toPrettyBytes(), key, id
-        );
-    }
+        byte[] bytes = resultSet.getBytes("data");
+        if (bytes == null) {
+          return Optional.empty();
+        }
 
-    @Override
-    public void remove(@NotNull String key, @NotNull String id) {
-        this.provider.executeUpdate(
-            "DELETE FROM `" + this.name + "` WHERE `key` = ?" + (id.isEmpty() ? "" : " AND (`identifier` = ? OR `identifier` IS NULL)"),
-            key, id.isEmpty() ? null : id
-        );
-    }
+        try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
+          return Optional.of(JsonConfiguration.newJsonConfiguration(inputStream));
+        } catch (final IOException ex) {
+          ex.printStackTrace();
+          return Optional.empty();
+        }
+      }, Optional.empty(), key, id.isEmpty() ? null : id
+    );
+  }
 
-    @NotNull
-    @Override
-    public Optional<JsonConfiguration> get(@NotNull String key, @NotNull String id) {
-        return this.provider.executeQuery(
-            "SELECT `data` FROM `" + this.name + "` WHERE `key` = ?" + (id.isEmpty() ? "" : " AND (`identifier` = ? OR `identifier` IS NULL)"),
-            resultSet -> {
-                if (!resultSet.next()) {
-                    return Optional.empty();
-                }
+  @NotNull
+  @Override
+  public @UnmodifiableView Collection<String> getEntryNames() {
+    return this.provider.executeQuery(
+      "SELECT `key` FROM " + this.name,
+      resultSet -> {
+        Collection<String> result = new ArrayList<>();
+        while (resultSet.next()) {
+          result.add(resultSet.getString("key"));
+        }
 
-                byte[] bytes = resultSet.getBytes("data");
-                if (bytes == null) {
-                    return Optional.empty();
-                }
+        return result;
+      }, new ArrayList<>()
+    );
+  }
 
-                try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
-                    return Optional.of(JsonConfiguration.newJsonConfiguration(inputStream));
-                } catch (final IOException ex) {
-                    ex.printStackTrace();
-                    return Optional.empty();
-                }
-            }, Optional.empty(), key, id.isEmpty() ? null : id
-        );
-    }
+  @Override
+  public long count() {
+    return this.provider.executeQuery(
+      "SELECT COUNT(*) FROM " + this.name,
+      resultSet -> {
+        if (resultSet.next()) {
+          return resultSet.getLong(1);
+        }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Collection<String> getEntryNames() {
-        return this.provider.executeQuery(
-            "SELECT `key` FROM " + this.name,
-            resultSet -> {
-                Collection<String> result = new ArrayList<>();
-                while (resultSet.next()) {
-                    result.add(resultSet.getString("key"));
-                }
+        return -1L;
+      }, -1L);
+  }
 
-                return result;
-            }, new ArrayList<>()
-        );
-    }
+  @Override
+  public void clear() {
+    this.provider.executeUpdate("TRUNCATE TABLE " + this.name);
+  }
 
-    @Override
-    public long count() {
-        return this.provider.executeQuery(
-            "SELECT COUNT(*) FROM " + this.name,
-            resultSet -> {
-                if (resultSet.next()) {
-                    return resultSet.getLong(1);
-                }
+  @NotNull
+  @Override
+  public @UnmodifiableView Collection<JsonConfiguration> getAll() {
+    return this.provider.executeQuery(
+      "SELECT `data` FROM " + this.name,
+      resultSet -> {
+        Collection<JsonConfiguration> result = new ArrayList<>();
+        while (resultSet.next()) {
+          byte[] bytes = resultSet.getBytes("data");
+          if (bytes == null) {
+            continue;
+          }
 
-                return -1L;
-            }, -1L);
-    }
+          try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
+            result.add(JsonConfiguration.newJsonConfiguration(inputStream));
+          } catch (final IOException ex) {
+            ex.printStackTrace();
+          }
+        }
 
-    @Override
-    public void clear() {
-        this.provider.executeUpdate("TRUNCATE TABLE " + this.name);
-    }
+        return result;
+      }, new ArrayList<>()
+    );
+  }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Collection<JsonConfiguration> getAll() {
-        return this.provider.executeQuery(
-            "SELECT `data` FROM " + this.name,
-            resultSet -> {
-                Collection<JsonConfiguration> result = new ArrayList<>();
-                while (resultSet.next()) {
-                    byte[] bytes = resultSet.getBytes("data");
-                    if (bytes == null) {
-                        continue;
-                    }
-
-                    try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
-                        result.add(JsonConfiguration.newJsonConfiguration(inputStream));
-                    } catch (final IOException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-
-                return result;
-            }, new ArrayList<>()
-        );
-    }
-
-    @Override
-    public boolean has(@NotNull String key) {
-        return this.provider.executeQuery(
-            "SELECT `key` FROM " + this.name + " WHERE `key` = ?",
-            resultSet -> resultSet.next() && resultSet.getString("key") != null,
-            false,
-            key
-        );
-    }
+  @Override
+  public boolean has(@NotNull String key) {
+    return this.provider.executeQuery(
+      "SELECT `key` FROM " + this.name + " WHERE `key` = ?",
+      resultSet -> resultSet.next() && resultSet.getString("key") != null,
+      false,
+      key
+    );
+  }
 }

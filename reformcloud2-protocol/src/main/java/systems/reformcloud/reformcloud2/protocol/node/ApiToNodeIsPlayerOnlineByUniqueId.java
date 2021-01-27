@@ -36,33 +36,33 @@ import java.util.UUID;
 
 public class ApiToNodeIsPlayerOnlineByUniqueId extends ProtocolPacket {
 
-    private UUID uniqueId;
+  private UUID uniqueId;
 
-    public ApiToNodeIsPlayerOnlineByUniqueId() {
-    }
+  public ApiToNodeIsPlayerOnlineByUniqueId() {
+  }
 
-    public ApiToNodeIsPlayerOnlineByUniqueId(UUID uniqueId) {
-        this.uniqueId = uniqueId;
-    }
+  public ApiToNodeIsPlayerOnlineByUniqueId(UUID uniqueId) {
+    this.uniqueId = uniqueId;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 42;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 42;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        boolean online = ExecutorAPI.getInstance().getPlayerProvider().isPlayerOnline(this.uniqueId);
-        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeIsPlayerOnlineResult(online));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    boolean online = ExecutorAPI.getInstance().getPlayerProvider().isPlayerOnline(this.uniqueId);
+    channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeIsPlayerOnlineResult(online));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.uniqueId);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.uniqueId);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.uniqueId = buffer.readUniqueId();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.uniqueId = buffer.readUniqueId();
+  }
 }

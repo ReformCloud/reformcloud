@@ -36,74 +36,74 @@ import java.util.Optional;
  */
 public interface ApplicationLoader {
 
-    /**
-     * Detects all applications
-     */
-    void detectApplications();
+  /**
+   * Detects all applications
+   */
+  void detectApplications();
 
-    /**
-     * Loads all applications
-     */
-    void loadApplications();
+  /**
+   * Loads all applications
+   */
+  void loadApplications();
 
-    /**
-     * Enables all applications
-     */
-    void enableApplications();
+  /**
+   * Enables all applications
+   */
+  void enableApplications();
 
-    /**
-     * Disables all applications
-     */
-    void disableApplications();
+  /**
+   * Disables all applications
+   */
+  void disableApplications();
 
-    /**
-     * Fetches all updates for all applications &amp; downloads them
-     */
-    void fetchAllUpdates();
+  /**
+   * Fetches all updates for all applications &amp; downloads them
+   */
+  void fetchAllUpdates();
 
-    /**
-     * Fetches the updates for a specific addon
-     *
-     * @param application The name of the application which should get checked
-     */
-    void fetchUpdates(@NotNull String application);
+  /**
+   * Fetches the updates for a specific addon
+   *
+   * @param application The name of the application which should get checked
+   */
+  void fetchUpdates(@NotNull String application);
 
-    /**
-     * Installs an specific application
-     *
-     * @param application The application which should get installed
-     * @return If the cloud can find the application and install it {@code true} else {@code false}
-     */
-    boolean doSpecificApplicationInstall(@NotNull Path application);
+  /**
+   * Installs an specific application
+   *
+   * @param application The application which should get installed
+   * @return If the cloud can find the application and install it {@code true} else {@code false}
+   */
+  boolean doSpecificApplicationInstall(@NotNull Path application);
 
-    /**
-     * Unloads a specific application
-     *
-     * @param loadedApplication The application which should get unloaded
-     * @return If the application was loaded and got unloaded
-     */
-    boolean doSpecificApplicationUninstall(@NotNull LoadedApplication loadedApplication);
+  /**
+   * Unloads a specific application
+   *
+   * @param loadedApplication The application which should get unloaded
+   * @return If the application was loaded and got unloaded
+   */
+  boolean doSpecificApplicationUninstall(@NotNull LoadedApplication loadedApplication);
 
-    /**
-     * Get a specific application
-     *
-     * @param name The name of the application
-     * @return The loaded application or empty if the application is not loaded
-     */
-    @NotNull
-    Optional<LoadedApplication> getApplication(@NotNull String name);
+  /**
+   * Get a specific application
+   *
+   * @param name The name of the application
+   * @return The loaded application or empty if the application is not loaded
+   */
+  @NotNull
+  Optional<LoadedApplication> getApplication(@NotNull String name);
 
-    /**
-     * @return All currently loaded applications in the runtime
-     */
-    @NotNull
-    @UnmodifiableView
-    Collection<LoadedApplication> getApplications();
+  /**
+   * @return All currently loaded applications in the runtime
+   */
+  @NotNull
+  @UnmodifiableView
+  Collection<LoadedApplication> getApplications();
 
-    /**
-     * @return the folder from which the applications are loaded.
-     * @since 20. October 2020
-     */
-    @NotNull
-    Path getApplicationFolder();
+  /**
+   * @return the folder from which the applications are loaded.
+   * @since 20. October 2020
+   */
+  @NotNull
+  Path getApplicationFolder();
 }

@@ -35,26 +35,26 @@ import systems.reformcloud.reformcloud2.executor.api.http.request.RequestMethod;
  */
 public interface HttpListenerRegistryEntry {
 
-    /**
-     * Get the actual listeners this entry is for.
-     *
-     * @return the actual listener.
-     */
-    @NotNull
-    HttpListener getListener();
+  /**
+   * Get the actual listeners this entry is for.
+   *
+   * @return the actual listener.
+   */
+  @NotNull
+  HttpListener getListener();
 
-    /**
-     * Get the handling requests methods of this listener entry.
-     *
-     * @return the handling requests methods of this listener entry.
-     */
-    @NotNull
-    RequestMethod[] getHandlingRequestMethods();
+  /**
+   * Get the handling requests methods of this listener entry.
+   *
+   * @return the handling requests methods of this listener entry.
+   */
+  @NotNull
+  RequestMethod[] getHandlingRequestMethods();
 
-    /**
-     * Get the priority of this listener.
-     *
-     * @return the priority of this listener.
-     */
-    int priority();
+  /**
+   * Get the priority of this listener.
+   *
+   * @return the priority of this listener.
+   */
+  int priority();
 }

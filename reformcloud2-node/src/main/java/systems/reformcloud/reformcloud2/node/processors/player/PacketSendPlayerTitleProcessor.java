@@ -30,9 +30,9 @@ import systems.reformcloud.reformcloud2.protocol.shared.PacketSendPlayerTitle;
 
 public class PacketSendPlayerTitleProcessor extends PlayerApiToNodePacketProcessor<PacketSendPlayerTitle> {
 
-    @Override
-    public void process(@NotNull NetworkChannel channel, @NotNull PacketSendPlayerTitle packet) {
-        this.getPlayerProvider().getPlayer(packet.getUniqueId())
-            .ifPresent(wrapper -> wrapper.sendTitle(packet.getTitle(), packet.getSubTitle(), packet.getFadeIn(), packet.getStay(), packet.getFadeOut()));
-    }
+  @Override
+  public void process(@NotNull NetworkChannel channel, @NotNull PacketSendPlayerTitle packet) {
+    this.getPlayerProvider().getPlayer(packet.getUniqueId())
+      .ifPresent(wrapper -> wrapper.sendTitle(packet.getTitle(), packet.getSubTitle(), packet.getFadeIn(), packet.getStay(), packet.getFadeOut()));
+  }
 }

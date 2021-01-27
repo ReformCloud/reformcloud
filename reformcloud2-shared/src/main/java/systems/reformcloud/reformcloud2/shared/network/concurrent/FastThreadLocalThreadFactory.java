@@ -32,16 +32,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class FastThreadLocalThreadFactory implements ThreadFactory {
 
-    private final String nameFormat;
-    private final AtomicInteger threadNumber = new AtomicInteger();
+  private final String nameFormat;
+  private final AtomicInteger threadNumber = new AtomicInteger();
 
-    public FastThreadLocalThreadFactory(String nameFormat) {
-        this.nameFormat = nameFormat;
-    }
+  public FastThreadLocalThreadFactory(String nameFormat) {
+    this.nameFormat = nameFormat;
+  }
 
-    @Override
-    public Thread newThread(@NotNull Runnable r) {
-        String name = String.format(this.nameFormat, this.threadNumber.getAndIncrement());
-        return new FastThreadLocalThread(r, name);
-    }
+  @Override
+  public Thread newThread(@NotNull Runnable r) {
+    String name = String.format(this.nameFormat, this.threadNumber.getAndIncrement());
+    return new FastThreadLocalThread(r, name);
+  }
 }

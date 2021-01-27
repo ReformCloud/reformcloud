@@ -35,75 +35,75 @@ import java.net.UnknownHostException;
 
 public class DefaultNetworkAddress implements NetworkAddress {
 
-    private String host;
-    private int port;
-    //
-    private transient InetAddress inetAddress;
-    private transient InetSocketAddress inetSocketAddress;
+  private String host;
+  private int port;
+  //
+  private transient InetAddress inetAddress;
+  private transient InetSocketAddress inetSocketAddress;
 
-    protected DefaultNetworkAddress() {
-    }
+  protected DefaultNetworkAddress() {
+  }
 
-    @ApiStatus.Internal
-    public DefaultNetworkAddress(String host, int port) {
-        this.host = host;
-        this.port = port;
-    }
+  @ApiStatus.Internal
+  public DefaultNetworkAddress(String host, int port) {
+    this.host = host;
+    this.port = port;
+  }
 
-    @Override
-    public @NotNull String getHost() {
-        return this.host;
-    }
+  @Override
+  public @NotNull String getHost() {
+    return this.host;
+  }
 
-    @Override
-    public void setHost(@NotNull String host) {
-        this.host = host;
-    }
+  @Override
+  public void setHost(@NotNull String host) {
+    this.host = host;
+  }
 
-    @Override
-    public @Range(from = 0, to = 65535) int getPort() {
-        return this.port;
-    }
+  @Override
+  public @Range(from = 0, to = 65535) int getPort() {
+    return this.port;
+  }
 
-    @Override
-    public void setPort(@Range(from = 0, to = 65535) int port) {
-        this.port = port;
-    }
+  @Override
+  public void setPort(@Range(from = 0, to = 65535) int port) {
+    this.port = port;
+  }
 
-    @Override
-    public @NotNull InetAddress toInetAddress() {
-        if (this.inetAddress == null) {
-            try {
-                this.inetAddress = InetAddress.getByName(this.host);
-            } catch (UnknownHostException exception) {
-                throw new IllegalStateException("Unable to resolve host " + this.host, exception);
-            }
-        }
-        return this.inetAddress;
+  @Override
+  public @NotNull InetAddress toInetAddress() {
+    if (this.inetAddress == null) {
+      try {
+        this.inetAddress = InetAddress.getByName(this.host);
+      } catch (UnknownHostException exception) {
+        throw new IllegalStateException("Unable to resolve host " + this.host, exception);
+      }
     }
+    return this.inetAddress;
+  }
 
-    @Override
-    public @NotNull InetSocketAddress toInetSocketAddress() {
-        if (this.inetSocketAddress == null) {
-            this.inetSocketAddress = new InetSocketAddress(this.toInetAddress(), this.port);
-        }
-        return this.inetSocketAddress;
+  @Override
+  public @NotNull InetSocketAddress toInetSocketAddress() {
+    if (this.inetSocketAddress == null) {
+      this.inetSocketAddress = new InetSocketAddress(this.toInetAddress(), this.port);
     }
+    return this.inetSocketAddress;
+  }
 
-    @Override
-    public @NotNull NetworkAddress clone() {
-        return new DefaultNetworkAddress(this.host, this.port);
-    }
+  @Override
+  public @NotNull NetworkAddress clone() {
+    return new DefaultNetworkAddress(this.host, this.port);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.host);
-        buffer.writeInt(this.port);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.host);
+    buffer.writeInt(this.port);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.host = buffer.readString();
-        this.port = buffer.readInt();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.host = buffer.readString();
+    this.port = buffer.readInt();
+  }
 }

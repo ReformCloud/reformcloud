@@ -39,36 +39,36 @@ import java.util.UUID;
 
 public class ApiToNodeSetProcessRuntimeState extends ProtocolPacket {
 
-    private UUID processUniqueId;
-    private ProcessState runtimeState;
+  private UUID processUniqueId;
+  private ProcessState runtimeState;
 
-    public ApiToNodeSetProcessRuntimeState() {
-    }
+  public ApiToNodeSetProcessRuntimeState() {
+  }
 
-    public ApiToNodeSetProcessRuntimeState(ProcessInformation information, ProcessState runtimeState) {
-        this.processUniqueId = information.getId().getUniqueId();
-        this.runtimeState = runtimeState;
-    }
+  public ApiToNodeSetProcessRuntimeState(ProcessInformation information, ProcessState runtimeState) {
+    this.processUniqueId = information.getId().getUniqueId();
+    this.runtimeState = runtimeState;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 85;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 85;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(this.processUniqueId).ifPresent(wrapper -> wrapper.setRuntimeStateAsync(this.runtimeState));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(this.processUniqueId).ifPresent(wrapper -> wrapper.setRuntimeStateAsync(this.runtimeState));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.processUniqueId);
-        buffer.writeInt(this.runtimeState.ordinal());
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.processUniqueId);
+    buffer.writeInt(this.runtimeState.ordinal());
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.processUniqueId = buffer.readUniqueId();
-        this.runtimeState = EnumUtil.findEnumFieldByIndex(ProcessState.class, buffer.readInt()).orElse(null);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.processUniqueId = buffer.readUniqueId();
+    this.runtimeState = EnumUtil.findEnumFieldByIndex(ProcessState.class, buffer.readInt()).orElse(null);
+  }
 }

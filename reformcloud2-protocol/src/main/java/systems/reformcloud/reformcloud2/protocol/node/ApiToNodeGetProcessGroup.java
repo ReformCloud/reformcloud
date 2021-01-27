@@ -37,33 +37,33 @@ import java.util.Optional;
 
 public class ApiToNodeGetProcessGroup extends ProtocolPacket {
 
-    private String name;
+  private String name;
 
-    public ApiToNodeGetProcessGroup() {
-    }
+  public ApiToNodeGetProcessGroup() {
+  }
 
-    public ApiToNodeGetProcessGroup(String name) {
-        this.name = name;
-    }
+  public ApiToNodeGetProcessGroup(String name) {
+    this.name = name;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 63;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 63;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        Optional<ProcessGroup> processGroup = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(this.name);
-        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetProcessGroupResult(processGroup.orElse(null)));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    Optional<ProcessGroup> processGroup = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(this.name);
+    channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetProcessGroupResult(processGroup.orElse(null)));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.name);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeString(this.name);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.name = buffer.readString();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.name = buffer.readString();
+  }
 }

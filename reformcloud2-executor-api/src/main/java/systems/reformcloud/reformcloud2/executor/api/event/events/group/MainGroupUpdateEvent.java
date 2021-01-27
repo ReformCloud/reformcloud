@@ -28,7 +28,7 @@ import systems.reformcloud.reformcloud2.executor.api.group.main.MainGroup;
 
 public class MainGroupUpdateEvent extends MainGroupEvent {
 
-    public MainGroupUpdateEvent(MainGroup mainGroup) {
-        super(mainGroup);
-    }
+  public MainGroupUpdateEvent(MainGroup mainGroup) {
+    super(mainGroup);
+  }
 }

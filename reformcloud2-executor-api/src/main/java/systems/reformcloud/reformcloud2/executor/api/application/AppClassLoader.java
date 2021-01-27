@@ -32,19 +32,19 @@ import java.net.URLClassLoader;
 
 public final class AppClassLoader extends URLClassLoader {
 
-    static {
-        ClassLoader.registerAsParallelCapable();
-    }
+  static {
+    ClassLoader.registerAsParallelCapable();
+  }
 
-    public AppClassLoader(@NotNull URL[] urls, @NotNull ClassLoader parent) {
-        super(urls, parent);
-    }
+  public AppClassLoader(@NotNull URL[] urls, @NotNull ClassLoader parent) {
+    super(urls, parent);
+  }
 
-    @Override
-    public void close() {
-        try {
-            super.close();
-        } catch (final IOException ignored) {
-        }
+  @Override
+  public void close() {
+    try {
+      super.close();
+    } catch (final IOException ignored) {
     }
+  }
 }

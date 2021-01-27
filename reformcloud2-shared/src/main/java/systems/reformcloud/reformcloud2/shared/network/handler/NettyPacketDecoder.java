@@ -36,15 +36,15 @@ import java.util.List;
 
 public class NettyPacketDecoder extends MessageToMessageDecoder<ByteBuf> {
 
-    @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) {
-        if (ctx.channel().isActive() && msg.isReadable()) {
-            ProtocolBuffer buffer = new DefaultProtocolBuffer(msg);
-            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).getPacketById(buffer.readVarInt()).ifPresent(packet -> {
-                packet.setQueryUniqueID(buffer.readUniqueId());
-                packet.read(buffer);
-                out.add(packet);
-            });
-        }
+  @Override
+  protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) {
+    if (ctx.channel().isActive() && msg.isReadable()) {
+      ProtocolBuffer buffer = new DefaultProtocolBuffer(msg);
+      ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).getPacketById(buffer.readVarInt()).ifPresent(packet -> {
+        packet.setQueryUniqueID(buffer.readUniqueId());
+        packet.read(buffer);
+        out.add(packet);
+      });
     }
+  }
 }

@@ -33,31 +33,31 @@ import java.util.Collection;
 
 public class NodeToNodeProcessCommandResult extends QueryResultPacket {
 
-    private Collection<String> result;
+  private Collection<String> result;
 
-    public NodeToNodeProcessCommandResult() {
-    }
+  public NodeToNodeProcessCommandResult() {
+  }
 
-    public NodeToNodeProcessCommandResult(Collection<String> result) {
-        this.result = result;
-    }
+  public NodeToNodeProcessCommandResult(Collection<String> result) {
+    this.result = result;
+  }
 
-    public Collection<String> getResult() {
-        return this.result;
-    }
+  public Collection<String> getResult() {
+    return this.result;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 6;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 6;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeStringArray(this.result);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeStringArray(this.result);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.result = buffer.readStringArray();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.result = buffer.readStringArray();
+  }
 }

@@ -38,32 +38,32 @@ import java.util.Collection;
 
 public class NodeToNodeSetProcesses extends ProtocolPacket {
 
-    private Collection<ProcessInformation> processInformation;
+  private Collection<ProcessInformation> processInformation;
 
-    public NodeToNodeSetProcesses() {
-    }
+  public NodeToNodeSetProcesses() {
+  }
 
-    public NodeToNodeSetProcesses(Collection<ProcessInformation> processInformation) {
-        this.processInformation = processInformation;
-    }
+  public NodeToNodeSetProcesses(Collection<ProcessInformation> processInformation) {
+    this.processInformation = processInformation;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 13;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 13;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleProcessSet(this.processInformation);
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleProcessSet(this.processInformation);
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObjects(this.processInformation);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObjects(this.processInformation);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.processInformation = buffer.readObjects(ProcessInformation.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.processInformation = buffer.readObjects(ProcessInformation.class);
+  }
 }

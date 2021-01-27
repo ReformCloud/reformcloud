@@ -37,35 +37,35 @@ import java.util.UUID;
 
 public class NodeToNodeGetLastLogLines extends ProtocolPacket {
 
-    private UUID uniqueId;
+  private UUID uniqueId;
 
-    public NodeToNodeGetLastLogLines() {
-    }
+  public NodeToNodeGetLastLogLines() {
+  }
 
-    public NodeToNodeGetLastLogLines(UUID uniqueId) {
-        this.uniqueId = uniqueId;
-    }
+  public NodeToNodeGetLastLogLines(UUID uniqueId) {
+    this.uniqueId = uniqueId;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 29;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 29;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(this.uniqueId).ifPresent(wrapper -> {
-            Queue<String> lines = wrapper.getLastLogLines();
-            channel.sendQueryResult(this.getQueryUniqueID(), new NodeToNodeGetLastLogLinesResult(lines));
-        });
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(this.uniqueId).ifPresent(wrapper -> {
+      Queue<String> lines = wrapper.getLastLogLines();
+      channel.sendQueryResult(this.getQueryUniqueID(), new NodeToNodeGetLastLogLinesResult(lines));
+    });
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.uniqueId);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.uniqueId);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.uniqueId = buffer.readUniqueId();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.uniqueId = buffer.readUniqueId();
+  }
 }

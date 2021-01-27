@@ -39,40 +39,40 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultChannelManager implements ChannelManager {
 
-    private final Map<String, NetworkChannel> channels = new ConcurrentHashMap<>();
+  private final Map<String, NetworkChannel> channels = new ConcurrentHashMap<>();
 
-    @NotNull
-    @Override
-    public Optional<NetworkChannel> getChannel(@NotNull String name) {
-        return Optional.ofNullable(this.channels.get(name));
-    }
+  @NotNull
+  @Override
+  public Optional<NetworkChannel> getChannel(@NotNull String name) {
+    return Optional.ofNullable(this.channels.get(name));
+  }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Collection<NetworkChannel> getNetworkChannels(@NotNull String remoteAddress) {
-        return MoreCollections.allOf(this.channels.values(), channel -> channel.getRemoteAddress().getHost().equals(remoteAddress));
-    }
+  @NotNull
+  @Override
+  public @UnmodifiableView Collection<NetworkChannel> getNetworkChannels(@NotNull String remoteAddress) {
+    return MoreCollections.allOf(this.channels.values(), channel -> channel.getRemoteAddress().getHost().equals(remoteAddress));
+  }
 
-    @NotNull
-    @Override
-    public Optional<NetworkChannel> getFirstChannel() {
-        Iterator<NetworkChannel> iterator = this.channels.values().iterator();
-        return iterator.hasNext() ? Optional.of(iterator.next()) : Optional.empty();
-    }
+  @NotNull
+  @Override
+  public Optional<NetworkChannel> getFirstChannel() {
+    Iterator<NetworkChannel> iterator = this.channels.values().iterator();
+    return iterator.hasNext() ? Optional.of(iterator.next()) : Optional.empty();
+  }
 
-    @NotNull
-    @Override
-    public @UnmodifiableView Collection<NetworkChannel> getRegisteredChannels() {
-        return Collections.unmodifiableCollection(this.channels.values());
-    }
+  @NotNull
+  @Override
+  public @UnmodifiableView Collection<NetworkChannel> getRegisteredChannels() {
+    return Collections.unmodifiableCollection(this.channels.values());
+  }
 
-    @Override
-    public void registerChannel(@NotNull NetworkChannel channel) {
-        this.channels.put(channel.getName(), channel);
-    }
+  @Override
+  public void registerChannel(@NotNull NetworkChannel channel) {
+    this.channels.put(channel.getName(), channel);
+  }
 
-    @Override
-    public void unregisterChannel(@NotNull String name) {
-        this.channels.remove(name);
-    }
+  @Override
+  public void unregisterChannel(@NotNull String name) {
+    this.channels.remove(name);
+  }
 }

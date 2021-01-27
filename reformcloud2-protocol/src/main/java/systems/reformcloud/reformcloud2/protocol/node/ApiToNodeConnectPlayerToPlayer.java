@@ -36,44 +36,44 @@ import java.util.UUID;
 
 public class ApiToNodeConnectPlayerToPlayer extends ProtocolPacket {
 
-    private UUID playerUniqueId;
-    private UUID otherPlayer;
+  private UUID playerUniqueId;
+  private UUID otherPlayer;
 
-    public ApiToNodeConnectPlayerToPlayer() {
-    }
+  public ApiToNodeConnectPlayerToPlayer() {
+  }
 
-    public ApiToNodeConnectPlayerToPlayer(UUID playerUniqueId, UUID otherPlayer) {
-        this.playerUniqueId = playerUniqueId;
-        this.otherPlayer = otherPlayer;
-    }
+  public ApiToNodeConnectPlayerToPlayer(UUID playerUniqueId, UUID otherPlayer) {
+    this.playerUniqueId = playerUniqueId;
+    this.otherPlayer = otherPlayer;
+  }
 
-    public UUID getOtherPlayer() {
-        return this.otherPlayer;
-    }
+  public UUID getOtherPlayer() {
+    return this.otherPlayer;
+  }
 
-    public UUID getPlayerUniqueId() {
-        return this.playerUniqueId;
-    }
+  public UUID getPlayerUniqueId() {
+    return this.playerUniqueId;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.EMBEDDED_BUS + 46;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.EMBEDDED_BUS + 46;
+  }
 
-    @Override
-    public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.playerUniqueId).ifPresent(e -> e.connect(this.otherPlayer));
-    }
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.playerUniqueId).ifPresent(e -> e.connect(this.otherPlayer));
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.playerUniqueId);
-        buffer.writeUniqueId(this.otherPlayer);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.playerUniqueId);
+    buffer.writeUniqueId(this.otherPlayer);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.playerUniqueId = buffer.readUniqueId();
-        this.otherPlayer = buffer.readUniqueId();
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.playerUniqueId = buffer.readUniqueId();
+    this.otherPlayer = buffer.readUniqueId();
+  }
 }

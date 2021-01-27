@@ -28,5 +28,5 @@ import java.net.HttpURLConnection;
 
 @FunctionalInterface
 public interface DownloadCallback {
-    void handleConnection(HttpURLConnection connection, Throwable exception) throws Throwable;
+  void handleConnection(HttpURLConnection connection, Throwable exception) throws Throwable;
 }

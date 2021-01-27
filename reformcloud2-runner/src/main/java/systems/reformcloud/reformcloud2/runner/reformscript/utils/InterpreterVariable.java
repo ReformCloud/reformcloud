@@ -33,32 +33,32 @@ import java.util.Collection;
  */
 public abstract class InterpreterVariable {
 
-    private final String plain;
+  private final String plain;
 
-    /**
-     * Creates a new variable
-     *
-     * @param plain The plain variable name which can get wrapped
-     */
-    public InterpreterVariable(@NotNull String plain) {
-        this.plain = plain.toLowerCase();
-    }
+  /**
+   * Creates a new variable
+   *
+   * @param plain The plain variable name which can get wrapped
+   */
+  public InterpreterVariable(@NotNull String plain) {
+    this.plain = plain.toLowerCase();
+  }
 
-    /**
-     * @return The wrapped name of the variable
-     */
-    @NotNull
-    public String wrap() {
-        return "_%_" + this.plain + "_%_";
-    }
+  /**
+   * @return The wrapped name of the variable
+   */
+  @NotNull
+  public String wrap() {
+    return "_%_" + this.plain + "_%_";
+  }
 
-    /**
-     * Unwraps the current variable and returns the replaced string
-     *
-     * @param cursorLine The current line of the cursor
-     * @param fullLines  All lines of the script
-     * @return The replaced string of the current variable
-     */
-    @NotNull
-    public abstract String unwrap(@NotNull String cursorLine, @NotNull Collection<String> fullLines);
+  /**
+   * Unwraps the current variable and returns the replaced string
+   *
+   * @param cursorLine The current line of the cursor
+   * @param fullLines  All lines of the script
+   * @return The replaced string of the current variable
+   */
+  @NotNull
+  public abstract String unwrap(@NotNull String cursorLine, @NotNull Collection<String> fullLines);
 }

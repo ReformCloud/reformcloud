@@ -37,29 +37,29 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface ContinuationSocketFrame<T extends ContinuationSocketFrame<T>> extends SocketFrame<T> {
 
-    /**
-     * Get the text data in this frame.
-     *
-     * @return the text data in this frame.
-     */
-    @NotNull
-    String text();
+  /**
+   * Get the text data in this frame.
+   *
+   * @return the text data in this frame.
+   */
+  @NotNull
+  String text();
 
-    /**
-     * Sets the text data in this frame.
-     *
-     * @param text the text data in this frame.
-     * @return the same instance of this class, for chaining
-     */
-    @NotNull
-    T text(@NotNull String text);
+  /**
+   * Sets the text data in this frame.
+   *
+   * @param text the text data in this frame.
+   * @return the same instance of this class, for chaining
+   */
+  @NotNull
+  T text(@NotNull String text);
 
-    /**
-     * {@inheritDoc}
-     */
-    @NotNull
-    @Override
-    default SocketFrameType type() {
-        return SocketFrameType.CONTINUATION;
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @NotNull
+  @Override
+  default SocketFrameType type() {
+    return SocketFrameType.CONTINUATION;
+  }
 }

@@ -28,9 +28,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class ProviderNotRegisteredException extends RuntimeException {
 
-    private static final long serialVersionUID = -4706963432668698438L;
+  private static final long serialVersionUID = -4706963432668698438L;
 
-    public ProviderNotRegisteredException(@NotNull Class<?> service) {
-        super("No provider for service " + service.getName() + " is registered");
-    }
+  public ProviderNotRegisteredException(@NotNull Class<?> service) {
+    super("No provider for service " + service.getName() + " is registered");
+  }
 }

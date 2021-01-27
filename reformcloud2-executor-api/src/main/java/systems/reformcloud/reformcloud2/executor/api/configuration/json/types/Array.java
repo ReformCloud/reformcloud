@@ -32,39 +32,39 @@ import java.util.Optional;
 
 public interface Array extends Element, Iterable<Element>, Cloneable {
 
-    @NotNull
-    Array add(@Nullable Boolean bool);
+  @NotNull
+  Array add(@Nullable Boolean bool);
 
-    @NotNull
-    Array add(@Nullable Character character);
+  @NotNull
+  Array add(@Nullable Character character);
 
-    @NotNull
-    Array add(@Nullable Number number);
+  @NotNull
+  Array add(@Nullable Number number);
 
-    @NotNull
-    Array add(@Nullable String string);
+  @NotNull
+  Array add(@Nullable String string);
 
-    @NotNull
-    Array add(@Nullable Element element);
+  @NotNull
+  Array add(@Nullable Element element);
 
-    @NotNull
-    Array addAll(@NotNull Array array);
+  @NotNull
+  Array addAll(@NotNull Array array);
 
-    @NotNull
-    Optional<Element> set(int index, @NotNull Element element) throws ArrayIndexOutOfBoundsException;
+  @NotNull
+  Optional<Element> set(int index, @NotNull Element element) throws ArrayIndexOutOfBoundsException;
 
-    boolean remove(@NotNull Element element);
+  boolean remove(@NotNull Element element);
 
-    @NotNull
-    Optional<Element> remove(int index);
+  @NotNull
+  Optional<Element> remove(int index);
 
-    boolean contains(@NotNull Element element);
+  boolean contains(@NotNull Element element);
 
-    int size();
+  int size();
 
-    @NotNull
-    Optional<Element> get(int i);
+  @NotNull
+  Optional<Element> get(int i);
 
-    @NotNull
-    Array clone();
+  @NotNull
+  Array clone();
 }

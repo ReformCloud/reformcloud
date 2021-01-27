@@ -32,31 +32,31 @@ import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
 public class NodeToHeadNodeCreateProcessResult extends QueryResultPacket {
 
-    private ProcessInformation processInformation;
+  private ProcessInformation processInformation;
 
-    public NodeToHeadNodeCreateProcessResult() {
-    }
+  public NodeToHeadNodeCreateProcessResult() {
+  }
 
-    public NodeToHeadNodeCreateProcessResult(ProcessInformation processInformation) {
-        this.processInformation = processInformation;
-    }
+  public NodeToHeadNodeCreateProcessResult(ProcessInformation processInformation) {
+    this.processInformation = processInformation;
+  }
 
-    public ProcessInformation getProcessInformation() {
-        return this.processInformation;
-    }
+  public ProcessInformation getProcessInformation() {
+    return this.processInformation;
+  }
 
-    @Override
-    public int getId() {
-        return PacketIds.NODE_BUS + 23;
-    }
+  @Override
+  public int getId() {
+    return PacketIds.NODE_BUS + 23;
+  }
 
-    @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.processInformation);
-    }
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeObject(this.processInformation);
+  }
 
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.processInformation = buffer.readObject(ProcessInformation.class);
-    }
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.processInformation = buffer.readObject(ProcessInformation.class);
+  }
 }

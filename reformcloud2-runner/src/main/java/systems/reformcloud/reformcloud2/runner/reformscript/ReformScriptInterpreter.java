@@ -39,64 +39,64 @@ import java.nio.file.Path;
  */
 public interface ReformScriptInterpreter {
 
-    /**
-     * Registers a command for the reform script which will get executed in the interpreted version
-     * of the script ({@link InterpretedReformScript})
-     *
-     * @param command The command which should be registered
-     * @return The same reform script interpreter instance as used to call the method
-     */
-    @NotNull
-    ReformScriptInterpreter registerInterpreterCommand(@NotNull InterpreterCommand command);
+  /**
+   * Registers a command for the reform script which will get executed in the interpreted version
+   * of the script ({@link InterpretedReformScript})
+   *
+   * @param command The command which should be registered
+   * @return The same reform script interpreter instance as used to call the method
+   */
+  @NotNull
+  ReformScriptInterpreter registerInterpreterCommand(@NotNull InterpreterCommand command);
 
-    /**
-     * Registers a variable which should be replaced if the variable pattern appears in the script code
-     *
-     * @param variable The variable which should be registered
-     * @return The same reform script interpreter instance as used to call the method
-     */
-    @NotNull
-    ReformScriptInterpreter registerInterpreterVariable(@NotNull InterpreterVariable variable);
+  /**
+   * Registers a variable which should be replaced if the variable pattern appears in the script code
+   *
+   * @param variable The variable which should be registered
+   * @return The same reform script interpreter instance as used to call the method
+   */
+  @NotNull
+  ReformScriptInterpreter registerInterpreterVariable(@NotNull InterpreterVariable variable);
 
-    /**
-     * Get the command by the given name
-     *
-     * @param command The name of the command which should get found
-     * @return The command by the given name or {@code null} if the command is unknown
-     */
-    @Nullable
-    InterpreterCommand getCommand(@NotNull String command);
+  /**
+   * Get the command by the given name
+   *
+   * @param command The name of the command which should get found
+   * @return The command by the given name or {@code null} if the command is unknown
+   */
+  @Nullable
+  InterpreterCommand getCommand(@NotNull String command);
 
-    /**
-     * Get the variable by the given name
-     *
-     * @param variable The name of the variable which should get found
-     * @return The variable by the name or {@code null} if the variable is unknown
-     */
-    @Nullable
-    InterpreterVariable getVariable(@NotNull String variable);
+  /**
+   * Get the variable by the given name
+   *
+   * @param variable The name of the variable which should get found
+   * @return The variable by the name or {@code null} if the variable is unknown
+   */
+  @Nullable
+  InterpreterVariable getVariable(@NotNull String variable);
 
-    /**
-     * Interprets the given file as a reform script
-     *
-     * @param script The file name of the file which should get interpreted
-     * @return The interpreted script or {@code null} if the interpreter cannot understand the file content
-     * @deprecated Use {@link #interpret(Path)} instead
-     */
-    @Nullable
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
-    default InterpretedReformScript interpret(@NotNull File script) {
-        return this.interpret(script.toPath());
-    }
+  /**
+   * Interprets the given file as a reform script
+   *
+   * @param script The file name of the file which should get interpreted
+   * @return The interpreted script or {@code null} if the interpreter cannot understand the file content
+   * @deprecated Use {@link #interpret(Path)} instead
+   */
+  @Nullable
+  @Deprecated
+  @ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
+  default InterpretedReformScript interpret(@NotNull File script) {
+    return this.interpret(script.toPath());
+  }
 
-    /**
-     * Interprets the given path as a reform script
-     *
-     * @param script The path name of the file which should get interpreted
-     * @return The interpreted script or {@code null} if the interpreter cannot understand the file content
-     */
-    @Nullable
-    InterpretedReformScript interpret(@NotNull Path script);
+  /**
+   * Interprets the given path as a reform script
+   *
+   * @param script The path name of the file which should get interpreted
+   * @return The interpreted script or {@code null} if the interpreter cannot understand the file content
+   */
+  @Nullable
+  InterpretedReformScript interpret(@NotNull Path script);
 
 }

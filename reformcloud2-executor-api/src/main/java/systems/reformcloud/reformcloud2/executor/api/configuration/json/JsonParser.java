@@ -30,14 +30,14 @@ import java.io.Reader;
 
 public interface JsonParser {
 
-    @NotNull
-    static JsonParser defaultParser() {
-        return JsonFactories.DEFAULT_PARSER.get();
-    }
+  @NotNull
+  static JsonParser defaultParser() {
+    return JsonFactories.DEFAULT_PARSER.get();
+  }
 
-    @NotNull
-    Element parse(@NotNull String json) throws JsonParseException;
+  @NotNull
+  Element parse(@NotNull String json) throws JsonParseException;
 
-    @NotNull
-    Element parse(@NotNull Reader reader) throws JsonParseException;
+  @NotNull
+  Element parse(@NotNull Reader reader) throws JsonParseException;
 }

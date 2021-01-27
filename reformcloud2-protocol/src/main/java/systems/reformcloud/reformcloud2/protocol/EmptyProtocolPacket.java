@@ -29,11 +29,11 @@ import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer
 
 public abstract class EmptyProtocolPacket extends ProtocolPacket {
 
-    @Override
-    public final void write(@NotNull ProtocolBuffer buffer) {
-    }
+  @Override
+  public final void write(@NotNull ProtocolBuffer buffer) {
+  }
 
-    @Override
-    public final void read(@NotNull ProtocolBuffer buffer) {
-    }
+  @Override
+  public final void read(@NotNull ProtocolBuffer buffer) {
+  }
 }

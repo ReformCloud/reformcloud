@@ -34,21 +34,21 @@ import systems.reformcloud.reformcloud2.signs.sponge.adapter.SpongeSignSystemAda
 import systems.reformcloud.reformcloud2.signs.util.ConfigRequesterUtil;
 
 @Plugin(
-    id = "reformcloud_2_signs",
-    name = "SpongeSignsPlugin",
-    version = "2",
-    description = "The reformcloud signs plugin",
-    authors = {"derklaro"},
-    url = "https://reformcloud.systems",
-    dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
+  id = "reformcloud_2_signs",
+  name = "SpongeSignsPlugin",
+  version = "2",
+  description = "The reformcloud signs plugin",
+  authors = {"derklaro"},
+  url = "https://reformcloud.systems",
+  dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
 )
 public class SpongePlugin {
 
-    @Inject
-    private Logger logger;
+  @Inject
+  private Logger logger;
 
-    @Listener
-    public void handle(final GameStartedServerEvent event) {
-        ConfigRequesterUtil.requestSignConfigAsync(e -> new SpongeSignSystemAdapter(e, this));
-    }
+  @Listener
+  public void handle(final GameStartedServerEvent event) {
+    ConfigRequesterUtil.requestSignConfigAsync(e -> new SpongeSignSystemAdapter(e, this));
+  }
 }
