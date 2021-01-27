@@ -26,15 +26,16 @@ package systems.reformcloud.reformcloud2.node.setup;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.function.Function;
 
 public interface SetupQuestion {
 
-  //  -> return value: true - continue setup
-  //                   false - invalid input
   @NotNull Function<SetupAnswer, Boolean> getAnswerHandler();
 
   @NotNull String getInvalidInputMessage();
 
   @NotNull String getOriginalQuestion();
+
+  @NotNull Collection<String> getHistoryEntries();
 }

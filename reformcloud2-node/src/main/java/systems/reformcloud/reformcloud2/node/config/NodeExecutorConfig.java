@@ -81,9 +81,17 @@ public final class NodeExecutorConfig {
       AtomicBoolean runClusterSetup = new AtomicBoolean(false);
       List<DefaultNetworkAddress> clusterNodes = new ArrayList<>();
 
-      String ips = String.join(", ", NetworkUtils.getAllAvailableIpAddresses());
+      final Collection<String> ips = NetworkUtils.getAllAvailableIpAddresses();
 
       this.setup.addQuestion(new DefaultSetupQuestion(
+        setupAnswer -> {
+          final Boolean result = setupAnswer.getAsBoolean();
+          return result != null ? result : false;
+        },
+        TranslationHolder.translate("node-setup-question-eula-needed"),
+        TranslationHolder.translate("node-setup-question-eula-agree"),
+        "yes", "no", "true", "false"
+      )).addQuestion(new DefaultSetupQuestion(
         setupAnswer -> {
           if (setupAnswer.getOriginalAnswer().equalsIgnoreCase("null")) {
             nodeName.set("Node-" + UUID.randomUUID().toString().split("-")[0]);
@@ -94,7 +102,8 @@ public final class NodeExecutorConfig {
           return true;
         },
         "",
-        TranslationHolder.translate("node-setup-question-node-name")
+        TranslationHolder.translate("node-setup-question-node-name"),
+        "null", "Node-1"
       )).addQuestion(new DefaultSetupQuestion(
         setupAnswer -> {
           String address = NetworkUtils.validateAndGetIpAddress(setupAnswer.getOriginalAnswer());
@@ -105,7 +114,8 @@ public final class NodeExecutorConfig {
           return address != null;
         },
         TranslationHolder.translate("node-setup-question-node-address-wrong"),
-        TranslationHolder.translate("node-setup-question-node-address", ips)
+        TranslationHolder.translate("node-setup-question-node-address", String.join(", ", ips)),
+        ips
       )).addQuestion(new DefaultSetupQuestion(
         setupAnswer -> {
           Integer port = setupAnswer.getAsInt();
@@ -117,7 +127,8 @@ public final class NodeExecutorConfig {
           return false;
         },
         TranslationHolder.translate("node-setup-question-integer", 0, 65535),
-        TranslationHolder.translate("node-setup-question-node-network-port")
+        TranslationHolder.translate("node-setup-question-node-network-port"),
+        1808, 1809, 1810, 1811, 1812
       )).addQuestion(new DefaultSetupQuestion(
         setupAnswer -> {
           Integer webPort = setupAnswer.getAsInt();
@@ -129,7 +140,8 @@ public final class NodeExecutorConfig {
           return false;
         },
         TranslationHolder.translate("node-setup-question-integer", 0, 65535),
-        TranslationHolder.translate("node-setup-question-node-web-port")
+        TranslationHolder.translate("node-setup-question-node-web-port"),
+        2007, 2008, 2009, 2010, 2011
       )).addQuestion(new DefaultSetupQuestion(
         setupAnswer -> {
           String key = setupAnswer.getOriginalAnswer();
@@ -141,7 +153,8 @@ public final class NodeExecutorConfig {
           return true;
         },
         "",
-        TranslationHolder.translate("node-setup-question-connection-key")
+        TranslationHolder.translate("node-setup-question-connection-key"),
+        "gen"
       )).addQuestion(new DefaultSetupQuestion(
         setupAnswer -> {
           Boolean clusterSetup = setupAnswer.getAsBoolean();
@@ -152,7 +165,8 @@ public final class NodeExecutorConfig {
           return clusterSetup != null;
         },
         TranslationHolder.translate("node-setup-question-boolean"),
-        TranslationHolder.translate("node-setup-in-cluster")
+        TranslationHolder.translate("node-setup-in-cluster"),
+        "yes", "no", "true", "false"
       )).runSetup();
 
       if (runClusterSetup.get()) {
@@ -206,7 +220,8 @@ public final class NodeExecutorConfig {
         return false;
       },
       TranslationHolder.translate("node-setup-question-integer", 0, 100),
-      TranslationHolder.translate("node-cluster-setup-node-count")
+      TranslationHolder.translate("node-cluster-setup-node-count"),
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10
     )).runSetup();
 
     AtomicReference<String> nodeHost = new AtomicReference<>();
@@ -235,7 +250,8 @@ public final class NodeExecutorConfig {
         return false;
       },
       TranslationHolder.translate("node-setup-question-integer", 0, 65535),
-      TranslationHolder.translate("node-cluster-setup-new-node-port")
+      TranslationHolder.translate("node-cluster-setup-new-node-port"),
+      1808, 1809, 1810, 1811, 1812
     ));
 
     for (int i = 1; i <= nodeCount.get(); i++) {

@@ -32,6 +32,7 @@ import systems.reformcloud.reformcloud2.executor.api.group.process.startup.Start
 import systems.reformcloud.reformcloud2.executor.api.group.setup.GroupSetupVersion;
 import systems.reformcloud.reformcloud2.executor.api.group.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.group.template.version.Version;
+import systems.reformcloud.reformcloud2.shared.StringUtil;
 import systems.reformcloud.reformcloud2.shared.group.DefaultMainGroup;
 import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroup;
 
@@ -46,11 +47,13 @@ final class VersionedGroupSetupVersion implements GroupSetupVersion {
   private final String processGroupName;
 
   private final Version version;
+  private final String displayName;
 
   public VersionedGroupSetupVersion(String mainGroupName, String processGroupName, Version version) {
     this.mainGroupName = mainGroupName;
     this.processGroupName = processGroupName;
     this.version = version;
+    this.displayName = this.formatName();
   }
 
   @Override
@@ -73,6 +76,18 @@ final class VersionedGroupSetupVersion implements GroupSetupVersion {
 
   @Override
   public String getName() {
-    return this.version.getName().toLowerCase(Locale.ROOT).replace('_', ' ');
+    return this.displayName;
+  }
+
+  private String formatName() {
+    final int index = this.version.getName().indexOf('_');
+    if (index == -1) {
+      return this.version.getName().toLowerCase(Locale.ROOT);
+    }
+    String lower = this.version.getName().toLowerCase(Locale.ROOT).substring(0, index) + ' ' + this.version.getInfo().toString();
+    if (lower.endsWith(".0")) {
+      lower = StringUtil.replaceLastEmpty(lower, "\\.0");
+    }
+    return lower;
   }
 }

@@ -26,18 +26,38 @@ package systems.reformcloud.reformcloud2.node.setup;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class DefaultSetupQuestion implements SetupQuestion {
 
   private final Function<SetupAnswer, Boolean> answerHandler;
   private final String invalidInputMessage;
   private final String originalQuestion;
+  private final Collection<String> historyEntries;
 
   public DefaultSetupQuestion(Function<SetupAnswer, Boolean> answerHandler, String invalidInputMessage, String originalQuestion) {
     this.answerHandler = answerHandler;
     this.invalidInputMessage = invalidInputMessage;
     this.originalQuestion = originalQuestion;
+    this.historyEntries = new ArrayList<>();
+  }
+
+  public DefaultSetupQuestion(Function<SetupAnswer, Boolean> answerHandler, String invalidInputMessage, String originalQuestion, Object... historyEntries) {
+    this.answerHandler = answerHandler;
+    this.invalidInputMessage = invalidInputMessage;
+    this.originalQuestion = originalQuestion;
+    this.historyEntries = Arrays.stream(historyEntries).map(Object::toString).collect(Collectors.toList());
+  }
+
+  public DefaultSetupQuestion(Function<SetupAnswer, Boolean> answerHandler, String invalidInputMessage, String originalQuestion, Collection<String> historyEntries) {
+    this.answerHandler = answerHandler;
+    this.invalidInputMessage = invalidInputMessage;
+    this.originalQuestion = originalQuestion;
+    this.historyEntries = historyEntries;
   }
 
   @Override
@@ -53,5 +73,10 @@ public class DefaultSetupQuestion implements SetupQuestion {
   @Override
   public @NotNull String getOriginalQuestion() {
     return this.originalQuestion;
+  }
+
+  @Override
+  public @NotNull Collection<String> getHistoryEntries() {
+    return this.historyEntries;
   }
 }

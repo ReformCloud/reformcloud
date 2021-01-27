@@ -34,8 +34,10 @@ import systems.reformcloud.reformcloud2.node.setup.DefaultSetup;
 import systems.reformcloud.reformcloud2.node.setup.DefaultSetupQuestion;
 import systems.reformcloud.reformcloud2.node.setup.Setup;
 
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -73,7 +75,8 @@ final class GroupSetupHelper {
         return aBoolean != null;
       },
       invalidAnswer,
-      question
+      question,
+      "yes", "no", "false", "true"
     ));
     setup.runSetup();
     return result.get();
@@ -84,8 +87,15 @@ final class GroupSetupHelper {
       .values()
       .stream()
       .filter(version -> version.getVersionType().isServer() == server)
+      .sorted(Comparator.comparingInt(o -> o.getInfo().getMinor()))
       .map(version -> new VersionedGroupSetupVersion(server ? "Lobbies" : "Proxies", server ? "Lobby" : "Proxy", version))
-      .collect(Collectors.toMap(GroupSetupVersion::getName, Function.identity()));
+      .collect(Collectors.toMap(
+        GroupSetupVersion::getName,
+        Function.identity(),
+        (u, v) -> {
+          throw new IllegalStateException(String.format("Duplicate key %s", u));
+        }, TreeMap::new
+      ));
 
     final Console console = NodeExecutor.getInstance().getConsole();
     console.clearHistory();
