@@ -1,0 +1,14 @@
+name: 'ReformCloudNukkitPermissions'
+author: 'derklaro'
+version: '3'
+main: systems.reformcloud.permissions.nukkit.NukkitPermissionPlugin
+api: [ '1.0.0' ]
+
+load: STARTUP
+
+depdend:
+  - ReformCloudNukkitExecutor
+
+# Additional
+website: 'https://reformcloud.systems'
+description: 'The reformcloud permission plugin'

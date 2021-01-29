@@ -1,8 +1,0 @@
-name: ReformCloud2Tab
-version: '3.0.0-SNAPSHOT'
-author: derklaro
-main: systems.reformcloud.reformcloud2.tab.ReformCloudTabPlugin
-api-version: '1.13'
-
-softdepend:
-  - ReformCloud2BukkitPermissions

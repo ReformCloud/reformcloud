@@ -64,12 +64,12 @@ pipeline {
       steps {
         echo "Creating cloud zip...";
 
-        sh "rm -rf ReformCloud2.zip";
+        sh "rm -rf ReformCloud.zip";
         sh "mkdir -p results";
         sh "cp -r .templates/* results/";
-        sh "cp reformcloud2-runner/target/runner.jar results/runner.jar";
+        sh "cp runner/target/runner.jar results/runner.jar";
 
-        zip archive: true, dir: 'results', glob: '', zipFile: 'ReformCloud2.zip';
+        zip archive: true, dir: 'results', glob: '', zipFile: 'ReformCloud.zip';
 
         sh "rm -rf results/";
       }
@@ -77,11 +77,11 @@ pipeline {
 
     stage('Prepare applications zip') {
       steps {
-        sh "rm -rf ReformCloud2-Applications.zip";
+        sh "rm -rf ReformCloud-Applications.zip";
         sh "mkdir -p applications/";
 
-        sh "find reformcloud2-applications/ -type f -name \"reformcloud2-*.jar\" -and -not -name \"*-sources.jar\" -and -not -name \"*-javadoc.jar\" -exec cp \"{}\" applications/ ';'";
-        zip archive: true, dir: 'applications', glob: '', zipFile: 'ReformCloud2-Applications.zip'
+        sh "find applications/ -type f -name \"*.jar\" -and -not -name \"*-sources.jar\" -and -not -name \"*-javadoc.jar\" -exec cp \"{}\" applications/ ';'";
+        zip archive: true, dir: 'applications', glob: '', zipFile: 'ReformCloud-Applications.zip'
 
         sh "rm -rf applications/";
       }
@@ -89,11 +89,11 @@ pipeline {
 
     stage('Prepare plugins zip') {
       steps {
-        sh "rm -rf ReformCloud2-Plugins.zip";
+        sh "rm -rf ReformCloud-Plugins.zip";
         sh "mkdir -p plugins/";
 
-        sh "find reformcloud2-plugins/ -type f -name \"reformcloud2-*.jar\" -and -not -name \"*-sources.jar\" -and -not -name \"*-javadoc.jar\" -exec cp \"{}\" plugins/ ';'";
-        zip archive: true, dir: 'plugins', glob: '', zipFile: 'ReformCloud2-Plugins.zip'
+        sh "find plugins/ -type f -name \"*.jar\" -and -not -name \"*-sources.jar\" -and -not -name \"*-javadoc.jar\" -exec cp \"{}\" plugins/ ';'";
+        zip archive: true, dir: 'plugins', glob: '', zipFile: 'ReformCloud-Plugins.zip'
 
         sh "rm -rf plugins/";
       }
@@ -101,12 +101,12 @@ pipeline {
 
     stage('Archive') {
       steps {
-        archiveArtifacts artifacts: 'ReformCloud2.zip', fingerprint: true
-        archiveArtifacts artifacts: 'ReformCloud2-Applications.zip', fingerprint: true
-        archiveArtifacts artifacts: 'ReformCloud2-Plugins.zip', fingerprint: true
-        archiveArtifacts artifacts: 'reformcloud2-runner/target/runner.jar', fingerprint: true
-        archiveArtifacts artifacts: 'reformcloud2-node/target/executor.jar', fingerprint: true
-        archiveArtifacts artifacts: 'reformcloud2-embedded/target/embedded.jar', fingerprint: true
+        archiveArtifacts artifacts: 'ReformCloud.zip', fingerprint: true
+        archiveArtifacts artifacts: 'ReformCloud-Applications.zip', fingerprint: true
+        archiveArtifacts artifacts: 'ReformCloud-Plugins.zip', fingerprint: true
+        archiveArtifacts artifacts: 'runner/target/runner.jar', fingerprint: true
+        archiveArtifacts artifacts: 'node/target/executor.jar', fingerprint: true
+        archiveArtifacts artifacts: 'embedded/target/embedded.jar', fingerprint: true
       }
     }
   }
@@ -119,9 +119,9 @@ pipeline {
     }
 
     success {
-      junit allowEmptyResults: true, testResults: 'reformcloud2-executor-api/target/surefire-reports/TEST-*.xml'
-      junit allowEmptyResults: true, testResults: 'reformcloud2-protocol/target/surefire-reports/TEST-*.xml'
-      junit allowEmptyResults: true, testResults: 'reformcloud2-shared/target/surefire-reports/TEST-*.xml'
+      junit allowEmptyResults: true, testResults: 'api/target/surefire-reports/TEST-*.xml'
+      junit allowEmptyResults: true, testResults: 'protocol/target/surefire-reports/TEST-*.xml'
+      junit allowEmptyResults: true, testResults: 'shared/target/surefire-reports/TEST-*.xml'
     }
   }
 }

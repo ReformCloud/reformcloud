@@ -1,0 +1,8 @@
+name: ReformCloudChat
+version: '3.0.0-SNAPSHOT'
+author: derklaro
+main: systems.reformcloud.chat.BukkitChatPlugin
+api-version: '1.13'
+
+softdepend:
+  - ReformCloudBukkitPermissions

@@ -1,6 +1,6 @@
 ![](https://s17.directupload.net/images/190317/g4777bij.png)
 
-# ReformCloud 2 [![Discord](https://img.shields.io/discord/499666347337449472.svg?color=7289DA&label=discord)](https://discord.gg/uskXdVZ) [![CodeFactor](https://www.codefactor.io/repository/github/ReformCloud/reformcloud2/badge?s=1093a7711bb179b3fb6e48ffbb3e4c1315e5aada)](https://www.codefactor.io/repository/github/ReformCloud/reformcloud2) [![Build Status](https://travis-ci.com/ReformCloud/reformcloud2.svg?token=DsMrJCyqH6BCtUu5ax94&branch=stable)](https://travis-ci.com/ReformCloud/reformcloud2) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/systems.reformcloud.reformcloud2/reformcloud2-executor-api/badge.svg)](https://mvnrepository.com/artifact/systems.reformcloud.reformcloud2/reformcloud2-executor-api)
+# ReformCloud 2 [![Discord](https://img.shields.io/discord/499666347337449472.svg?color=7289DA&label=discord)](https://discord.gg/uskXdVZ) [![CodeFactor](https://www.codefactor.io/repository/github/ReformCloud/reformcloud2/badge?s=1093a7711bb179b3fb6e48ffbb3e4c1315e5aada)](https://www.codefactor.io/repository/github/ReformCloud/reformcloud2) [![Build Status](https://travis-ci.com/ReformCloud/reformcloud2.svg?token=DsMrJCyqH6BCtUu5ax94&branch=stable)](https://travis-ci.com/ReformCloud/reformcloud2) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/systems.reformcloud/reformcloud2-executor-api/badge.svg)](https://mvnrepository.com/artifact/systems.reformcloud/reformcloud2-executor-api)
 
 ReformCloud is a cloud system programmed and optimized for all sizes of networks. The cloud system
 provides a huge api to access all internal functions, group, processes etc. It's made for **
@@ -42,7 +42,7 @@ templates at the next startup of a process.
 | NukkitX       | Java 8                   |
 | WaterDog      | Java 8                   |
 
-# Run ReformCloud2 the first time
+# Run ReformCloud the first time
 
 ## System requirements
 
@@ -139,16 +139,16 @@ mvn clean package
 ## Maven
 
 **Repository:**
-ReformCloud2 is available in the [central repository](https://search.maven.org/search?q=reformcloud)
+ReformCloud is available in the [central repository](https://search.maven.org/search?q=reformcloud)
 . Because of this you don't need to provide any repository.
 
 **Dependency:**
 
 ```xml
     <dependency>
-        <groupId>systems.reformcloud.reformcloud2</groupId>
-        <!-- replace with needed artifact for example 'reformcloud2-executor' or 'reformcloud2-permissions' -->
-        <artifactId>reformcloud2-executor-api</artifactId>
+        <groupId>systems.reformcloud</groupId>
+        <!-- replace with needed artifact for example 'embedded' or 'permissions' -->
+        <artifactId>api</artifactId>
         <version>3.0.0-SNAPSHOT</version>
         <scope>provided</scope>
     </dependency>

@@ -1,0 +1,6 @@
+name: 'ReformCloudBungeeNotifications'
+version: '3'
+author: 'derklaro'
+main: systems.reformcloud.notifications.bungeecord.BungeecordPlugin
+depend:
+  - ReformCloudBungeeExecutor

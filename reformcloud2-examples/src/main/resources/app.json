@@ -1,7 +1,0 @@
-{
-  "name": "ExampleApplication",
-  "author": "derklaro",
-  "main": "systems.reformcloud.reformcloud2.examples.ExampleApplication",
-  "version": "3.0.0-SNAPSHOT",
-  "impl-version": "3.0.0-SNAPSHOT"
-}

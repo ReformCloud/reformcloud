@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>reformcloud-parent</artifactId>
+    <groupId>systems.reformcloud</groupId>
+    <version>3.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>runner</artifactId>
+
+  <build>
+    <finalName>runner</finalName>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.4</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <filters>
+                <filter>
+                  <artifact>org.jetbrains:annotations</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.MF</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.2.0</version>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Premain-Class>
+                systems.reformcloud.runner.instrumentation.RunnerPremain
+              </Premain-Class>
+              <Main-Class>systems.reformcloud.runner.RunnerExecutor
+              </Main-Class>
+              <Version>${project.version}</Version>
+              <Implementation-Version>${project.version}</Implementation-Version>
+              <!--suppress UnresolvedMavenProperty -->
+              <Specification-Version>${describe}</Specification-Version>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+
+            <!-- Copies the final executor file to the resource directory -->
+            <configuration>
+              <failOnError>false</failOnError>
+              <target name="copy node">
+                <copy
+                  file="${basedir}/../node/target/executor.jar"
+                  tofile="${basedir}/src/main/resources/files/executor.jar"
+                />
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

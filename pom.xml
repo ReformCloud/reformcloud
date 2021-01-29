@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>systems.reformcloud.reformcloud2</groupId>
-  <artifactId>reformcloud2</artifactId>
+  <groupId>systems.reformcloud</groupId>
+  <artifactId>reformcloud-parent</artifactId>
   <packaging>pom</packaging>
   <version>3.0.0-SNAPSHOT</version>
 
@@ -46,7 +46,7 @@
     <system>GitHub Issues</system>
   </issueManagement>
 
-  <name>reformcloud2-root</name>
+  <name>reformcloud-parent</name>
   <description>A simple server management system for minecraft java/bedrock proxies and servers
   </description>
   <url>https://reformcloud.systems/</url>
@@ -65,15 +65,15 @@
 
   <!-- do not change the module order to prevent issues while building the project -->
   <modules>
-    <module>reformcloud2-executor-api</module>
-    <module>reformcloud2-protocol</module>
-    <module>reformcloud2-shared</module>
-    <module>reformcloud2-embedded</module>
-    <module>reformcloud2-node</module>
-    <module>reformcloud2-applications</module>
-    <module>reformcloud2-plugins</module>
-    <module>reformcloud2-examples</module>
-    <module>reformcloud2-runner</module>
+    <module>api</module>
+    <module>protocol</module>
+    <module>shared</module>
+    <module>embedded</module>
+    <module>node</module>
+    <module>applications</module>
+    <module>plugins</module>
+    <module>examples</module>
+    <module>runner</module>
   </modules>
 
   <properties>

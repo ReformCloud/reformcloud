@@ -1,0 +1,103 @@
+/*
+ * This file is part of reformcloud, licensed under the MIT License (MIT).
+ *
+ * Copyright (c) ReformCloud <https://github.com/ReformCloud>
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+package systems.reformcloud.node.template;
+
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.group.template.backend.TemplateBackend;
+import systems.reformcloud.utility.MoreCollections;
+
+import java.util.Collection;
+import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+/**
+ * The template backend manager which manages all template backend which registered
+ */
+public final class TemplateBackendManager {
+
+  /**
+   * All loaded template backends
+   */
+  private static final Collection<TemplateBackend> LOADED = new CopyOnWriteArrayList<>();
+  /**
+   * The default template backend which is provided internally
+   */
+  private static final TemplateBackend DEFAULT = new FileTemplateBackend();
+
+  private TemplateBackendManager() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Get a template backend or the default file backend
+   *
+   * @param name The name of the template which should get loaded
+   * @return The template with the given name or the default file backend
+   */
+  @NotNull
+  public static TemplateBackend getOrDefault(@NotNull String name) {
+    TemplateBackend backend = MoreCollections.filter(LOADED, e -> e.getName().equalsIgnoreCase(name));
+    return backend != null ? backend : DEFAULT;
+  }
+
+  /**
+   * Gets a specified template
+   *
+   * @param name The name of the template which should get loaded
+   * @return The template backend with the given name or an empty optional
+   */
+  @NotNull
+  public static Optional<TemplateBackend> get(@NotNull String name) {
+    return Optional.ofNullable(MoreCollections.filter(LOADED, e -> e.getName().equalsIgnoreCase(name)));
+  }
+
+  /**
+   * Registers a new template backend
+   *
+   * @param templateBackend The template backend which should get registered
+   */
+  public static void registerBackend(@NotNull TemplateBackend templateBackend) {
+    Optional<TemplateBackend> backend = MoreCollections.findFirst(LOADED, e -> e.getName().equalsIgnoreCase(templateBackend.getName()));
+    if (!backend.isPresent()) {
+      LOADED.add(templateBackend);
+    }
+  }
+
+  /**
+   * Unregisters the specified template backend
+   *
+   * @param name The name of the backend which should get unregistered
+   */
+  public static void unregisterBackend(@NotNull String name) {
+    MoreCollections.findFirst(LOADED, e -> e.getName().equalsIgnoreCase(name)).ifPresent(LOADED::remove);
+  }
+
+  /**
+   * Registers the default template backend
+   */
+  public static void registerDefaults() {
+    registerBackend(DEFAULT);
+  }
+}

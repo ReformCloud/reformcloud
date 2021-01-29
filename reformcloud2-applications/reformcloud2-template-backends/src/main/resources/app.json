@@ -1,7 +1,0 @@
-{
-  "name": "TemplateBackendApplication",
-  "author": "derklaro",
-  "main": "systems.reformcloud.reformcloud2.backends.TemplateBackendApplication",
-  "version": "3.0.0-SNAPSHOT",
-  "impl-version": "3.0.0-SNAPSHOT"
-}

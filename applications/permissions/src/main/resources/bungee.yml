@@ -1,0 +1,6 @@
+name: 'ReformCloudBungeePermissions'
+version: '3'
+author: 'derklaro'
+main: systems.reformcloud.permissions.bungeecord.BungeeCordPermissionPlugin
+depend:
+  - ReformCloudBungeeExecutor

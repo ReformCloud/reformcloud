@@ -23,7 +23,7 @@ FROM openjdk:8-jre-slim AS run
 LABEL maintainer="ReformCloud <info@reformcloud.systems>"
 
 # Copy runner from build stage
-COPY --from=build /src/reformcloud2-runner/target/runner.jar /app/runner.jar
+COPY --from=build /src/runner/target/runner.jar /app/runner.jar
 
 # Ports
 EXPOSE 1809

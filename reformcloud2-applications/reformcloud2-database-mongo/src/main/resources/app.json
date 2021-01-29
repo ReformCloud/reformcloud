@@ -1,7 +1,0 @@
-{
-  "name": "MongoDatabase",
-  "author": "derklaro",
-  "main": "systems.reformcloud.reformcloud2.mongo.MongoApplication",
-  "version": "3.0.0-SNAPSHOT",
-  "impl-version": "3.0.0-SNAPSHOT"
-}

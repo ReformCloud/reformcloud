@@ -1,6 +1,0 @@
-name: 'ReformCloud2BungeeProxy'
-version: '2'
-author: 'derklaro'
-main: systems.reformcloud.reformcloud2.proxy.bungeecord.BungeeCordPlugin
-depend:
-  - ReformCloud2BungeeExecutor
