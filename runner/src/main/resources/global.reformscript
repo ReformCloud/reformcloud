@@ -3,6 +3,7 @@
 # Do not remove something from this file it might be required for the workflow to run
 
 # Header printing
+PRINTLN
 PRINTLN  ______ _______ _______  _____   ______ _______ _______         _____  _     _ ______
 PRINTLN |_____/ |______ |______ |     | |_____/ |  |  | |       |      |     | |     | |     \
 PRINTLN |    \_ |______ |       |_____| |    \_ |  |  | |_____  |_____ |_____| |_____| |_____/ ref: _%_git_commit_%_
