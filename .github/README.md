@@ -1,6 +1,6 @@
 ![](https://s17.directupload.net/images/190317/g4777bij.png)
 
-# ReformCloud 2 [![Discord](https://img.shields.io/discord/499666347337449472.svg?color=7289DA&label=discord)](https://discord.gg/uskXdVZ) [![CodeFactor](https://www.codefactor.io/repository/github/ReformCloud/reformcloud2/badge?s=1093a7711bb179b3fb6e48ffbb3e4c1315e5aada)](https://www.codefactor.io/repository/github/ReformCloud/reformcloud2) [![Build Status](https://travis-ci.com/ReformCloud/reformcloud2.svg?token=DsMrJCyqH6BCtUu5ax94&branch=stable)](https://travis-ci.com/ReformCloud/reformcloud2) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/systems.reformcloud/reformcloud2-executor-api/badge.svg)](https://mvnrepository.com/artifact/systems.reformcloud/reformcloud2-executor-api)
+# ReformCloud [![Discord](https://img.shields.io/discord/499666347337449472.svg?color=7289DA&label=discord)](https://discord.gg/uskXdVZ) [![CodeFactor](https://www.codefactor.io/repository/github/reformcloud/reformcloud/badge)](https://www.codefactor.io/repository/github/reformcloud/reformcloud) [![Build Status](https://travis-ci.com/ReformCloud/reformcloud.svg?branch=stable)](https://travis-ci.com/ReformCloud/reformcloud) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/systems.reformcloud/api/badge.svg)](https://mvnrepository.com/artifact/systems.reformcloud/api)
 
 ReformCloud is a cloud system programmed and optimized for all sizes of networks. The cloud system
 provides a huge api to access all internal functions, group, processes etc. It's made for **
@@ -59,9 +59,9 @@ templates at the next startup of a process.
 ## Startup
 
 You can download the latest release version from
-the [CI](https://ci.reformcloud.systems/job/reformcloud/job/reformcloud2/job/stable/lastStableBuild/artifact/reformcloud2-runner/target/runner.jar)
+the [CI](https://ci.reformcloud.systems/job/reformcloud/job/reformcloud/job/stable/lastStableBuild/artifact/runner/target/runner.jar)
 or as a zip file from
-the [download server](https://dl.reformcloud.systems/latest/ReformCloud2-latest.zip).
+the [download server](https://dl.reformcloud.systems/latest/ReformCloud-latest.zip).
 
 Just save the file named as `runner.jar` in the folder you want to run the cloud in and start the
 runner using:
@@ -91,7 +91,7 @@ The node will ask six questions:
 # Found a bug or have a proposal?
 
 Please
-[**open an issue**](https://github.com/ReformCloud/reformcloud2/issues/new)
+[**open an issue**](https://github.com/ReformCloud/reformcloud/issues/new)
 and ***describe the bug/proposal as detailed as possible*** and **look into your email if we have
 replied to your issue and answer upcoming questions**.
 
@@ -109,7 +109,7 @@ But the best support for our work is very simple: ***use the cloud system!***
 ## Want to contribute?
 
 You can simply
-[**fork the project**](https://github.com/ReformCloud/reformcloud2/fork)
+[**fork the project**](https://github.com/ReformCloud/reformcloud/fork)
 make the changes you want to add and create a **pull request**. If your pull request got approved
 and merged you will get added to the list of contributors.
 
@@ -131,8 +131,8 @@ and merged you will get added to the list of contributors.
 ## Build this project
 
 ```
-git clone https://github.com/ReformCloud/reformcloud2.git
-cd reformcloud2/
+git clone https://github.com/ReformCloud/reformcloud.git
+cd reformcloud/
 mvn clean package
 ```
 

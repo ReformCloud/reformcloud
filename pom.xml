@@ -35,14 +35,14 @@
   </contributors>
 
   <scm>
-    <connection>scm:git:git://github.com/ReformCloud/reformcloud2.git</connection>
-    <developerConnection>scm:git:ssh://github.com/ReformCloud/reformcloud2.git
+    <connection>scm:git:git://github.com/ReformCloud/reformcloud.git</connection>
+    <developerConnection>scm:git:ssh://github.com/ReformCloud/reformcloud.git
     </developerConnection>
-    <url>https://github.com/ReformCloud/reformcloud2</url>
+    <url>https://github.com/ReformCloud/reformcloud</url>
   </scm>
 
   <issueManagement>
-    <url>https://github.com/ReformCloud/reformcloud2/issues</url>
+    <url>https://github.com/ReformCloud/reformcloud/issues</url>
     <system>GitHub Issues</system>
   </issueManagement>
 

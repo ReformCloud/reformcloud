@@ -3,11 +3,9 @@
 # Do not remove something from this file it might be required for the workflow to run
 
 # Header printing
-PRINTLN    __       __                        ___ _                 _ ____
-PRINTLN   /__\ ___ / _| ___  _ __ _ __ ___   / __\ | ___  _   _  __| |___ \
-PRINTLN  / \/// _ \ |_ / _ \| '__| '_ ` _ \ / /  | |/ _ \| | | |/ _` | __) |
-PRINTLN / _  \  __/  _| (_) | |  | | | | | / /___| | (_) | |_| | (_| |/ __/
-PRINTLN \/ \_/\___|_|  \___/|_|  |_| |_| |_\____/|_|\___/ \__,_|\__,_|_____| git: _%_git_commit_%_
+PRINTLN  ______ _______ _______  _____   ______ _______ _______         _____  _     _ ______
+PRINTLN |_____/ |______ |______ |     | |_____/ |  |  | |       |      |     | |     | |     \
+PRINTLN |    \_ |______ |       |_____| |    \_ |  |  | |_____  |_____ |_____| |_____| |_____/ ref: _%_git_commit_%_
 PRINTLN
 PRINTLN                   Not just a cloud system, but an experience.
 PRINTLN
@@ -21,7 +19,7 @@ PRINTLN
 # VARIABLE reformcloud.disable.colours=true
 # VARIABLE reformcloud.indev.builds=true
 # VARIABLE reformcloud.runner.version=3.0.0-SNAPSHOT-SNAPSHOT
-VARIABLE reformcloud.indev.build.url=https://ci.reformcloud.systems/job/reformcloud2/job/indev/lastSuccessfulBuild/artifact/node/target/executor.jar
+VARIABLE reformcloud.indev.build.url=https://ci.reformcloud.systems/job/reformcloud/job/indev/lastSuccessfulBuild/artifact/node/target/executor.jar
 VARIABLE reformcloud.version.url=https://internal.reformcloud.systems/version.properties
 VARIABLE reformcloud.auto.update=true
 
