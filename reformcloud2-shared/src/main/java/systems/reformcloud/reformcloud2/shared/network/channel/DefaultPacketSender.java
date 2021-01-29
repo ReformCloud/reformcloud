@@ -85,7 +85,7 @@ public abstract class DefaultPacketSender implements PacketSender {
   public void closeSync() {
     final Channel channel = this.channel;
     if (channel != null) {
-      channel.close().syncUninterruptibly();
+      channel.close();
     }
   }
 }

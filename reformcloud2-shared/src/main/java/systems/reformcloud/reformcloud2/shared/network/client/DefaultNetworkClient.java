@@ -84,6 +84,6 @@ public class DefaultNetworkClient extends DefaultNetworkChannel implements Netwo
   @Override
   public void closeSync() {
     super.closeSync();
-    this.workerGroup.shutdownGracefully().syncUninterruptibly();
+    this.workerGroup.shutdownGracefully();
   }
 }
