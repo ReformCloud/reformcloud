@@ -59,7 +59,10 @@ public class ConsoleReadThread extends Thread {
         continue;
       }
 
-      this.dispatchLine(line);
+      final String[] parts = line.split(" && ");
+      for (String part : parts) {
+        this.dispatchLine(part);
+      }
     }
   }
 
