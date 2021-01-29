@@ -24,6 +24,11 @@
  */
 package systems.refomcloud.reformcloud2.embedded.executor;
 
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 import java.util.UUID;
 
@@ -39,17 +44,23 @@ public abstract class PlayerAPIExecutor {
     PlayerAPIExecutor.instance = Objects.requireNonNull(instance);
   }
 
-  public abstract void executeSendMessage(UUID player, String message);
+  public abstract void executeSendMessage(@NotNull UUID player, @NotNull Component message);
 
-  public abstract void executeKickPlayer(UUID player, String message);
+  public abstract void executeKickPlayer(@NotNull UUID player, @NotNull Component message);
 
-  public abstract void executePlaySound(UUID player, String sound, float f1, float f2);
+  public abstract void executePlaySound(@NotNull UUID player, @NotNull String sound, float f1, float f2);
 
-  public abstract void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut);
+  public abstract void executeSendTitle(@NotNull UUID player, @NotNull Title title);
 
-  public abstract void executePlayEffect(UUID player, String entityEffect);
+  public abstract void executeSendActionBar(@NotNull UUID player, @NotNull Component actionBar);
 
-  public abstract void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch);
+  public abstract void executeSendBossBar(@NotNull UUID player, @NotNull BossBar bossBar);
 
-  public abstract void executeConnect(UUID player, String server);
+  public abstract void executeHideBossBar(@NotNull UUID player, @NotNull BossBar bossBar);
+
+  public abstract void executePlayEffect(@NotNull UUID player, @NotNull String entityEffect);
+
+  public abstract void executeTeleport(@NotNull UUID player, @NotNull String world, double x, double y, double z, float yaw, float pitch);
+
+  public abstract void executeConnect(@NotNull UUID player, @NotNull String server);
 }

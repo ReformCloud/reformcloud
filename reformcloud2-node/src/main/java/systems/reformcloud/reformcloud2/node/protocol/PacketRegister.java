@@ -96,6 +96,8 @@ import systems.reformcloud.reformcloud2.protocol.shared.PacketConnectPlayerToSer
 import systems.reformcloud.reformcloud2.protocol.shared.PacketDisconnectPlayer;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketPlayEffectToPlayer;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketPlaySoundToPlayer;
+import systems.reformcloud.reformcloud2.protocol.shared.PacketSendActionBar;
+import systems.reformcloud.reformcloud2.protocol.shared.PacketSendBossBar;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketSendPlayerMessage;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketSendPlayerTitle;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketSetPlayerLocation;
@@ -127,6 +129,8 @@ public final class PacketRegister {
     packetProvider.registerPacket(NodeToNodeRequestNodeInformationUpdate.class);
     packetProvider.registerPacket(NodeToNodeRequestProcessUpdate.class);
     packetProvider.registerPacket(NodeToNodeSendPlayerMessage.class);
+    packetProvider.registerPacket(NodeToNodeSendPlayerActionbar.class);
+    packetProvider.registerPacket(NodeToNodeSendPlayerBossBar.class);
     packetProvider.registerPacket(NodeToNodeSendPlayerTitle.class);
     packetProvider.registerPacket(NodeToNodeSendPlayerToServer.class);
     packetProvider.registerPacket(NodeToNodeSendProcessCommand.class);
@@ -222,5 +226,7 @@ public final class PacketRegister {
     packetProvider.registerPacket(PacketSendPlayerMessage.class);
     packetProvider.registerPacket(PacketSendPlayerTitle.class);
     packetProvider.registerPacket(PacketSetPlayerLocation.class);
+    packetProvider.registerPacket(PacketSendActionBar.class);
+    packetProvider.registerPacket(PacketSendBossBar.class);
   }
 }

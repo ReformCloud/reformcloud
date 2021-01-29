@@ -24,60 +24,75 @@
  */
 package systems.refomcloud.reformcloud2.embedded.plugin.bungee.executor;
 
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.platform.bungeecord.BungeeAudiences;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
+import net.kyori.adventure.title.Title;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
 
 import java.util.UUID;
 
 public class BungeePlayerAPIExecutor extends PlayerAPIExecutor {
 
+  private final BungeeAudiences bungeeAudiences;
+
+  public BungeePlayerAPIExecutor(@NotNull Plugin plugin) {
+    this.bungeeAudiences = BungeeAudiences.create(plugin);
+  }
+
   @Override
-  public void executeSendMessage(UUID player, String message) {
-    ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(player);
+  public void executeSendMessage(@NotNull UUID player, @NotNull Component message) {
+    this.bungeeAudiences.player(player).sendMessage(message);
+  }
+
+  @Override
+  public void executeKickPlayer(@NotNull UUID player, @NotNull Component message) {
+    final ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(player);
     if (proxiedPlayer != null) {
-      proxiedPlayer.sendMessage(TextComponent.fromLegacyText(message));
+      proxiedPlayer.disconnect(BungeeComponentSerializer.get().serialize(message));
     }
   }
 
   @Override
-  public void executeKickPlayer(UUID player, String message) {
-    ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(player);
-    if (proxiedPlayer != null) {
-      proxiedPlayer.disconnect(TextComponent.fromLegacyText(message));
-    }
+  public void executePlaySound(@NotNull UUID player, @NotNull String sound, float f1, float f2) {
   }
 
   @Override
-  public void executePlaySound(UUID player, String sound, float f1, float f2) {
+  public void executeSendTitle(@NotNull UUID player, @NotNull Title title) {
+    this.bungeeAudiences.player(player).showTitle(title);
   }
 
   @Override
-  public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
-    ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(player);
-    if (proxiedPlayer != null) {
-      ProxyServer.getInstance().createTitle()
-        .title(TextComponent.fromLegacyText(title))
-        .subTitle(TextComponent.fromLegacyText(subTitle))
-        .fadeIn(fadeIn)
-        .stay(stay)
-        .fadeOut(fadeOut)
-        .send(proxiedPlayer);
-    }
+  public void executeSendActionBar(@NotNull UUID player, @NotNull Component actionBar) {
+    this.bungeeAudiences.player(player).sendActionBar(actionBar);
   }
 
   @Override
-  public void executePlayEffect(UUID player, String entityEffect) {
+  public void executeSendBossBar(@NotNull UUID player, @NotNull BossBar bossBar) {
+    this.bungeeAudiences.player(player).showBossBar(bossBar);
   }
 
   @Override
-  public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
+  public void executeHideBossBar(@NotNull UUID player, @NotNull BossBar bossBar) {
+    this.bungeeAudiences.player(player).hideBossBar(bossBar);
   }
 
   @Override
-  public void executeConnect(UUID player, String server) {
+  public void executePlayEffect(@NotNull UUID player, @NotNull String entityEffect) {
+  }
+
+  @Override
+  public void executeTeleport(@NotNull UUID player, @NotNull String world, double x, double y, double z, float yaw, float pitch) {
+  }
+
+  @Override
+  public void executeConnect(@NotNull UUID player, @NotNull String server) {
     ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(player);
     ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(server);
     if (proxiedPlayer != null && serverInfo != null) {

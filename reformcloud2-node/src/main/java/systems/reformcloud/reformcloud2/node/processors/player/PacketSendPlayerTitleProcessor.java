@@ -24,15 +24,22 @@
  */
 package systems.reformcloud.reformcloud2.node.processors.player;
 
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.title.Title;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketSendPlayerTitle;
+
+import java.time.Duration;
 
 public class PacketSendPlayerTitleProcessor extends PlayerApiToNodePacketProcessor<PacketSendPlayerTitle> {
 
   @Override
   public void process(@NotNull NetworkChannel channel, @NotNull PacketSendPlayerTitle packet) {
-    this.getPlayerProvider().getPlayer(packet.getUniqueId())
-      .ifPresent(wrapper -> wrapper.sendTitle(packet.getTitle(), packet.getSubTitle(), packet.getFadeIn(), packet.getStay(), packet.getFadeOut()));
+    this.getPlayerProvider().getPlayer(packet.getUniqueId()).ifPresent(player -> player.sendTitle(Title.title(
+      GsonComponentSerializer.gson().deserialize(packet.getTitle()),
+      GsonComponentSerializer.gson().deserialize(packet.getSubTitle()),
+      Title.Times.of(Duration.ofMillis(packet.getFadeIn()), Duration.ofMillis(packet.getStay()), Duration.ofMillis(packet.getFadeOut()))
+    )));
   }
 }

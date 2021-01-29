@@ -25,13 +25,12 @@
 package systems.refomcloud.reformcloud2.embedded.plugin.velocity.executor;
 
 import com.velocitypowered.api.proxy.ProxyServer;
-import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
-import systems.refomcloud.reformcloud2.embedded.plugin.velocity.VelocityExecutor;
 
-import java.time.Duration;
 import java.util.UUID;
 
 public class VelocityPlayerAPIExecutor extends PlayerAPIExecutor {
@@ -43,41 +42,49 @@ public class VelocityPlayerAPIExecutor extends PlayerAPIExecutor {
   }
 
   @Override
-  public void executeSendMessage(UUID player, String message) {
-    this.proxyServer.getPlayer(player).ifPresent(val -> val.sendMessage(Identity.nil(), VelocityExecutor.SERIALIZER.deserialize(message)));
+  public void executeSendMessage(@NotNull UUID player, @NotNull Component message) {
+    this.proxyServer.getPlayer(player).ifPresent(val -> val.sendMessage(message));
   }
 
   @Override
-  public void executeKickPlayer(UUID player, String message) {
-    this.proxyServer.getPlayer(player).ifPresent(val -> val.disconnect(VelocityExecutor.SERIALIZER.deserialize(message)));
+  public void executeKickPlayer(@NotNull UUID player, @NotNull Component message) {
+    this.proxyServer.getPlayer(player).ifPresent(val -> val.disconnect(message));
   }
 
   @Override
-  public void executePlaySound(UUID player, String sound, float f1, float f2) {
+  public void executePlaySound(@NotNull UUID player, @NotNull String sound, float f1, float f2) {
   }
 
   @Override
-  public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
-    this.proxyServer.getPlayer(player).ifPresent(val -> {
-      Title velocityTitle = Title.title(
-        VelocityExecutor.SERIALIZER.deserialize(title),
-        VelocityExecutor.SERIALIZER.deserialize(subTitle),
-        Title.Times.of(Duration.ofSeconds(fadeIn / 20), Duration.ofSeconds(stay / 20), Duration.ofSeconds(fadeOut / 20))
-      );
-      val.showTitle(velocityTitle);
-    });
+  public void executeSendTitle(@NotNull UUID player, @NotNull Title title) {
+    this.proxyServer.getPlayer(player).ifPresent(val -> val.showTitle(title));
   }
 
   @Override
-  public void executePlayEffect(UUID player, String entityEffect) {
+  public void executeSendActionBar(@NotNull UUID player, @NotNull Component actionBar) {
+    this.proxyServer.getPlayer(player).ifPresent(val -> val.sendActionBar(actionBar));
   }
 
   @Override
-  public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
+  public void executeSendBossBar(@NotNull UUID player, @NotNull BossBar bossBar) {
+    this.proxyServer.getPlayer(player).ifPresent(val -> val.showBossBar(bossBar));
   }
 
   @Override
-  public void executeConnect(UUID player, String server) {
+  public void executeHideBossBar(@NotNull UUID player, @NotNull BossBar bossBar) {
+    this.proxyServer.getPlayer(player).ifPresent(val -> val.hideBossBar(bossBar));
+  }
+
+  @Override
+  public void executePlayEffect(@NotNull UUID player, @NotNull String entityEffect) {
+  }
+
+  @Override
+  public void executeTeleport(@NotNull UUID player, @NotNull String world, double x, double y, double z, float yaw, float pitch) {
+  }
+
+  @Override
+  public void executeConnect(@NotNull UUID player, @NotNull String server) {
     this.proxyServer.getPlayer(player).ifPresent(val -> this.proxyServer.getServer(server).ifPresent(s -> val.createConnectionRequest(s).fireAndForget()));
   }
 }

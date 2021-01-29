@@ -24,6 +24,9 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.wrappers;
 
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
@@ -70,7 +73,7 @@ public interface PlayerWrapper {
    *
    * @param message The message which should get sent to the player
    */
-  void sendMessage(@NotNull String message);
+  void sendMessage(@NotNull Component message);
 
   /**
    * Disconnects the player from his connected proxy.
@@ -78,7 +81,7 @@ public interface PlayerWrapper {
    *
    * @param kickReason The reason for the disconnect
    */
-  void disconnect(@NotNull String kickReason);
+  void disconnect(@NotNull Component kickReason);
 
   /**
    * Plays a sound to the player using it's currently connected server.
@@ -94,13 +97,15 @@ public interface PlayerWrapper {
    * Sends a title to the player using it's currently connected proxy.
    * <p>If the player is not connected this method has no effect.</p>
    *
-   * @param title    Title text
-   * @param subTitle Subtitle text
-   * @param fadeIn   Time in ticks for titles to fade in. Defaults to 10.
-   * @param stay     Time in ticks for titles to stay. Defaults to 70.
-   * @param fadeOut  Time in ticks for titles to fade out. Defaults to 20.
+   * @param title The title to send
    */
-  void sendTitle(@NotNull String title, @NotNull String subTitle, int fadeIn, int stay, int fadeOut);
+  void sendTitle(@NotNull Title title);
+
+  void sendActionBar(@NotNull Component actionBar);
+
+  void sendBossBar(@NotNull BossBar bossBar);
+
+  void hideBossBar(@NotNull BossBar bossBar);
 
   /**
    * Plays an effect to the player using it's currently connected server.

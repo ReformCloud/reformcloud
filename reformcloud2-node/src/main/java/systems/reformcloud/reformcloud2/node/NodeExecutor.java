@@ -95,6 +95,8 @@ import systems.reformcloud.reformcloud2.node.processors.player.PacketConnectPlay
 import systems.reformcloud.reformcloud2.node.processors.player.PacketDisconnectPlayerProcessor;
 import systems.reformcloud.reformcloud2.node.processors.player.PacketPlayEffectToPlayerProcessor;
 import systems.reformcloud.reformcloud2.node.processors.player.PacketPlaySoundToPlayerProcessor;
+import systems.reformcloud.reformcloud2.node.processors.player.PacketSendActionBarProcessor;
+import systems.reformcloud.reformcloud2.node.processors.player.PacketSendBossBarProcessor;
 import systems.reformcloud.reformcloud2.node.processors.player.PacketSendPlayerMessageProcessor;
 import systems.reformcloud.reformcloud2.node.processors.player.PacketSendPlayerTitleProcessor;
 import systems.reformcloud.reformcloud2.node.processors.player.PacketSetPlayerLocationProcessor;
@@ -121,6 +123,8 @@ import systems.reformcloud.reformcloud2.protocol.shared.PacketConnectPlayerToSer
 import systems.reformcloud.reformcloud2.protocol.shared.PacketDisconnectPlayer;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketPlayEffectToPlayer;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketPlaySoundToPlayer;
+import systems.reformcloud.reformcloud2.protocol.shared.PacketSendActionBar;
+import systems.reformcloud.reformcloud2.protocol.shared.PacketSendBossBar;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketSendPlayerMessage;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketSendPlayerTitle;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketSetPlayerLocation;
@@ -545,6 +549,8 @@ public final class NodeExecutor extends ExecutorAPI {
       .registerProcessor(new PacketDisconnectPlayerProcessor(), PacketDisconnectPlayer.class)
       .registerProcessor(new PacketPlayEffectToPlayerProcessor(), PacketPlayEffectToPlayer.class)
       .registerProcessor(new PacketPlaySoundToPlayerProcessor(), PacketPlaySoundToPlayer.class)
+      .registerProcessor(new PacketSendBossBarProcessor(), PacketSendBossBar.class)
+      .registerProcessor(new PacketSendActionBarProcessor(), PacketSendActionBar.class)
       .registerProcessor(new PacketSendPlayerMessageProcessor(), PacketSendPlayerMessage.class)
       .registerProcessor(new PacketSendPlayerTitleProcessor(), PacketSendPlayerTitle.class)
       .registerProcessor(new PacketSetPlayerLocationProcessor(), PacketSetPlayerLocation.class)

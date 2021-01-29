@@ -12,6 +12,14 @@
   <artifactId>reformcloud2-executor-api</artifactId>
 
   <dependencies>
+    <!-- https://mvnrepository.com/artifact/net.kyori/adventure-api -->
+    <dependency>
+      <groupId>net.kyori</groupId>
+      <artifactId>adventure-api</artifactId>
+      <version>4.4.0</version>
+      <scope>compile</scope>
+    </dependency>
+
     <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>

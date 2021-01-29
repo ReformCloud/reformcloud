@@ -32,6 +32,7 @@ import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public interface ProtocolBuffer {
@@ -61,6 +62,8 @@ public interface ProtocolBuffer {
   void writeLongArray(long[] longs);
 
   long[] readLongArray();
+
+  @NotNull Set<Integer> readIntSet();
 
   <T extends SerializableObject> void writeObject(@Nullable T object);
 
@@ -141,6 +144,8 @@ public interface ProtocolBuffer {
   void writeBytes(byte[] bytes);
 
   void writeEnum(@NotNull Enum<?> constant);
+
+  void writeIntSet(@NotNull Set<Integer> ints);
 
   void transferTo(@NotNull OutputStream stream) throws IOException;
 }

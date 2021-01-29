@@ -40,7 +40,7 @@ public final class SpigotExecutor extends Embedded {
 
   SpigotExecutor(JavaPlugin plugin) {
     super.type = ExecutorType.API;
-    PlayerAPIExecutor.setInstance(new SpigotPlayerAPIExecutor());
+    PlayerAPIExecutor.setInstance(new SpigotPlayerAPIExecutor(plugin));
 
     instance = this;
     this.plugin = plugin;

@@ -26,14 +26,16 @@ package systems.reformcloud.reformcloud2.node.processors.player;
 
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
-import systems.reformcloud.reformcloud2.protocol.shared.PacketDisconnectPlayer;
+import systems.reformcloud.reformcloud2.protocol.processor.PacketProcessor;
+import systems.reformcloud.reformcloud2.protocol.shared.PacketSendActionBar;
 
-public class PacketDisconnectPlayerProcessor extends PlayerApiToNodePacketProcessor<PacketDisconnectPlayer> {
+public class PacketSendActionBarProcessor implements PacketProcessor<PacketSendActionBar> {
 
   @Override
-  public void process(@NotNull NetworkChannel channel, @NotNull PacketDisconnectPlayer packet) {
-    this.getPlayerProvider().getPlayer(packet.getPlayer())
-      .ifPresent(wrapper -> wrapper.disconnect(GsonComponentSerializer.gson().deserialize(packet.getReason())));
+  public void process(@NotNull NetworkChannel channel, @NotNull PacketSendActionBar packet) {
+    ExecutorAPI.getInstance().getPlayerProvider().getPlayer(packet.getUniqueId())
+      .ifPresent(player -> player.sendActionBar(GsonComponentSerializer.gson().deserialize(packet.getText())));
   }
 }

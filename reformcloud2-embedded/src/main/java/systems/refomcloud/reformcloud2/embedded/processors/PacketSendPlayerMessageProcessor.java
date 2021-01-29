@@ -24,6 +24,7 @@
  */
 package systems.refomcloud.reformcloud2.embedded.processors;
 
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketSendPlayerMessage;
@@ -32,6 +33,6 @@ public class PacketSendPlayerMessageProcessor extends PlayerApiToNodePacketProce
 
   @Override
   public void process(@NotNull NetworkChannel channel, @NotNull PacketSendPlayerMessage packet) {
-    this.getPlayerExecutor().executeSendMessage(packet.getPlayer(), packet.getMessage());
+    this.getPlayerExecutor().executeSendMessage(packet.getPlayer(), GsonComponentSerializer.gson().deserialize(packet.getMessage()));
   }
 }

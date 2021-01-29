@@ -22,18 +22,57 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.processors.player;
+package systems.reformcloud.reformcloud2.protocol.shared;
 
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
-import systems.reformcloud.reformcloud2.protocol.shared.PacketDisconnectPlayer;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.ChannelListener;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
-public class PacketDisconnectPlayerProcessor extends PlayerApiToNodePacketProcessor<PacketDisconnectPlayer> {
+import java.util.UUID;
+
+public class PacketSendActionBar extends ProtocolPacket {
+
+  private UUID uniqueId;
+  private String text;
+
+  public PacketSendActionBar() {
+  }
+
+  public PacketSendActionBar(UUID uniqueId, String text) {
+    this.uniqueId = uniqueId;
+    this.text = text;
+  }
 
   @Override
-  public void process(@NotNull NetworkChannel channel, @NotNull PacketDisconnectPlayer packet) {
-    this.getPlayerProvider().getPlayer(packet.getPlayer())
-      .ifPresent(wrapper -> wrapper.disconnect(GsonComponentSerializer.gson().deserialize(packet.getReason())));
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.uniqueId);
+    buffer.writeString(this.text);
+  }
+
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.uniqueId = buffer.readUniqueId();
+    this.text = buffer.readString();
+  }
+
+  @Override
+  public int getId() {
+    return PacketIds.API_BUS + 20;
+  }
+
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    super.post(channel, PacketSendActionBar.class, this);
+  }
+
+  public UUID getUniqueId() {
+    return this.uniqueId;
+  }
+
+  public String getText() {
+    return this.text;
   }
 }

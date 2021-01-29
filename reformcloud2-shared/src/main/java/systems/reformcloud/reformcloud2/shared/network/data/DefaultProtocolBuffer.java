@@ -39,8 +39,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -177,6 +179,18 @@ public class DefaultProtocolBuffer implements ProtocolBuffer {
 
     for (int i = 0; i < size; i++) {
       out[i] = this.readLong();
+    }
+
+    return out;
+  }
+
+  @Override
+  public @NotNull Set<Integer> readIntSet() {
+    int size = this.readVarInt();
+    Set<Integer> out = new HashSet<>(size);
+
+    for (int i = 0; i < size; i++) {
+      out.add(this.readInt());
     }
 
     return out;
@@ -467,6 +481,16 @@ public class DefaultProtocolBuffer implements ProtocolBuffer {
   @Override
   public void writeEnum(@NotNull Enum<?> constant) {
     this.writeVarInt(constant.ordinal());
+  }
+
+  @Override
+  public void writeIntSet(@NotNull Set<Integer> ints) {
+    this.writeVarInt(ints.size());
+    for (Integer aInt : ints) {
+      if (aInt != null) {
+        this.writeInt(aInt);
+      }
+    }
   }
 
   @Override

@@ -24,6 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.node.protocol;
 
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.PacketIds;
@@ -54,7 +55,8 @@ public class NodeToNodeDisconnectPlayer extends ProtocolPacket {
 
   @Override
   public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-    ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.playerUniqueId).ifPresent(player -> player.disconnect(this.reason));
+    ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.playerUniqueId)
+      .ifPresent(player -> player.disconnect(GsonComponentSerializer.gson().deserialize(this.reason)));
   }
 
   @Override

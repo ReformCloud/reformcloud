@@ -31,80 +31,89 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.listener.Ch
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
+import java.util.Set;
 import java.util.UUID;
 
-public class PacketSendPlayerTitle extends ProtocolPacket {
+public class PacketSendBossBar extends ProtocolPacket {
 
-  private UUID uniqueId;
-  private String title;
-  private String subTitle;
-  private long fadeIn;
-  private long stay;
-  private long fadeOut;
+  protected UUID uniqueId;
+  protected String name;
+  protected float progress;
+  protected int color;
+  protected int overlay;
+  protected Set<Integer> flags;
+  protected boolean hide;
 
-  public PacketSendPlayerTitle() {
+  public PacketSendBossBar() {
   }
 
-  public PacketSendPlayerTitle(UUID uniqueId, String title, String subTitle, long fadeIn, long stay, long fadeOut) {
+  public PacketSendBossBar(UUID uniqueId, String name, float progress, int color, int overlay, Set<Integer> flags, boolean hide) {
     this.uniqueId = uniqueId;
-    this.title = title;
-    this.subTitle = subTitle;
-    this.fadeIn = fadeIn;
-    this.stay = stay;
-    this.fadeOut = fadeOut;
+    this.name = name;
+    this.progress = progress;
+    this.color = color;
+    this.overlay = overlay;
+    this.flags = flags;
+    this.hide = hide;
+  }
+
+  @Override
+  public void write(@NotNull ProtocolBuffer buffer) {
+    buffer.writeUniqueId(this.uniqueId);
+    buffer.writeString(this.name);
+    buffer.writeFloat(this.progress);
+    buffer.writeInt(this.color);
+    buffer.writeInt(this.overlay);
+    buffer.writeIntSet(this.flags);
+    buffer.writeBoolean(this.hide);
+  }
+
+  @Override
+  public void read(@NotNull ProtocolBuffer buffer) {
+    this.uniqueId = buffer.readUniqueId();
+    this.name = buffer.readString();
+    this.progress = buffer.readFloat();
+    this.color = buffer.readInt();
+    this.overlay = buffer.readInt();
+    this.flags = buffer.readIntSet();
+    this.hide = buffer.readBoolean();
+  }
+
+  @Override
+  public int getId() {
+    return PacketIds.API_BUS + 21;
+  }
+
+  @Override
+  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
+    super.post(channel, PacketSendBossBar.class, this);
   }
 
   public UUID getUniqueId() {
     return this.uniqueId;
   }
 
-  public String getTitle() {
-    return this.title;
+  public String getName() {
+    return this.name;
   }
 
-  public String getSubTitle() {
-    return this.subTitle;
+  public float getProgress() {
+    return this.progress;
   }
 
-  public long getFadeIn() {
-    return this.fadeIn;
+  public int getColor() {
+    return this.color;
   }
 
-  public long getStay() {
-    return this.stay;
+  public int getOverlay() {
+    return this.overlay;
   }
 
-  public long getFadeOut() {
-    return this.fadeOut;
+  public Set<Integer> getFlags() {
+    return this.flags;
   }
 
-  @Override
-  public int getId() {
-    return PacketIds.API_BUS + 12;
-  }
-
-  @Override
-  public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-    super.post(channel, PacketSendPlayerTitle.class, this);
-  }
-
-  @Override
-  public void write(@NotNull ProtocolBuffer buffer) {
-    buffer.writeUniqueId(this.uniqueId);
-    buffer.writeString(this.title);
-    buffer.writeString(this.subTitle);
-    buffer.writeLong(this.fadeIn);
-    buffer.writeLong(this.stay);
-    buffer.writeLong(this.fadeOut);
-  }
-
-  @Override
-  public void read(@NotNull ProtocolBuffer buffer) {
-    this.uniqueId = buffer.readUniqueId();
-    this.title = buffer.readString();
-    this.subTitle = buffer.readString();
-    this.fadeIn = buffer.readLong();
-    this.stay = buffer.readLong();
-    this.fadeOut = buffer.readLong();
+  public boolean isHide() {
+    return this.hide;
   }
 }

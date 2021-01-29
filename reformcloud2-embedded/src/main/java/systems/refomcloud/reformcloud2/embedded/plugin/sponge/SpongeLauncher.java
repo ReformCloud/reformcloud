@@ -24,6 +24,8 @@
  */
 package systems.refomcloud.reformcloud2.embedded.plugin.sponge;
 
+import com.google.inject.Inject;
+import net.kyori.adventure.platform.spongeapi.SpongeAudiences;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameLoadCompleteEvent;
@@ -45,6 +47,13 @@ import systems.refomcloud.reformcloud2.embedded.plugin.sponge.event.PlayerListen
 )
 public class SpongeLauncher {
 
+  private final SpongeAudiences spongeAudiences;
+
+  @Inject
+  public SpongeLauncher(SpongeAudiences spongeAudiences) {
+    this.spongeAudiences = spongeAudiences;
+  }
+
   @Listener
   public void handle(final GameLoadCompleteEvent event) {
     Sponge.getChannelRegistrar().createChannel(this, "BungeeCord");
@@ -53,7 +62,7 @@ public class SpongeLauncher {
   @Listener
   public void handle(final GameStartingServerEvent event) {
     Sponge.getEventManager().registerListeners(this, new PlayerListenerHandler());
-    new SpongeExecutor(this);
+    new SpongeExecutor(this, this.spongeAudiences);
   }
 
   @Listener

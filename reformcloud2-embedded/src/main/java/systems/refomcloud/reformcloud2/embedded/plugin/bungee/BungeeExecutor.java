@@ -51,7 +51,7 @@ public final class BungeeExecutor extends Embedded {
     instance = this;
     this.plugin = plugin;
 
-    PlayerAPIExecutor.setInstance(new BungeePlayerAPIExecutor());
+    PlayerAPIExecutor.setInstance(new BungeePlayerAPIExecutor(plugin));
     ProxyServer.getInstance().setReconnectHandler(new ReformCloudReconnectHandler());
 
     super.getServiceRegistry().setProvider(ProxyServerController.class, new BungeeProxyServerController(), true);

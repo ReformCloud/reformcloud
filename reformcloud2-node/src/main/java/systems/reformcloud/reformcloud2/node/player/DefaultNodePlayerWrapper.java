@@ -24,6 +24,10 @@
  */
 package systems.reformcloud.reformcloud2.node.player;
 
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.title.Title;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
@@ -37,6 +41,8 @@ import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeDisconnectPlayer;
 import systems.reformcloud.reformcloud2.node.protocol.NodeToNodePlayEffectToPlayer;
 import systems.reformcloud.reformcloud2.node.protocol.NodeToNodePlaySoundToPlayer;
+import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeSendPlayerActionbar;
+import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeSendPlayerBossBar;
 import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeSendPlayerMessage;
 import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeSendPlayerTitle;
 import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeSendPlayerToServer;
@@ -45,6 +51,8 @@ import systems.reformcloud.reformcloud2.protocol.shared.PacketConnectPlayerToSer
 import systems.reformcloud.reformcloud2.protocol.shared.PacketDisconnectPlayer;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketPlayEffectToPlayer;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketPlaySoundToPlayer;
+import systems.reformcloud.reformcloud2.protocol.shared.PacketSendActionBar;
+import systems.reformcloud.reformcloud2.protocol.shared.PacketSendBossBar;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketSendPlayerMessage;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketSendPlayerTitle;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketSetPlayerLocation;
@@ -52,6 +60,7 @@ import systems.reformcloud.reformcloud2.shared.collect.Entry2;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class DefaultNodePlayerWrapper implements PlayerWrapper {
 
@@ -108,30 +117,26 @@ public class DefaultNodePlayerWrapper implements PlayerWrapper {
   }
 
   @Override
-  public void sendMessage(@NotNull String message) {
-    ProcessInformation proxy = this.getPlayerProxy();
-    if (proxy == null) {
-      return;
-    }
-
-    if (proxy.getId().getNodeUniqueId().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
-      this.sendPacketToPlayerProxy(new PacketSendPlayerMessage(this.uniqueId, message));
-    } else {
-      this.sendPacketToParent(proxy, new NodeToNodeSendPlayerMessage(this.uniqueId, message));
+  public void sendMessage(@NotNull Component message) {
+    final ProcessInformation proxy = this.getPlayerProxy();
+    if (proxy != null) {
+      if (proxy.getId().getNodeUniqueId().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
+        this.sendPacketToPlayerProxy(new PacketSendPlayerMessage(this.uniqueId, GsonComponentSerializer.gson().serialize(message)));
+      } else {
+        this.sendPacketToParent(proxy, new NodeToNodeSendPlayerMessage(this.uniqueId, GsonComponentSerializer.gson().serialize(message)));
+      }
     }
   }
 
   @Override
-  public void disconnect(@NotNull String kickReason) {
-    ProcessInformation proxy = this.getPlayerProxy();
-    if (proxy == null) {
-      return;
-    }
-
-    if (proxy.getId().getUniqueId().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
-      this.sendPacketToPlayerProxy(new PacketDisconnectPlayer(this.uniqueId, kickReason));
-    } else {
-      this.sendPacketToParent(proxy, new NodeToNodeDisconnectPlayer(this.uniqueId, kickReason));
+  public void disconnect(@NotNull Component kickReason) {
+    final ProcessInformation proxy = this.getPlayerProxy();
+    if (proxy != null) {
+      if (proxy.getId().getNodeUniqueId().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
+        this.sendPacketToPlayerProxy(new PacketDisconnectPlayer(this.uniqueId, GsonComponentSerializer.gson().serialize(kickReason)));
+      } else {
+        this.sendPacketToParent(proxy, new NodeToNodeDisconnectPlayer(this.uniqueId, GsonComponentSerializer.gson().serialize(kickReason)));
+      }
     }
   }
 
@@ -150,16 +155,79 @@ public class DefaultNodePlayerWrapper implements PlayerWrapper {
   }
 
   @Override
-  public void sendTitle(@NotNull String title, @NotNull String subTitle, int fadeIn, int stay, int fadeOut) {
-    ProcessInformation proxy = this.getPlayerProxy();
-    if (proxy == null) {
-      return;
-    }
+  public void sendTitle(@NotNull Title title) {
+    final ProcessInformation proxy = this.getPlayerProxy();
+    if (proxy != null) {
+      final Title.Times times = title.times();
 
-    if (proxy.getId().getUniqueId().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
-      this.sendPacketToPlayerProxy(new PacketSendPlayerTitle(this.uniqueId, title, subTitle, fadeIn, stay, fadeOut));
-    } else {
-      this.sendPacketToParent(proxy, new NodeToNodeSendPlayerTitle(this.uniqueId, title, subTitle, fadeIn, stay, fadeOut));
+      if (proxy.getId().getUniqueId().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
+        this.sendPacketToPlayerProxy(new PacketSendPlayerTitle(
+          this.uniqueId,
+          GsonComponentSerializer.gson().serialize(title.title()),
+          GsonComponentSerializer.gson().serialize(title.subtitle()),
+          times == null ? 0 : times.fadeIn().toMillis(),
+          times == null ? 0 : times.stay().toMillis(),
+          times == null ? 0 : times.fadeOut().toMillis()
+        ));
+      } else {
+        this.sendPacketToParent(proxy, new NodeToNodeSendPlayerTitle(
+          this.uniqueId,
+          GsonComponentSerializer.gson().serialize(title.title()),
+          GsonComponentSerializer.gson().serialize(title.subtitle()),
+          times == null ? 0 : times.fadeIn().toMillis(),
+          times == null ? 0 : times.stay().toMillis(),
+          times == null ? 0 : times.fadeOut().toMillis()
+        ));
+      }
+    }
+  }
+
+  @Override
+  public void sendActionBar(@NotNull Component actionBar) {
+    final ProcessInformation proxy = this.getPlayerProxy();
+    if (proxy != null) {
+      if (proxy.getId().getNodeUniqueId().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
+        this.sendPacketToPlayerProxy(new PacketSendActionBar(this.uniqueId, GsonComponentSerializer.gson().serialize(actionBar)));
+      } else {
+        this.sendPacketToParent(proxy, new NodeToNodeSendPlayerActionbar(this.uniqueId, GsonComponentSerializer.gson().serialize(actionBar)));
+      }
+    }
+  }
+
+  @Override
+  public void sendBossBar(@NotNull BossBar bossBar) {
+    this.sendBossBar(bossBar, false);
+  }
+
+  @Override
+  public void hideBossBar(@NotNull BossBar bossBar) {
+    this.sendBossBar(bossBar, true);
+  }
+
+  private void sendBossBar(@NotNull BossBar bossBar, boolean hide) {
+    final ProcessInformation proxy = this.getPlayerProxy();
+    if (proxy != null) {
+      if (proxy.getId().getNodeUniqueId().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
+        this.sendPacketToPlayerProxy(new PacketSendBossBar(
+          this.uniqueId,
+          GsonComponentSerializer.gson().serialize(bossBar.name()),
+          bossBar.progress(),
+          bossBar.color().ordinal(),
+          bossBar.overlay().ordinal(),
+          bossBar.flags().stream().map(Enum::ordinal).collect(Collectors.toSet()),
+          hide
+        ));
+      } else {
+        this.sendPacketToParent(proxy, new NodeToNodeSendPlayerBossBar(
+          this.uniqueId,
+          GsonComponentSerializer.gson().serialize(bossBar.name()),
+          bossBar.progress(),
+          bossBar.color().ordinal(),
+          bossBar.overlay().ordinal(),
+          bossBar.flags().stream().map(Enum::ordinal).collect(Collectors.toSet()),
+          hide
+        ));
+      }
     }
   }
 

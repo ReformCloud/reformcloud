@@ -24,6 +24,7 @@
  */
 package systems.refomcloud.reformcloud2.embedded.plugin.sponge;
 
+import net.kyori.adventure.platform.spongeapi.SpongeAudiences;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.SpongeExecutorService;
@@ -39,9 +40,9 @@ public class SpongeExecutor extends Embedded {
   private final SpongeLauncher plugin;
   private final SpongeExecutorService executorService;
 
-  SpongeExecutor(SpongeLauncher launcher) {
+  SpongeExecutor(SpongeLauncher launcher, SpongeAudiences audiences) {
     super.type = ExecutorType.API;
-    PlayerAPIExecutor.setInstance(new SpongePlayerExecutor());
+    PlayerAPIExecutor.setInstance(new SpongePlayerExecutor(audiences));
 
     this.plugin = launcher;
     this.executorService = Sponge.getScheduler().createSyncExecutor(launcher);

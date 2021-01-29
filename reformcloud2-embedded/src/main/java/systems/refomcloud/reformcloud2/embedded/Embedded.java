@@ -39,6 +39,8 @@ import systems.refomcloud.reformcloud2.embedded.processors.PacketConnectPlayerTo
 import systems.refomcloud.reformcloud2.embedded.processors.PacketDisconnectPlayerProcessor;
 import systems.refomcloud.reformcloud2.embedded.processors.PacketPlayEffectToPlayerProcessor;
 import systems.refomcloud.reformcloud2.embedded.processors.PacketPlaySoundToPlayerProcessor;
+import systems.refomcloud.reformcloud2.embedded.processors.PacketSendActionBarProcessor;
+import systems.refomcloud.reformcloud2.embedded.processors.PacketSendBossBarProcessor;
 import systems.refomcloud.reformcloud2.embedded.processors.PacketSendPlayerMessageProcessor;
 import systems.refomcloud.reformcloud2.embedded.processors.PacketSendPlayerTitleProcessor;
 import systems.refomcloud.reformcloud2.embedded.processors.PacketSetPlayerLocationProcessor;
@@ -73,6 +75,8 @@ import systems.reformcloud.reformcloud2.protocol.shared.PacketConnectPlayerToSer
 import systems.reformcloud.reformcloud2.protocol.shared.PacketDisconnectPlayer;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketPlayEffectToPlayer;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketPlaySoundToPlayer;
+import systems.reformcloud.reformcloud2.protocol.shared.PacketSendActionBar;
+import systems.reformcloud.reformcloud2.protocol.shared.PacketSendBossBar;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketSendPlayerMessage;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketSendPlayerTitle;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketSetPlayerLocation;
@@ -172,6 +176,8 @@ public abstract class Embedded extends ExecutorAPI {
       .registerProcessor(new PacketPlaySoundToPlayerProcessor(), PacketPlaySoundToPlayer.class)
       .registerProcessor(new PacketSendPlayerMessageProcessor(), PacketSendPlayerMessage.class)
       .registerProcessor(new PacketSendPlayerTitleProcessor(), PacketSendPlayerTitle.class)
+      .registerProcessor(new PacketSendActionBarProcessor(), PacketSendActionBar.class)
+      .registerProcessor(new PacketSendBossBarProcessor(), PacketSendBossBar.class)
       .registerProcessor(new PacketSetPlayerLocationProcessor(), PacketSetPlayerLocation.class);
 
     Runtime.getRuntime().addShutdownHook(new Thread(this.networkClient::closeSync));

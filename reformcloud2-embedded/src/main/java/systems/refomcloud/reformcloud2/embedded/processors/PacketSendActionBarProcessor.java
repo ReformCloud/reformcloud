@@ -22,18 +22,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.processors.player;
+package systems.refomcloud.reformcloud2.embedded.processors;
 
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
-import systems.reformcloud.reformcloud2.protocol.shared.PacketDisconnectPlayer;
+import systems.reformcloud.reformcloud2.protocol.shared.PacketSendActionBar;
 
-public class PacketDisconnectPlayerProcessor extends PlayerApiToNodePacketProcessor<PacketDisconnectPlayer> {
+public class PacketSendActionBarProcessor extends PlayerApiToNodePacketProcessor<PacketSendActionBar> {
 
   @Override
-  public void process(@NotNull NetworkChannel channel, @NotNull PacketDisconnectPlayer packet) {
-    this.getPlayerProvider().getPlayer(packet.getPlayer())
-      .ifPresent(wrapper -> wrapper.disconnect(GsonComponentSerializer.gson().deserialize(packet.getReason())));
+  public void process(@NotNull NetworkChannel channel, @NotNull PacketSendActionBar packet) {
+    this.getPlayerExecutor().executeSendActionBar(packet.getUniqueId(), GsonComponentSerializer.gson().deserialize(packet.getText()));
   }
 }
