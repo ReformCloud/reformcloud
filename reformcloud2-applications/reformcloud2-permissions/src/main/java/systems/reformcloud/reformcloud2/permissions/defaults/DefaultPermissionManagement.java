@@ -125,14 +125,6 @@ public class DefaultPermissionManagement extends PermissionManagement {
     this.updateGroup(permissionGroup);
   }
 
-  @NotNull
-  @Override
-  @Deprecated
-  public PermissionGroup createGroup(@NotNull String name) {
-    PermissionGroup newGroup = new PermissionGroup(new ArrayList<>(), name, 0);
-    return this.createPermissionGroup(newGroup);
-  }
-
   @Override
   public @NotNull PermissionGroup createPermissionGroup(@NotNull PermissionGroup permissionGroup) {
     PermissionGroup group = this.getPermissionGroup(permissionGroup.getName()).orElse(null);

@@ -25,7 +25,6 @@
 package systems.reformcloud.reformcloud2.node.application;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.application.ApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.application.ApplicationStatus;
 import systems.reformcloud.reformcloud2.executor.api.application.LoadedApplication;
@@ -49,12 +48,6 @@ public final class DefaultLoadedApplication implements LoadedApplication {
   @Override
   public ApplicationLoader getApplicationLoader() {
     return this.loader;
-  }
-
-  @NotNull
-  @Override
-  public ExecutorAPI api() {
-    return ExecutorAPI.getInstance();
   }
 
   @NotNull

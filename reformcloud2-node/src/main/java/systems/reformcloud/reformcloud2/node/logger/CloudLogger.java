@@ -97,7 +97,7 @@ public class CloudLogger extends Logger {
    * @param logRecord The log record to check
    * @return {@code true} if the record should be printed, {@code false} otherwise
    */
-  @ApiStatus.AvailableSince("2.11.0-SNAPSHOT-SNAPSHOT")
+  @ApiStatus.AvailableSince("3.0.0-SNAPSHOT-SNAPSHOT")
   protected boolean preProcessRecord(@NotNull LogRecord logRecord) {
     return !NodeExecutor.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class)
       .callEvent(new LogRecordProcessEvent(logRecord))

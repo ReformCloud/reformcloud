@@ -24,13 +24,11 @@
  */
 package systems.reformcloud.reformcloud2.runner.reformscript;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.runner.reformscript.utils.InterpreterCommand;
 import systems.reformcloud.reformcloud2.runner.reformscript.utils.InterpreterVariable;
 
-import java.io.File;
 import java.nio.file.Path;
 
 /**
@@ -77,20 +75,6 @@ public interface ReformScriptInterpreter {
   InterpreterVariable getVariable(@NotNull String variable);
 
   /**
-   * Interprets the given file as a reform script
-   *
-   * @param script The file name of the file which should get interpreted
-   * @return The interpreted script or {@code null} if the interpreter cannot understand the file content
-   * @deprecated Use {@link #interpret(Path)} instead
-   */
-  @Nullable
-  @Deprecated
-  @ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
-  default InterpretedReformScript interpret(@NotNull File script) {
-    return this.interpret(script.toPath());
-  }
-
-  /**
    * Interprets the given path as a reform script
    *
    * @param script The path name of the file which should get interpreted
@@ -98,5 +82,4 @@ public interface ReformScriptInterpreter {
    */
   @Nullable
   InterpretedReformScript interpret(@NotNull Path script);
-
 }

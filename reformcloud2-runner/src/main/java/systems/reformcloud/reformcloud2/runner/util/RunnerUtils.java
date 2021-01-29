@@ -24,11 +24,9 @@
  */
 package systems.reformcloud.reformcloud2.runner.util;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -59,12 +57,6 @@ public final class RunnerUtils {
    * The location of the runner in the node and client env
    */
   public static final Path RUNNER_FILES_FILE = Paths.get("reformcloud/files/runner.jar");
-  /**
-   * The file where the reform script is located by default
-   */
-  @Deprecated
-  @ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
-  public static final File GLOBAL_SCRIPT_FILE = new File("global.reformscript");
   /**
    * The file where the reform script is located by default
    */
@@ -130,19 +122,6 @@ public final class RunnerUtils {
   @NotNull
   public static String replaceLast(@NotNull String text, @NotNull String regex, @NotNull String replacement) {
     return text.replaceFirst("(?s)(.*)" + regex, "$1" + replacement);
-  }
-
-  /**
-   * Copies a compiled file from the source location to the given target location
-   *
-   * @param from The location of the compiled file which should get copied
-   * @param to   The target of the file which should get copied
-   * @deprecated Use {@link #copyCompiledFile(String, Path)} instead
-   */
-  @Deprecated
-  @ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
-  public static void copyCompiledFile(@NotNull String from, @NotNull File to) {
-    copyCompiledFile(from, to.toPath());
   }
 
   /**

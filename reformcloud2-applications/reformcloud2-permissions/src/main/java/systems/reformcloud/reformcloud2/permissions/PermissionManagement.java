@@ -63,20 +63,6 @@ public abstract class PermissionManagement {
   }
 
   /**
-   * Get a specific group
-   *
-   * @param name The name of the group
-   * @return The {@link PermissionGroup} or {@code null} if the group does not exists
-   * @deprecated Use {@link #getPermissionGroup(String)} instead
-   */
-  @Nullable
-  @Deprecated
-  @ApiStatus.ScheduledForRemoval(inVersion = "2.10.2")
-  public PermissionGroup getGroup(@NotNull String name) {
-    return this.getPermissionGroup(name).orElse(null);
-  }
-
-  /**
    * Get a specific permission group by it's name
    *
    * @param name The name of the group
@@ -108,18 +94,6 @@ public abstract class PermissionManagement {
    * @param permissionNode  The permission which should be added
    */
   public abstract void addProcessGroupPermission(@NotNull String processGroup, @NotNull PermissionGroup permissionGroup, @NotNull PermissionNode permissionNode);
-
-  /**
-   * Creates a new group
-   *
-   * @param name The name of the new group
-   * @return The created group or the group which already exists
-   * @deprecated Use {@link #createPermissionGroup(PermissionGroup)} instead
-   */
-  @NotNull
-  @Deprecated
-  @ApiStatus.ScheduledForRemoval(inVersion = "2.10.2")
-  public abstract PermissionGroup createGroup(@NotNull String name);
 
   /**
    * Creates a new permission group

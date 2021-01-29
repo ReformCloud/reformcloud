@@ -24,14 +24,10 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.application;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
-import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -79,13 +75,6 @@ public class Application {
   }
 
   @NotNull
-  @Deprecated
-  @ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
-  public final File getDataFolder() {
-    return this.dataDirectory.toFile();
-  }
-
-  @NotNull
   public Path getDataDirectory() {
     return this.dataDirectory;
   }
@@ -111,15 +100,5 @@ public class Application {
   @NotNull
   public final ExecutorService getExecutorService() {
     return this.executorService;
-  }
-
-  /**
-   * @deprecated replaced with {@link ExecutorAPI#getDependencyLoader()}
-   */
-  @NotNull
-  @Deprecated
-  @ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
-  public DependencyLoader getDependencyLoader() {
-    return ExecutorAPI.getInstance().getDependencyLoader();
   }
 }

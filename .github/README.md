@@ -149,7 +149,7 @@ ReformCloud2 is available in the [central repository](https://search.maven.org/s
         <groupId>systems.reformcloud.reformcloud2</groupId>
         <!-- replace with needed artifact for example 'reformcloud2-executor' or 'reformcloud2-permissions' -->
         <artifactId>reformcloud2-executor-api</artifactId>
-        <version>2.11.0-SNAPSHOT</version>
+        <version>3.0.0-SNAPSHOT</version>
         <scope>provided</scope>
     </dependency>
 ```

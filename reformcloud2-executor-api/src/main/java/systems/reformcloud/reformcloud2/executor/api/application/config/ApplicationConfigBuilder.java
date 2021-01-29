@@ -38,7 +38,7 @@ public final class ApplicationConfigBuilder {
   private String version;
   private Path appFile;
   private JarEntry descFile;
-  private String implementedVersion = "2.11.0-SNAPSHOT";
+  private String implementedVersion = "3.0.0-SNAPSHOT";
   private String website = "https://reformcloud.systems";
   private String description = "A reformcloud application";
 
