@@ -27,27 +27,15 @@ package systems.reformcloud.reformcloud2.commands.application.listener;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.commands.application.ReformCloudApplication;
 import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
-import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessInclusion;
+import systems.reformcloud.reformcloud2.node.application.ApplicationUtils;
 import systems.reformcloud.reformcloud2.node.event.process.LocalProcessPrePrepareEvent;
 
 public final class ProcessInclusionHandler {
 
-  private static String getVersion() {
-    return ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion();
-  }
-
   @Listener
   public void handle(@NotNull LocalProcessPrePrepareEvent event) {
     if (event.getProcessInformation().getPrimaryTemplate().getVersion().getVersionType().isProxy()) {
-      this.includeSelfFile(event.getProcessInformation());
+      ApplicationUtils.copyApplicationToDirectory(ReformCloudApplication.getInstance(), event.getWrapper().getPath().resolve("plugins"));
     }
-  }
-
-  private void includeSelfFile(@NotNull ProcessInformation processInformation) {
-    processInformation.addProcessInclusion(ProcessInclusion.inclusion(
-      "https://dl.reformcloud.systems/addonsv2/reformcloud2-commands-" + getVersion() + ".jar",
-      "plugins/commands-" + getVersion() + ".jar"
-    ));
   }
 }

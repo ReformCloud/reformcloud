@@ -26,26 +26,14 @@ package systems.reformcloud.reformcloud2.permissions.application.listener;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
-import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessInclusion;
+import systems.reformcloud.reformcloud2.node.application.ApplicationUtils;
 import systems.reformcloud.reformcloud2.node.event.process.LocalProcessPrePrepareEvent;
 import systems.reformcloud.reformcloud2.permissions.application.ReformCloudApplication;
 
 public final class ProcessInclusionHandler {
 
-  private static String getVersion() {
-    return ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion();
-  }
-
   @Listener
   public void handle(final @NotNull LocalProcessPrePrepareEvent event) {
-    this.includeSelfFile(event.getProcessInformation());
-  }
-
-  private void includeSelfFile(@NotNull ProcessInformation processInformation) {
-    processInformation.addProcessInclusion(ProcessInclusion.inclusion(
-      "https://dl.reformcloud.systems/addonsv2/reformcloud2-permissions-" + getVersion() + ".jar",
-      "plugins/permissions-" + getVersion() + ".jar"
-    ));
+    ApplicationUtils.copyApplicationToDirectory(ReformCloudApplication.getInstance(), event.getWrapper().getPath().resolve("plugins"));
   }
 }

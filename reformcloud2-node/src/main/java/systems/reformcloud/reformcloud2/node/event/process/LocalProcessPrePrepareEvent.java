@@ -25,11 +25,18 @@
 package systems.reformcloud.reformcloud2.node.event.process;
 
 import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessEvent;
-import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.node.process.DefaultNodeLocalProcessWrapper;
 
 public class LocalProcessPrePrepareEvent extends ProcessEvent {
 
-  public LocalProcessPrePrepareEvent(ProcessInformation processInformation) {
-    super(processInformation);
+  private final DefaultNodeLocalProcessWrapper wrapper;
+
+  public LocalProcessPrePrepareEvent(DefaultNodeLocalProcessWrapper wrapper) {
+    super(wrapper.getProcessInformation());
+    this.wrapper = wrapper;
+  }
+
+  public DefaultNodeLocalProcessWrapper getWrapper() {
+    return this.wrapper;
   }
 }

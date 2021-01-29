@@ -22,20 +22,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.proxy.application.listener;
+package systems.reformcloud.reformcloud2.node.application;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
-import systems.reformcloud.reformcloud2.node.application.ApplicationUtils;
-import systems.reformcloud.reformcloud2.node.event.process.LocalProcessPrePrepareEvent;
-import systems.reformcloud.reformcloud2.proxy.application.ProxyApplication;
+import systems.reformcloud.reformcloud2.executor.api.application.Application;
+import systems.reformcloud.reformcloud2.shared.io.IOUtils;
 
-public final class ProcessInclusionHandler {
+import java.nio.file.Path;
 
-  @Listener
-  public void handle(final @NotNull LocalProcessPrePrepareEvent event) {
-    if (event.getProcessInformation().getPrimaryTemplate().getVersion().getVersionType().isProxy()) {
-      ApplicationUtils.copyApplicationToDirectory(ProxyApplication.getInstance(), event.getWrapper().getPath().resolve("plugins"));
-    }
+public final class ApplicationUtils {
+
+  private ApplicationUtils() {
+    throw new UnsupportedOperationException();
+  }
+
+  public static void copyApplicationFile(@NotNull Application application, @NotNull Path target) {
+    IOUtils.copy(application.getApplication().getApplicationConfig().getApplicationPath(), target);
+  }
+
+  public static void copyApplicationToDirectory(@NotNull Application application, @NotNull Path target) {
+    target = target.resolve(application.getApplication().getName() + ".jar");
+    IOUtils.copy(application.getApplication().getApplicationConfig().getApplicationPath(), target);
   }
 }

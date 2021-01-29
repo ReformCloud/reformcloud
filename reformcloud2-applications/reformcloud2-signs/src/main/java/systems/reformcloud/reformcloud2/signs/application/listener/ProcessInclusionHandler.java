@@ -26,8 +26,7 @@ package systems.reformcloud.reformcloud2.signs.application.listener;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
-import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.process.builder.ProcessInclusion;
+import systems.reformcloud.reformcloud2.node.application.ApplicationUtils;
 import systems.reformcloud.reformcloud2.node.event.process.LocalProcessPrePrepareEvent;
 import systems.reformcloud.reformcloud2.signs.application.ReformCloudApplication;
 
@@ -35,18 +34,8 @@ public final class ProcessInclusionHandler {
 
   @Listener
   public void handle(final @NotNull LocalProcessPrePrepareEvent event) {
-    this.includeSelfFile(event.getProcessInformation());
-  }
-
-  private void includeSelfFile(@NotNull ProcessInformation processInformation) {
-    if (processInformation.getPrimaryTemplate().getVersion().getVersionType().isProxy() || !processInformation.getProcessGroup().isLobbyGroup()) {
-      return;
+    if (event.getProcessInformation().getPrimaryTemplate().getVersion().getVersionType().isServer()) {
+      ApplicationUtils.copyApplicationToDirectory(ReformCloudApplication.getInstance(), event.getWrapper().getPath().resolve("plugins"));
     }
-
-    processInformation.addProcessInclusion(ProcessInclusion.inclusion(
-      "https://dl.reformcloud.systems/addonsv2/reformcloud2-signs-"
-        + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar",
-      "plugins/signs-" + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar"
-    ));
   }
 }

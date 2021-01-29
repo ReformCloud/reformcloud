@@ -85,8 +85,13 @@ public final class IOUtils {
   }
 
   public static void copy(String from, Path target) {
-    try (InputStream inputStream = Files.newInputStream(Paths.get(from))) {
-      copy(inputStream, target, StandardCopyOption.REPLACE_EXISTING);
+    copy(Paths.get(from), target);
+  }
+
+  public static void copy(Path from, Path target) {
+    IOUtils.createDirectory(target.getParent());
+    try (OutputStream outputStream = Files.newOutputStream(target)) {
+      Files.copy(from, outputStream);
     } catch (IOException exception) {
       exception.printStackTrace();
     }

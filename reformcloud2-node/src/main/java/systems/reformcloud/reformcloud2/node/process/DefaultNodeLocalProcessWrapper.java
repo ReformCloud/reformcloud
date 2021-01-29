@@ -193,7 +193,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
     try {
       this.lock.lock();
 
-      ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new LocalProcessPrePrepareEvent(this.processInformation));
+      ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new LocalProcessPrePrepareEvent(this));
       EnvironmentBuilder.constructEnvFor(this, this.firstStart, this.connectionKey);
     } finally {
       this.lock.unlock();
