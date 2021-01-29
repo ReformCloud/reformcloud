@@ -1,0 +1,6 @@
+name: 'ReformCloudBungeeCommands'
+version: '3'
+author: 'derklaro'
+main: systems.reformcloud.commands.plugin.bungeecord.BungeecordPlugin
+depend:
+  - ReformCloudBungeeExecutor

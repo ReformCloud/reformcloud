@@ -1,0 +1,7 @@
+{
+  "name": "MySQLDatabase",
+  "author": "derklaro",
+  "main": "systems.reformcloud.mysql.MySQLApplication",
+  "version": "3.0.0-SNAPSHOT",
+  "impl-version": "3.0.0-SNAPSHOT"
+}

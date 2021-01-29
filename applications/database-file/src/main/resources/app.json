@@ -1,0 +1,7 @@
+{
+  "name": "FileDatabase",
+  "author": "derklaro",
+  "main": "systems.reformcloud.file.FileDatabase",
+  "version": "3.0.0-SNAPSHOT",
+  "impl-version": "3.0.0-SNAPSHOT"
+}

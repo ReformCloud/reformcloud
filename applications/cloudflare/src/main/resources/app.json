@@ -1,0 +1,7 @@
+{
+  "name": "CloudFlareAddon",
+  "author": "derklaro",
+  "main": "systems.reformcloud.cloudflare.ReformCloudApplication",
+  "version": "3.0.0-SNAPSHOT",
+  "impl-version": "3.0.0-SNAPSHOT"
+}

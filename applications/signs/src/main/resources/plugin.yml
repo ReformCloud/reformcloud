@@ -1,0 +1,15 @@
+name: ReformCloudSigns
+version: '3.0'
+author: derklaro
+main: systems.reformcloud.signs.bukkit.BukkitPlugin
+api-version: '1.13'
+
+depend:
+  - ReformCloudSpigotExecutor
+
+# Additional
+website: 'https://reformcloud.systems'
+description: 'The reformcloud sign plugin'
+
+commands:
+  signs:

@@ -1,0 +1,18 @@
+name: 'ReformCloudSigns'
+author: 'derklaro'
+version: '3.0'
+main: systems.reformcloud.signs.nukkit.NukkitPlugin
+
+load: STARTUP
+
+api: [ '1.0.0' ]
+depend:
+  - ReformCloudNukkitExecutor
+
+commands:
+  signs:
+    description: Manage signs
+
+# Additional
+website: 'https://reformcloud.systems'
+description: 'The reformcloud sign plugin'
