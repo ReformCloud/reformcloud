@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>reformcloud2-applications</artifactId>
+    <groupId>systems.reformcloud.reformcloud2</groupId>
+    <version>2.11.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>reformcloud2-commands</artifactId>
+
+  <repositories>
+    <!-- bungee repo -->
+    <repository>
+      <id>bungeecord-repo</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </repository>
+
+    <!-- velocity repo -->
+    <repository>
+      <id>velocity</id>
+      <url>https://repo.velocitypowered.com/snapshots/</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <!-- bungee api -->
+    <dependency>
+      <groupId>net.md-5</groupId>
+      <artifactId>bungeecord-api</artifactId>
+      <version>1.16-R0.4</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- velocity api -->
+    <dependency>
+      <groupId>com.velocitypowered</groupId>
+      <artifactId>velocity-api</artifactId>
+      <version>1.1.3</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- reformcloud2 executor -->
+    <dependency>
+      <groupId>systems.reformcloud.reformcloud2</groupId>
+      <artifactId>reformcloud2-node</artifactId>
+      <version>2.11.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>systems.reformcloud.reformcloud2</groupId>
+      <artifactId>reformcloud2-embedded</artifactId>
+      <version>2.11.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+</project>
