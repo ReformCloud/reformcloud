@@ -80,7 +80,7 @@ pipeline {
         sh "rm -rf ReformCloud2-Applications.zip";
         sh "mkdir -p applications/";
 
-        sh "find reformcloud2-applications/ -type f -name \"reformcloud2-default-*.jar\" -and -not -name \"*-sources.jar\" -and -not -name \"*-javadoc.jar\" -exec cp \"{}\" applications/ ';'";
+        sh "find reformcloud2-applications/ -type f -name \"reformcloud2-*.jar\" -and -not -name \"*-sources.jar\" -and -not -name \"*-javadoc.jar\" -exec cp \"{}\" applications/ ';'";
         zip archive: true, dir: 'applications', glob: '', zipFile: 'ReformCloud2-Applications.zip'
 
         sh "rm -rf applications/";
@@ -92,7 +92,7 @@ pipeline {
         sh "rm -rf ReformCloud2-Plugins.zip";
         sh "mkdir -p plugins/";
 
-        sh "find reformcloud2-plugins/ -type f -name \"reformcloud2-default-*.jar\" -and -not -name \"*-sources.jar\" -and -not -name \"*-javadoc.jar\" -exec cp \"{}\" plugins/ ';'";
+        sh "find reformcloud2-plugins/ -type f -name \"reformcloud2-*.jar\" -and -not -name \"*-sources.jar\" -and -not -name \"*-javadoc.jar\" -exec cp \"{}\" plugins/ ';'";
         zip archive: true, dir: 'plugins', glob: '', zipFile: 'ReformCloud2-Plugins.zip'
 
         sh "rm -rf plugins/";
