@@ -215,6 +215,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
       "-Dreformcloud.runner.version=" + System.getProperty("reformcloud.runner.version"),
       "-Dreformcloud.executor.type=3",
       "-Dreformcloud.lib.path=" + LIB_PATH,
+      "-Dreformcloud.disable.native=" + !this.processInformation.getPrimaryTemplate().getVersion().isNativeTransportSupported(),
       "-Dreformcloud.process.path=" + Paths.get("reformcloud/files", Versions.formatVersion(
         this.processInformation.getPrimaryTemplate().getVersion()
       )).toAbsolutePath().toString()
