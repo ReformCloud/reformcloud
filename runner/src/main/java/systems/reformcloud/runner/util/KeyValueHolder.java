@@ -25,6 +25,7 @@
 package systems.reformcloud.runner.util;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -33,13 +34,12 @@ public final class KeyValueHolder<K, V> implements Map.Entry<K, V> {
   private final K key;
   private V value;
 
-  public KeyValueHolder(@NotNull K key, @NotNull V value) {
+  public KeyValueHolder(@Nullable K key, @NotNull V value) {
     this.key = key;
     this.value = value;
   }
 
   @Override
-  @NotNull
   public K getKey() {
     return this.key;
   }

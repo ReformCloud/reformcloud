@@ -38,12 +38,12 @@ import systems.reformcloud.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.configuration.JsonConfiguration;
 import systems.reformcloud.event.EventManager;
 import systems.reformcloud.language.TranslationHolder;
-import systems.reformcloud.utility.MoreCollections;
 import systems.reformcloud.node.event.application.ApplicationDisableEvent;
 import systems.reformcloud.node.event.application.ApplicationLoadEvent;
 import systems.reformcloud.node.event.application.ApplicationLoaderDetectedApplicationEvent;
 import systems.reformcloud.shared.io.DownloadHelper;
 import systems.reformcloud.shared.io.IOUtils;
+import systems.reformcloud.utility.MoreCollections;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -290,8 +290,6 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
 
     IOUtils.createDirectory(Paths.get("reformcloud/.update/apps"));
     String fileName = application.getApplication().getApplicationConfig().getApplicationPath().getFileName().toString();
-    String[] split = fileName.split("-");
-    String name = fileName.replace("-" + split[split.length - 1], "").replace(".jar", "");
 
     System.out.println(TranslationHolder.translate(
       "application-download-update",
@@ -302,9 +300,6 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
       repository.getUpdate().getDownloadUrl()
     ));
 
-    DownloadHelper.download(
-      repository.getUpdate().getDownloadUrl(),
-      "reformcloud/.update/apps/" + name + "-" + repository.getUpdate().getNewVersion() + ".jar"
-    );
+    DownloadHelper.download(repository.getUpdate().getDownloadUrl(), "reformcloud/.update/apps/" + fileName);
   }
 }

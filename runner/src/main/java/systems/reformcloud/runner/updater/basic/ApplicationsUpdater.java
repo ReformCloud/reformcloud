@@ -38,8 +38,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Represents an updater for the applications
@@ -49,12 +47,8 @@ public final class ApplicationsUpdater implements Updater {
   /**
    * The folder in which the installed applications of the cloud versions are located
    */
-  private static final Path APP_FOLDER = Paths.get("reformcloud/applications");
+  private static final Path APP_FOLDER = Paths.get(System.getProperty("systems.reformcloud.application-directory", "reformcloud/applications"));
 
-  /**
-   * The pattern to find a file update
-   */
-  private static final Pattern PATTERN = Pattern.compile("(.*)-(.*)\\.jar");
   private final Path applicationUpdatesPath;
   private final Collection<Map.Entry<Path, Path>> oldToNewUpdates;
 
@@ -70,32 +64,17 @@ public final class ApplicationsUpdater implements Updater {
 
   @Override
   public void collectInformation() {
-    if (Files.notExists(this.applicationUpdatesPath)) {
-      return;
-    }
+    if (Files.exists(this.applicationUpdatesPath)) {
+      try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.applicationUpdatesPath, new JarFileDirectoryStreamFilter())) {
+        for (Path entry : stream) {
+          final String fileName = entry.getFileName().toString();
+          final Path oldFile = RunnerUtils.findFile(APP_FOLDER, path -> path.getFileName().toString().equals(fileName), new JarFileDirectoryStreamFilter());
 
-    try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.applicationUpdatesPath, new JarFileDirectoryStreamFilter())) {
-      for (Path entry : stream) {
-        Matcher matcher = PATTERN.matcher(entry.getFileName().toString());
-        if (!matcher.find()) {
-          System.err.println("Unable to find match for \"file-name-version.jar\" " +
-            "is the requested format: " + entry.toString());
-          continue;
+          this.oldToNewUpdates.add(new KeyValueHolder<>(oldFile, entry));
         }
-
-        String oldName = matcher.group(1);
-        Path old = RunnerUtils.findFile(
-          APP_FOLDER,
-          path -> path.getFileName().toString().startsWith(oldName),
-          new JarFileDirectoryStreamFilter()
-        );
-
-        if (old != null) {
-          this.oldToNewUpdates.add(new KeyValueHolder<>(old, entry));
-        }
+      } catch (final IOException ex) {
+        throw new RuntimeException(ex);
       }
-    } catch (final IOException ex) {
-      throw new RuntimeException(ex);
     }
   }
 
@@ -107,7 +86,9 @@ public final class ApplicationsUpdater implements Updater {
   @Override
   public void applyUpdates() {
     for (Map.Entry<Path, Path> oldToNewUpdate : this.oldToNewUpdates) {
-      RunnerUtils.deleteFileIfExists(oldToNewUpdate.getKey());
+      if (oldToNewUpdate.getKey() != null) {
+        RunnerUtils.deleteFileIfExists(oldToNewUpdate.getKey());
+      }
 
       RunnerUtils.copy(oldToNewUpdate.getValue(), APP_FOLDER.resolve(oldToNewUpdate.getValue().getFileName()));
       RunnerUtils.deleteFileIfExists(oldToNewUpdate.getValue());
