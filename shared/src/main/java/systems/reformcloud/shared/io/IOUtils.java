@@ -25,11 +25,14 @@
 package systems.reformcloud.shared.io;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.CopyOption;
 import java.nio.file.DirectoryStream;
@@ -43,6 +46,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -206,7 +210,17 @@ public final class IOUtils {
     }
   }
 
-  static void copy(InputStream inputStream, Path path, CopyOption... options) {
+  @NotNull
+  public static Optional<URI> resolveClassSource(@NotNull String className) {
+    try {
+      return Optional.of(Class.forName(className).getProtectionDomain().getCodeSource().getLocation().toURI());
+    } catch (ClassNotFoundException | URISyntaxException exception) {
+      exception.printStackTrace();
+      return Optional.empty();
+    }
+  }
+
+  public static void copy(InputStream inputStream, Path path, CopyOption... options) {
     try {
       Files.copy(inputStream, path, options);
     } catch (IOException exception) {

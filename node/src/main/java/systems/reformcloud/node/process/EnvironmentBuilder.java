@@ -48,12 +48,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 import java.util.Optional;
 
 final class EnvironmentBuilder {
+
+  private static final Path RUNNER_LOCATION = IOUtils.resolveClassSource("systems.reformcloud.runner.Runner")
+    .map(Paths::get)
+    .orElse(null);
+  private static final Path FALLBACK_RUNNER_LOCATION = Paths.get("reformcloud/files/runner.jar");
 
   private EnvironmentBuilder() {
     throw new UnsupportedOperationException();
@@ -80,12 +86,16 @@ final class EnvironmentBuilder {
       loadPathInclusions(wrapper, Inclusion.InclusionLoadType.PAST);
     }
 
-    if (Files.notExists(Paths.get("reformcloud/files/runner.jar"))) {
-      DownloadHelper.download(Constants.RUNNER_DOWNLOAD_URL, "reformcloud/files/runner.jar");
+    Path runnerLocation = RUNNER_LOCATION;
+    if (runnerLocation == null) {
+      runnerLocation = FALLBACK_RUNNER_LOCATION;
+      if (Files.notExists(runnerLocation)) {
+        DownloadHelper.download(Constants.RUNNER_DOWNLOAD_URL, runnerLocation);
+      }
     }
 
     IOUtils.createDirectory(Paths.get(wrapper.getPath() + "/plugins"));
-    IOUtils.copy("reformcloud/files/runner.jar", wrapper.getPath().resolve("runner.jar"));
+    IOUtils.copy(runnerLocation, wrapper.getPath().resolve("runner.jar"));
     IOUtils.copyCompiledFile(EnvironmentBuilder.class.getClassLoader(), "files/embedded.jar", wrapper.getPath() + "/plugins/executor.jar");
 
     final NetworkAddress connectHost = NodeExecutor.getInstance().getAnyAddress();
