@@ -29,11 +29,11 @@ import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.configuration.JsonConfiguration;
 import systems.reformcloud.network.channel.NetworkChannel;
 import systems.reformcloud.network.channel.manager.ChannelManager;
-import systems.reformcloud.process.ProcessInformation;
-import systems.reformcloud.provider.ChannelMessageProvider;
 import systems.reformcloud.node.NodeExecutor;
 import systems.reformcloud.node.protocol.NodeToNodePublishChannelMessage;
+import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.protocol.shared.PacketChannelMessage;
+import systems.reformcloud.provider.ChannelMessageProvider;
 
 public class DefaultNodeChannelMessageProvider implements ChannelMessageProvider {
 

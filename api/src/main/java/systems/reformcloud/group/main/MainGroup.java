@@ -29,9 +29,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.builder.MainGroupBuilder;
+import systems.reformcloud.configuration.data.JsonDataHolder;
 import systems.reformcloud.network.data.SerializableObject;
 import systems.reformcloud.utility.name.Nameable;
-import systems.reformcloud.configuration.data.JsonDataHolder;
 
 import java.util.Collection;
 import java.util.Optional;

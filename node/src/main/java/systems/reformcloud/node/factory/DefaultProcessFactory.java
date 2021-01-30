@@ -32,18 +32,18 @@ import systems.reformcloud.group.process.ProcessGroup;
 import systems.reformcloud.group.template.Template;
 import systems.reformcloud.language.TranslationHolder;
 import systems.reformcloud.network.address.NetworkAddress;
-import systems.reformcloud.node.NodeInformation;
-import systems.reformcloud.process.ProcessInformation;
-import systems.reformcloud.process.ProcessState;
-import systems.reformcloud.task.Task;
-import systems.reformcloud.utility.MoreCollections;
-import systems.reformcloud.wrappers.NodeProcessWrapper;
 import systems.reformcloud.node.NodeExecutor;
+import systems.reformcloud.node.NodeInformation;
 import systems.reformcloud.node.cluster.ClusterManager;
 import systems.reformcloud.node.process.DefaultNodeProcessProvider;
+import systems.reformcloud.process.ProcessInformation;
+import systems.reformcloud.process.ProcessState;
 import systems.reformcloud.shared.process.DefaultIdentity;
 import systems.reformcloud.shared.process.DefaultProcessInformation;
 import systems.reformcloud.shared.process.DefaultProcessRuntimeInformation;
+import systems.reformcloud.task.Task;
+import systems.reformcloud.utility.MoreCollections;
+import systems.reformcloud.wrappers.NodeProcessWrapper;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -99,6 +99,9 @@ public class DefaultProcessFactory implements ProcessFactory {
         configuration.getInitialState(),
         configuration.getInclusions()
       );
+      if (configuration.getMessageOfTheDay() != null) {
+        processInformation.add("motd", configuration.getMessageOfTheDay());
+      }
 
       this.defaultNodeProcessProvider.registerProcess(processInformation);
       ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessRegister(processInformation);

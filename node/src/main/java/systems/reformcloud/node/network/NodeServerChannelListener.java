@@ -33,14 +33,14 @@ import systems.reformcloud.network.channel.NetworkChannel;
 import systems.reformcloud.network.channel.manager.ChannelManager;
 import systems.reformcloud.network.channel.shared.SharedChannelListener;
 import systems.reformcloud.network.packet.Packet;
-import systems.reformcloud.process.ProcessInformation;
-import systems.reformcloud.utility.MoreCollections;
 import systems.reformcloud.node.NodeExecutor;
 import systems.reformcloud.node.cluster.ClusterManager;
 import systems.reformcloud.node.process.DefaultNodeLocalProcessWrapper;
+import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.protocol.shared.PacketAuthBegin;
 import systems.reformcloud.protocol.shared.PacketAuthSuccess;
 import systems.reformcloud.shared.node.DefaultNodeInformation;
+import systems.reformcloud.utility.MoreCollections;
 
 import java.util.Optional;
 import java.util.UUID;

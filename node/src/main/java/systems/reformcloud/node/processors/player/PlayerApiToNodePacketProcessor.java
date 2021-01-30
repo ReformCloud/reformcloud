@@ -27,8 +27,8 @@ package systems.reformcloud.node.processors.player;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.network.packet.Packet;
-import systems.reformcloud.provider.PlayerProvider;
 import systems.reformcloud.protocol.processor.PacketProcessor;
+import systems.reformcloud.provider.PlayerProvider;
 
 abstract class PlayerApiToNodePacketProcessor<T extends Packet> implements PacketProcessor<T> {
 

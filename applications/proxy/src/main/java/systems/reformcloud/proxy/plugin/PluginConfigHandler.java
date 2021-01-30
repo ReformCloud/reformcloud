@@ -28,9 +28,9 @@ import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.embedded.Embedded;
 import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.network.packet.PacketProvider;
+import systems.reformcloud.proxy.ProxyConfigurationHandler;
 import systems.reformcloud.proxy.application.network.PacketRequestConfig;
 import systems.reformcloud.proxy.application.network.PacketRequestConfigResult;
-import systems.reformcloud.proxy.ProxyConfigurationHandler;
 import systems.reformcloud.proxy.network.PacketProxyConfigUpdate;
 
 public final class PluginConfigHandler {

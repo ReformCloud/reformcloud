@@ -26,19 +26,19 @@ package systems.reformcloud.node.provider;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
-import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.network.channel.NetworkChannel;
 import systems.reformcloud.network.channel.manager.ChannelManager;
 import systems.reformcloud.network.packet.Packet;
 import systems.reformcloud.network.packet.query.QueryManager;
 import systems.reformcloud.node.NodeInformation;
-import systems.reformcloud.wrappers.NodeProcessWrapper;
 import systems.reformcloud.node.protocol.NodeToNodeProcessCommand;
 import systems.reformcloud.node.protocol.NodeToNodeProcessCommandResult;
 import systems.reformcloud.node.protocol.NodeToNodeRequestNodeInformationUpdate;
 import systems.reformcloud.node.protocol.NodeToNodeRequestNodeInformationUpdateResult;
 import systems.reformcloud.node.protocol.NodeToNodeTabCompleteCommand;
 import systems.reformcloud.node.protocol.NodeToNodeTabCompleteCommandResult;
+import systems.reformcloud.registry.service.ServiceRegistry;
+import systems.reformcloud.wrappers.NodeProcessWrapper;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -62,12 +62,12 @@ public class DefaultNodeProcessWrapper implements NodeProcessWrapper {
   @NotNull
   @Override
   public Optional<NodeInformation> requestNodeInformationUpdate() {
-    Optional<NetworkChannel> channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getChannel(this.nodeInformation.getName());
+    Optional<NetworkChannel> channel = ServiceRegistry.getUnchecked(ChannelManager.class).getChannel(this.nodeInformation.getName());
     if (!channel.isPresent()) {
       return Optional.empty();
     }
 
-    Packet packet = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class)
+    Packet packet = ServiceRegistry.getUnchecked(QueryManager.class)
       .sendPacketQuery(channel.get(), new NodeToNodeRequestNodeInformationUpdate())
       .getUninterruptedly(TimeUnit.SECONDS, 5);
     if (!(packet instanceof NodeToNodeRequestNodeInformationUpdateResult)) {
@@ -80,12 +80,12 @@ public class DefaultNodeProcessWrapper implements NodeProcessWrapper {
   @NotNull
   @Override
   public @UnmodifiableView Collection<String> sendCommandLine(@NotNull String commandLine) {
-    Optional<NetworkChannel> channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getChannel(this.nodeInformation.getName());
+    Optional<NetworkChannel> channel = ServiceRegistry.getUnchecked(ChannelManager.class).getChannel(this.nodeInformation.getName());
     if (!channel.isPresent()) {
       return Collections.emptyList();
     }
 
-    Packet packet = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class)
+    Packet packet = ServiceRegistry.getUnchecked(QueryManager.class)
       .sendPacketQuery(channel.get(), new NodeToNodeProcessCommand(commandLine))
       .getUninterruptedly(TimeUnit.SECONDS, 5);
     if (!(packet instanceof NodeToNodeProcessCommandResult)) {
@@ -98,12 +98,12 @@ public class DefaultNodeProcessWrapper implements NodeProcessWrapper {
   @NotNull
   @Override
   public @UnmodifiableView Collection<String> tabCompleteCommandLine(@NotNull String commandLine) {
-    Optional<NetworkChannel> channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getChannel(this.nodeInformation.getName());
+    Optional<NetworkChannel> channel = ServiceRegistry.getUnchecked(ChannelManager.class).getChannel(this.nodeInformation.getName());
     if (!channel.isPresent()) {
       return Collections.emptyList();
     }
 
-    Packet packet = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class)
+    Packet packet = ServiceRegistry.getUnchecked(QueryManager.class)
       .sendPacketQuery(channel.get(), new NodeToNodeTabCompleteCommand(commandLine))
       .getUninterruptedly(TimeUnit.SECONDS, 5);
     if (!(packet instanceof NodeToNodeTabCompleteCommandResult)) {

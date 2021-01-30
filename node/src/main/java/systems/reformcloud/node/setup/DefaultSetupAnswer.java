@@ -26,8 +26,8 @@ package systems.reformcloud.node.setup;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.utility.MoreCollections;
 import systems.reformcloud.shared.parser.Parsers;
+import systems.reformcloud.utility.MoreCollections;
 
 import java.util.Set;
 import java.util.function.Function;

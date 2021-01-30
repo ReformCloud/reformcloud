@@ -25,8 +25,8 @@
 package systems.reformcloud.network.packet.query;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.network.packet.Packet;
 import systems.reformcloud.network.channel.NetworkChannel;
+import systems.reformcloud.network.packet.Packet;
 import systems.reformcloud.task.Task;
 
 import java.util.Optional;

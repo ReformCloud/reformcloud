@@ -27,9 +27,9 @@ package systems.reformcloud.node.database.sql;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
+import systems.reformcloud.node.database.util.SQLFunction;
 import systems.reformcloud.provider.DatabaseProvider;
 import systems.reformcloud.wrappers.DatabaseTableWrapper;
-import systems.reformcloud.node.database.util.SQLFunction;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

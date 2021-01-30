@@ -28,13 +28,13 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.builder.ProcessGroupBuilder;
+import systems.reformcloud.configuration.data.JsonDataHolder;
 import systems.reformcloud.group.process.player.PlayerAccessConfiguration;
+import systems.reformcloud.group.process.startup.StartupConfiguration;
 import systems.reformcloud.group.template.TemplateHolder;
 import systems.reformcloud.network.data.SerializableObject;
-import systems.reformcloud.utility.name.Nameable;
-import systems.reformcloud.configuration.data.JsonDataHolder;
-import systems.reformcloud.group.process.startup.StartupConfiguration;
 import systems.reformcloud.process.builder.ProcessBuilder;
+import systems.reformcloud.utility.name.Nameable;
 
 import java.util.Optional;
 

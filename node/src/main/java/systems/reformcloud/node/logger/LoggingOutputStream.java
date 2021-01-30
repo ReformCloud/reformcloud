@@ -24,8 +24,8 @@
  */
 package systems.reformcloud.node.logger;
 
-import systems.reformcloud.utility.MoreCollections;
 import systems.reformcloud.shared.StringUtil;
+import systems.reformcloud.utility.MoreCollections;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

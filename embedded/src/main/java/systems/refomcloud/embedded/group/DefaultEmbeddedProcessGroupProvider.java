@@ -29,7 +29,6 @@ import org.jetbrains.annotations.UnmodifiableView;
 import systems.refomcloud.embedded.Embedded;
 import systems.reformcloud.builder.ProcessGroupBuilder;
 import systems.reformcloud.group.process.ProcessGroup;
-import systems.reformcloud.provider.ProcessGroupProvider;
 import systems.reformcloud.protocol.node.ApiToNodeDeleteProcessGroup;
 import systems.reformcloud.protocol.node.ApiToNodeGetProcessGroup;
 import systems.reformcloud.protocol.node.ApiToNodeGetProcessGroupCount;
@@ -40,6 +39,7 @@ import systems.reformcloud.protocol.node.ApiToNodeGetProcessGroupObjectsResult;
 import systems.reformcloud.protocol.node.ApiToNodeGetProcessGroupResult;
 import systems.reformcloud.protocol.node.ApiToNodeGetStringCollectionResult;
 import systems.reformcloud.protocol.node.ApiToNodeUpdateProcessGroup;
+import systems.reformcloud.provider.ProcessGroupProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;

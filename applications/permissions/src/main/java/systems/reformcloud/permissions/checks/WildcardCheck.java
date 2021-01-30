@@ -27,9 +27,9 @@ package systems.reformcloud.permissions.checks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.refomcloud.embedded.Embedded;
-import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.permissions.nodes.PermissionNode;
 import systems.reformcloud.permissions.objects.holder.PermissionHolder;
+import systems.reformcloud.process.ProcessInformation;
 
 import java.util.Collection;
 

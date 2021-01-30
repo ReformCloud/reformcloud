@@ -28,11 +28,11 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.configuration.JsonConfiguration;
 import systems.reformcloud.group.process.ProcessGroup;
 import systems.reformcloud.group.template.backend.TemplateBackend;
-import systems.reformcloud.task.Task;
-import systems.reformcloud.utility.MoreCollections;
 import systems.reformcloud.node.template.TemplateBackendManager;
 import systems.reformcloud.shared.io.DownloadHelper;
 import systems.reformcloud.shared.io.IOUtils;
+import systems.reformcloud.task.Task;
+import systems.reformcloud.utility.MoreCollections;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

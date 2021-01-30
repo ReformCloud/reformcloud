@@ -32,9 +32,9 @@ import systems.reformcloud.http.HttpVersion;
 import systems.reformcloud.http.cookie.CookieHolder;
 import systems.reformcloud.http.cookie.HttpCookie;
 import systems.reformcloud.http.decode.DecodeResult;
-import systems.reformcloud.utility.MoreCollections;
 import systems.reformcloud.node.http.DefaultHttpInformation;
 import systems.reformcloud.node.http.InstanceHolder;
+import systems.reformcloud.utility.MoreCollections;
 
 import java.util.Arrays;
 import java.util.Collection;

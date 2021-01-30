@@ -28,12 +28,12 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.group.process.ProcessGroup;
 import systems.reformcloud.language.TranslationHolder;
+import systems.reformcloud.node.NodeExecutor;
+import systems.reformcloud.node.cluster.ClusterManager;
 import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.process.ProcessState;
 import systems.reformcloud.utility.MoreCollections;
 import systems.reformcloud.wrappers.ProcessWrapper;
-import systems.reformcloud.node.NodeExecutor;
-import systems.reformcloud.node.cluster.ClusterManager;
 
 import java.util.Collection;
 import java.util.Optional;

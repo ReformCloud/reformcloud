@@ -25,12 +25,12 @@
 package systems.reformcloud.node.protocol;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.network.PacketIds;
 import systems.reformcloud.network.channel.NetworkChannel;
 import systems.reformcloud.network.channel.listener.ChannelListener;
 import systems.reformcloud.network.data.ProtocolBuffer;
-import systems.reformcloud.node.process.screen.ProcessScreenController;
+import systems.reformcloud.node.NodeExecutor;
+import systems.reformcloud.node.process.DefaultNodeLocalProcessWrapper;
 import systems.reformcloud.protocol.ProtocolPacket;
 
 import java.util.UUID;
@@ -53,14 +53,15 @@ public class NodeToNodeToggleProcessScreen extends ProtocolPacket {
 
   @Override
   public void handlePacketReceive(@NotNull ChannelListener reader, @NotNull NetworkChannel channel) {
-    ProcessScreenController controller = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProcessScreenController.class);
-    controller.getScreen(this.processUniqueId).ifPresent(screen -> {
-      if (screen.getListeningNodes().contains(channel.getName())) {
-        screen.removeListeningNode(channel.getName());
-      } else {
-        screen.addListeningNode(channel.getName());
-      }
-    });
+    NodeExecutor.getInstance().getDefaultNodeProcessProvider().getProcessWrapperByUniqueId(this.processUniqueId)
+      .map(DefaultNodeLocalProcessWrapper::getProcessScreen)
+      .ifPresent(screen -> {
+        if (screen.getListeningNodes().contains(channel.getName())) {
+          screen.removeListeningNode(channel.getName());
+        } else {
+          screen.addListeningNode(channel.getName());
+        }
+      });
   }
 
   @Override

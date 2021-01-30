@@ -28,8 +28,8 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.task.Task;
 import systems.reformcloud.process.ProcessInformation;
+import systems.reformcloud.task.Task;
 
 import java.util.Optional;
 import java.util.UUID;

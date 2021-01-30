@@ -30,8 +30,8 @@ import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.SubjectData;
 import systems.reformcloud.permissions.PermissionManagement;
 import systems.reformcloud.permissions.nodes.PermissionNode;
-import systems.reformcloud.permissions.util.PermissionPluginUtil;
 import systems.reformcloud.permissions.sponge.subject.AbstractSpongeSubjectData;
+import systems.reformcloud.permissions.util.PermissionPluginUtil;
 
 import java.util.Collections;
 import java.util.Map;

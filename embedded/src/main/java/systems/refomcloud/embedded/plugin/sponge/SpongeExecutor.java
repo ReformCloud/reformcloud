@@ -29,9 +29,9 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.SpongeExecutorService;
 import systems.refomcloud.embedded.Embedded;
-import systems.refomcloud.embedded.shared.SharedInvalidPlayerFixer;
 import systems.refomcloud.embedded.executor.PlayerAPIExecutor;
 import systems.refomcloud.embedded.plugin.sponge.executor.SpongePlayerExecutor;
+import systems.refomcloud.embedded.shared.SharedInvalidPlayerFixer;
 import systems.reformcloud.ExecutorType;
 
 public class SpongeExecutor extends Embedded {

@@ -36,11 +36,11 @@ import systems.reformcloud.group.template.inclusion.Inclusion;
 import systems.reformcloud.group.template.version.Version;
 import systems.reformcloud.group.template.version.Versions;
 import systems.reformcloud.language.TranslationHolder;
-import systems.reformcloud.utility.MoreCollections;
 import systems.reformcloud.node.template.TemplateBackendManager;
 import systems.reformcloud.shared.StringUtil;
 import systems.reformcloud.shared.collect.Entry2;
 import systems.reformcloud.shared.parser.Parsers;
+import systems.reformcloud.utility.MoreCollections;
 
 import java.util.ArrayList;
 import java.util.Arrays;

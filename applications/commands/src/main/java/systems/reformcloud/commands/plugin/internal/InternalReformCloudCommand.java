@@ -32,8 +32,8 @@ import systems.reformcloud.network.channel.NetworkChannel;
 import systems.reformcloud.network.channel.manager.ChannelManager;
 import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.process.ProcessState;
-import systems.reformcloud.wrappers.ProcessWrapper;
 import systems.reformcloud.shared.parser.Parsers;
+import systems.reformcloud.wrappers.ProcessWrapper;
 
 import java.util.Arrays;
 import java.util.Optional;

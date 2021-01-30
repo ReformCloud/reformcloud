@@ -26,13 +26,13 @@ package systems.reformcloud.permissions.util;
 
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.embedded.Embedded;
-import systems.reformcloud.utility.MoreCollections;
 import systems.reformcloud.permissions.PermissionManagement;
 import systems.reformcloud.permissions.nodes.NodeGroup;
 import systems.reformcloud.permissions.nodes.PermissionNode;
 import systems.reformcloud.permissions.objects.PermissionGroup;
 import systems.reformcloud.permissions.objects.PermissionUser;
 import systems.reformcloud.permissions.packets.PacketHelper;
+import systems.reformcloud.utility.MoreCollections;
 
 import java.util.Collection;
 import java.util.HashSet;

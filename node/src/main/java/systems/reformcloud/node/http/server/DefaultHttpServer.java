@@ -33,10 +33,10 @@ import io.netty.channel.EventLoopGroup;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.http.listener.HttpListenerRegistry;
 import systems.reformcloud.http.server.HttpServer;
-import systems.reformcloud.node.http.websocket.response.DefaultResponseSocketFrameFactory;
 import systems.reformcloud.node.http.listener.DefaultHttpListenerRegistry;
 import systems.reformcloud.node.http.response.DefaultHttpServerResponseFactory;
 import systems.reformcloud.node.http.websocket.DefaultSocketFrameFactory;
+import systems.reformcloud.node.http.websocket.response.DefaultResponseSocketFrameFactory;
 import systems.reformcloud.shared.network.transport.EventLoopGroupType;
 import systems.reformcloud.shared.network.transport.TransportType;
 

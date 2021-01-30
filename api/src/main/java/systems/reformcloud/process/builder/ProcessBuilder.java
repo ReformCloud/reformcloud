@@ -30,9 +30,9 @@ import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.configuration.JsonConfiguration;
 import systems.reformcloud.group.process.ProcessGroup;
 import systems.reformcloud.group.template.Template;
+import systems.reformcloud.process.ProcessState;
 import systems.reformcloud.task.Task;
 import systems.reformcloud.wrappers.ProcessWrapper;
-import systems.reformcloud.process.ProcessState;
 
 import java.util.Collection;
 import java.util.UUID;

@@ -26,12 +26,12 @@ package systems.reformcloud.commands.plugin.bungeecord;
 
 import net.md_5.bungee.api.plugin.Plugin;
 import systems.refomcloud.embedded.Embedded;
+import systems.reformcloud.ExecutorAPI;
+import systems.reformcloud.commands.application.packet.PacketGetCommandsConfig;
 import systems.reformcloud.commands.application.packet.PacketGetCommandsConfigResult;
 import systems.reformcloud.commands.plugin.CommandConfigHandler;
 import systems.reformcloud.commands.plugin.bungeecord.handler.BungeeCommandConfigHandler;
 import systems.reformcloud.commands.plugin.packet.PacketReleaseCommandsConfig;
-import systems.reformcloud.commands.application.packet.PacketGetCommandsConfig;
-import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.network.PacketIds;
 import systems.reformcloud.network.packet.PacketProvider;
 

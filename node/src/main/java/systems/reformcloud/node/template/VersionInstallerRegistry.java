@@ -26,9 +26,9 @@ package systems.reformcloud.node.template;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.group.template.version.VersionInstaller;
-import systems.reformcloud.utility.MoreCollections;
 import systems.reformcloud.node.template.installers.DownloadingVersionInstaller;
 import systems.reformcloud.node.template.installers.SpongeVersionInstaller;
+import systems.reformcloud.utility.MoreCollections;
 
 import java.util.Locale;
 import java.util.Map;

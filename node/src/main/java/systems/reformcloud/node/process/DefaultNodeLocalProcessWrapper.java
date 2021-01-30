@@ -35,15 +35,14 @@ import systems.reformcloud.network.channel.NetworkChannel;
 import systems.reformcloud.network.channel.manager.ChannelManager;
 import systems.reformcloud.network.packet.Packet;
 import systems.reformcloud.network.packet.query.QueryManager;
-import systems.reformcloud.process.ProcessInformation;
-import systems.reformcloud.process.ProcessState;
-import systems.reformcloud.utility.MoreCollections;
 import systems.reformcloud.node.NodeExecutor;
 import systems.reformcloud.node.cluster.ClusterManager;
 import systems.reformcloud.node.event.process.LocalProcessPrePrepareEvent;
+import systems.reformcloud.node.process.screen.DefaultProcessScreen;
 import systems.reformcloud.node.process.screen.ProcessScreen;
-import systems.reformcloud.node.process.screen.ProcessScreenController;
 import systems.reformcloud.node.template.TemplateBackendManager;
+import systems.reformcloud.process.ProcessInformation;
+import systems.reformcloud.process.ProcessState;
 import systems.reformcloud.protocol.api.NodeToApiRequestProcessInformationUpdate;
 import systems.reformcloud.protocol.api.NodeToApiRequestProcessInformationUpdateResult;
 import systems.reformcloud.shared.Constants;
@@ -51,6 +50,7 @@ import systems.reformcloud.shared.StringUtil;
 import systems.reformcloud.shared.io.IOUtils;
 import systems.reformcloud.shared.platform.Platform;
 import systems.reformcloud.shared.process.DefaultProcessRuntimeInformation;
+import systems.reformcloud.utility.MoreCollections;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -89,7 +89,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
       : Paths.get("reformcloud/temp", processInformation.getName() + "-" + processInformation.getId().getUniqueId());
     this.firstStart = Files.notExists(this.path);
     this.memory = MemoryCalculator.calcMemory(processInformation.getProcessGroup().getName(), processInformation.getPrimaryTemplate());
-    this.processScreen = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProcessScreenController.class).createScreen(this);
+    this.processScreen = new DefaultProcessScreen(this);
 
     IOUtils.createDirectory(this.path);
 
@@ -326,5 +326,9 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
 
   public @NotNull Optional<Process> getProcess() {
     return Optional.ofNullable(this.process);
+  }
+
+  public ProcessScreen getProcessScreen() {
+    return this.processScreen;
   }
 }

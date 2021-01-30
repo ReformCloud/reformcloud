@@ -27,11 +27,11 @@ package systems.reformcloud.group.template.builder;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.configuration.JsonConfiguration;
 import systems.reformcloud.group.template.Template;
 import systems.reformcloud.group.template.inclusion.Inclusion;
-import systems.reformcloud.group.template.version.Version;
-import systems.reformcloud.configuration.JsonConfiguration;
 import systems.reformcloud.group.template.runtime.RuntimeConfiguration;
+import systems.reformcloud.group.template.version.Version;
 
 import java.util.Collection;
 

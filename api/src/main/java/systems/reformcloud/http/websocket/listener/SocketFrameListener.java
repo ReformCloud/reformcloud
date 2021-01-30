@@ -27,9 +27,9 @@ package systems.reformcloud.http.websocket.listener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.http.listener.Priority;
-import systems.reformcloud.http.websocket.response.ResponseFrameHolder;
 import systems.reformcloud.http.websocket.SocketFrame;
 import systems.reformcloud.http.websocket.request.RequestFrameHolder;
+import systems.reformcloud.http.websocket.response.ResponseFrameHolder;
 
 /**
  * A listener which handles socket frames sent by a client to the server. The priority

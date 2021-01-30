@@ -25,8 +25,8 @@
 package systems.reformcloud.group.template.inclusion;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.network.data.ProtocolBuffer;
 import systems.reformcloud.enums.EnumUtil;
+import systems.reformcloud.network.data.ProtocolBuffer;
 
 public final class DefaultInclusion implements Inclusion {
 

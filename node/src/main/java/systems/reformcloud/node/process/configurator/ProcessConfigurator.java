@@ -25,8 +25,8 @@
 package systems.reformcloud.node.process.configurator;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.utility.name.Nameable;
 import systems.reformcloud.node.process.DefaultNodeLocalProcessWrapper;
+import systems.reformcloud.utility.name.Nameable;
 
 public interface ProcessConfigurator extends Nameable {
 

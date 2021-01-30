@@ -27,8 +27,8 @@ package systems.reformcloud.group.template.version;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
-import systems.reformcloud.network.data.ProtocolBuffer;
 import systems.reformcloud.enums.EnumUtil;
+import systems.reformcloud.network.data.ProtocolBuffer;
 
 import java.util.Objects;
 

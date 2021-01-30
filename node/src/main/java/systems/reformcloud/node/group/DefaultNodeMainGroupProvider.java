@@ -32,12 +32,12 @@ import systems.reformcloud.builder.MainGroupBuilder;
 import systems.reformcloud.configuration.JsonConfiguration;
 import systems.reformcloud.group.main.MainGroup;
 import systems.reformcloud.language.TranslationHolder;
+import systems.reformcloud.node.cluster.ClusterManager;
 import systems.reformcloud.provider.MainGroupProvider;
 import systems.reformcloud.registry.io.FileRegistry;
-import systems.reformcloud.utility.MoreCollections;
-import systems.reformcloud.node.cluster.ClusterManager;
 import systems.reformcloud.shared.group.DefaultMainGroup;
 import systems.reformcloud.shared.registry.io.DefaultFileRegistry;
+import systems.reformcloud.utility.MoreCollections;
 
 import java.util.Collection;
 import java.util.Collections;

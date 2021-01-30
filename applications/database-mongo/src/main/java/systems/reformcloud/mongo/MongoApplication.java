@@ -27,8 +27,8 @@ package systems.reformcloud.mongo;
 import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.application.Application;
 import systems.reformcloud.configuration.JsonConfiguration;
-import systems.reformcloud.provider.DatabaseProvider;
 import systems.reformcloud.mongo.config.MongoConfig;
+import systems.reformcloud.provider.DatabaseProvider;
 import systems.reformcloud.shared.dependency.DependencyFileLoader;
 
 import java.nio.file.Files;

@@ -27,6 +27,7 @@ package systems.reformcloud.registry.service;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
+import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.registry.service.exception.ProviderImmutableException;
 import systems.reformcloud.registry.service.exception.ProviderNeedsReplacementException;
 import systems.reformcloud.registry.service.exception.ProviderNotRegisteredException;
@@ -35,6 +36,16 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface ServiceRegistry {
+
+  @NotNull
+  static <T> T getUnchecked(@NotNull Class<T> service) throws ProviderNotRegisteredException {
+    return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(service);
+  }
+
+  @NotNull
+  static <T> Optional<T> getProvided(@NotNull Class<T> service) throws ProviderNotRegisteredException {
+    return ExecutorAPI.getInstance().getServiceRegistry().getProvider(service);
+  }
 
   default <T> void setProvider(@NotNull Class<T> service, @NotNull T provider) throws ProviderImmutableException {
     this.setProvider(service, provider, false);

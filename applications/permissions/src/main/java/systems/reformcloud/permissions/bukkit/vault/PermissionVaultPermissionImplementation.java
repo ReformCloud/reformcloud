@@ -26,12 +26,12 @@ package systems.reformcloud.permissions.bukkit.vault;
 
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
-import systems.reformcloud.utility.MoreCollections;
 import systems.reformcloud.permissions.PermissionManagement;
 import systems.reformcloud.permissions.nodes.NodeGroup;
 import systems.reformcloud.permissions.nodes.PermissionNode;
 import systems.reformcloud.permissions.objects.PermissionGroup;
 import systems.reformcloud.permissions.objects.PermissionUser;
+import systems.reformcloud.utility.MoreCollections;
 
 public class PermissionVaultPermissionImplementation extends Permission {
 

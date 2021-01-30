@@ -33,10 +33,10 @@ import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.SubjectCollection;
 import org.spongepowered.api.service.permission.SubjectReference;
-import systems.reformcloud.permissions.sponge.subject.util.SubjectDefaultData;
 import systems.reformcloud.permissions.sponge.collections.CollectionCatalog;
 import systems.reformcloud.permissions.sponge.description.SpongePermissionDescriptionBuilder;
 import systems.reformcloud.permissions.sponge.reference.SpongeSubjectReference;
+import systems.reformcloud.permissions.sponge.subject.util.SubjectDefaultData;
 
 import java.util.Collection;
 import java.util.Collections;

@@ -29,7 +29,6 @@ import org.jetbrains.annotations.UnmodifiableView;
 import systems.refomcloud.embedded.Embedded;
 import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.process.ProcessState;
-import systems.reformcloud.wrappers.ProcessWrapper;
 import systems.reformcloud.protocol.node.ApiToNodeCopyProcess;
 import systems.reformcloud.protocol.node.ApiToNodeGetLastProcessLogLines;
 import systems.reformcloud.protocol.node.ApiToNodeGetProcessInformationResult;
@@ -40,6 +39,7 @@ import systems.reformcloud.protocol.node.ApiToNodeSetProcessRuntimeState;
 import systems.reformcloud.protocol.node.ApiToNodeUploadProcessLog;
 import systems.reformcloud.protocol.node.ApiToNodeUploadProcessLogResult;
 import systems.reformcloud.shared.Constants;
+import systems.reformcloud.wrappers.ProcessWrapper;
 
 import java.util.ArrayDeque;
 import java.util.Optional;

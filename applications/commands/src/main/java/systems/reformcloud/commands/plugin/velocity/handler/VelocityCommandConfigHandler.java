@@ -28,11 +28,11 @@ import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.base.Conditions;
 import systems.reformcloud.commands.config.CommandsConfig;
 import systems.reformcloud.commands.plugin.CommandConfigHandler;
 import systems.reformcloud.commands.plugin.velocity.commands.CommandLeave;
 import systems.reformcloud.commands.plugin.velocity.commands.CommandReformCloud;
-import systems.reformcloud.base.Conditions;
 
 import java.util.Arrays;
 

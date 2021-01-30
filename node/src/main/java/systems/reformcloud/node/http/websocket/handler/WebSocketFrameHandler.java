@@ -44,11 +44,11 @@ import systems.reformcloud.http.websocket.listener.SocketFrameListenerRegistryEn
 import systems.reformcloud.http.websocket.request.RequestFrameHolder;
 import systems.reformcloud.http.websocket.request.SocketFrameSource;
 import systems.reformcloud.http.websocket.response.ResponseFrameHolder;
-import systems.reformcloud.node.http.websocket.TypedSocketFrame;
 import systems.reformcloud.node.http.utils.BinaryUtils;
 import systems.reformcloud.node.http.websocket.DefaultCloseSocketFrame;
 import systems.reformcloud.node.http.websocket.DefaultContinuationSocketFrame;
 import systems.reformcloud.node.http.websocket.DefaultTextSocketFrame;
+import systems.reformcloud.node.http.websocket.TypedSocketFrame;
 import systems.reformcloud.node.http.websocket.request.DefaultRequestFrameHolder;
 
 import java.io.IOException;

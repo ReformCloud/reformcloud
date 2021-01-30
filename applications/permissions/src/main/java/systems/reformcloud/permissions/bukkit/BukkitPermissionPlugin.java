@@ -26,9 +26,9 @@ package systems.reformcloud.permissions.bukkit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import systems.reformcloud.permissions.util.PermissionPluginUtil;
 import systems.reformcloud.permissions.bukkit.listeners.BukkitPermissionListener;
 import systems.reformcloud.permissions.bukkit.vault.VaultUtil;
+import systems.reformcloud.permissions.util.PermissionPluginUtil;
 
 import java.util.logging.Level;
 

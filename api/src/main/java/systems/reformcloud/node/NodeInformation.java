@@ -25,10 +25,10 @@
 package systems.reformcloud.node;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.network.data.SerializableObject;
-import systems.reformcloud.utility.name.Nameable;
 import systems.reformcloud.network.address.NetworkAddress;
+import systems.reformcloud.network.data.SerializableObject;
 import systems.reformcloud.process.ProcessRuntimeInformation;
+import systems.reformcloud.utility.name.Nameable;
 
 import java.util.UUID;
 

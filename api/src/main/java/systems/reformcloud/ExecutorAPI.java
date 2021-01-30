@@ -43,96 +43,96 @@ import java.util.Objects;
  */
 public abstract class ExecutorAPI {
 
-    /* The current instance of the executor */
-    private static ExecutorAPI instance;
+  /* The current instance of the executor */
+  private static ExecutorAPI instance;
 
-    /* The executor type which is currently running */
-    protected ExecutorType type = ExecutorType.UNKNOWN;
+  /* The executor type which is currently running */
+  protected ExecutorType type = ExecutorType.UNKNOWN;
 
-    /**
-     * @return The current instance of this class
-     */
-    @NotNull
-    public static ExecutorAPI getInstance() {
-        return instance;
-    }
+  /**
+   * @return The current instance of this class
+   */
+  @NotNull
+  public static ExecutorAPI getInstance() {
+    return instance;
+  }
 
-    /**
-     * Updates the current instance of the cloud system
-     * <br>
-     * This action can only performed once on the current instance, normally by the cloud itself
-     *
-     * @param instance The new instance of the executor api
-     */
-    @VisibleForTesting
-    public static void setInstance(@NotNull ExecutorAPI instance) {
-        ExecutorAPI.instance = Objects.requireNonNull(instance, "instance");
-    }
+  /**
+   * Updates the current instance of the cloud system
+   * <br>
+   * This action can only performed once on the current instance, normally by the cloud itself
+   *
+   * @param instance The new instance of the executor api
+   */
+  @VisibleForTesting
+  public static void setInstance(@NotNull ExecutorAPI instance) {
+    ExecutorAPI.instance = Objects.requireNonNull(instance, "instance");
+  }
 
-    /**
-     * @return The current instance of the executor specific implemented version of the channel message provider
-     */
-    @NotNull
-    public abstract ChannelMessageProvider getChannelMessageProvider();
+  /**
+   * @return The current instance of the executor specific implemented version of the channel message provider
+   */
+  @NotNull
+  public abstract ChannelMessageProvider getChannelMessageProvider();
 
-    /**
-     * @return The current instance of the executor specific implemented version of the database provider
-     */
-    @NotNull
-    public abstract DatabaseProvider getDatabaseProvider();
+  /**
+   * @return The current instance of the executor specific implemented version of the database provider
+   */
+  @NotNull
+  public abstract DatabaseProvider getDatabaseProvider();
 
-    /**
-     * @return The current instance of the executor specific implemented version of the main group provider
-     */
-    @NotNull
-    public abstract MainGroupProvider getMainGroupProvider();
+  /**
+   * @return The current instance of the executor specific implemented version of the main group provider
+   */
+  @NotNull
+  public abstract MainGroupProvider getMainGroupProvider();
 
-    /**
-     * @return The current instance of the executor specific implemented version of the node information provider
-     */
-    @NotNull
-    public abstract NodeInformationProvider getNodeInformationProvider();
+  /**
+   * @return The current instance of the executor specific implemented version of the node information provider
+   */
+  @NotNull
+  public abstract NodeInformationProvider getNodeInformationProvider();
 
-    /**
-     * @return The current instance of the executor specific implemented version of the player provider
-     */
-    @NotNull
-    public abstract PlayerProvider getPlayerProvider();
+  /**
+   * @return The current instance of the executor specific implemented version of the player provider
+   */
+  @NotNull
+  public abstract PlayerProvider getPlayerProvider();
 
-    /**
-     * @return The current instance of the executor specific implemented version of the process group provider
-     */
-    @NotNull
-    public abstract ProcessGroupProvider getProcessGroupProvider();
+  /**
+   * @return The current instance of the executor specific implemented version of the process group provider
+   */
+  @NotNull
+  public abstract ProcessGroupProvider getProcessGroupProvider();
 
-    /**
-     * @return The current instance of the executor specific implemented version of the process provider
-     */
-    @NotNull
-    public abstract ProcessProvider getProcessProvider();
+  /**
+   * @return The current instance of the executor specific implemented version of the process provider
+   */
+  @NotNull
+  public abstract ProcessProvider getProcessProvider();
 
-    /**
-     * @return The service registry provided by the current environment
-     */
-    @NotNull
-    public abstract ServiceRegistry getServiceRegistry();
+  /**
+   * @return The service registry provided by the current environment
+   */
+  @NotNull
+  public abstract ServiceRegistry getServiceRegistry();
 
-    /**
-     * @return The dependency loader which was used to inject the needed dependencies
-     */
-    @NotNull
-    public abstract DependencyLoader getDependencyLoader();
+  /**
+   * @return The dependency loader which was used to inject the needed dependencies
+   */
+  @NotNull
+  public abstract DependencyLoader getDependencyLoader();
 
-    /**
-     * @return If the current cloud instance is ready
-     */
-    public abstract boolean isReady();
+  /**
+   * @return If the current cloud instance is ready
+   */
+  public abstract boolean isReady();
 
-    /**
-     * @return The current type which the cloud is executing
-     */
-    @NotNull
-    public ExecutorType getType() {
-        return this.type;
-    }
+  /**
+   * @return The current type which the cloud is executing
+   */
+  @NotNull
+  public ExecutorType getType() {
+    return this.type;
+  }
 }

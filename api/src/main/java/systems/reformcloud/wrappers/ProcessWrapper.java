@@ -28,9 +28,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.group.template.Template;
 import systems.reformcloud.group.template.builder.TemplateBuilder;
-import systems.reformcloud.task.Task;
 import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.process.ProcessState;
+import systems.reformcloud.task.Task;
 
 import java.util.Optional;
 import java.util.Queue;

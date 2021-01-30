@@ -32,8 +32,8 @@ import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.InfoCmp;
 import systems.reformcloud.console.Console;
-import systems.reformcloud.task.Task;
 import systems.reformcloud.node.logger.ConsoleColour;
+import systems.reformcloud.task.Task;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

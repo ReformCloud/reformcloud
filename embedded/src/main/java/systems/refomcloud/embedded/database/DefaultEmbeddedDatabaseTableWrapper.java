@@ -28,7 +28,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.refomcloud.embedded.Embedded;
 import systems.reformcloud.configuration.JsonConfiguration;
-import systems.reformcloud.wrappers.DatabaseTableWrapper;
 import systems.reformcloud.protocol.node.ApiToNodeClearDatabaseTable;
 import systems.reformcloud.protocol.node.ApiToNodeGetAllTableEntries;
 import systems.reformcloud.protocol.node.ApiToNodeGetAllTableEntriesResult;
@@ -43,6 +42,7 @@ import systems.reformcloud.protocol.node.ApiToNodeHasTableDocumentResult;
 import systems.reformcloud.protocol.node.ApiToNodeInsertDocumentIntoTable;
 import systems.reformcloud.protocol.node.ApiToNodeRemoveDocumentFromTable;
 import systems.reformcloud.protocol.node.ApiToNodeUpdateDocumentInTable;
+import systems.reformcloud.wrappers.DatabaseTableWrapper;
 
 import java.util.ArrayList;
 import java.util.Collection;

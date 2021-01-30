@@ -30,8 +30,6 @@ import systems.refomcloud.embedded.Embedded;
 import systems.reformcloud.group.template.version.Version;
 import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.process.builder.ProcessBuilder;
-import systems.reformcloud.provider.ProcessProvider;
-import systems.reformcloud.wrappers.ProcessWrapper;
 import systems.reformcloud.protocol.node.ApiToNodeGetProcessCount;
 import systems.reformcloud.protocol.node.ApiToNodeGetProcessCountByProcessGroup;
 import systems.reformcloud.protocol.node.ApiToNodeGetProcessCountResult;
@@ -46,6 +44,8 @@ import systems.reformcloud.protocol.node.ApiToNodeGetProcessInformationResult;
 import systems.reformcloud.protocol.node.ApiToNodeGetProcessUniqueIds;
 import systems.reformcloud.protocol.node.ApiToNodeGetProcessUniqueIdsResult;
 import systems.reformcloud.protocol.node.ApiToNodeUpdateProcessInformation;
+import systems.reformcloud.provider.ProcessProvider;
+import systems.reformcloud.wrappers.ProcessWrapper;
 
 import java.util.ArrayList;
 import java.util.Collection;

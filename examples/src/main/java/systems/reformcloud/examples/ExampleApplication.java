@@ -24,10 +24,10 @@
  */
 package systems.reformcloud.examples;
 
-import systems.reformcloud.examples.event.ExampleEventListener;
 import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.application.Application;
 import systems.reformcloud.event.EventManager;
+import systems.reformcloud.examples.event.ExampleEventListener;
 
 /**
  * For this example class only the executor-api is required. For a example app.json please look into

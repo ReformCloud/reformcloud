@@ -29,10 +29,10 @@ import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.language.TranslationHolder;
 import systems.reformcloud.network.channel.manager.ChannelManager;
-import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.node.NodeExecutor;
 import systems.reformcloud.node.process.DefaultNodeLocalProcessWrapper;
 import systems.reformcloud.node.protocol.NodeToNodeProcessScreenLines;
+import systems.reformcloud.process.ProcessInformation;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,19 +44,22 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DefaultProcessScreen implements ProcessScreen {
 
-  private final DefaultNodeLocalProcessWrapper processWrapper;
-  private final Collection<String> listeningNodes = new CopyOnWriteArrayList<>();
-  private final Lock readLock = new ReentrantLock();
-  private final Queue<String> cachedLogLines = new ConcurrentLinkedQueue<>();
-  private final StringBuffer stringBuffer = new StringBuffer();
-  private final byte[] buffer = new byte[1024];
-  private final int maxCacheSize = Integer.getInteger("systems.reformcloud.screen-cache-max-size", 256);
+  private static final int MAX_CACHE_SIZE = Integer.getInteger("systems.reformcloud.screen-cache-max-size", 256);
 
-  protected DefaultProcessScreen(DefaultNodeLocalProcessWrapper processWrapper) {
+  private final Queue<String> cachedLogLines = new ConcurrentLinkedQueue<>();
+  private final Collection<String> listeningNodes = new CopyOnWriteArrayList<>();
+
+  private final byte[] readBuffer = new byte[1024];
+  private final StringBuffer stringBuffer = new StringBuffer();
+  private final Lock readLock = new ReentrantReadWriteLock().readLock();
+
+  private final DefaultNodeLocalProcessWrapper processWrapper;
+
+  public DefaultProcessScreen(DefaultNodeLocalProcessWrapper processWrapper) {
     this.processWrapper = processWrapper;
   }
 
@@ -107,8 +110,8 @@ public class DefaultProcessScreen implements ProcessScreen {
   private @NotNull Collection<String> readInputStream(@NotNull InputStream inputStream) {
     try {
       int length;
-      while (inputStream.available() > 0 && (length = inputStream.read(this.buffer, 0, this.buffer.length)) != -1) {
-        this.stringBuffer.append(new String(this.buffer, 0, length, StandardCharsets.UTF_8));
+      while (inputStream.available() > 0 && (length = inputStream.read(this.readBuffer, 0, this.readBuffer.length)) != -1) {
+        this.stringBuffer.append(new String(this.readBuffer, 0, length, StandardCharsets.UTF_8));
       }
 
       String string = this.stringBuffer.toString();
@@ -138,7 +141,7 @@ public class DefaultProcessScreen implements ProcessScreen {
   }
 
   private void cache(@NotNull String text) {
-    while (this.cachedLogLines.size() > this.maxCacheSize) {
+    while (this.cachedLogLines.size() > MAX_CACHE_SIZE) {
       this.cachedLogLines.poll();
     }
 

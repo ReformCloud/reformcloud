@@ -25,8 +25,8 @@
 package systems.reformcloud.commands.plugin;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.commands.config.CommandsConfig;
 import systems.reformcloud.base.Conditions;
+import systems.reformcloud.commands.config.CommandsConfig;
 
 public abstract class CommandConfigHandler {
 

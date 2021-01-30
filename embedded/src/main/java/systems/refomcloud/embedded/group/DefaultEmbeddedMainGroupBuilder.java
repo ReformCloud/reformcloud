@@ -28,10 +28,10 @@ import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.embedded.Embedded;
 import systems.reformcloud.group.main.MainGroup;
 import systems.reformcloud.network.packet.Packet;
-import systems.reformcloud.task.Task;
 import systems.reformcloud.protocol.node.ApiToNodeCreateMainGroup;
 import systems.reformcloud.protocol.node.ApiToNodeCreateMainGroupResult;
 import systems.reformcloud.shared.group.DefaultMainGroupBuilder;
+import systems.reformcloud.task.Task;
 
 import java.util.Optional;
 

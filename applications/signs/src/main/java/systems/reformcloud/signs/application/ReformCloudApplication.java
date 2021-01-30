@@ -34,7 +34,6 @@ import systems.reformcloud.event.EventManager;
 import systems.reformcloud.network.channel.NetworkChannel;
 import systems.reformcloud.network.channel.manager.ChannelManager;
 import systems.reformcloud.network.packet.PacketProvider;
-import systems.reformcloud.utility.MoreCollections;
 import systems.reformcloud.signs.application.listener.ProcessInclusionHandler;
 import systems.reformcloud.signs.application.packets.PacketCreateSign;
 import systems.reformcloud.signs.application.packets.PacketDeleteBulkSigns;
@@ -46,6 +45,7 @@ import systems.reformcloud.signs.packets.PacketUtil;
 import systems.reformcloud.signs.util.SignSystemAdapter;
 import systems.reformcloud.signs.util.sign.CloudSign;
 import systems.reformcloud.signs.util.sign.config.SignConfig;
+import systems.reformcloud.utility.MoreCollections;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

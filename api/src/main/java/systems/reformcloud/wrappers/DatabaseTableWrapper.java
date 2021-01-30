@@ -26,8 +26,8 @@ package systems.reformcloud.wrappers;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
-import systems.reformcloud.task.Task;
 import systems.reformcloud.configuration.JsonConfiguration;
+import systems.reformcloud.task.Task;
 
 import java.util.Collection;
 import java.util.Optional;

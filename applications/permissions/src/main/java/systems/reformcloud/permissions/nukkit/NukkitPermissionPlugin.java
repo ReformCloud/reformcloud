@@ -26,8 +26,8 @@ package systems.reformcloud.permissions.nukkit;
 
 import cn.nukkit.Server;
 import cn.nukkit.plugin.PluginBase;
-import systems.reformcloud.permissions.util.PermissionPluginUtil;
 import systems.reformcloud.permissions.nukkit.listeners.NukkitPermissionListener;
+import systems.reformcloud.permissions.util.PermissionPluginUtil;
 
 public class NukkitPermissionPlugin extends PluginBase {
 

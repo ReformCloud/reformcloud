@@ -35,13 +35,13 @@ import systems.reformcloud.group.template.backend.TemplateBackend;
 import systems.reformcloud.group.template.version.Version;
 import systems.reformcloud.group.template.version.Versions;
 import systems.reformcloud.language.TranslationHolder;
+import systems.reformcloud.node.template.TemplateBackendManager;
 import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.process.ProcessState;
-import systems.reformcloud.utility.MoreCollections;
-import systems.reformcloud.wrappers.ProcessWrapper;
-import systems.reformcloud.node.template.TemplateBackendManager;
 import systems.reformcloud.shared.StringUtil;
 import systems.reformcloud.shared.parser.Parsers;
+import systems.reformcloud.utility.MoreCollections;
+import systems.reformcloud.wrappers.ProcessWrapper;
 
 import java.util.ArrayList;
 import java.util.Arrays;

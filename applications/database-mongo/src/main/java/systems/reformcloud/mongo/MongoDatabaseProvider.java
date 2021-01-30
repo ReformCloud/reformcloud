@@ -29,9 +29,9 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
+import systems.reformcloud.mongo.config.MongoConfig;
 import systems.reformcloud.provider.DatabaseProvider;
 import systems.reformcloud.wrappers.DatabaseTableWrapper;
-import systems.reformcloud.mongo.config.MongoConfig;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

@@ -24,16 +24,14 @@
  */
 package systems.reformcloud.node.runnables;
 
-import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.node.NodeExecutor;
 import systems.reformcloud.node.cluster.ClusterManager;
+import systems.reformcloud.registry.service.ServiceRegistry;
 
 public class NodeInformationUpdateRunnable implements Runnable {
 
   @Override
   public void run() {
-    ExecutorAPI.getInstance().getServiceRegistry()
-      .getProvider(ClusterManager.class)
-      .ifPresent(e -> e.publishNodeUpdate(NodeExecutor.getInstance().updateCurrentNodeInformation()));
+    ServiceRegistry.getProvided(ClusterManager.class).ifPresent(e -> e.publishNodeUpdate(NodeExecutor.getInstance().updateCurrentNodeInformation()));
   }
 }

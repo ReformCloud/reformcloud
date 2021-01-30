@@ -27,9 +27,9 @@ package systems.reformcloud.node.group;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.base.Conditions;
 import systems.reformcloud.group.main.MainGroup;
-import systems.reformcloud.task.Task;
 import systems.reformcloud.shared.group.DefaultMainGroup;
 import systems.reformcloud.shared.group.DefaultMainGroupBuilder;
+import systems.reformcloud.task.Task;
 
 public class NodeMainGroupBuilder extends DefaultMainGroupBuilder {
 

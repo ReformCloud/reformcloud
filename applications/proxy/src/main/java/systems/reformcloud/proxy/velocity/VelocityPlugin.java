@@ -32,9 +32,9 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.event.EventManager;
+import systems.reformcloud.proxy.plugin.PluginConfigHandler;
 import systems.reformcloud.proxy.velocity.listener.VelocityListener;
 import systems.reformcloud.proxy.velocity.listener.VelocityProxyConfigurationHandlerSetupListener;
-import systems.reformcloud.proxy.plugin.PluginConfigHandler;
 
 @Plugin(
   id = "reformcloud_proxy",

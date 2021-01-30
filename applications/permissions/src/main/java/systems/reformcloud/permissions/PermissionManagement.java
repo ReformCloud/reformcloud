@@ -31,10 +31,10 @@ import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.base.Conditions;
 import systems.reformcloud.event.EventManager;
-import systems.reformcloud.permissions.nodes.NodeGroup;
-import systems.reformcloud.permissions.nodes.PermissionNode;
 import systems.reformcloud.permissions.defaults.DefaultPermissionManagement;
 import systems.reformcloud.permissions.events.system.PermissionManagerSetupEvent;
+import systems.reformcloud.permissions.nodes.NodeGroup;
+import systems.reformcloud.permissions.nodes.PermissionNode;
 import systems.reformcloud.permissions.objects.PermissionGroup;
 import systems.reformcloud.permissions.objects.PermissionUser;
 

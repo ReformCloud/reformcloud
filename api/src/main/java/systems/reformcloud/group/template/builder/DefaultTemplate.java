@@ -27,6 +27,8 @@ package systems.reformcloud.group.template.builder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
+import systems.reformcloud.configuration.JsonConfiguration;
+import systems.reformcloud.configuration.data.DefaultJsonDataHolder;
 import systems.reformcloud.group.template.Template;
 import systems.reformcloud.group.template.inclusion.DefaultInclusion;
 import systems.reformcloud.group.template.inclusion.Inclusion;
@@ -35,8 +37,6 @@ import systems.reformcloud.group.template.runtime.RuntimeConfiguration;
 import systems.reformcloud.group.template.version.DefaultVersion;
 import systems.reformcloud.group.template.version.Version;
 import systems.reformcloud.network.data.ProtocolBuffer;
-import systems.reformcloud.configuration.JsonConfiguration;
-import systems.reformcloud.configuration.data.DefaultJsonDataHolder;
 
 import java.util.ArrayList;
 import java.util.Collection;

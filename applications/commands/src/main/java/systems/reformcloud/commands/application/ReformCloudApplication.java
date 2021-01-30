@@ -25,14 +25,14 @@
 package systems.reformcloud.commands.application;
 
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.ExecutorAPI;
+import systems.reformcloud.application.Application;
+import systems.reformcloud.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.commands.application.listener.ProcessInclusionHandler;
 import systems.reformcloud.commands.application.packet.PacketGetCommandsConfig;
 import systems.reformcloud.commands.application.update.CommandAddonUpdater;
 import systems.reformcloud.commands.config.CommandsConfig;
 import systems.reformcloud.commands.plugin.packet.PacketReleaseCommandsConfig;
-import systems.reformcloud.ExecutorAPI;
-import systems.reformcloud.application.Application;
-import systems.reformcloud.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.configuration.JsonConfiguration;
 import systems.reformcloud.event.EventManager;
 import systems.reformcloud.network.PacketIds;

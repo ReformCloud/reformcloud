@@ -26,8 +26,8 @@ package systems.reformcloud.application;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.utility.name.Nameable;
 import systems.reformcloud.application.config.ApplicationConfig;
+import systems.reformcloud.utility.name.Nameable;
 
 /**
  * This class represents an application which is loaded

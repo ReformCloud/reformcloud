@@ -26,9 +26,9 @@ package systems.reformcloud.group.template.version;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.network.data.SerializableObject;
 import systems.reformcloud.functional.Sorted;
 import systems.reformcloud.functional.Sorted3;
+import systems.reformcloud.network.data.SerializableObject;
 
 public interface VersionInfo extends SerializableObject, Sorted3<Integer, Integer, Integer>, Sorted<VersionInfo>, Cloneable {
 

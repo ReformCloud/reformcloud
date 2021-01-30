@@ -28,11 +28,11 @@ import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.embedded.Embedded;
 import systems.reformcloud.configuration.JsonConfiguration;
 import systems.reformcloud.process.ProcessInformation;
-import systems.reformcloud.provider.ChannelMessageProvider;
 import systems.reformcloud.protocol.node.ApiToNodePublishNodeChannelMessage;
 import systems.reformcloud.protocol.node.ApiToNodeSendChannelMessageToProcess;
 import systems.reformcloud.protocol.node.ApiToNodeSendChannelMessageToProcessGroup;
 import systems.reformcloud.protocol.node.ApiToNodeSendGlobalChannelMessage;
+import systems.reformcloud.provider.ChannelMessageProvider;
 
 public class DefaultEmbeddedChannelMessageProvider implements ChannelMessageProvider {
 

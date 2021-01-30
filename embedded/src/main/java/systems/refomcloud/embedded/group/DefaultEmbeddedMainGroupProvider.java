@@ -29,7 +29,6 @@ import org.jetbrains.annotations.UnmodifiableView;
 import systems.refomcloud.embedded.Embedded;
 import systems.reformcloud.builder.MainGroupBuilder;
 import systems.reformcloud.group.main.MainGroup;
-import systems.reformcloud.provider.MainGroupProvider;
 import systems.reformcloud.protocol.node.ApiToNodeDeleteMainGroup;
 import systems.reformcloud.protocol.node.ApiToNodeGetMainGroup;
 import systems.reformcloud.protocol.node.ApiToNodeGetMainGroupCount;
@@ -40,6 +39,7 @@ import systems.reformcloud.protocol.node.ApiToNodeGetMainGroupObjectsResult;
 import systems.reformcloud.protocol.node.ApiToNodeGetMainGroupResult;
 import systems.reformcloud.protocol.node.ApiToNodeGetStringCollectionResult;
 import systems.reformcloud.protocol.node.ApiToNodeUpdateMainGroup;
+import systems.reformcloud.provider.MainGroupProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;

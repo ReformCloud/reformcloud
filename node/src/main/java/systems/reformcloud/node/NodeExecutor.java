@@ -41,21 +41,6 @@ import systems.reformcloud.network.channel.manager.ChannelManager;
 import systems.reformcloud.network.packet.PacketProvider;
 import systems.reformcloud.network.packet.query.QueryManager;
 import systems.reformcloud.network.server.NetworkServer;
-import systems.reformcloud.process.ProcessInformation;
-import systems.reformcloud.provider.ChannelMessageProvider;
-import systems.reformcloud.provider.DatabaseProvider;
-import systems.reformcloud.provider.MainGroupProvider;
-import systems.reformcloud.provider.NodeInformationProvider;
-import systems.reformcloud.provider.PlayerProvider;
-import systems.reformcloud.provider.ProcessGroupProvider;
-import systems.reformcloud.registry.service.ServiceRegistry;
-import systems.reformcloud.node.messaging.DefaultNodeChannelMessageProvider;
-import systems.reformcloud.node.player.DefaultNodePlayerProvider;
-import systems.reformcloud.node.runnables.AutoStartRunnable;
-import systems.reformcloud.node.runnables.NodeInformationUpdateRunnable;
-import systems.reformcloud.node.runnables.OnlinePercentCheckerTask;
-import systems.reformcloud.node.runnables.ProcessScreenTickRunnable;
-import systems.reformcloud.node.runnables.ServerWatchdogRunnable;
 import systems.reformcloud.node.application.DefaultApplicationLoader;
 import systems.reformcloud.node.argument.ArgumentParser;
 import systems.reformcloud.node.cluster.ClusterManager;
@@ -82,14 +67,14 @@ import systems.reformcloud.node.group.DefaultNodeMainGroupProvider;
 import systems.reformcloud.node.group.DefaultNodeProcessGroupProvider;
 import systems.reformcloud.node.http.server.DefaultHttpServer;
 import systems.reformcloud.node.logger.CloudLogger;
+import systems.reformcloud.node.messaging.DefaultNodeChannelMessageProvider;
 import systems.reformcloud.node.network.NodeClientChannelListener;
 import systems.reformcloud.node.network.NodeNetworkClient;
 import systems.reformcloud.node.network.NodeServerChannelListener;
+import systems.reformcloud.node.player.DefaultNodePlayerProvider;
 import systems.reformcloud.node.process.DefaultNodeLocalProcessWrapper;
 import systems.reformcloud.node.process.DefaultNodeProcessProvider;
 import systems.reformcloud.node.process.configurator.ProcessConfiguratorRegistry;
-import systems.reformcloud.node.process.screen.DefaultProcessScreenController;
-import systems.reformcloud.node.process.screen.ProcessScreenController;
 import systems.reformcloud.node.processors.ApiToNodeGetIngameMessagesProcessor;
 import systems.reformcloud.node.processors.ChannelMessageProcessor;
 import systems.reformcloud.node.processors.NodeToNodeProcessCommandProcessor;
@@ -111,11 +96,17 @@ import systems.reformcloud.node.protocol.NodeToNodeRequestNodeInformationUpdate;
 import systems.reformcloud.node.protocol.NodeToNodeTabCompleteCommand;
 import systems.reformcloud.node.protocol.PacketRegister;
 import systems.reformcloud.node.provider.DefaultNodeNodeInformationProvider;
+import systems.reformcloud.node.runnables.AutoStartRunnable;
+import systems.reformcloud.node.runnables.NodeInformationUpdateRunnable;
+import systems.reformcloud.node.runnables.OnlinePercentCheckerTask;
+import systems.reformcloud.node.runnables.ProcessScreenTickRunnable;
+import systems.reformcloud.node.runnables.ServerWatchdogRunnable;
 import systems.reformcloud.node.sentry.SentryLoggingLoader;
 import systems.reformcloud.node.template.TemplateBackendManager;
 import systems.reformcloud.node.template.VersionInstallerRegistry;
 import systems.reformcloud.node.tick.CloudTickWorker;
 import systems.reformcloud.node.tick.TickedTaskScheduler;
+import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.protocol.node.ApiToNodeGetIngameMessages;
 import systems.reformcloud.protocol.processor.PacketProcessorManager;
 import systems.reformcloud.protocol.shared.PacketChannelMessage;
@@ -128,6 +119,13 @@ import systems.reformcloud.protocol.shared.PacketSendBossBar;
 import systems.reformcloud.protocol.shared.PacketSendPlayerMessage;
 import systems.reformcloud.protocol.shared.PacketSendPlayerTitle;
 import systems.reformcloud.protocol.shared.PacketSetPlayerLocation;
+import systems.reformcloud.provider.ChannelMessageProvider;
+import systems.reformcloud.provider.DatabaseProvider;
+import systems.reformcloud.provider.MainGroupProvider;
+import systems.reformcloud.provider.NodeInformationProvider;
+import systems.reformcloud.provider.PlayerProvider;
+import systems.reformcloud.provider.ProcessGroupProvider;
+import systems.reformcloud.registry.service.ServiceRegistry;
 import systems.reformcloud.shared.Constants;
 import systems.reformcloud.shared.command.DefaultCommandManager;
 import systems.reformcloud.shared.event.DefaultEventManager;
@@ -144,10 +142,11 @@ import systems.reformcloud.shared.registry.service.DefaultServiceRegistry;
 
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class NodeExecutor extends ExecutorAPI {
 
-  private static volatile boolean running = true;
+  private static final AtomicBoolean RUNNING = new AtomicBoolean(true);
 
   private final DependencyLoader dependencyLoader;
 
@@ -197,7 +196,7 @@ public final class NodeExecutor extends ExecutorAPI {
   }
 
   public static boolean isRunning() {
-    return running;
+    return RUNNING.get();
   }
 
   protected synchronized void bootstrap(@NotNull ArgumentParser argumentParser) {
@@ -302,9 +301,7 @@ public final class NodeExecutor extends ExecutorAPI {
   public void shutdown() throws Exception {
     // prevent duplicate shutdown requests
     synchronized (this) {
-      if (running) {
-        running = false;
-      } else {
+      if (!RUNNING.getAndSet(false)) {
         return;
       }
     }
@@ -540,7 +537,6 @@ public final class NodeExecutor extends ExecutorAPI {
     this.serviceRegistry.setProvider(PacketProvider.class, new DefaultPacketProvider(), false, true);
     this.serviceRegistry.setProvider(QueryManager.class, new DefaultQueryManager(), false, true);
     this.serviceRegistry.setProvider(ProcessFactoryController.class, new DefaultProcessFactoryController(this.processProvider), false, true);
-    this.serviceRegistry.setProvider(ProcessScreenController.class, new DefaultProcessScreenController(), false, true);
   }
 
   private void registerDefaultPacketProcessors() {

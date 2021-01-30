@@ -32,10 +32,14 @@
                 <transformer
                   implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <manifestEntries>
-                    <Premain-Class>systems.reformcloud.runner.instrumentation.RunnerPremain</Premain-Class>
-                    <Main-Class>systems.reformcloud.runner.RunnerExecutor</Main-Class>
+                    <Premain-Class>
+                      systems.reformcloud.runner.instrumentation.RunnerPremain
+                    </Premain-Class>
+                    <Main-Class>systems.reformcloud.runner.RunnerExecutor
+                    </Main-Class>
                     <Version>${project.version}</Version>
-                    <Implementation-Version>${project.version}</Implementation-Version>
+                    <Implementation-Version>${project.version}
+                    </Implementation-Version>
                     <!--suppress UnresolvedMavenProperty -->
                     <Specification-Version>${describe}</Specification-Version>
                   </manifestEntries>

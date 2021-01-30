@@ -28,9 +28,9 @@ import net.md_5.bungee.api.ProxyServer;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.commands.config.CommandsConfig;
 import systems.reformcloud.commands.plugin.CommandConfigHandler;
-import systems.reformcloud.commands.plugin.bungeecord.commands.CommandReformCloud;
 import systems.reformcloud.commands.plugin.bungeecord.BungeecordPlugin;
 import systems.reformcloud.commands.plugin.bungeecord.commands.CommandLeave;
+import systems.reformcloud.commands.plugin.bungeecord.commands.CommandReformCloud;
 
 public class BungeeCommandConfigHandler extends CommandConfigHandler {
 

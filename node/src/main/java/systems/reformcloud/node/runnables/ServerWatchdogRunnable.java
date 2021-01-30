@@ -24,9 +24,9 @@
  */
 package systems.reformcloud.node.runnables;
 
-import systems.reformcloud.process.ProcessState;
 import systems.reformcloud.node.NodeExecutor;
 import systems.reformcloud.node.process.DefaultNodeLocalProcessWrapper;
+import systems.reformcloud.process.ProcessState;
 
 public class ServerWatchdogRunnable implements Runnable {
 

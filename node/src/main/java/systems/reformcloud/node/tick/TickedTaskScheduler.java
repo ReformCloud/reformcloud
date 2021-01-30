@@ -28,11 +28,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.event.EventManager;
-import systems.reformcloud.task.Task;
-import systems.reformcloud.task.defaults.DefaultTask;
 import systems.reformcloud.node.concurrent.AsyncCatcher;
 import systems.reformcloud.node.event.scheduler.SchedulerFullHeartBeatPermanentTaskExecuteEvent;
 import systems.reformcloud.node.event.scheduler.SchedulerHeartBeatTaskExecuteEvent;
+import systems.reformcloud.task.Task;
+import systems.reformcloud.task.defaults.DefaultTask;
 
 import java.util.Collection;
 import java.util.Queue;
@@ -57,7 +57,7 @@ public final class TickedTaskScheduler {
   @NotNull
   public <T> Task<T> queue(@NotNull Callable<T> callable, int delay) {
     Task<T> task = new DefaultTask<>();
-    this.queue.add(new TickedTaskSchedulerTask<>(task, callable, CloudTickWorker.currentTick + delay));
+    this.queue.add(new TickedTaskSchedulerTask<>(task, callable, CloudTickWorker.CURRENT_TICK.get() + delay));
     return task;
   }
 
@@ -128,7 +128,7 @@ public final class TickedTaskScheduler {
 
   private @Nullable TickedTaskSchedulerTask<?> element() {
     for (TickedTaskSchedulerTask<?> tickedTaskSchedulerTask : this.queue) {
-      if (tickedTaskSchedulerTask.getTargetTick() < 0 || tickedTaskSchedulerTask.getTargetTick() == CloudTickWorker.currentTick) {
+      if (tickedTaskSchedulerTask.getTargetTick() < 0 || tickedTaskSchedulerTask.getTargetTick() == CloudTickWorker.CURRENT_TICK.get()) {
         this.queue.remove(tickedTaskSchedulerTask);
         return tickedTaskSchedulerTask;
       }

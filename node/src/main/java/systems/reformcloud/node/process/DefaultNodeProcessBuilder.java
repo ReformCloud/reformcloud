@@ -27,10 +27,10 @@ package systems.reformcloud.node.process;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.base.Conditions;
-import systems.reformcloud.task.Task;
-import systems.reformcloud.wrappers.ProcessWrapper;
 import systems.reformcloud.node.cluster.ClusterManager;
 import systems.reformcloud.shared.process.AbstractProcessBuilder;
+import systems.reformcloud.task.Task;
+import systems.reformcloud.wrappers.ProcessWrapper;
 
 final class DefaultNodeProcessBuilder extends AbstractProcessBuilder {
 

@@ -27,11 +27,11 @@ package systems.refomcloud.embedded.database;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.refomcloud.embedded.Embedded;
-import systems.reformcloud.provider.DatabaseProvider;
-import systems.reformcloud.wrappers.DatabaseTableWrapper;
 import systems.reformcloud.protocol.node.ApiToNodeDeleteDatabaseTable;
 import systems.reformcloud.protocol.node.ApiToNodeGetDatabaseNames;
 import systems.reformcloud.protocol.node.ApiToNodeGetDatabaseNamesResult;
+import systems.reformcloud.provider.DatabaseProvider;
+import systems.reformcloud.wrappers.DatabaseTableWrapper;
 
 import java.util.ArrayList;
 import java.util.Collection;

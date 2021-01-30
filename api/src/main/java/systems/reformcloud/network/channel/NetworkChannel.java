@@ -25,10 +25,10 @@
 package systems.reformcloud.network.channel;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.network.channel.listener.ChannelListenerHolder;
-import systems.reformcloud.utility.name.ReNameable;
 import systems.reformcloud.functional.Sorted;
 import systems.reformcloud.network.address.NetworkAddress;
+import systems.reformcloud.network.channel.listener.ChannelListenerHolder;
+import systems.reformcloud.utility.name.ReNameable;
 
 import java.util.concurrent.ScheduledExecutorService;
 

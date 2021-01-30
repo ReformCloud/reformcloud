@@ -31,8 +31,8 @@ import com.rethinkdb.net.Result;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.provider.DatabaseProvider;
-import systems.reformcloud.wrappers.DatabaseTableWrapper;
 import systems.reformcloud.rethink.config.RethinkConfig;
+import systems.reformcloud.wrappers.DatabaseTableWrapper;
 
 import java.util.Collection;
 

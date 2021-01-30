@@ -28,9 +28,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.node.NodeInformation;
 import systems.reformcloud.provider.NodeInformationProvider;
+import systems.reformcloud.shared.node.DefaultNodeInformation;
 import systems.reformcloud.utility.MoreCollections;
 import systems.reformcloud.wrappers.NodeProcessWrapper;
-import systems.reformcloud.shared.node.DefaultNodeInformation;
 
 import java.util.Collection;
 import java.util.Optional;

@@ -25,9 +25,9 @@
 package systems.reformcloud.network.server;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.network.channel.listener.ChannelListener;
 import systems.reformcloud.network.address.NetworkAddress;
 import systems.reformcloud.network.channel.NetworkChannel;
+import systems.reformcloud.network.channel.listener.ChannelListener;
 
 import java.util.function.Function;
 

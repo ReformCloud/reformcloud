@@ -31,9 +31,9 @@ import org.jline.reader.UserInterruptException;
 import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.command.CommandManager;
 import systems.reformcloud.language.TranslationHolder;
+import systems.reformcloud.shared.command.sources.ConsoleCommandSender;
 import systems.reformcloud.task.Task;
 import systems.reformcloud.task.defaults.DefaultTask;
-import systems.reformcloud.shared.command.sources.ConsoleCommandSender;
 
 public class ConsoleReadThread extends Thread {
 

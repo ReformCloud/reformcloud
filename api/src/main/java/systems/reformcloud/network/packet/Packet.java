@@ -26,9 +26,9 @@ package systems.reformcloud.network.packet;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.network.channel.NetworkChannel;
 import systems.reformcloud.network.channel.listener.ChannelListener;
 import systems.reformcloud.network.data.SerializableObject;
-import systems.reformcloud.network.channel.NetworkChannel;
 
 import java.util.UUID;
 

@@ -34,9 +34,9 @@ import systems.reformcloud.language.TranslationHolder;
 import systems.reformcloud.process.ProcessState;
 import systems.reformcloud.process.builder.ProcessBuilder;
 import systems.reformcloud.process.builder.ProcessInclusion;
-import systems.reformcloud.utility.MoreCollections;
 import systems.reformcloud.shared.StringUtil;
 import systems.reformcloud.shared.parser.Parsers;
+import systems.reformcloud.utility.MoreCollections;
 
 import java.util.ArrayList;
 import java.util.Arrays;

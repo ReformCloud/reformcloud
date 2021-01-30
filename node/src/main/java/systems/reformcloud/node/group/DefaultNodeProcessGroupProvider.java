@@ -31,14 +31,14 @@ import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.builder.ProcessGroupBuilder;
 import systems.reformcloud.group.process.ProcessGroup;
 import systems.reformcloud.language.TranslationHolder;
+import systems.reformcloud.node.cluster.ClusterManager;
 import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.provider.ProcessGroupProvider;
 import systems.reformcloud.registry.io.FileRegistry;
-import systems.reformcloud.utility.MoreCollections;
-import systems.reformcloud.node.cluster.ClusterManager;
 import systems.reformcloud.shared.group.DefaultProcessGroup;
 import systems.reformcloud.shared.group.ProcessGroupJsonReaders;
 import systems.reformcloud.shared.registry.io.DefaultFileRegistry;
+import systems.reformcloud.utility.MoreCollections;
 
 import java.util.Collection;
 import java.util.Collections;

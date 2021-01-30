@@ -26,9 +26,9 @@ package systems.reformcloud.node.group;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.group.process.ProcessGroup;
-import systems.reformcloud.task.Task;
 import systems.reformcloud.shared.group.DefaultProcessGroup;
 import systems.reformcloud.shared.group.DefaultProcessGroupBuilder;
+import systems.reformcloud.task.Task;
 
 public class NodeProcessGroupBuilder extends DefaultProcessGroupBuilder {
 

@@ -30,8 +30,8 @@ import systems.reformcloud.network.PacketIds;
 import systems.reformcloud.network.channel.NetworkChannel;
 import systems.reformcloud.network.channel.listener.ChannelListener;
 import systems.reformcloud.network.data.ProtocolBuffer;
-import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.node.cluster.ClusterManager;
+import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.protocol.ProtocolPacket;
 
 public class NodeToNodeRegisterProcess extends ProtocolPacket {

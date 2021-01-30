@@ -45,7 +45,8 @@ public final class SQLDatabaseTableWrapper implements DatabaseTableWrapper {
     this.name = name;
     this.provider = provider;
 
-    provider.executeUpdate("CREATE TABLE IF NOT EXISTS `" + name + "` (`key` TEXT, `identifier` TEXT, `data` LONGBLOB);");
+    provider.executeUpdate("CREATE TABLE IF NOT EXISTS `" + name
+      + "` (`key` VARCHAR(50) PRIMARY KEY, `identifier` VARCHAR(150), `data` MEDIUMBLOB);");
   }
 
   @Override

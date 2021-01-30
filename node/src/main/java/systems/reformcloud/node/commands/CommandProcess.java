@@ -34,16 +34,16 @@ import systems.reformcloud.group.template.inclusion.Inclusion;
 import systems.reformcloud.language.TranslationHolder;
 import systems.reformcloud.network.channel.NetworkChannel;
 import systems.reformcloud.network.channel.manager.ChannelManager;
+import systems.reformcloud.node.NodeExecutor;
+import systems.reformcloud.node.process.DefaultNodeLocalProcessWrapper;
+import systems.reformcloud.node.process.screen.ProcessScreen;
+import systems.reformcloud.node.protocol.NodeToNodeToggleProcessScreen;
 import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.process.ProcessState;
-import systems.reformcloud.utility.MoreCollections;
-import systems.reformcloud.wrappers.ProcessWrapper;
-import systems.reformcloud.node.NodeExecutor;
-import systems.reformcloud.node.process.screen.ProcessScreen;
-import systems.reformcloud.node.process.screen.ProcessScreenController;
-import systems.reformcloud.node.protocol.NodeToNodeToggleProcessScreen;
 import systems.reformcloud.shared.StringUtil;
 import systems.reformcloud.shared.parser.Parsers;
+import systems.reformcloud.utility.MoreCollections;
+import systems.reformcloud.wrappers.ProcessWrapper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -119,14 +119,15 @@ public final class CommandProcess implements Command {
         return;
       }
 
-      ProcessScreenController controller = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProcessScreenController.class);
-      Optional<ProcessScreen> screen = controller.getScreen(target.getId().getUniqueId());
-      if (screen.isPresent()) {
-        if (screen.get().getListeningNodes().contains(NodeExecutor.getInstance().getSelfName())) {
-          screen.get().removeListeningNode(NodeExecutor.getInstance().getSelfName());
+      Optional<DefaultNodeLocalProcessWrapper> wrapper = NodeExecutor.getInstance().getDefaultNodeProcessProvider().getProcessWrapperByName(strings[0]);
+      if (wrapper.isPresent()) {
+        final ProcessScreen screen = wrapper.get().getProcessScreen();
+
+        if (screen.getListeningNodes().contains(NodeExecutor.getInstance().getSelfName())) {
+          screen.removeListeningNode(NodeExecutor.getInstance().getSelfName());
           commandSource.sendMessage(TranslationHolder.translate("command-process-screen-toggle-disabled", strings[0]));
         } else {
-          screen.get().addListeningNode(NodeExecutor.getInstance().getSelfName());
+          screen.addListeningNode(NodeExecutor.getInstance().getSelfName());
           commandSource.sendMessage(TranslationHolder.translate("command-process-screen-toggle-activated", strings[0]));
         }
       } else {

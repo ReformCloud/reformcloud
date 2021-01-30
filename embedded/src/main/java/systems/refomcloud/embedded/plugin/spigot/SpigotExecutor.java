@@ -28,9 +28,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.embedded.Embedded;
+import systems.refomcloud.embedded.executor.PlayerAPIExecutor;
 import systems.refomcloud.embedded.plugin.spigot.executor.SpigotPlayerAPIExecutor;
 import systems.refomcloud.embedded.shared.SharedInvalidPlayerFixer;
-import systems.refomcloud.embedded.executor.PlayerAPIExecutor;
 import systems.reformcloud.ExecutorType;
 
 public final class SpigotExecutor extends Embedded {

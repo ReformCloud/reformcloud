@@ -24,13 +24,17 @@
  */
 package systems.reformcloud.node.runnables;
 
-import systems.reformcloud.ExecutorAPI;
-import systems.reformcloud.node.process.screen.ProcessScreenController;
+import systems.reformcloud.node.NodeExecutor;
+import systems.reformcloud.node.process.DefaultNodeLocalProcessWrapper;
 
 public class ProcessScreenTickRunnable implements Runnable {
 
   @Override
   public void run() {
-    ExecutorAPI.getInstance().getServiceRegistry().getProvider(ProcessScreenController.class).ifPresent(ProcessScreenController::tick);
+    for (DefaultNodeLocalProcessWrapper wrapper : NodeExecutor.getInstance().getDefaultNodeProcessProvider().getProcessWrappers()) {
+      if (wrapper.isStarted()) {
+        wrapper.getProcessScreen().tick();
+      }
+    }
   }
 }

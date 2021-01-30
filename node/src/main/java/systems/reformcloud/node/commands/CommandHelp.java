@@ -29,8 +29,8 @@ import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.command.Command;
 import systems.reformcloud.command.CommandManager;
 import systems.reformcloud.command.CommandSender;
-import systems.reformcloud.utility.MoreCollections;
 import systems.reformcloud.shared.collect.Entry2;
+import systems.reformcloud.utility.MoreCollections;
 
 import java.util.ArrayList;
 import java.util.Collection;

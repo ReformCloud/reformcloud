@@ -38,8 +38,8 @@ import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.process.ProcessState;
 import systems.reformcloud.process.builder.ProcessInclusion;
 import systems.reformcloud.protocol.ProtocolPacket;
-import systems.reformcloud.wrappers.ProcessWrapper;
 import systems.reformcloud.shared.group.DefaultProcessGroup;
+import systems.reformcloud.wrappers.ProcessWrapper;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -29,7 +29,6 @@ import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.command.Command;
 import systems.reformcloud.command.CommandSender;
-import systems.reformcloud.utility.MoreCollections;
 import systems.reformcloud.permissions.PermissionManagement;
 import systems.reformcloud.permissions.nodes.NodeGroup;
 import systems.reformcloud.permissions.nodes.PermissionNode;
@@ -37,6 +36,7 @@ import systems.reformcloud.permissions.objects.PermissionGroup;
 import systems.reformcloud.permissions.objects.PermissionUser;
 import systems.reformcloud.shared.Constants;
 import systems.reformcloud.shared.parser.Parsers;
+import systems.reformcloud.utility.MoreCollections;
 
 import java.util.ArrayList;
 import java.util.Arrays;

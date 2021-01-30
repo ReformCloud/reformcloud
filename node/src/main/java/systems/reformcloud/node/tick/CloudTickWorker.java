@@ -31,13 +31,18 @@ import systems.reformcloud.node.NodeExecutor;
 import systems.reformcloud.node.event.worker.WorkerFullTickEvent;
 import systems.reformcloud.node.event.worker.WorkerTickEvent;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+
 public final class CloudTickWorker {
 
   static final int TPS = 20;
-  static final long SEC_IN_NANO = 1_000_000_000;
+  static final AtomicLong CURRENT_TICK = new AtomicLong();
+  static final long SEC_IN_NANO = TimeUnit.SECONDS.toNanos(1);
+
   private static final long TICK_TIME = SEC_IN_NANO / TPS;
   private static final long MAX_CATCHUP_BUFFER = TICK_TIME * TPS * 60L;
-  protected static long currentTick = 0;
+
   private final TickedTaskScheduler taskScheduler;
   private final Thread mainThread;
 
@@ -78,7 +83,7 @@ public final class CloudTickWorker {
         }
 
         catchupTime = Math.min(MAX_CATCHUP_BUFFER, catchupTime - wait);
-        if (++CloudTickWorker.currentTick % TPS == 0) {
+        if (CURRENT_TICK.incrementAndGet() % TPS == 0) {
           this.taskScheduler.fullHeartBeat();
           ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(WorkerFullTickEvent.INSTANCE);
         }

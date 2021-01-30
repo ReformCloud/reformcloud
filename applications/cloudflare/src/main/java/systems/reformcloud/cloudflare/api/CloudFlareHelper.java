@@ -25,15 +25,15 @@
 package systems.reformcloud.cloudflare.api;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.cloudflare.config.CloudFlareConfig;
 import systems.reformcloud.ExecutorAPI;
+import systems.reformcloud.cloudflare.config.CloudFlareConfig;
 import systems.reformcloud.configuration.JsonConfiguration;
 import systems.reformcloud.configuration.json.Element;
 import systems.reformcloud.configuration.json.types.Object;
 import systems.reformcloud.language.TranslationHolder;
+import systems.reformcloud.node.NodeExecutor;
 import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.utility.MoreCollections;
-import systems.reformcloud.node.NodeExecutor;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

@@ -29,14 +29,14 @@ import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.group.template.version.Version;
 import systems.reformcloud.language.TranslationHolder;
+import systems.reformcloud.node.NodeExecutor;
+import systems.reformcloud.node.cluster.ClusterManager;
 import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.process.ProcessState;
 import systems.reformcloud.process.builder.ProcessBuilder;
 import systems.reformcloud.provider.ProcessProvider;
 import systems.reformcloud.utility.MoreCollections;
 import systems.reformcloud.wrappers.ProcessWrapper;
-import systems.reformcloud.node.NodeExecutor;
-import systems.reformcloud.node.cluster.ClusterManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -158,6 +158,16 @@ public final class DefaultNodeProcessProvider implements ProcessProvider {
   public @NotNull Optional<DefaultNodeLocalProcessWrapper> getProcessWrapperByUniqueId(@NotNull UUID uniqueId) {
     for (DefaultNodeLocalProcessWrapper processWrapper : this.getProcessWrappers()) {
       if (processWrapper.getProcessInformation().getId().getUniqueId().equals(uniqueId)) {
+        return Optional.of(processWrapper);
+      }
+    }
+
+    return Optional.empty();
+  }
+
+  public @NotNull Optional<DefaultNodeLocalProcessWrapper> getProcessWrapperByName(@NotNull String name) {
+    for (DefaultNodeLocalProcessWrapper processWrapper : this.getProcessWrappers()) {
+      if (processWrapper.getProcessInformation().getName().equalsIgnoreCase(name)) {
         return Optional.of(processWrapper);
       }
     }

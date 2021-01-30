@@ -25,11 +25,11 @@
 package systems.reformcloud.configuration.json;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.network.data.SerializableObject;
 import systems.reformcloud.configuration.json.types.Array;
 import systems.reformcloud.configuration.json.types.Null;
 import systems.reformcloud.configuration.json.types.Object;
 import systems.reformcloud.configuration.json.types.Primitive;
+import systems.reformcloud.network.data.SerializableObject;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

@@ -34,7 +34,6 @@ import systems.reformcloud.group.process.ProcessGroup;
 import systems.reformcloud.network.packet.PacketProvider;
 import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.process.ProcessState;
-import systems.reformcloud.utility.MoreCollections;
 import systems.reformcloud.signs.application.packets.PacketCreateSign;
 import systems.reformcloud.signs.application.packets.PacketDeleteBulkSigns;
 import systems.reformcloud.signs.application.packets.PacketDeleteSign;
@@ -48,6 +47,7 @@ import systems.reformcloud.signs.util.sign.CloudSign;
 import systems.reformcloud.signs.util.sign.config.SignConfig;
 import systems.reformcloud.signs.util.sign.config.SignLayout;
 import systems.reformcloud.signs.util.sign.config.SignSubLayout;
+import systems.reformcloud.utility.MoreCollections;
 
 import java.util.Arrays;
 import java.util.Collection;

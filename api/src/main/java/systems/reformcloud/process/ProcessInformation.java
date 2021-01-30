@@ -32,9 +32,9 @@ import systems.reformcloud.group.process.ProcessGroup;
 import systems.reformcloud.group.template.Template;
 import systems.reformcloud.network.address.NetworkAddress;
 import systems.reformcloud.network.data.SerializableObject;
+import systems.reformcloud.process.builder.ProcessBuilder;
 import systems.reformcloud.utility.name.Nameable;
 import systems.reformcloud.wrappers.ProcessWrapper;
-import systems.reformcloud.process.builder.ProcessBuilder;
 
 import java.util.Optional;
 import java.util.UUID;

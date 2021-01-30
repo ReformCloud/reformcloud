@@ -25,12 +25,12 @@
 package systems.reformcloud.cloudflare;
 
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.cloudflare.api.CloudFlareHelper;
-import systems.reformcloud.cloudflare.update.CloudFlareAddonUpdater;
-import systems.reformcloud.cloudflare.listener.ProcessListener;
 import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.application.Application;
 import systems.reformcloud.application.updater.ApplicationUpdateRepository;
+import systems.reformcloud.cloudflare.api.CloudFlareHelper;
+import systems.reformcloud.cloudflare.listener.ProcessListener;
+import systems.reformcloud.cloudflare.update.CloudFlareAddonUpdater;
 import systems.reformcloud.event.EventManager;
 import systems.reformcloud.language.LanguageFileHolder;
 import systems.reformcloud.language.TranslationHolder;

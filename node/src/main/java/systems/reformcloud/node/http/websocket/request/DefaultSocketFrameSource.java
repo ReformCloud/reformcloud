@@ -32,8 +32,8 @@ import systems.reformcloud.http.websocket.CloseSocketFrame;
 import systems.reformcloud.http.websocket.SocketFrame;
 import systems.reformcloud.http.websocket.listener.SocketFrameListenerRegistry;
 import systems.reformcloud.http.websocket.request.SocketFrameSource;
-import systems.reformcloud.node.http.websocket.handler.WebSocketFrameHandler;
 import systems.reformcloud.node.http.request.DefaultHttpRequestSource;
+import systems.reformcloud.node.http.websocket.handler.WebSocketFrameHandler;
 
 import java.util.Optional;
 import java.util.concurrent.Future;

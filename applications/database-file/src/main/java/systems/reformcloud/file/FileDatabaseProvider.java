@@ -27,8 +27,8 @@ package systems.reformcloud.file;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.provider.DatabaseProvider;
-import systems.reformcloud.wrappers.DatabaseTableWrapper;
 import systems.reformcloud.shared.io.IOUtils;
+import systems.reformcloud.wrappers.DatabaseTableWrapper;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;

@@ -32,11 +32,11 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.configuration.JsonConfiguration;
 import systems.reformcloud.group.process.ProcessGroup;
 import systems.reformcloud.group.template.backend.TemplateBackend;
+import systems.reformcloud.node.template.TemplateBackendManager;
+import systems.reformcloud.shared.io.IOUtils;
 import systems.reformcloud.task.Task;
 import systems.reformcloud.task.defaults.DefaultTask;
 import systems.reformcloud.utility.MoreCollections;
-import systems.reformcloud.node.template.TemplateBackendManager;
-import systems.reformcloud.shared.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;

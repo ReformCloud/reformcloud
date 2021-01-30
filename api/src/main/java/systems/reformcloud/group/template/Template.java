@@ -27,14 +27,14 @@ package systems.reformcloud.group.template;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.group.template.inclusion.InclusionHolder;
-import systems.reformcloud.network.data.SerializableObject;
-import systems.reformcloud.utility.name.ReNameable;
 import systems.reformcloud.configuration.data.JsonDataHolder;
 import systems.reformcloud.functional.Sorted;
 import systems.reformcloud.group.template.builder.TemplateBuilder;
+import systems.reformcloud.group.template.inclusion.InclusionHolder;
 import systems.reformcloud.group.template.runtime.RuntimeConfiguration;
 import systems.reformcloud.group.template.version.Version;
+import systems.reformcloud.network.data.SerializableObject;
+import systems.reformcloud.utility.name.ReNameable;
 
 public interface Template extends ReNameable, JsonDataHolder<Template>, InclusionHolder, SerializableObject, Sorted<Template>, Cloneable {
 
