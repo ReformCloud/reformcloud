@@ -12,13 +12,6 @@
   <artifactId>shared</artifactId>
   <description>Shared code between the embedded api and the node api</description>
 
-  <repositories>
-    <repository>
-      <id>sonatype-snapshots</id>
-      <url>https://oss.sonatype.org/content/groups/public/</url>
-    </repository>
-  </repositories>
-
   <dependencies>
     <dependency>
       <groupId>systems.reformcloud</groupId>
@@ -27,6 +20,7 @@
       <scope>compile</scope>
     </dependency>
 
+    <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
@@ -34,6 +28,7 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- https://mvnrepository.com/artifact/io.netty/netty-transport -->
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-transport</artifactId>

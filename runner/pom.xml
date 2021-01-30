@@ -26,38 +26,36 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <!-- transformers -->
+              <transformers>
+                <transformer
+                  implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <manifestEntries>
+                    <Premain-Class>systems.reformcloud.runner.instrumentation.RunnerPremain</Premain-Class>
+                    <Main-Class>systems.reformcloud.runner.RunnerExecutor</Main-Class>
+                    <Version>${project.version}</Version>
+                    <Implementation-Version>${project.version}</Implementation-Version>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <Specification-Version>${describe}</Specification-Version>
+                  </manifestEntries>
+                </transformer>
+              </transformers>
+              <!-- filters -->
               <filters>
                 <filter>
-                  <artifact>org.jetbrains:annotations</artifact>
+                  <artifact>*:*</artifact>
                   <excludes>
-                    <exclude>META-INF/*.MF</exclude>
+                    <exclude>META-INF/MANIFEST.MF</exclude>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
                   </excludes>
                 </filter>
               </filters>
             </configuration>
           </execution>
         </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.2.0</version>
-        <configuration>
-          <archive>
-            <manifestEntries>
-              <Premain-Class>
-                systems.reformcloud.runner.instrumentation.RunnerPremain
-              </Premain-Class>
-              <Main-Class>systems.reformcloud.runner.RunnerExecutor
-              </Main-Class>
-              <Version>${project.version}</Version>
-              <Implementation-Version>${project.version}</Implementation-Version>
-              <!--suppress UnresolvedMavenProperty -->
-              <Specification-Version>${describe}</Specification-Version>
-            </manifestEntries>
-          </archive>
-        </configuration>
       </plugin>
 
       <plugin>

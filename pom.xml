@@ -63,7 +63,7 @@
     </repository>
   </distributionManagement>
 
-  <!-- do not change the module order to prevent issues while building the project -->
+  <!-- do not change the module order -->
   <modules>
     <module>api</module>
     <module>protocol</module>
@@ -77,8 +77,6 @@
   </modules>
 
   <properties>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -122,8 +120,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
         <configuration>
-          <source>${maven.compiler.source}</source>
-          <target>${maven.compiler.target}</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
       </plugin>
 

@@ -40,7 +40,7 @@
       <plugin>
         <groupId>com.github.derklaro</groupId>
         <artifactId>dependency-list-maven-plugin</artifactId>
-        <version>1.3.4</version>
+        <version>1.3.5</version>
         <configuration>
           <excludedScopes>
             <excludedScope>test</excludedScope>
@@ -53,9 +53,7 @@
             <exclude>org.jetbrains:*</exclude>
           </excludes>
 
-          <outputFileName>
-            applications/applicationsdatabase-mongo/src/main/resources/dependencies.txt
-          </outputFileName>
+          <outputFileName>${basedir}/src/main/resources/dependencies.txt</outputFileName>
 
           <overrideExistingFile>true</overrideExistingFile>
           <resolveDependenciesOfDependencies>true</resolveDependenciesOfDependencies>
