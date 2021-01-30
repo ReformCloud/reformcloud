@@ -27,6 +27,7 @@ package systems.reformcloud.shared.io;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.utility.MoreCollections;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,15 +37,13 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.CopyOption;
 import java.nio.file.DirectoryStream;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -79,7 +78,7 @@ public final class IOUtils {
   }
 
   public static void createDirectory(@Nullable Path path) {
-    if (path != null) {
+    if (path != null && Files.notExists(path)) {
       try {
         Files.createDirectories(path);
       } catch (IOException exception) {
@@ -93,9 +92,51 @@ public final class IOUtils {
   }
 
   public static void copy(Path from, Path target) {
-    IOUtils.createDirectory(target.getParent());
-    try (OutputStream outputStream = Files.newOutputStream(target)) {
-      Files.copy(from, outputStream);
+    try (InputStream inputStream = Files.newInputStream(from)) {
+      copy(inputStream, target, StandardCopyOption.REPLACE_EXISTING);
+    } catch (IOException exception) {
+      exception.printStackTrace();
+    }
+  }
+
+  public static void copy(InputStream inputStream, Path target, CopyOption... options) {
+    try {
+      IOUtils.createDirectory(target.getParent());
+      Files.copy(inputStream, target, options);
+    } catch (IOException exception) {
+      exception.printStackTrace();
+    }
+  }
+
+  public static void copyCompiledFile(ClassLoader classLoader, String file, String target) {
+    try (InputStream inputStream = classLoader.getResourceAsStream(file)) {
+      Files.copy(Objects.requireNonNull(inputStream), Paths.get(target), StandardCopyOption.REPLACE_EXISTING);
+    } catch (IOException exception) {
+      exception.printStackTrace();
+    }
+  }
+
+  public static void copyDirectory(Path path, Path target) {
+    copyDirectory(path, target, Collections.emptyList());
+  }
+
+  public static void copyDirectory(Path path, Path target, Collection<String> excludedFiles) {
+    try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
+      for (Path child : stream) {
+        final Path targetLocation = target.resolve(path.relativize(child));
+        if (Files.isDirectory(child)) {
+          final String name = child.getFileName().toString() + "/**";
+          if (!MoreCollections.hasMatch(excludedFiles, file -> file.equalsIgnoreCase(name))) {
+            copyDirectory(child, targetLocation, excludedFiles);
+          }
+        } else {
+          final String fileName = targetLocation.getFileName().toString();
+          if (!MoreCollections.hasMatch(excludedFiles, file -> file.equalsIgnoreCase(fileName))) {
+            IOUtils.createDirectory(targetLocation.getParent());
+            IOUtils.copy(child, targetLocation);
+          }
+        }
+      }
     } catch (IOException exception) {
       exception.printStackTrace();
     }
@@ -133,7 +174,9 @@ public final class IOUtils {
     deleteDirectoryChecked(dirPath, exceptions);
 
     if (!exceptions.isEmpty()) {
-      throw new IOException("Caught " + exceptions.size() + " exceptions: " + exceptions.stream().map(IOException::getMessage).collect(Collectors.joining(", ")));
+      throw new IOException("Caught " + exceptions.size() + " exceptions: " + exceptions.stream()
+        .map(IOException::getMessage)
+        .collect(Collectors.joining(", ")));
     }
   }
 
@@ -154,16 +197,12 @@ public final class IOUtils {
       exceptions.add(exception);
     }
 
-    try {
-      Files.delete(dir);
-    } catch (IOException exception) {
-      exceptions.add(exception);
-    }
+    IOUtils.deleteFile(dir);
   }
 
   public static void recreateDirectory(Path path) {
     if (Files.exists(path)) {
-      if (path.toFile().isDirectory()) {
+      if (Files.isDirectory(path)) {
         deleteDirectory(path);
       } else {
         deleteFile(path);
@@ -173,62 +212,27 @@ public final class IOUtils {
     createDirectory(path);
   }
 
-  public static void copyCompiledFile(ClassLoader classLoader, String file, String target) {
-    try (InputStream inputStream = classLoader.getResourceAsStream(file)) {
-      Files.copy(Objects.requireNonNull(inputStream), Paths.get(target), StandardCopyOption.REPLACE_EXISTING);
-    } catch (IOException exception) {
-      exception.printStackTrace();
-    }
-  }
-
-  public static void copyDirectory(Path path, Path target) {
-    copyDirectory(path, target, new ArrayList<>());
-  }
-
-  public static void copyDirectory(Path path, Path target, Collection<String> excludedFiles) {
-    try {
-      Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-        @Override
-        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-          if (excludedFiles.stream().anyMatch(e -> e.equals(file.toFile().getName()))) {
-            return FileVisitResult.CONTINUE;
-          }
-
-          Path targetFile = Paths.get(target.toString(), path.relativize(file).toString());
-          Path parent = targetFile.getParent();
-
-          if (parent != null && Files.notExists(parent)) {
-            Files.createDirectories(parent);
-          }
-
-          Files.copy(file, targetFile, StandardCopyOption.REPLACE_EXISTING);
-          return FileVisitResult.CONTINUE;
-        }
-      });
-    } catch (IOException exception) {
-      exception.printStackTrace();
-    }
-  }
-
   @NotNull
   public static Optional<URI> resolveClassSource(@NotNull String className) {
     try {
-      return Optional.of(Class.forName(className).getProtectionDomain().getCodeSource().getLocation().toURI());
-    } catch (ClassNotFoundException | URISyntaxException exception) {
+      return resolveClassSource(Class.forName(className));
+    } catch (ClassNotFoundException exception) {
       exception.printStackTrace();
       return Optional.empty();
     }
   }
 
-  public static void copy(InputStream inputStream, Path path, CopyOption... options) {
+  @NotNull
+  public static Optional<URI> resolveClassSource(@NotNull Class<?> clazz) {
     try {
-      Files.copy(inputStream, path, options);
-    } catch (IOException exception) {
+      return Optional.of(clazz.getProtectionDomain().getCodeSource().getLocation().toURI());
+    } catch (URISyntaxException exception) {
       exception.printStackTrace();
+      return Optional.empty();
     }
   }
 
-  public static void unZip(Path zippedPath, Path destinationPath) {
+  public static void unzip(Path zippedPath, Path destinationPath) {
     if (Files.notExists(destinationPath)) {
       createDirectory(destinationPath);
     } else if (!Files.isDirectory(destinationPath)) {

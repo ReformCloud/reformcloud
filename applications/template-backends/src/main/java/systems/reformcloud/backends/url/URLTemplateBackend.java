@@ -87,7 +87,7 @@ public final class URLTemplateBackend implements TemplateBackend {
   @Override
   public Task<Void> loadTemplate(@NotNull String group, @NotNull String template, @NotNull Path target) {
     DownloadHelper.download(this.getBasePath() + group + "-" + template + ".zip", "reformcloud/files/temp/template.zip");
-    IOUtils.unZip(Paths.get("reformcloud/files/temp/template.zip"), target);
+    IOUtils.unzip(Paths.get("reformcloud/files/temp/template.zip"), target);
     IOUtils.deleteFile("reformcloud/files/temp/template.zip");
     return Task.completedTask(null);
   }
@@ -104,7 +104,7 @@ public final class URLTemplateBackend implements TemplateBackend {
   @Override
   public Task<Void> loadPath(@NotNull String path, @NotNull Path target) {
     DownloadHelper.download(this.getBasePath() + path, "reformcloud/files/temp/template.zip");
-    IOUtils.unZip(Paths.get("reformcloud/files/temp/template.zip"), target);
+    IOUtils.unzip(Paths.get("reformcloud/files/temp/template.zip"), target);
     IOUtils.deleteFile("reformcloud/files/temp/template.zip");
     return Task.completedTask(null);
   }

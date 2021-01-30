@@ -44,7 +44,7 @@ public class SpongeVersionInstaller implements VersionInstaller {
       final Path tempDownloadPath = Paths.get("reformcloud/files", "temp_" + version.getName().toLowerCase(Locale.ROOT));
 
       DownloadHelper.download(version.getDownloadUrl(), tempDownloadPath);
-      IOUtils.unZip(tempDownloadPath, targetPath);
+      IOUtils.unzip(tempDownloadPath, targetPath);
       IOUtils.deleteFile(tempDownloadPath);
     }
     return true;
