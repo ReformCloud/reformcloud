@@ -29,16 +29,41 @@ import systems.reformcloud.event.priority.EventPriority;
 
 import java.lang.reflect.InvocationTargetException;
 
+/**
+ * A container holding information about a listener registered to an {@link EventManager}.
+ */
 public interface ListenerContainer {
 
+  /**
+   * Get the instance of the wrapped listener.
+   *
+   * @return The instance of the wrapped listener.
+   */
   @NotNull
   Object getListenerInstance();
 
+  /**
+   * Get the event class this listener is listening to.
+   *
+   * @return The event class this listener is listening to.
+   */
   @NotNull
   Class<?> getTargetEventClass();
 
+  /**
+   * Get the priority of the listener.
+   *
+   * @return The priority of the listener.
+   */
   @NotNull
   EventPriority getPriority();
 
+  /**
+   * Posts the {@code event} to the wrapped listener method.
+   *
+   * @param event The event to post to the method.
+   * @throws InvocationTargetException if the underlying method throws an exception.
+   * @throws IllegalAccessException    if the wrapped {@code Method} object is enforcing Java language access control and the underlying method is inaccessible.
+   */
   void call(@NotNull Event event) throws InvocationTargetException, IllegalAccessException;
 }

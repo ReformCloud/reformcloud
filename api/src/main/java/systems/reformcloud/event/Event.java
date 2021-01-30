@@ -25,7 +25,7 @@
 package systems.reformcloud.event;
 
 /**
- * Dummy class which represents an event which can get called in the runtime
+ * Dummy class representing an event which is callable in an {@link EventManager}.
  */
-public class Event {
+public interface Event {
 }

@@ -26,6 +26,9 @@ package systems.reformcloud.event.events.group;
 
 import systems.reformcloud.group.process.ProcessGroup;
 
+/**
+ * Called when a process group was deleted.
+ */
 public class ProcessGroupDeleteEvent extends ProcessGroupEvent {
 
   public ProcessGroupDeleteEvent(ProcessGroup processGroup) {

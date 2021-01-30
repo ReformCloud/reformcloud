@@ -30,7 +30,7 @@ import systems.reformcloud.permissions.PermissionManagement;
 
 import java.util.Objects;
 
-public class PermissionManagerSetupEvent extends Event {
+public class PermissionManagerSetupEvent implements Event {
 
   private PermissionManagement permissionManagement;
 

@@ -31,19 +31,49 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * A holder of {@link Player}s.
+ */
 public interface PlayerHolder extends SerializableObject, Cloneable {
 
+  /**
+   * Get the online count on this service.
+   *
+   * @return The online count on this service.
+   */
   int getOnlineCount();
 
+  /**
+   * Gets the players which are currently connected known to this holder.
+   *
+   * @return The players which are currently connected known to this holder.
+   */
   @NotNull
   Collection<Player> getPlayers();
 
+  /**
+   * Gets a specific player by the given {@code name}.
+   *
+   * @param name The name of player.
+   * @return The player with the given {@code name}.
+   */
   @NotNull
   Optional<Player> getPlayerByName(@NotNull String name);
 
+  /**
+   * Gets a specific player by the given {@code uniqueId}.
+   *
+   * @param uniqueId The unique id of the player.
+   * @return The player with the given {@code uniqueId}.
+   */
   @NotNull
   Optional<Player> getPlayerByUniqueId(@NotNull UUID uniqueId);
 
+  /**
+   * Creates a clone of this player holder.
+   *
+   * @return A clone of this player holder.
+   */
   @NotNull
   PlayerHolder clone();
 }

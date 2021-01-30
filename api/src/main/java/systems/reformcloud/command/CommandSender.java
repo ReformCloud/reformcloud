@@ -28,11 +28,30 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.utility.name.Nameable;
 
+/**
+ * A sender for a {@link Command} which can receive messages.
+ */
 public interface CommandSender extends Nameable {
 
+  /**
+   * Sends a message to this sender.
+   *
+   * @param message The message to send.
+   */
   void sendMessage(@NotNull String message);
 
+  /**
+   * Sends the messages to this sender.
+   *
+   * @param messages The messages to send.
+   */
   void sendMessages(@NonNls String[] messages);
 
+  /**
+   * Checks if this sender has the provided {@code permission}.
+   *
+   * @param permission The permission to check.
+   * @return {@code true} if the sender has the given permission, else {@code false}
+   */
   boolean hasPermission(@NotNull String permission);
 }

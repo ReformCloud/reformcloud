@@ -31,22 +31,55 @@ import systems.reformcloud.utility.name.Nameable;
 
 import java.util.UUID;
 
+/**
+ * An identity.
+ */
 public interface Identity extends Nameable, Sorted<Identity>, SerializableObject, Cloneable {
 
+  /**
+   * Gets the unique id of this identity.
+   *
+   * @return The unique id of this identity.
+   */
   @NotNull
   UUID getUniqueId();
 
+  /**
+   * Gets the numeric id of this identity.
+   *
+   * @return The numeric id of this identity.
+   */
   int getId();
 
+  /**
+   * Gets the node unique id of this identity.
+   *
+   * @return The node unique id of this identity.
+   */
   @NotNull
   UUID getNodeUniqueId();
 
+  /**
+   * Gets the node name of this identity.
+   *
+   * @return The node name of this identity.
+   */
   @NotNull
   String getNodeName();
 
+  /**
+   * Gets the display name of this identity.
+   *
+   * @return The display name of this identity.
+   */
   @NotNull
   String getDisplayName();
 
+  /**
+   * Creates a clone of this identity.
+   *
+   * @return A clone of this identity.
+   */
   @NotNull
   Identity clone();
 }

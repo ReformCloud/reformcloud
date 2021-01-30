@@ -28,7 +28,7 @@ import systems.reformcloud.event.Event;
 
 import java.util.UUID;
 
-public class PermissionUserDeleteEvent extends Event {
+public class PermissionUserDeleteEvent implements Event {
 
   private final UUID uuid;
 

@@ -26,7 +26,7 @@ package systems.reformcloud.node.event.scheduler;
 
 import systems.reformcloud.event.Event;
 
-public class SchedulerFullHeartBeatPermanentTaskExecuteEvent extends Event {
+public class SchedulerFullHeartBeatPermanentTaskExecuteEvent implements Event {
 
   private final Runnable runnable;
 

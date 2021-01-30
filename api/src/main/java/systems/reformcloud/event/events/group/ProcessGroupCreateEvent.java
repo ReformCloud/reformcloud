@@ -26,6 +26,9 @@ package systems.reformcloud.event.events.group;
 
 import systems.reformcloud.group.process.ProcessGroup;
 
+/**
+ * Gets called when a process group gets created.
+ */
 public class ProcessGroupCreateEvent extends ProcessGroupEvent {
 
   public ProcessGroupCreateEvent(ProcessGroup processGroup) {

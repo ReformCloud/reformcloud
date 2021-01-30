@@ -27,9 +27,25 @@ package systems.reformcloud.group.template.version;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.utility.name.Nameable;
 
+/**
+ * An installer for a {@link Version}
+ */
 public interface VersionInstaller extends Nameable {
+  /**
+   * The downloading installer only downloads the version and saves it to the files folder.
+   */
   String DOWNLOADING = "downloading";
+  /**
+   * The sponge downloader is created to install sponge-forge versions as they are zipped and need
+   * a special installing strategy.
+   */
   String SPONGE = "sponge";
 
+  /**
+   * Install the provided {@code version}.
+   *
+   * @param version The version to install.
+   * @return {@code true} if the installation was successful, else {@code false}.
+   */
   boolean installVersion(@NotNull Version version);
 }

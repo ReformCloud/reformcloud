@@ -26,15 +26,40 @@ package systems.reformcloud.registry.service;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * An entry in a {@link ServiceRegistry}.
+ *
+ * @param <T> the type of the entry.
+ */
 public interface ServiceRegistryEntry<T> {
 
+  /**
+   * Gets the class of the services provided by this entry.
+   *
+   * @return The class of the services provided by this entry.
+   */
   @NotNull
   Class<T> getService();
 
+  /**
+   * Gets the instance of the service provider.
+   *
+   * @return The instance of the service provider.
+   */
   @NotNull
   T getProvider();
 
+  /**
+   * Gets if this service is immutable.
+   *
+   * @return If this service is immutable.
+   */
   boolean isImmutable();
 
+  /**
+   * Gets if this service needs a replacement when changing in the associated service registry.
+   *
+   * @return If this service needs a replacement when changing in the associated service registry.
+   */
   boolean needsReplacement();
 }

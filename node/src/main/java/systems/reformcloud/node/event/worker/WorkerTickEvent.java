@@ -26,7 +26,7 @@ package systems.reformcloud.node.event.worker;
 
 import systems.reformcloud.event.Event;
 
-public final class WorkerTickEvent extends Event {
+public final class WorkerTickEvent implements Event {
 
   public static final WorkerTickEvent INSTANCE = new WorkerTickEvent();
 

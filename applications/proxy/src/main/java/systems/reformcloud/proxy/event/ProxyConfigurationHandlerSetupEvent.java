@@ -30,7 +30,7 @@ import systems.reformcloud.proxy.ProxyConfigurationHandler;
 
 import java.util.Objects;
 
-public class ProxyConfigurationHandlerSetupEvent extends Event {
+public class ProxyConfigurationHandlerSetupEvent implements Event {
 
   private ProxyConfigurationHandler proxyConfigurationHandler;
 

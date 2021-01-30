@@ -27,7 +27,10 @@ package systems.reformcloud.event.events.messaging;
 import systems.reformcloud.configuration.JsonConfiguration;
 import systems.reformcloud.event.Event;
 
-public class ChannelMessageReceiveEvent extends Event {
+/**
+ * Gets called when a channel message is received.
+ */
+public class ChannelMessageReceiveEvent implements Event {
 
   private final String channel;
   private final JsonConfiguration data;
@@ -37,10 +40,20 @@ public class ChannelMessageReceiveEvent extends Event {
     this.data = data;
   }
 
+  /**
+   * The name of the channel the message was sent over.
+   *
+   * @return The name of the channel the message was sent over.
+   */
   public String getChannel() {
     return this.channel;
   }
 
+  /**
+   * The data body of the message.
+   *
+   * @return The data body of the message.
+   */
   public JsonConfiguration getData() {
     return this.data;
   }

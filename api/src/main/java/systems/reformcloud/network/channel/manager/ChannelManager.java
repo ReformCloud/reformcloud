@@ -31,25 +31,64 @@ import systems.reformcloud.network.channel.NetworkChannel;
 import java.util.Collection;
 import java.util.Optional;
 
+/**
+ * A manager for {@link NetworkChannel}s.
+ */
 public interface ChannelManager {
-
+  /**
+   * Get a specific channel by it's name.
+   *
+   * @param name The name of the channel to get.
+   * @return The channel with the given {@code name}.
+   */
   @NotNull
   Optional<NetworkChannel> getChannel(@NotNull String name);
 
+  /**
+   * Gets all channel which are connected from the specified {@code remoteAddress}.
+   *
+   * @param remoteAddress The address to get the channels for.
+   * @return The channels connected from the given address.
+   */
   @NotNull
   @UnmodifiableView Collection<NetworkChannel> getNetworkChannels(@NotNull String remoteAddress);
 
+  /**
+   * Gets the first channel registered in this holder.
+   *
+   * @return The first channel registered in this holder.
+   */
   @NotNull
   Optional<NetworkChannel> getFirstChannel();
 
+  /**
+   * Get all channels registered in this holder.
+   *
+   * @return All channels registered in this holder.
+   */
   @NotNull
   @UnmodifiableView Collection<NetworkChannel> getRegisteredChannels();
 
+  /**
+   * Registers the specific {@code channel} to this holder.
+   *
+   * @param channel The channel to register.
+   */
   void registerChannel(@NotNull NetworkChannel channel);
 
+  /**
+   * Unregisters the given channel from this holder.
+   *
+   * @param channel The channel to unregister.
+   */
   default void unregisterChannel(@NotNull NetworkChannel channel) {
     this.unregisterChannel(channel.getName());
   }
 
+  /**
+   * Unregisters the first channel with the given {@code name} from this holder.
+   *
+   * @param name The name of the channel to unregister.
+   */
   void unregisterChannel(@NotNull String name);
 }

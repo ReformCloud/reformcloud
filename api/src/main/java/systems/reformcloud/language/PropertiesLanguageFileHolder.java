@@ -65,9 +65,14 @@ public class PropertiesLanguageFileHolder implements LanguageFileHolder {
   }
 
   @Override
-  public @NotNull LanguageFileHolder unregisterTranslation(@NotNull String key, @NotNull String translation) {
+  public @NotNull LanguageFileHolder unregisterTranslation(@NotNull String key) {
     this.translations.remove(key);
     return this;
+  }
+
+  @Override
+  public boolean isTranslationPresent(@NotNull String key) {
+    return this.translations.containsKey(key);
   }
 
   @Override

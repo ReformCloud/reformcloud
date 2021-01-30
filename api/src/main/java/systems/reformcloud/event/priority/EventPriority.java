@@ -25,17 +25,29 @@
 package systems.reformcloud.event.priority;
 
 public enum EventPriority {
-
+  /**
+   * Methods annotated with this priority will get called first.
+   */
   FIRST((byte) -64),
-
+  /**
+   * Methods annotated with this priority will get called secondly.
+   */
   SECOND((byte) -32),
-
+  /**
+   * Methods annotated with this priority will get called third.
+   */
   MONITOR((byte) -1),
-
+  /**
+   * Methods annotated with this priority will get called fourth.
+   */
   NORMAL((byte) 0),
-
+  /**
+   * Methods annotated with this priority will get called fifth.
+   */
   PENULTIMATE((byte) 32),
-
+  /**
+   * Methods annotated with this priority will get called sixth.
+   */
   LAST((byte) 64);
 
   private final byte priority;

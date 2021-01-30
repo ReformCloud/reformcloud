@@ -36,6 +36,8 @@ import systems.reformcloud.group.process.startup.DefaultStartupConfiguration;
 import systems.reformcloud.group.process.startup.StartupConfiguration;
 import systems.reformcloud.group.template.Template;
 import systems.reformcloud.group.template.builder.DefaultTemplate;
+import systems.reformcloud.group.template.inclusion.DefaultInclusion;
+import systems.reformcloud.group.template.inclusion.Inclusion;
 import systems.reformcloud.group.template.runtime.DefaultRuntimeConfiguration;
 import systems.reformcloud.group.template.runtime.RuntimeConfiguration;
 import systems.reformcloud.group.template.version.DefaultVersion;
@@ -53,6 +55,7 @@ public class ProcessGroupJsonReaders {
     .registerJsonReader(Template.class, new TemplateJsonReader())
     .registerJsonReader(RuntimeConfiguration.class, new RuntimeConfigurationJsonReader())
     .registerJsonReader(Version.class, new VersionJsonReader())
+    .registerJsonReader(Inclusion.class, new InclusionJsonReader())
     // options
     .disableHtmlEscaping()
     .enablePrettyPrinting()
@@ -144,6 +147,20 @@ public class ProcessGroupJsonReaders {
 
     @Override public @NotNull Version createInstance(@NotNull Type type) {
       return new DefaultVersion();
+    }
+  }
+
+  private static final class InclusionJsonReader implements JsonReader<Inclusion> {
+    @Override public @NotNull Inclusion createInstance(@NotNull Type type) {
+      return Inclusion.inclusion("", "FILE", Inclusion.InclusionLoadType.PAST);
+    }
+
+    @Override public @NotNull Element serialize(@NotNull Inclusion inclusion, Type typeOfT) {
+      return ADAPTER.toTree(inclusion, typeOfT);
+    }
+
+    @Override public @NotNull Inclusion deserialize(@NotNull Element element, @NotNull Type typeOfT) {
+      return ADAPTER.fromJson(element, DefaultInclusion.class);
     }
   }
 }

@@ -26,7 +26,7 @@ package systems.reformcloud.permissions.events.group;
 
 import systems.reformcloud.event.Event;
 
-public class PermissionGroupDeleteEvent extends Event {
+public class PermissionGroupDeleteEvent implements Event {
 
   private final String name;
 

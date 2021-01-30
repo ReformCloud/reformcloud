@@ -28,14 +28,32 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
+/**
+ * A wrapper for a {@link Command} registered in a {@link CommandManager}.
+ */
 public interface CommandContainer {
 
+  /**
+   * All aliases for the wrapped command.
+   *
+   * @return All aliases for the wrapped command.
+   */
   @NotNull
   Collection<String> getAliases();
 
+  /**
+   * The description of the wrapped command.
+   *
+   * @return The description of the wrapped command.
+   */
   @NotNull
   String getDescription();
 
+  /**
+   * The wrapped command.
+   *
+   * @return The wrapped command.
+   */
   @NotNull
   Command getCommand();
 }

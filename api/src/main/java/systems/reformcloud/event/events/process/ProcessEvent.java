@@ -27,7 +27,10 @@ package systems.reformcloud.event.events.process;
 import systems.reformcloud.event.Event;
 import systems.reformcloud.process.ProcessInformation;
 
-public abstract class ProcessEvent extends Event {
+/**
+ * The superclass for all events related to a {@code ProcessInformation}.
+ */
+public abstract class ProcessEvent implements Event {
 
   protected final ProcessInformation processInformation;
 
@@ -35,6 +38,11 @@ public abstract class ProcessEvent extends Event {
     this.processInformation = processInformation;
   }
 
+  /**
+   * Get the process information this event is related to.
+   *
+   * @return The process information this event is related to.
+   */
   public ProcessInformation getProcessInformation() {
     return this.processInformation;
   }

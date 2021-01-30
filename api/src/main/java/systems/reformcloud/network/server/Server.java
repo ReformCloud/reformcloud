@@ -24,9 +24,20 @@
  */
 package systems.reformcloud.network.server;
 
+/**
+ * A network server.
+ */
 public interface Server {
 
+  /**
+   * Closes the specific network server by the given {@code port}.
+   *
+   * @param port the port of the network server to close.
+   */
   void close(int port);
 
+  /**
+   * Closes all listeners of this network server.
+   */
   void closeAll();
 }

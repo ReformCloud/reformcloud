@@ -24,16 +24,41 @@
  */
 package systems.reformcloud.group.template.version;
 
+/**
+ * Represents the different types of a server/proxy software.
+ */
 public enum VersionType {
+  /**
+   * A minecraft: JavaEdition server.
+   */
   JAVA_SERVER,
+  /**
+   * A minecraft: JavaEdition proxy.
+   */
   JAVA_PROXY,
+  /**
+   * A minecraft: BedrockEdition server.
+   */
   POCKET_SERVER,
+  /**
+   * A minecraft: BedrockEdition proxy.
+   */
   POCKET_PROXY;
 
+  /**
+   * Get if the version is a server.
+   *
+   * @return If the version is a server.
+   */
   public boolean isServer() {
     return this == JAVA_SERVER || this == POCKET_SERVER;
   }
 
+  /**
+   * Get if the version is a proxy.
+   *
+   * @return If the version is a proxy.
+   */
   public boolean isProxy() {
     return this == JAVA_PROXY || this == POCKET_PROXY;
   }

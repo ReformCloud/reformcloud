@@ -30,7 +30,7 @@ import systems.reformcloud.signs.util.sign.CloudSign;
 import java.util.UUID;
 import java.util.function.Function;
 
-public class UserSignPreConnectEvent extends Event {
+public class UserSignPreConnectEvent implements Event {
 
   private final UUID playerUniqueId;
   private final Function<String, Boolean> permissionChecker;

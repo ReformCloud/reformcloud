@@ -27,7 +27,7 @@ package systems.reformcloud.node.event.application;
 import systems.reformcloud.application.config.ApplicationConfig;
 import systems.reformcloud.event.Event;
 
-public class ApplicationLoaderDetectedApplicationEvent extends Event {
+public class ApplicationLoaderDetectedApplicationEvent implements Event {
 
   private final ApplicationConfig applicationConfig;
   private boolean cancelled = false;

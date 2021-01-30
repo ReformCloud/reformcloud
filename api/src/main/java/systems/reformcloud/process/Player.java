@@ -30,16 +30,39 @@ import systems.reformcloud.network.data.SerializableObject;
 
 import java.util.UUID;
 
+/**
+ * A player who is connected to a process.
+ */
 public interface Player extends SerializableObject, Sorted<Player>, Cloneable {
 
+  /**
+   * Gets the unique id of this player.
+   *
+   * @return The unique id of this player.
+   */
   @NotNull
   UUID getUniqueID();
 
+  /**
+   * Gets the name of this player.
+   *
+   * @return The name of this player.
+   */
   @NotNull
   String getName();
 
+  /**
+   * Gets the join milliseconds of this player.
+   *
+   * @return The join milliseconds of this player.
+   */
   long getJoined();
 
+  /**
+   * Creates a clone of this player.
+   *
+   * @return A clone of this player.
+   */
   @NotNull
   Player clone();
 }

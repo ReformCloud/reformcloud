@@ -33,23 +33,66 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
+/**
+ * A holder for a language file, computing the translations when needed.
+ */
 public interface LanguageFileHolder extends Nameable {
 
+  /**
+   * Creates a new language file holder with the given {@code properties} as the backing
+   * translations holder.
+   *
+   * @param languageCode The language code of the language.
+   * @param properties   The backing properties of the language.
+   * @return The created holder.
+   */
   @NotNull
   @Contract("_, _ -> new")
   static LanguageFileHolder properties(@NotNull String languageCode, @NotNull Properties properties) {
     return new PropertiesLanguageFileHolder(languageCode, properties);
   }
 
+  /**
+   * Get a specific translation by it's {@code key}.
+   *
+   * @param key The key of the translation.
+   * @return The translation associated with the {@code key}.
+   */
   @NotNull
   Optional<String> getTranslation(@NotNull String key);
 
+  /**
+   * Registers a translation to this holder if it is not present already.
+   *
+   * @param key         The key of the translation.
+   * @param translation The translation associated with the key.
+   * @return The same instance of this class, for chaining.
+   */
   @NotNull
   LanguageFileHolder registerTranslation(@NotNull String key, @NotNull String translation);
 
+  /**
+   * Removes a translation from thus holder.
+   *
+   * @param key The key of the translation to remove.
+   * @return The same instance of this class, for chaining.
+   */
   @NotNull
-  LanguageFileHolder unregisterTranslation(@NotNull String key, @NotNull String translation);
+  LanguageFileHolder unregisterTranslation(@NotNull String key);
 
+  /**
+   * Checks if a translation is associated with the given {@code key} in this holder.
+   *
+   * @param key The key of the translation to check.
+   * @return If a translation with the given {@code key} is known to this holder.
+   */
+  boolean isTranslationPresent(@NotNull String key);
+
+  /**
+   * Get all translations registered in this holder.
+   *
+   * @return All translations registered in this holder.
+   */
   @NotNull
   @Unmodifiable
   Map<String, String> getTranslations();

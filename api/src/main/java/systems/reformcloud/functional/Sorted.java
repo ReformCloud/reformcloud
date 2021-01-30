@@ -26,24 +26,59 @@ package systems.reformcloud.functional;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * An object than can be compared to another.
+ *
+ * @param <T> The type of the object.
+ */
 public interface Sorted<T> extends Comparable<T> {
 
+  /**
+   * Checks if the current instance is less than {@code that}.
+   *
+   * @param that The object to compare.
+   * @return {@code true} if this object is less than {@code that}, else {@code false}
+   */
   default boolean lt(@NotNull T that) {
     return this.compareTo(that) < 0;
   }
 
+  /**
+   * Checks if the current instance is less than or equal to {@code that}.
+   *
+   * @param that The object to compare.
+   * @return {@code true} if this object is less than or equal to {@code that}, else {@code false}
+   */
   default boolean lte(@NotNull T that) {
     return this.compareTo(that) <= 0;
   }
 
+  /**
+   * Checks if the current instance is greater than {@code that}.
+   *
+   * @param that The object to compare.
+   * @return {@code true} if this object is greater than {@code that}, else {@code false}
+   */
   default boolean gt(@NotNull T that) {
     return this.compareTo(that) > 0;
   }
 
+  /**
+   * Checks if the current instance is greater than or equal to {@code that}.
+   *
+   * @param that The object to compare.
+   * @return {@code true} if this object is greater than or equal to {@code that}, else {@code false}
+   */
   default boolean gte(@NotNull T that) {
     return this.compareTo(that) >= 0;
   }
 
+  /**
+   * Checks if the current instance is equal to {@code that}.
+   *
+   * @param that The object to compare.
+   * @return {@code true} if this object is equal to {@code that}, else {@code false}
+   */
   default boolean e(@NotNull T that) {
     return this.compareTo(that) == 0;
   }

@@ -32,10 +32,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * A annotation indicating that the annotated method handles an event in the runtime.
+ */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Listener {
-
+  /**
+   * The priority of the listener invocation.
+   *
+   * @return The priority of the listener invocation.
+   */
   EventPriority priority() default EventPriority.NORMAL;
 }

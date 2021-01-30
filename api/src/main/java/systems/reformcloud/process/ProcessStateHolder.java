@@ -27,18 +27,46 @@ package systems.reformcloud.process;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.network.data.SerializableObject;
 
+/**
+ * A holder for a single {@link ProcessState}.
+ */
 public interface ProcessStateHolder extends SerializableObject, Cloneable {
 
+  /**
+   * Gets the current process state of this holder.
+   *
+   * @return The current process state of this holder.
+   */
   @NotNull
   ProcessState getCurrentState();
 
+  /**
+   * Sets the current process state of this holder.
+   *
+   * @param newState The current process state of this holder.
+   */
   void setCurrentState(@NotNull ProcessState newState);
 
+  /**
+   * Gets the initial state of this holder.
+   *
+   * @return The initial state of this holder.
+   */
   @NotNull
   ProcessState getInitialState();
 
+  /**
+   * Sets the initial state of this holder.
+   *
+   * @param newInitialState The initial state of this holder.
+   */
   void setInitialState(@NotNull ProcessState newInitialState);
 
+  /**
+   * Creates a clone of this holder.
+   *
+   * @return A clone of this holder.
+   */
   @NotNull
   ProcessStateHolder clone();
 }

@@ -24,6 +24,9 @@
  */
 package systems.reformcloud.group.template;
 
+/**
+ * Some default process configurator names (integrated in the system).
+ */
 public interface ProcessConfigurators {
 
   String SPIGOT = "spigot";

@@ -31,24 +31,67 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * A holder for {@link Template}s.
+ */
 public interface TemplateHolder {
 
+  /**
+   * Get all templates known to this holder.
+   *
+   * @return All templates known to this holder.
+   */
   @NotNull
   @UnmodifiableView
   Collection<Template> getTemplates();
 
+  /**
+   * Sets all templates which are known to this holder.
+   *
+   * @param templates The templates which are known to this holder.
+   */
   void setTemplates(@NotNull List<Template> templates);
 
+  /**
+   * Get a specific template by it's name.
+   *
+   * @param name The name of the template to get.
+   * @return The template with the given {@code name}.
+   */
   @NotNull
   Optional<Template> getTemplate(@NotNull String name);
 
+  /**
+   * Adds the specified {@code template} to this holder.
+   *
+   * @param template The template to add.
+   */
   void addTemplate(@NotNull Template template);
 
+  /**
+   * Removes the specified {@code template} from this holder.
+   *
+   * @param template The template to remove.
+   */
   void removeTemplate(@NotNull Template template);
 
+  /**
+   * Removed a specific template by the given {@code name} from this holder.
+   *
+   * @param name The name of the template to remove.
+   */
   void removeTemplate(@NotNull String name);
 
+  /**
+   * Gets if a template with the given {@code name} is registered in this holder.
+   *
+   * @param name The name of the template.
+   * @return {@code true} if the template is registered in this holder, else {@code false}.
+   */
   boolean isTemplatePresent(@NotNull String name);
 
+  /**
+   * Removes all templates from this holder.
+   */
   void removeAllTemplates();
 }

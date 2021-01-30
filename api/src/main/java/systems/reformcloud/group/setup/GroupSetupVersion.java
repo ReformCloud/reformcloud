@@ -31,7 +31,15 @@ import systems.reformcloud.utility.name.Nameable;
 
 import java.util.function.Consumer;
 
+/**
+ * A version which can be installed during the setup.
+ */
 public interface GroupSetupVersion extends Nameable {
-
+  /**
+   * Install this version.
+   *
+   * @param processGroupInstaller The installer for a process group.
+   * @param mainGroupInstaller    The installer for a main group.
+   */
   void install(@NotNull Consumer<ProcessGroup> processGroupInstaller, @NotNull Consumer<MainGroup> mainGroupInstaller);
 }

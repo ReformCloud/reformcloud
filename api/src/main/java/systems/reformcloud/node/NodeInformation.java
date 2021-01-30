@@ -32,19 +32,57 @@ import systems.reformcloud.utility.name.Nameable;
 
 import java.util.UUID;
 
+/**
+ * An information about a node.
+ */
 public interface NodeInformation extends Nameable, SerializableObject {
 
+  /**
+   * Gets the unique id of the node.
+   *
+   * @return The unique id of the node.
+   */
   @NotNull UUID getUniqueId();
 
+  /**
+   * Gets the startup milliseconds of the node.
+   *
+   * @return The startup milliseconds of the node.
+   */
   long getStartupMillis();
 
+  /**
+   * Gets the last update milliseconds of the node.
+   *
+   * @return The last update milliseconds of the node.
+   */
   long getLastUpdateTimestamp();
 
+  /**
+   * Get the last used memory on the update.
+   *
+   * @return The last used memory on the update.
+   */
   long getUsedMemory();
 
+  /**
+   * Get the last max memory on the update.
+   *
+   * @return The last max memory on the update.
+   */
   long getMaxMemory();
 
+  /**
+   * Get the process start host on the monitored node.
+   *
+   * @return The process start host on the monitored node.
+   */
   @NotNull NetworkAddress getProcessStartHost();
 
+  /**
+   * Get the last process runtime information publish by this node.
+   *
+   * @return The last process runtime information publish by this node.
+   */
   @NotNull ProcessRuntimeInformation getProcessRuntimeInformation();
 }

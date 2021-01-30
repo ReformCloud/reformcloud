@@ -27,7 +27,10 @@ package systems.reformcloud.event.events.group;
 import systems.reformcloud.event.Event;
 import systems.reformcloud.group.main.MainGroup;
 
-public abstract class MainGroupEvent extends Event {
+/**
+ * The superclass for all events related to a {@code MainGroup}.
+ */
+public abstract class MainGroupEvent implements Event {
 
   protected final MainGroup mainGroup;
 
@@ -35,6 +38,11 @@ public abstract class MainGroupEvent extends Event {
     this.mainGroup = mainGroup;
   }
 
+  /**
+   * Get the main group the event is called for.
+   *
+   * @return The main group the event is called for.
+   */
   public MainGroup getMainGroup() {
     return this.mainGroup;
   }

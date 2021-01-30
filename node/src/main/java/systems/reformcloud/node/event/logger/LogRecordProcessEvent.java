@@ -29,7 +29,7 @@ import systems.reformcloud.event.Event;
 
 import java.util.logging.LogRecord;
 
-public class LogRecordProcessEvent extends Event implements Cancelable {
+public class LogRecordProcessEvent implements Cancelable, Event {
 
   private LogRecord logRecord;
   private boolean cancel;

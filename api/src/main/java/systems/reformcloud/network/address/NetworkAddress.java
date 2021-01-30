@@ -33,48 +33,112 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
 
+/**
+ * A network address.
+ */
 public interface NetworkAddress extends SerializableObject, Cloneable {
 
+  /**
+   * Creates a new network address.
+   *
+   * @param uri The uri to create the address from.
+   * @return The created address.
+   */
   @NotNull
   @Contract(value = "_ -> new", pure = true)
   static NetworkAddress fromUri(@NotNull URI uri) {
     return address(uri.getHost(), uri.getPort());
   }
 
+  /**
+   * Creates a new network address.
+   *
+   * @param inetSocketAddress The InetSocketAddress to create the address from.
+   * @return The created address.
+   */
   @NotNull
   @Contract(value = "_ -> new", pure = true)
   static NetworkAddress fromInetSocketAddress(@NotNull InetSocketAddress inetSocketAddress) {
     return fromInetAddress(inetSocketAddress.getAddress(), inetSocketAddress.getPort());
   }
 
+  /**
+   * Creates a new network address.
+   *
+   * @param inetAddress The InetAddress to read the host from.
+   * @param port        The port of the address.
+   * @return The created address.
+   */
   @NotNull
   @Contract(value = "_, _ -> new", pure = true)
   static NetworkAddress fromInetAddress(@NotNull InetAddress inetAddress, @Range(from = 0, to = 65535) int port) {
     return address(inetAddress.getHostAddress(), port);
   }
 
+  /**
+   * Creates a new network address.
+   *
+   * @param host The host of the address.
+   * @param port The port of the address.
+   * @return The created address.
+   */
   @NotNull
   @Contract(value = "_, _ -> new", pure = true)
   static NetworkAddress address(@NotNull String host, @Range(from = 0, to = 65535) int port) {
     return new DefaultNetworkAddress(host, port);
   }
 
+  /**
+   * Gets the host of the address.
+   *
+   * @return The host of the address.
+   */
   @NotNull
   String getHost();
 
+  /**
+   * Sets the host of the address.
+   *
+   * @param host The host of the address.
+   */
   void setHost(@NotNull String host);
 
+  /**
+   * Gets the port of the address.
+   *
+   * @return The port of the address.
+   */
   @Range(from = 0, to = 65535)
   int getPort();
 
+  /**
+   * Sets the port of the address.
+   *
+   * @param port The port of the address.
+   */
   void setPort(@Range(from = 0, to = 65535) int port);
 
+  /**
+   * Creates an {@link InetAddress} from this address.
+   *
+   * @return The created address from this wrapper.
+   */
   @NotNull
   InetAddress toInetAddress();
 
+  /**
+   * Creates an {@link InetSocketAddress} from this address.
+   *
+   * @return The created address from this wrapper.
+   */
   @NotNull
   InetSocketAddress toInetSocketAddress();
 
+  /**
+   * Creates a clone of this address.
+   *
+   * @return A clone of this address.
+   */
   @NotNull
   NetworkAddress clone();
 }

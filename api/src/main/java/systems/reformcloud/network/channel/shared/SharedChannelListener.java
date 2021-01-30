@@ -32,6 +32,7 @@ import systems.reformcloud.network.packet.Packet;
 import systems.reformcloud.network.packet.query.QueryManager;
 import systems.reformcloud.task.Task;
 
+import java.io.IOException;
 import java.util.Optional;
 
 public abstract class SharedChannelListener implements ChannelListener {
@@ -58,5 +59,19 @@ public abstract class SharedChannelListener implements ChannelListener {
       System.err.println("Error while handling packet " + input.getId() + "@" + input.getClass().getName());
       throwable.printStackTrace();
     }
+  }
+
+  @Override
+  public void exceptionCaught(@NotNull NetworkChannel channel, @NotNull Throwable cause) {
+    boolean debug = Boolean.getBoolean("systems.reformcloud.debug-net");
+    if (!(cause instanceof IOException) && debug) {
+      System.err.println("Exception in channel " + channel.getRemoteAddress());
+      cause.printStackTrace();
+    }
+  }
+
+  @Override
+  public void readOperationCompleted(@NotNull NetworkChannel channel) {
+    channel.flush();
   }
 }

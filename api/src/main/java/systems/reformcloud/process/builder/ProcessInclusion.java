@@ -26,17 +26,30 @@ package systems.reformcloud.process.builder;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.network.data.SerializableObject;
+import systems.reformcloud.utility.name.Nameable;
 
-public interface ProcessInclusion extends SerializableObject, Cloneable {
+/**
+ * An inclusion for a process.
+ */
+public interface ProcessInclusion extends SerializableObject, Nameable, Cloneable {
 
+  /**
+   * Creates a new process inclusion.
+   *
+   * @param name        The name of the inclusion.
+   * @param downloadUrl The download url of the inclusion.
+   * @return The created process inclusion.
+   */
   @NotNull
   static ProcessInclusion inclusion(@NotNull String name, @NotNull String downloadUrl) {
     return new DefaultProcessInclusion(name, downloadUrl);
   }
 
-  @NotNull
-  String getName();
-
+  /**
+   * Gets the download url of the inclusion.
+   *
+   * @return The download url of the inclusion.
+   */
   @NotNull
   String getDownloadUrl();
 }

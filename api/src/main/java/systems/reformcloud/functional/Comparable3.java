@@ -26,8 +26,22 @@ package systems.reformcloud.functional;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A functional interface for comparing 3 types.
+ *
+ * @param <F> The first type which gets compared to the second and third.
+ * @param <S> The second type which gets compared to the first and third.
+ * @param <T> The third type which gets compared to the second and first.
+ */
 @FunctionalInterface
 public interface Comparable3<F, S, T> {
-
+  /**
+   * Compares the 3 types.
+   *
+   * @param f The first type instance.
+   * @param s The second type instance.
+   * @param t The third type instance.
+   * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
+   */
   int compareTo(@NotNull F f, @NotNull S s, @NotNull T t);
 }

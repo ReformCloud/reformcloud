@@ -33,14 +33,34 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A configuration for the runtime of a process.
+ */
 public interface RuntimeConfiguration extends SerializableObject, Cloneable {
 
+  /**
+   * Creates a new runtime configuration.
+   *
+   * @param initialJvmMemoryAllocation The initial memory allocation.
+   * @param maximumJvmMemoryAllocation The maximum memory allocation.
+   * @param dynamicMemory              The dynamic memory calculated against the amount of running processes.
+   * @return The created runtime configuration.
+   */
   @NotNull
   @Contract(value = "_, _, _ -> new", pure = true)
   static RuntimeConfiguration configuration(int initialJvmMemoryAllocation, int maximumJvmMemoryAllocation, int dynamicMemory) {
     return configuration(initialJvmMemoryAllocation, maximumJvmMemoryAllocation, dynamicMemory, new ArrayList<>());
   }
 
+  /**
+   * Creates a new runtime configuration.
+   *
+   * @param initialJvmMemoryAllocation The initial memory allocation.
+   * @param maximumJvmMemoryAllocation The maximum memory allocation.
+   * @param dynamicMemory              The dynamic memory calculated against the amount of running processes.
+   * @param processParameters          The process parameters: {@code java -jar file.jar parameter1 parameter2}.
+   * @return The created runtime configuration.
+   */
   @NotNull
   @Contract(value = "_, _, _, _ -> new", pure = true)
   static RuntimeConfiguration configuration(int initialJvmMemoryAllocation, int maximumJvmMemoryAllocation, int dynamicMemory,
@@ -49,6 +69,16 @@ public interface RuntimeConfiguration extends SerializableObject, Cloneable {
     return configuration(initialJvmMemoryAllocation, maximumJvmMemoryAllocation, dynamicMemory, processParameters, new ArrayList<>());
   }
 
+  /**
+   * Creates a new runtime configuration.
+   *
+   * @param initialJvmMemoryAllocation The initial memory allocation.
+   * @param maximumJvmMemoryAllocation The maximum memory allocation.
+   * @param dynamicMemory              The dynamic memory calculated against the amount of running processes.
+   * @param processParameters          The process parameters: {@code java -jar file.jar parameter1 parameter2}.
+   * @param jvmOptions                 The jvm options: {@code java parameter1 parameter2 -jar file.jar}.
+   * @return The created runtime configuration.
+   */
   @NotNull
   @Contract(value = "_, _, _, _, _ -> new", pure = true)
   static RuntimeConfiguration configuration(int initialJvmMemoryAllocation, int maximumJvmMemoryAllocation, int dynamicMemory,
@@ -57,6 +87,17 @@ public interface RuntimeConfiguration extends SerializableObject, Cloneable {
     return configuration(initialJvmMemoryAllocation, maximumJvmMemoryAllocation, dynamicMemory, processParameters, jvmOptions, new HashMap<>());
   }
 
+  /**
+   * Creates a new runtime configuration.
+   *
+   * @param initialJvmMemoryAllocation The initial memory allocation.
+   * @param maximumJvmMemoryAllocation The maximum memory allocation.
+   * @param dynamicMemory              The dynamic memory calculated against the amount of running processes.
+   * @param processParameters          The process parameters: {@code java -jar file.jar parameter1 parameter2}.
+   * @param jvmOptions                 The jvm options: {@code java parameter1 parameter2 -jar file.jar}.
+   * @param systemProperties           The system properties: {@code java -Dkey1=value1 -Dkey2=value2 -jar file.jar}
+   * @return The created runtime configuration.
+   */
   @NotNull
   @Contract(value = "_, _, _, _, _, _ -> new", pure = true)
   static RuntimeConfiguration configuration(int initialJvmMemoryAllocation, int maximumJvmMemoryAllocation, int dynamicMemory,
@@ -66,6 +107,18 @@ public interface RuntimeConfiguration extends SerializableObject, Cloneable {
     return configuration(initialJvmMemoryAllocation, maximumJvmMemoryAllocation, dynamicMemory, processParameters, jvmOptions, systemProperties, new ArrayList<>());
   }
 
+  /**
+   * Creates a new runtime configuration.
+   *
+   * @param initialJvmMemoryAllocation The initial memory allocation.
+   * @param maximumJvmMemoryAllocation The maximum memory allocation.
+   * @param dynamicMemory              The dynamic memory calculated against the amount of running processes.
+   * @param processParameters          The process parameters: {@code java -jar file.jar parameter1 parameter2}.
+   * @param jvmOptions                 The jvm options: {@code java parameter1 parameter2 -jar file.jar}.
+   * @param systemProperties           The system properties: {@code java -Dkey1=value1 -Dkey2=value2 -jar file.jar}
+   * @param shutdownCommands           The shutdown commands for the server. {@code stop} and {@code end} are always present.
+   * @return The created runtime configuration.
+   */
   @NotNull
   @Contract(value = "_, _, _, _, _, _, _ -> new", pure = true)
   static RuntimeConfiguration configuration(int initialJvmMemoryAllocation, int maximumJvmMemoryAllocation, int dynamicMemory,
@@ -76,30 +129,85 @@ public interface RuntimeConfiguration extends SerializableObject, Cloneable {
       processParameters, jvmOptions, systemProperties, shutdownCommands);
   }
 
+  /**
+   * Get the initial heap memory allocation a process takes.
+   *
+   * @return The initial heap memory allocation a process takes.
+   */
   int getInitialJvmMemoryAllocation();
 
+  /**
+   * Sets the initial heap memory allocation a process takes.
+   *
+   * @param initialJvmMemoryAllocation The initial heap memory allocation a process takes.
+   */
   void setInitialJvmMemoryAllocation(int initialJvmMemoryAllocation);
 
+  /**
+   * Get the maximum heap memory allocation a process takes.
+   *
+   * @return The maximum heap memory allocation a process takes.
+   */
   int getMaximumJvmMemoryAllocation();
 
+  /**
+   * Sets the maximum heap memory allocation a process takes.
+   *
+   * @param maximumJvmMemoryAllocation The maximum heap memory allocation a process takes.
+   */
   void setMaximumJvmMemoryAllocation(int maximumJvmMemoryAllocation);
 
+  /**
+   * Get the dynamic memory of a group.
+   *
+   * @return The dynamic memory of a group.
+   */
   int getDynamicMemory();
 
+  /**
+   * Sets the dynamic memory of a group.
+   *
+   * @param dynamicMemory The dynamic memory of a group.
+   */
   void setDynamicMemory(int dynamicMemory);
 
+  /**
+   * Get the process parameters.
+   *
+   * @return The process parameters.
+   */
   @NotNull
   Collection<String> getProcessParameters();
 
+  /**
+   * Get the jvm options.
+   *
+   * @return The jvm options.
+   */
   @NotNull
   Collection<String> getJvmOptions();
 
+  /**
+   * Gets the system properties.
+   *
+   * @return The system properties.
+   */
   @NotNull
   Map<String, String> getSystemProperties();
 
+  /**
+   * Gets the shutdown commands.
+   *
+   * @return The shutdown commands.
+   */
   @NotNull
   Collection<String> getShutdownCommands();
 
+  /**
+   * Creates a clone of this configuration.
+   *
+   * @return A clone of this configuration.
+   */
   @NotNull
   RuntimeConfiguration clone();
 }

@@ -26,6 +26,9 @@ package systems.reformcloud.event.events.process;
 
 import systems.reformcloud.process.ProcessInformation;
 
+/**
+ * Gets called when a process was updated.
+ */
 public class ProcessUpdateEvent extends ProcessEvent {
 
   public ProcessUpdateEvent(ProcessInformation processInformation) {

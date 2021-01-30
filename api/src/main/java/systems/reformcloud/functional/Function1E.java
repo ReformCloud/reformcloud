@@ -26,9 +26,22 @@ package systems.reformcloud.functional;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A function which throws one exception.
+ *
+ * @param <I> The input type which gets applied.
+ * @param <O> The output type which gets created from the input type.
+ * @param <T> The exception which can be thrown during the conversation.
+ */
 @FunctionalInterface
 public interface Function1E<I, O, T extends Throwable> {
-
+  /**
+   * Applies this function to the given argument.
+   *
+   * @param i The input type to convert to the output type.
+   * @return The created object from the input type.
+   * @throws T If an exception occurs during the conversation.
+   */
   @NotNull
   O apply(@NotNull I i) throws T;
 }

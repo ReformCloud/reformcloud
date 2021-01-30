@@ -83,7 +83,7 @@ class DefaultEventManagerTest {
     Assertions.assertEquals(0, this.eventManager.getListeners().size());
   }
 
-  public static class TestEvent extends Event {
+  public static class TestEvent implements Event {
 
     public final AtomicInteger counter = new AtomicInteger();
   }

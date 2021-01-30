@@ -27,7 +27,7 @@ package systems.reformcloud.node.event.scheduler;
 import systems.reformcloud.event.Event;
 import systems.reformcloud.node.tick.TickedTaskScheduler;
 
-public class SchedulerHeartBeatTaskExecuteEvent extends Event {
+public class SchedulerHeartBeatTaskExecuteEvent implements Event {
 
   private final TickedTaskScheduler.TickedTaskSchedulerTask<?> task;
 

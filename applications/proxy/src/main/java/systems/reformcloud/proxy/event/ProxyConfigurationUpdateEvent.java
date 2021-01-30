@@ -27,7 +27,7 @@ package systems.reformcloud.proxy.event;
 import systems.reformcloud.event.Event;
 import systems.reformcloud.proxy.ProxyConfiguration;
 
-public class ProxyConfigurationUpdateEvent extends Event {
+public class ProxyConfigurationUpdateEvent implements Event {
 
   private final ProxyConfiguration proxyConfiguration;
 

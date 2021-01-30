@@ -29,6 +29,7 @@ package systems.reformcloud.utility.name;
  *
  * @see ReNameable
  */
+@FunctionalInterface
 public interface Nameable {
 
   /**

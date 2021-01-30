@@ -31,9 +31,26 @@ import systems.reformcloud.network.channel.listener.ChannelListener;
 
 import java.util.function.Function;
 
+/**
+ * A client that can connect to a network server.
+ */
 public interface NetworkClient extends NetworkChannel {
-
+  /**
+   * Connects to a network server.
+   *
+   * @param host                   The host of the network server.
+   * @param port                   The port of the network server.
+   * @param channelListenerFactory The factory creating the channel listener for the connection.
+   * @return {@code true} if the connection was established successfully, else {@code false}.
+   */
   boolean connect(@NotNull String host, int port, @NotNull Function<NetworkChannel, ChannelListener> channelListenerFactory);
 
+  /**
+   * Connects to a network server.
+   *
+   * @param address                The address of the network server.
+   * @param channelListenerFactory The factory creating the channel listener for the connection.
+   * @return {@code true} if the connection was established successfully, else {@code false}.
+   */
   boolean connect(@NotNull NetworkAddress address, @NotNull Function<NetworkChannel, ChannelListener> channelListenerFactory);
 }

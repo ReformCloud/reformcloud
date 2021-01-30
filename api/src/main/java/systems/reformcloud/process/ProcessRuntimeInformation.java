@@ -29,6 +29,9 @@ import systems.reformcloud.network.data.SerializableObject;
 
 import java.util.Map;
 
+/**
+ * A runtime information of a process.
+ */
 public interface ProcessRuntimeInformation extends SerializableObject, Cloneable {
 
   long getCreationMillis();

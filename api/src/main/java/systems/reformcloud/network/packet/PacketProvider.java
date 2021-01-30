@@ -30,8 +30,16 @@ import systems.reformcloud.network.packet.exception.PacketAlreadyRegisteredExcep
 import java.util.Collection;
 import java.util.Optional;
 
+/**
+ * A packet provider.
+ */
 public interface PacketProvider {
 
+  /**
+   * Registers a packet ignoring the {@link PacketAlreadyRegisteredException} if the packet is already registered.
+   *
+   * @param packetClass The class of the packet.
+   */
   default void registerPacketIgnored(@NotNull Class<? extends Packet> packetClass) {
     try {
       this.registerPacket(packetClass);
@@ -39,8 +47,19 @@ public interface PacketProvider {
     }
   }
 
+  /**
+   * Registers a packet to this provider.
+   *
+   * @param packetClass The class of the packet.
+   * @throws PacketAlreadyRegisteredException when the packet is already registered.
+   */
   void registerPacket(@NotNull Class<? extends Packet> packetClass) throws PacketAlreadyRegisteredException;
 
+  /**
+   * Registers a packet ignoring the {@link PacketAlreadyRegisteredException} if the packet is already registered.
+   *
+   * @param packet The packet which should get registered.
+   */
   default void registerPacketIgnored(@NotNull Packet packet) {
     try {
       this.registerPacket(packet);
@@ -48,16 +67,48 @@ public interface PacketProvider {
     }
   }
 
+  /**
+   * Registers a packet to this provider.
+   *
+   * @param packet The packet which should get registered.
+   * @throws PacketAlreadyRegisteredException when the packet is already registered.
+   */
   void registerPacket(@NotNull Packet packet) throws PacketAlreadyRegisteredException;
 
+  /**
+   * Registers the packets to this provider.
+   *
+   * @param packetClasses the packet classes which should get registered to this provider.
+   * @throws PacketAlreadyRegisteredException when one of the packets is already registered.
+   */
   void registerPackets(@NotNull Collection<Class<? extends Packet>> packetClasses) throws PacketAlreadyRegisteredException;
 
+  /**
+   * Registers the packets to this provider.
+   *
+   * @param packets the packets which should get registered to this provider.
+   * @throws PacketAlreadyRegisteredException when one of the packets is already registered.
+   */
   void registerPacket(@NotNull Collection<Packet> packets) throws PacketAlreadyRegisteredException;
 
+  /**
+   * Unregisters the packet by the given id.
+   *
+   * @param id the id of the packet to unregister.
+   */
   void unregisterPacket(int id);
 
+  /**
+   * Gets a specific packet by the packet id.
+   *
+   * @param id The id of the packet to get.
+   * @return The packet.
+   */
   @NotNull
   Optional<Packet> getPacketById(int id);
 
+  /**
+   * Clears the packets known to this provider.
+   */
   void clearRegisteredPackets();
 }

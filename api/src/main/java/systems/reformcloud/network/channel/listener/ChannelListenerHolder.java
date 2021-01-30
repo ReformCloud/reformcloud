@@ -26,10 +26,22 @@ package systems.reformcloud.network.channel.listener;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A holder for a single {@link ChannelListener}.
+ */
 public interface ChannelListenerHolder {
-
+  /**
+   * Gets the channel listener of this holder.
+   *
+   * @return The channel listener.
+   */
   @NotNull
   ChannelListener getListener();
 
+  /**
+   * Sets the channel listener of this holder.
+   *
+   * @param listener The channel listener of the holder.
+   */
   void setListener(@NotNull ChannelListener listener);
 }

@@ -27,19 +27,48 @@ package systems.reformcloud.console;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.task.Task;
 
+/**
+ * Represents the cli of the system.
+ */
 public interface Console extends AutoCloseable {
 
+  /**
+   * Waits for the next input and completes the returned future.
+   *
+   * @return A future completed on the next cli input.
+   */
   @NotNull
   Task<String> readString();
 
+  /**
+   * The current prompt of this console.
+   *
+   * @return The current prompt of this console.
+   */
   @NotNull
   String getPrompt();
 
+  /**
+   * Sets the current prompt of this console.
+   *
+   * @param prompt The new prompt of this console.
+   */
   void setPrompt(@NotNull String prompt);
 
+  /**
+   * Adds the specific {@code entry} to the history.
+   *
+   * @param entry The entry to add to the history.
+   */
   void addHistoryEntry(@NotNull String entry);
 
+  /**
+   * Clears the history.
+   */
   void clearHistory();
 
+  /**
+   * Clears this console.
+   */
   void clearScreen();
 }

@@ -32,16 +32,40 @@ import systems.reformcloud.task.Task;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * The query manager handling the network query operations.
+ */
 public interface QueryManager {
 
+  /**
+   * Gets the waiting query task associated with the given {@code queryUniqueId}.
+   *
+   * @param queryUniqueId The query unique id of the packet task to get.
+   * @return The task associated with the given {@code queryUniqueId}.
+   */
   @NotNull
   Optional<Task<Packet>> getWaitingQuery(@NotNull UUID queryUniqueId);
 
+  /**
+   * Sends a query into a the given {@code channel}.
+   *
+   * @param channel The channel to send the query to.
+   * @param packet  The packet which should be sent as a query packet.
+   * @return The task waiting for the operation to complete.
+   */
   @NotNull
   default Task<Packet> sendPacketQuery(@NotNull NetworkChannel channel, @NotNull Packet packet) {
     return this.sendPacketQuery(channel, UUID.randomUUID(), packet);
   }
 
+  /**
+   * Sends a query into a the given {@code channel}.
+   *
+   * @param channel       The channel to send the query to.
+   * @param queryUniqueId The unique id of the query to send.
+   * @param packet        The packet which should be sent as a query packet.
+   * @return The task waiting for the operation to complete.
+   */
   @NotNull
   Task<Packet> sendPacketQuery(@NotNull NetworkChannel channel, @NotNull UUID queryUniqueId, @NotNull Packet packet);
 }

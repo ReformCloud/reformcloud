@@ -36,46 +36,131 @@ import systems.reformcloud.group.template.version.Version;
 import systems.reformcloud.network.data.SerializableObject;
 import systems.reformcloud.utility.name.ReNameable;
 
+/**
+ * A template which is the base of a process file structure.
+ */
 public interface Template extends ReNameable, JsonDataHolder<Template>, InclusionHolder, SerializableObject, Sorted<Template>, Cloneable {
 
+  /**
+   * Creates a new template builder.
+   *
+   * @param name    The name of the template to create.
+   * @param version The version of the template to create.
+   * @return A new builder for a template with default values applied.
+   */
   @NotNull
   @Contract(value = "_, _ -> new", pure = true)
   static TemplateBuilder builder(@NotNull String name, @NotNull Version version) {
     return TemplateBuilder.newBuilder(name, version);
   }
 
+  /**
+   * Get the priority of this template.
+   *
+   * @return The priority of this template.
+   */
   int getPriority();
 
+  /**
+   * Sets the priority of this template.
+   *
+   * @param priority The priority of this template.
+   */
   void setPriority(int priority);
 
+  /**
+   * Gets if this template is a global template.
+   *
+   * @return If this template is a global template.
+   */
   boolean isGlobal();
 
+  /**
+   * Sets if this template is a global template.
+   *
+   * @param global If this template is a global template.
+   */
   void setGlobal(boolean global);
 
+  /**
+   * Gets if a process gets copied automatically to this template when it closes.
+   *
+   * @return If a process gets copied automatically to this template when it closes.
+   */
   boolean isAutoCopyOnClose();
 
+  /**
+   * Sets if a process gets copied automatically to this template when it closes.
+   *
+   * @param autoCopyOnClose If a process gets copied automatically to this template when it closes.
+   */
   void setAutoCopyOnClose(boolean autoCopyOnClose);
 
+  /**
+   * Get the backend of this template.
+   *
+   * @return The backend of this template.
+   */
   @NotNull
   String getBackend();
 
+  /**
+   * Sets the backend of this template.
+   *
+   * @param backend The backend to use for this template.
+   */
   void setBackend(@NotNull String backend);
 
+  /**
+   * Gets the server name splitter of this template.
+   *
+   * @return The server name splitter of this template.
+   */
   @Nullable
   String getServerNameSplitter();
 
+  /**
+   * Sets the server name splitter of this template.
+   *
+   * @param serverNameSplitter The server name splitter to use.
+   */
   void setServerNameSplitter(@Nullable String serverNameSplitter);
 
+  /**
+   * Gets the runtime configuration of this template.
+   *
+   * @return The runtime configuration of this template.
+   */
   @NotNull
   RuntimeConfiguration getRuntimeConfiguration();
 
+  /**
+   * Sets the runtime configuration of this template.
+   *
+   * @param runtimeConfiguration The runtime configuration to use.
+   */
   void setRuntimeConfiguration(@NotNull RuntimeConfiguration runtimeConfiguration);
 
+  /**
+   * Gets the version of this template.
+   *
+   * @return The version of this template.
+   */
   @NotNull
   Version getVersion();
 
+  /**
+   * Sets the version of this template.
+   *
+   * @param version The version to use.
+   */
   void setVersion(@NotNull Version version);
 
+  /**
+   * Creates a clone of this template.
+   *
+   * @return A clone of this template.
+   */
   @NotNull
   Template clone();
 }

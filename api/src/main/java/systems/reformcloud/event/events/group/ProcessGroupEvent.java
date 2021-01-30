@@ -27,7 +27,10 @@ package systems.reformcloud.event.events.group;
 import systems.reformcloud.event.Event;
 import systems.reformcloud.group.process.ProcessGroup;
 
-public abstract class ProcessGroupEvent extends Event {
+/**
+ * The superclass for all events related to a {@code ProcessGroup}.
+ */
+public abstract class ProcessGroupEvent implements Event {
 
   protected final ProcessGroup processGroup;
 
@@ -35,6 +38,11 @@ public abstract class ProcessGroupEvent extends Event {
     this.processGroup = processGroup;
   }
 
+  /**
+   * Get the process group this event is related to.
+   *
+   * @return the process group this event is related to.
+   */
   public ProcessGroup getProcessGroup() {
     return this.processGroup;
   }

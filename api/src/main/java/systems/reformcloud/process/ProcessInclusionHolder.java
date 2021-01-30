@@ -31,18 +31,44 @@ import systems.reformcloud.process.builder.ProcessInclusion;
 
 import java.util.Collection;
 
+/**
+ * An holder for process {@link ProcessInclusion}s.
+ */
 public interface ProcessInclusionHolder extends SerializableObject, Cloneable {
 
+  /**
+   * Adds a process inclusion to this holder.
+   *
+   * @param inclusion The inclusion to add.
+   */
   void addProcessInclusion(@NotNull ProcessInclusion inclusion);
 
+  /**
+   * Removed a process inclusion from this holder.
+   *
+   * @param inclusion The inclusion to remove.
+   */
   void removeProcessInclusion(@NotNull ProcessInclusion inclusion);
 
+  /**
+   * Removes all process inclusions from this holder.
+   */
   void removeAllProcessInclusions();
 
+  /**
+   * Gets all known process inclusions to this holder.
+   *
+   * @return All known process inclusions to this holder.
+   */
   @NotNull
   @Unmodifiable
   Collection<ProcessInclusion> getProcessInclusions();
 
+  /**
+   * Creates a clone of this holder.
+   *
+   * @return A clone of this holder.
+   */
   @NotNull
   ProcessInclusionHolder clone();
 }

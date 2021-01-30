@@ -29,5 +29,5 @@ import systems.reformcloud.event.Event;
 /**
  * Represents an event which can be listen to by the event manager
  */
-public class ExampleEvent extends Event {
+public class ExampleEvent implements Event {
 }

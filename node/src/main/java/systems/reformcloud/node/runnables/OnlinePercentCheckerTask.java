@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.group.process.ProcessGroup;
 import systems.reformcloud.group.process.startup.AutomaticStartupConfiguration;
+import systems.reformcloud.group.process.startup.StartupConfiguration;
 import systems.reformcloud.language.TranslationHolder;
 import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.process.ProcessState;
@@ -119,10 +120,21 @@ public class OnlinePercentCheckerTask implements Runnable {
         continue;
       }
 
-      if (percent >= configuration.getMaxPercentOfPlayersToStart()) {
+      if (percent >= configuration.getMaxPercentOfPlayersToStart() && configuration.isAutomaticStartupEnabled()) {
         startPreparedOfGroup(processes, processGroup);
+      } else if (configuration.isAutomaticShutdownEnabled()) {
+        for (ProcessInformation process : processes) {
+          final double onlinePercentage = this.getPercentOf(process.getOnlineCount(), process.getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers());
+          if (onlinePercentage <= configuration.getMaxPercentOfPlayersToStop()) {
+            final StartupConfiguration startupConfiguration = process.getProcessGroup().getStartupConfiguration();
+            if (processes.size() > startupConfiguration.getAlwaysOnlineProcessAmount()) {
+              ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(process.getId().getUniqueId())
+                .ifPresent(wrapper -> wrapper.setRuntimeState(ProcessState.STOPPED));
+              break;
+            }
+          }
+        }
       }
-      // TODO: implement max percent to stop
 
       this.checkGroups.put(processGroup.getName(), configuration.getCheckIntervalInSeconds());
     }

@@ -29,7 +29,7 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * Indicates that a user is able to cancel a specific event
  */
-@ApiStatus.AvailableSince("3.0.0-SNAPSHOT-SNAPSHOT")
+@ApiStatus.AvailableSince("3.0.0-SNAPSHOT")
 public interface Cancelable {
 
   /**

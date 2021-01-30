@@ -26,6 +26,9 @@ package systems.reformcloud.event.events.process;
 
 import systems.reformcloud.process.ProcessInformation;
 
+/**
+ * Gets called when a process gets unregistered.
+ */
 public class ProcessRegisterEvent extends ProcessEvent {
 
   public ProcessRegisterEvent(ProcessInformation processInformation) {

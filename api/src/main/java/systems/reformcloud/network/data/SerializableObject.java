@@ -28,9 +28,21 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 
+/**
+ * An object that can be serialized to a {@link ProtocolBuffer}.
+ */
 public interface SerializableObject extends Serializable {
-
+  /**
+   * Serializes the contents of this object into the {@code buffer}.
+   *
+   * @param buffer The buffer to write the data to.
+   */
   void write(@NotNull ProtocolBuffer buffer);
 
+  /**
+   * Reads the contents of this objects from the {@code buffer}.
+   *
+   * @param buffer The buffer to read the data from.
+   */
   void read(@NotNull ProtocolBuffer buffer);
 }

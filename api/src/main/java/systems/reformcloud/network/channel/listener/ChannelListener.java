@@ -28,29 +28,59 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.network.channel.NetworkChannel;
 import systems.reformcloud.network.packet.Packet;
 
-import java.io.IOException;
-
+/**
+ * A channel listener.
+ */
 public interface ChannelListener {
 
+  /**
+   * Checks if this listener should handle the received packet.
+   *
+   * @param packet The received packet.
+   * @return {@code true} if the packet should be handled, else {@code false}.
+   */
   boolean shouldHandle(@NotNull Packet packet);
 
+  /**
+   * Called when the {@code channel} is active for the first time.
+   *
+   * @param channel The channel which is active.
+   */
   void channelActive(@NotNull NetworkChannel channel);
 
+  /**
+   * Called when the {@code channel} is inactive.
+   *
+   * @param channel The channel which is inactive.
+   */
   void channelInactive(@NotNull NetworkChannel channel);
 
+  /**
+   * Called when the write ability of the {@code channel} changes.
+   *
+   * @param channel The channel of which the write ability changed.
+   */
   void channelWriteAbilityChanged(@NotNull NetworkChannel channel);
 
+  /**
+   * Handles the received packet.
+   *
+   * @param input The received packet.
+   */
   void handle(@NotNull Packet input);
 
-  default void exceptionCaught(@NotNull NetworkChannel channel, @NotNull Throwable cause) {
-    boolean debug = Boolean.getBoolean("systems.reformcloud.debug-net");
-    if (!(cause instanceof IOException) && debug) {
-      System.err.println("Exception in channel " + channel.getRemoteAddress());
-      cause.printStackTrace();
-    }
-  }
+  /**
+   * Called when an exception was caught in the {@code channel}.
+   *
+   * @param channel The channel in which the exception was thrown.
+   * @param cause   The exception which was thrown.
+   */
+  void exceptionCaught(@NotNull NetworkChannel channel, @NotNull Throwable cause);
 
-  default void readOperationCompleted(@NotNull NetworkChannel channel) {
-    channel.flush();
-  }
+  /**
+   * Called when the read operation of a channel was completed successfully.
+   *
+   * @param channel The channel in which the channel read finished.
+   */
+  void readOperationCompleted(@NotNull NetworkChannel channel);
 }

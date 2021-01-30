@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
-public class PlayerFallbackChooseEvent extends Event {
+public class PlayerFallbackChooseEvent implements Event {
 
   private final UUID playerUniqueId;
   private final Collection<ProcessInformation> allLobbies;

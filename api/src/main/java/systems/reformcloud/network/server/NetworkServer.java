@@ -31,9 +31,27 @@ import systems.reformcloud.network.channel.listener.ChannelListener;
 
 import java.util.function.Function;
 
+/**
+ * A network server that can listen on some ports.
+ */
 public interface NetworkServer extends Server {
 
+  /**
+   * Binds a network listener to the given port.
+   *
+   * @param host                   The host to bind the server to.
+   * @param port                   The port to bind the server to.
+   * @param channelListenerFactory The factory creating the channel listener.
+   * @return {@code true} if the bind operation was successful, else {@code false}.
+   */
   boolean bind(@NotNull String host, int port, @NotNull Function<NetworkChannel, ChannelListener> channelListenerFactory);
 
+  /**
+   * Binds a network listener to the given port.
+   *
+   * @param address                The address to bind to.
+   * @param channelListenerFactory The factory creating the channel listener.
+   * @return {@code true} if the bind operation was successful, else {@code false}.
+   */
   boolean bind(@NotNull NetworkAddress address, @NotNull Function<NetworkChannel, ChannelListener> channelListenerFactory);
 }

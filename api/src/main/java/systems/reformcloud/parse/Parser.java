@@ -27,8 +27,20 @@ package systems.reformcloud.parse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A parser for a specific type.
+ *
+ * @param <I> The input type.
+ * @param <O> The output type parsed by this parser.
+ */
+@FunctionalInterface
 public interface Parser<I, O> {
-
+  /**
+   * Parsed the input.
+   *
+   * @param i The input to parse.
+   * @return The output parsed from the input.
+   */
   @Nullable
   O parse(@NotNull I i);
 }

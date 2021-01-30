@@ -101,10 +101,28 @@ public interface PlayerWrapper {
    */
   void sendTitle(@NotNull Title title);
 
+  /**
+   * Sends an action bar to the player using it's currently connected proxy.
+   * <p>If the player is not connected this method has no effect.</p>
+   *
+   * @param actionBar The action bar to send.
+   */
   void sendActionBar(@NotNull Component actionBar);
 
+  /**
+   * Sends a boss bar to the player using it's currently connected proxy.
+   * <p>If the player is not connected this method has no effect.</p>
+   *
+   * @param bossBar The boss bar to send.
+   */
   void sendBossBar(@NotNull BossBar bossBar);
 
+  /**
+   * Hides a boss bar from the player using it's currently connected proxy.
+   * <p>If the player is not connected this method has no effect.</p>
+   *
+   * @param bossBar The boss bar to send.
+   */
   void hideBossBar(@NotNull BossBar bossBar);
 
   /**

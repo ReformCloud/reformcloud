@@ -26,24 +26,71 @@ package systems.reformcloud.functional;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * An object than can be compared to three others.
+ *
+ * @param <F> The type of the first object.
+ * @param <S> The type of the second object.
+ * @param <T> The type of the third object.
+ */
 public interface Sorted3<F, S, T> extends Comparable3<F, S, T> {
 
+  /**
+   * Checks if the current instance is less than {@code f}, {@code s} and {@code t}.
+   *
+   * @param f The first object to compare.
+   * @param s The second object to compare.
+   * @param t The third object to compare.
+   * @return {@code true} if this object is less than {@code f}, {@code s} and {@code t}, else {@code false}
+   */
   default boolean lt(@NotNull F f, @NotNull S s, @NotNull T t) {
     return this.compareTo(f, s, t) < 0;
   }
 
+  /**
+   * Checks if the current instance is less than or equal {@code f}, {@code s} and {@code t}.
+   *
+   * @param f The first object to compare.
+   * @param s The second object to compare.
+   * @param t The third object to compare.
+   * @return {@code true} if this object is less than or equal to {@code f}, {@code s} and {@code t}, else {@code false}
+   */
   default boolean lte(@NotNull F f, @NotNull S s, @NotNull T t) {
     return this.compareTo(f, s, t) <= 0;
   }
 
+  /**
+   * Checks if the current instance is greater than {@code f}, {@code s} and {@code t}.
+   *
+   * @param f The first object to compare.
+   * @param s The second object to compare.
+   * @param t The third object to compare.
+   * @return {@code true} if this object is greater than {@code f}, {@code s} and {@code t}, else {@code false}
+   */
   default boolean gt(@NotNull F f, @NotNull S s, @NotNull T t) {
     return this.compareTo(f, s, t) > 0;
   }
 
+  /**
+   * Checks if the current instance is greater than or equal to {@code f}, {@code s} and {@code t}.
+   *
+   * @param f The first object to compare.
+   * @param s The second object to compare.
+   * @param t The third object to compare.
+   * @return {@code true} if this object is greater than or equal to {@code f}, {@code s} and {@code t}, else {@code false}
+   */
   default boolean gte(@NotNull F f, @NotNull S s, @NotNull T t) {
     return this.compareTo(f, s, t) >= 0;
   }
 
+  /**
+   * Checks if the current instance is equal to {@code f}, {@code s} and {@code t}.
+   *
+   * @param f The first object to compare.
+   * @param s The second object to compare.
+   * @param t The third object to compare.
+   * @return {@code true} if this object is equal to {@code f}, {@code s} and {@code t}, else {@code false}
+   */
   default boolean e(@NotNull F f, @NotNull S s, @NotNull T t) {
     return this.compareTo(f, s, t) == 0;
   }

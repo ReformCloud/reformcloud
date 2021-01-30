@@ -31,8 +31,23 @@ import org.jetbrains.annotations.Range;
 import systems.reformcloud.network.data.SerializableObject;
 import systems.reformcloud.utility.name.ReNameable;
 
+/**
+ * A version which is loadable.
+ */
 public interface Version extends ReNameable, SerializableObject, Cloneable {
 
+  /**
+   * Creates a new version.
+   *
+   * @param versionName              The name of the version to create.
+   * @param downloadUrl              The download url of the version.
+   * @param installer                The installer of the version.
+   * @param configurator             The configurator of the version.
+   * @param versionType              The version type of the version.
+   * @param defaultStartPort         The default start port of the version.
+   * @param nativeTransportSupported If native (epoll) transport is supported by the version.
+   * @return The created version.
+   */
   @NotNull
   @Contract(pure = true)
   static Version version(@NotNull String versionName,
@@ -46,6 +61,19 @@ public interface Version extends ReNameable, SerializableObject, Cloneable {
     return new DefaultVersion(installer, configurator, versionName, downloadUrl, versionType, defaultStartPort, nativeTransportSupported);
   }
 
+  /**
+   * Creates a new version.
+   *
+   * @param versionName              The name of the version to create.
+   * @param downloadUrl              The download url of the version.
+   * @param installer                The installer of the version.
+   * @param configurator             The configurator of the version.
+   * @param versionType              The version type of the version.
+   * @param defaultStartPort         The default start port of the version.
+   * @param nativeTransportSupported If native (epoll) transport is supported by the version.
+   * @param versionInfo              The version info about the version.
+   * @return The created version.
+   */
   @NotNull
   @Contract(pure = true)
   static Version version(@NotNull String versionName,
@@ -60,43 +88,124 @@ public interface Version extends ReNameable, SerializableObject, Cloneable {
     return new DefaultVersion(installer, configurator, versionName, downloadUrl, versionType, defaultStartPort, nativeTransportSupported, versionInfo);
   }
 
+  /**
+   * Get the download url of the version.
+   *
+   * @return The download url of the version.
+   */
   @NotNull
   String getDownloadUrl();
 
+  /**
+   * Sets the download url of the version.
+   *
+   * @param downloadUrl The download url to use.
+   */
   void setDownloadUrl(@NotNull String downloadUrl);
 
+  /**
+   * Get the version type of this version.
+   *
+   * @return The version type of this version.
+   */
   @NotNull
   VersionType getVersionType();
 
+  /**
+   * Sets the version type of this version.
+   *
+   * @param versionType The version type of this version.
+   */
   void setVersionType(@NotNull VersionType versionType);
 
+  /**
+   * Get the default start port of this version.
+   *
+   * @return the default start port of this version.
+   */
   @Range(from = 0, to = 65536)
   int getDefaultStartPort();
 
+  /**
+   * Sets the default start port of this version.
+   *
+   * @param defaultStartPort The default start port to use.
+   */
   void setDefaultStartPort(@Range(from = 0, to = 65536) int defaultStartPort);
 
+  /**
+   * Get if native transport (most likely "epoll") is supported by this version.
+   *
+   * @return If epoll is supported by this version.
+   */
   boolean isNativeTransportSupported();
 
+  /**
+   * Sets if native transport is supported by this version.
+   *
+   * @param nativeTransportSupported If native transport is supported by this version.
+   */
   void setNativeTransportSupported(boolean nativeTransportSupported);
 
+  /**
+   * Get the version info of this version.
+   *
+   * @return The version info of this version.
+   */
   @NotNull
   VersionInfo getInfo();
 
+  /**
+   * Sets the version info of this version.
+   *
+   * @param versionInfo The version info to use.
+   */
   void setInfo(@NotNull VersionInfo versionInfo);
 
+  /**
+   * Gets the installer of this version.
+   *
+   * @return The installer of this version.
+   */
   @NotNull
   String getInstaller();
 
+  /**
+   * Sets the installer of this version.
+   *
+   * @param installer The installer to use.
+   */
   void setInstaller(@NotNull String installer);
 
+  /**
+   * Gets the configurator of this version.
+   *
+   * @return The configurator of this version.
+   */
   @NotNull
   String getConfigurator();
 
+  /**
+   * Sets the configurator of this version.
+   *
+   * @param configurator The configurator to use.
+   */
   void setConfigurator(@NotNull String configurator);
 
+  /**
+   * Creates a clone of this version.
+   *
+   * @return A clone of this version.
+   */
   @NotNull
   Version clone();
 
+  /**
+   * Checks if the given object is equal to this version.
+   *
+   * @param other The object to check.
+   * @return {@code true} if the given {@code other} object is equal to this one, else {@code false}.
+   */
   @Override
   boolean equals(Object other);
 }

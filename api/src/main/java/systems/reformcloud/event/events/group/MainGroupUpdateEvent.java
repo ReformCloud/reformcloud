@@ -26,6 +26,9 @@ package systems.reformcloud.event.events.group;
 
 import systems.reformcloud.group.main.MainGroup;
 
+/**
+ * Gets called when a main group gets created.
+ */
 public class MainGroupUpdateEvent extends MainGroupEvent {
 
   public MainGroupUpdateEvent(MainGroup mainGroup) {
