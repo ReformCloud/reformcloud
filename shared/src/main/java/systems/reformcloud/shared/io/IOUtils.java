@@ -240,6 +240,9 @@ public final class IOUtils {
       ZipEntry zipEntry;
       while ((zipEntry = zipInputStream.getNextEntry()) != null) {
         Path target = destinationPath.resolve(zipEntry.getName());
+        // Fixed the zip slip security issue
+        // https://www.heise.de/security/meldung/Schwachstelle-Zip-Slip-Beim-Entpacken-ist-Schadcode-inklusive-4070792.html
+        ensureChild(destinationPath, target);
         if (zipEntry.isDirectory()) {
           createDirectory(target);
         } else {
@@ -255,6 +258,15 @@ public final class IOUtils {
       }
     } catch (IOException exception) {
       exception.printStackTrace();
+    }
+  }
+
+  private static void ensureChild(Path root, Path child) {
+    Path rootNormal = root.normalize().toAbsolutePath();
+    Path childNormal = child.normalize().toAbsolutePath();
+
+    if (childNormal.getNameCount() <= rootNormal.getNameCount() || !childNormal.startsWith(rootNormal)) {
+      throw new IllegalStateException("Child " + childNormal + " is not in root path " + rootNormal);
     }
   }
 }
