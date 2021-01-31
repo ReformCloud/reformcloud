@@ -93,9 +93,9 @@ public final class Versions {
   // ----
   // bungeecord & forks
   public static final Version BUNGEECORD = javaProxy("BUNGEECORD", ProcessConfigurators.BUNGEE_CORD, "https://ci.md-5.net/job/BungeeCord/lastSuccessfulBuild/artifact/bootstrap/target/BungeeCord.jar");
-  public static final Version WATERFALL = javaProxy("WATERFALL", ProcessConfigurators.BUNGEE_CORD, "https://papermc.io/ci/job/Waterfall/lastSuccessfulBuild/artifact/Waterfall-Proxy/bootstrap/target/Waterfall.jar");
+  public static final Version WATERFALL = javaProxy("WATERFALL", ProcessConfigurators.BUNGEE_CORD, "https://dl.reformcloud.systems/mcversions/bungee/waterfall.jar");
   public static final Version HEXACORD = javaProxy("HEXACORD", ProcessConfigurators.BUNGEE_CORD, "https://github.com/HexagonMC/BungeeCord/releases/download/v246/BungeeCord.jar");
-  public static final Version TRAVERTINE = javaProxy("TRAVERTINE", ProcessConfigurators.BUNGEE_CORD, "https://papermc.io/ci/job/Travertine/lastSuccessfulBuild/artifact/Travertine-Proxy/bootstrap/target/Travertine.jar");
+  public static final Version TRAVERTINE = javaProxy("TRAVERTINE", ProcessConfigurators.BUNGEE_CORD, "https://dl.reformcloud.systems/mcversions/bungee/travertine.jar");
   public static final Version WATERDOG = javaProxy("WATERDOG", ProcessConfigurators.WATERDOG, "https://ci.codemc.org/job/yesdog/job/Waterdog/lastSuccessfulBuild/artifact/Waterfall-Proxy/bootstrap/target/Waterdog.jar");
   // velocity
   public static final Version VELOCITY = javaProxy("VELOCITY", ProcessConfigurators.VELOCITY, "https://versions.velocitypowered.com/download/latest.jar");
