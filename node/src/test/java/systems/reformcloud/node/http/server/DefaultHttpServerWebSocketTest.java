@@ -24,6 +24,14 @@
  */
 package systems.reformcloud.node.http.server;
 
+import jakarta.websocket.ClientEndpoint;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
+import org.glassfish.tyrus.client.ClientManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterAll;
@@ -52,14 +60,6 @@ import systems.reformcloud.http.websocket.request.SocketFrameSource;
 import systems.reformcloud.http.websocket.response.ResponseFrameHolder;
 import systems.reformcloud.shared.network.NetworkUtils;
 
-import javax.websocket.ClientEndpoint;
-import javax.websocket.CloseReason;
-import javax.websocket.ContainerProvider;
-import javax.websocket.DeploymentException;
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -141,7 +141,7 @@ public class DefaultHttpServerWebSocketTest {
   @Order(3)
   @Timeout(10)
   void testUpgradeConnection() throws IOException, InterruptedException, DeploymentException {
-    Session session = ContainerProvider.getWebSocketContainer().connectToServer(
+    Session session = ClientManager.createClient().connectToServer(
       ClientHandler.class,
       URI.create("ws://127.0.0.1:" + HTTP_PORT + "/to/websocket")
     );
@@ -158,6 +158,7 @@ public class DefaultHttpServerWebSocketTest {
   }
 
   @ClientEndpoint
+  @SuppressWarnings("unused")
   public static final class ClientHandler {
 
     private static final AtomicInteger STATE = new AtomicInteger();
