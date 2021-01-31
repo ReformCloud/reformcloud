@@ -81,6 +81,7 @@ public class DefaultProcessScreen implements ProcessScreen {
   @Override
   public void addListeningNode(@NotNull String name) {
     this.listeningNodes.add(name);
+    this.printLines(name, this.cachedLogLines);
   }
 
   @Override
@@ -150,21 +151,23 @@ public class DefaultProcessScreen implements ProcessScreen {
 
   private void printLines(@NotNull Collection<String> lines) {
     for (String listeningNode : this.listeningNodes) {
-      if (NodeExecutor.getInstance().isOwnIdentity(listeningNode)) {
-        for (String line : lines) {
-          System.out.println(TranslationHolder.translate(
-            "screen-line-added",
-            this.processWrapper.getProcessInformation().getName(),
-            NodeExecutor.getInstance().getCurrentNodeInformation().getName(),
-            line
-          ));
-        }
+      this.printLines(listeningNode, lines);
+    }
+  }
 
-        continue;
+  private void printLines(@NotNull String nodeName, @NotNull Collection<String> lines) {
+    if (NodeExecutor.getInstance().isOwnIdentity(nodeName)) {
+      for (String line : lines) {
+        System.out.println(TranslationHolder.translate(
+          "screen-line-added",
+          this.processWrapper.getProcessInformation().getName(),
+          NodeExecutor.getInstance().getCurrentNodeInformation().getName(),
+          line
+        ));
       }
-
+    } else {
       ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
-        .getChannel(listeningNode)
+        .getChannel(nodeName)
         .ifPresent(channel -> channel.sendPacket(new NodeToNodeProcessScreenLines(
           this.processWrapper.getProcessInformation().getName(),
           NodeExecutor.getInstance().getSelfName(),

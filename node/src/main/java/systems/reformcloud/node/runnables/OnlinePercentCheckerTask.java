@@ -29,7 +29,6 @@ import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.group.process.ProcessGroup;
 import systems.reformcloud.group.process.startup.AutomaticStartupConfiguration;
 import systems.reformcloud.group.process.startup.StartupConfiguration;
-import systems.reformcloud.language.TranslationHolder;
 import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.process.ProcessState;
 import systems.reformcloud.utility.MoreCollections;
@@ -51,7 +50,6 @@ public class OnlinePercentCheckerTask implements Runnable {
         .getProcessByUniqueId(prepared.getId().getUniqueId());
       if (processWrapper.isPresent()) {
         processWrapper.get().setRuntimeState(ProcessState.STARTED);
-        System.out.println(TranslationHolder.translate("process-start-process", processGroup.getName()));
       } else {
         ExecutorAPI.getInstance().getProcessProvider().createProcess()
           .group(processGroup)
@@ -59,7 +57,6 @@ public class OnlinePercentCheckerTask implements Runnable {
           .onComplete(wrapper -> {
             if (wrapper != null) {
               wrapper.setRuntimeState(ProcessState.STARTED);
-              System.out.println(TranslationHolder.translate("process-start-process", processGroup.getName()));
             }
           });
       }
@@ -70,7 +67,6 @@ public class OnlinePercentCheckerTask implements Runnable {
         .onComplete(wrapper -> {
           if (wrapper != null) {
             wrapper.setRuntimeState(ProcessState.STARTED);
-            System.out.println(TranslationHolder.translate("process-start-process", processGroup.getName()));
           }
         });
     }

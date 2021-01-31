@@ -33,7 +33,7 @@ public class ServerWatchdogRunnable implements Runnable {
   @Override
   public void run() {
     for (DefaultNodeLocalProcessWrapper processWrapper : NodeExecutor.getInstance().getDefaultNodeProcessProvider().getProcessWrappers()) {
-      if (processWrapper.isStarted() && !processWrapper.isAlive()) {
+      if (processWrapper.isStarted() && !processWrapper.isAlive(10_000)) {
         processWrapper.setRuntimeState(ProcessState.STOPPED);
       }
     }

@@ -31,6 +31,7 @@ import systems.reformcloud.event.EventManager;
 import systems.reformcloud.group.template.inclusion.Inclusion;
 import systems.reformcloud.group.template.version.VersionType;
 import systems.reformcloud.group.template.version.Versions;
+import systems.reformcloud.language.TranslationHolder;
 import systems.reformcloud.network.channel.NetworkChannel;
 import systems.reformcloud.network.channel.manager.ChannelManager;
 import systems.reformcloud.network.packet.Packet;
@@ -79,6 +80,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
   private final String connectionKey = StringUtil.generateRandomString(512);
 
   private ProcessState runtimeState = ProcessState.CREATED;
+  private long startupTime;
   private Process process;
 
   public DefaultNodeLocalProcessWrapper(ProcessInformation processInformation) {
@@ -190,9 +192,9 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
   }
 
   private void prepare() {
+    this.lock.lock();
     try {
-      this.lock.lock();
-
+      System.out.println(TranslationHolder.translate("process-preparing-new-process", this.processInformation.getName()));
       ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new LocalProcessPrePrepareEvent(this));
       EnvironmentBuilder.constructEnvFor(this, this.firstStart, this.connectionKey);
     } finally {
@@ -241,6 +243,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
     }
 
     try {
+      this.startupTime = System.currentTimeMillis();
       this.process = new ProcessBuilder()
         .command(command)
         .directory(this.path.toFile())
@@ -256,6 +259,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
       return false;
     }
 
+    System.out.println(TranslationHolder.translate("process-start-process", this.processInformation.getName()));
     return true;
   }
 
@@ -269,9 +273,12 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
       return;
     }
 
+    System.out.println(TranslationHolder.translate("process-stop-process", this.processInformation.getName()));
+
     if (this.isStarted()) {
       Platform.closeProcess(this.process, true, TimeUnit.SECONDS.toMillis(15), this.getShutdownCommands());
       this.process = null;
+      this.startupTime = 0;
     }
 
     if (finalStop) {
@@ -313,11 +320,16 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
   }
 
   public boolean isAlive() {
-    return this.process != null && this.process.isAlive();
+    return this.isStarted() && this.process.isAlive();
   }
 
   public boolean isStarted() {
-    return this.process != null;
+    return this.process != null && this.startupTime > 0;
+  }
+
+  public boolean isAlive(long millisSinceStart) {
+    final long millis = this.startupTime + millisSinceStart;
+    return millis <= System.currentTimeMillis() || this.isAlive();
   }
 
   public int getMemory() {
