@@ -25,6 +25,7 @@
 package systems.reformcloud.cloudflare.listener;
 
 import systems.reformcloud.cloudflare.api.CloudFlareHelper;
+import systems.reformcloud.cloudflare.config.CloudFlareConfig;
 import systems.reformcloud.event.events.process.ProcessRegisterEvent;
 import systems.reformcloud.event.events.process.ProcessUnregisterEvent;
 import systems.reformcloud.event.events.process.ProcessUpdateEvent;
@@ -32,13 +33,19 @@ import systems.reformcloud.event.handler.Listener;
 
 public final class ProcessListener {
 
+  private final CloudFlareConfig cloudFlareConfig;
+
+  public ProcessListener(CloudFlareConfig cloudFlareConfig) {
+    this.cloudFlareConfig = cloudFlareConfig;
+  }
+
   @Listener
   public void handle(ProcessRegisterEvent event) {
     if (!CloudFlareHelper.shouldHandle(event.getProcessInformation()) || !event.getProcessInformation().getCurrentState().isOnline()) {
       return;
     }
 
-    CloudFlareHelper.createForProcess(event.getProcessInformation());
+    CloudFlareHelper.createForProcess(event.getProcessInformation(), this.cloudFlareConfig);
   }
 
   @Listener
@@ -48,14 +55,14 @@ public final class ProcessListener {
     }
 
     if (!event.getProcessInformation().getCurrentState().isOnline() && CloudFlareHelper.hasEntry(event.getProcessInformation())) {
-      CloudFlareHelper.deleteRecord(event.getProcessInformation());
+      CloudFlareHelper.deleteRecord(event.getProcessInformation(), this.cloudFlareConfig);
     } else if (event.getProcessInformation().getCurrentState().isOnline() && !CloudFlareHelper.hasEntry(event.getProcessInformation())) {
-      CloudFlareHelper.createForProcess(event.getProcessInformation());
+      CloudFlareHelper.createForProcess(event.getProcessInformation(), this.cloudFlareConfig);
     }
   }
 
   @Listener
   public void handle(ProcessUnregisterEvent event) {
-    CloudFlareHelper.deleteRecord(event.getProcessInformation());
+    CloudFlareHelper.deleteRecord(event.getProcessInformation(), this.cloudFlareConfig);
   }
 }

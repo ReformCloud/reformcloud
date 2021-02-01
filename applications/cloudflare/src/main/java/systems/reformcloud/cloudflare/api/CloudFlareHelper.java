@@ -25,11 +25,13 @@
 package systems.reformcloud.cloudflare.api;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.cloudflare.config.CloudFlareConfig;
 import systems.reformcloud.configuration.JsonConfiguration;
 import systems.reformcloud.configuration.json.Element;
 import systems.reformcloud.configuration.json.types.Object;
+import systems.reformcloud.group.process.ProcessGroup;
 import systems.reformcloud.language.TranslationHolder;
 import systems.reformcloud.node.NodeExecutor;
 import systems.reformcloud.process.ProcessInformation;
@@ -44,73 +46,76 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public final class CloudFlareHelper {
 
   private static final String CLOUD_FLARE_API_URL = "https://api.cloudflare.com/client/v4/";
-  private static final Map<UUID, String> CACHE = new ConcurrentHashMap<>();
+  private static final String ZONE_DNS_URL = CLOUD_FLARE_API_URL + "zones/%s/dns_records/";
+  private static final String ZONE_SPECIFIC_DNS_URL = ZONE_DNS_URL + "%s";
+
+  private static final Map<UUID, String> SRV_RECORD_CACHE = new ConcurrentHashMap<>();
   private static final Map<String, String> A_RECORD_CACHE = new ConcurrentHashMap<>();
-  private static CloudFlareConfig cloudFlareConfig;
 
   private CloudFlareHelper() {
     throw new UnsupportedOperationException();
   }
 
-  public static boolean init(@NotNull Path configPath) {
+  @Nullable
+  public static CloudFlareConfig init(@NotNull Path configPath) {
     if (Files.notExists(configPath)) {
       JsonConfiguration.newJsonConfiguration()
-        .add("config", new CloudFlareConfig(
+        .add("config", new CloudFlareConfig(Collections.singleton(new CloudFlareConfig.Entry(
           "someone@example.com",
           "",
           "example.com",
           "",
-          "@"
-        )).write(configPath);
-      return true;
+          "@",
+          Collections.emptySet()
+        )))).write(configPath);
+      return null;
     }
 
-    cloudFlareConfig = JsonConfiguration.newJsonConfiguration(configPath).get("config", CloudFlareConfig.class);
-    return false;
+    return JsonConfiguration.newJsonConfiguration(configPath).get("config", CloudFlareConfig.class);
   }
 
-  public static void loadAlreadyRunning() {
+  public static void loadAlreadyRunning(@NotNull CloudFlareConfig config) {
     for (ProcessInformation processInformation : getShouldHandleProcesses()) {
-      CloudFlareHelper.createForProcess(processInformation);
+      CloudFlareHelper.createForProcess(processInformation, config);
     }
   }
 
-  public static void createForProcess(@NotNull ProcessInformation target) {
-    String dnsID = createSRVRecord(target);
-    if (dnsID == null) {
-      return;
-    }
-
-    CACHE.put(target.getId().getUniqueId(), dnsID);
+  public static void createForProcess(@NotNull ProcessInformation target, @NotNull CloudFlareConfig config) {
+    createForProcess0(target, selectEntries(target.getProcessGroup(), config));
   }
 
-  private static String createSRVRecord(ProcessInformation target) {
-    if (!A_RECORD_CACHE.containsKey(target.getId().getNodeName())) {
-      String recordID = createRecord(target, prepareARecord(target));
-      if (recordID != null) {
-        A_RECORD_CACHE.put(target.getId().getNodeName(), recordID);
+  private static void createForProcess0(@NotNull ProcessInformation target, @NotNull Set<CloudFlareConfig.Entry> entries) {
+    for (CloudFlareConfig.Entry entry : entries) {
+      String dnsID = createSRVRecord(target, entry);
+      if (dnsID != null) {
+        SRV_RECORD_CACHE.put(target.getId().getUniqueId(), dnsID);
       }
     }
-
-    return createRecord(target, prepareConfig(target));
   }
 
-  private static String createRecord(ProcessInformation target, JsonConfiguration configuration) {
+  private static String createSRVRecord(@NotNull ProcessInformation target, @NotNull CloudFlareConfig.Entry entry) {
+    A_RECORD_CACHE.computeIfAbsent(target.getId().getNodeName(), nodeName -> createRecord(target, prepareARecord(target, entry), entry));
+    return createRecord(target, prepareSrvRecord(target, entry), entry);
+  }
+
+  private static String createRecord(@NotNull ProcessInformation target, @NotNull JsonConfiguration configuration, @NotNull CloudFlareConfig.Entry entry) {
     try {
-      HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(CLOUD_FLARE_API_URL + "zones/"
-        + cloudFlareConfig.getZoneId() + "/dns_records").openConnection();
+      HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(String.format(ZONE_DNS_URL, entry.getZoneId())).openConnection();
       httpURLConnection.setRequestMethod("POST");
       httpURLConnection.setDoOutput(true);
       httpURLConnection.setUseCaches(false);
-      httpURLConnection.setRequestProperty("X-Auth-Email", cloudFlareConfig.getEmail());
-      httpURLConnection.setRequestProperty("X-Auth-Key", cloudFlareConfig.getApiToken());
+      httpURLConnection.setRequestProperty("X-Auth-Email", entry.getEmail());
+      httpURLConnection.setRequestProperty("X-Auth-Key", entry.getApiToken());
       httpURLConnection.setRequestProperty("Accept", "application/json");
       httpURLConnection.setRequestProperty("Content-Type", "application/json");
 
@@ -166,32 +171,37 @@ public final class CloudFlareHelper {
     return null;
   }
 
-  public static void handleStop() {
-    MoreCollections.forEachValues(A_RECORD_CACHE, CloudFlareHelper::deleteRecord);
-    A_RECORD_CACHE.clear();
+  public static void handleStop(@NotNull CloudFlareConfig cloudFlareConfig) {
+    for (Map.Entry<String, String> entry : A_RECORD_CACHE.entrySet()) {
+      deleteRecord(entry.getValue(), cloudFlareConfig.getEntries());
+      A_RECORD_CACHE.remove(entry.getKey());
+    }
 
     for (ProcessInformation shouldHandleProcess : getShouldHandleProcesses()) {
-      deleteRecord(shouldHandleProcess);
+      deleteRecord(shouldHandleProcess, cloudFlareConfig);
     }
   }
 
-  public static void deleteRecord(ProcessInformation target) {
-    String dnsID = CACHE.remove(target.getId().getUniqueId());
-    if (dnsID == null) {
-      return;
+  public static void deleteRecord(@NotNull ProcessInformation target, @NotNull CloudFlareConfig config) {
+    final String dnsId = SRV_RECORD_CACHE.remove(target.getId().getUniqueId());
+    if (dnsId != null) {
+      deleteRecord(dnsId, selectEntries(target.getProcessGroup(), config));
     }
-
-    deleteRecord(dnsID);
   }
 
-  private static void deleteRecord(String dnsID) {
+  private static void deleteRecord(String dnsId, Set<CloudFlareConfig.Entry> entries) {
+    for (CloudFlareConfig.Entry entry : entries) {
+      deleteRecord(dnsId, entry);
+    }
+  }
+
+  private static void deleteRecord(@NotNull String dnsId, @NotNull CloudFlareConfig.Entry entry) {
     try {
-      HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(CLOUD_FLARE_API_URL + "zones/"
-        + cloudFlareConfig.getZoneId() + "/dns_records/" + dnsID).openConnection();
+      HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(String.format(ZONE_SPECIFIC_DNS_URL, entry.getZoneId(), dnsId)).openConnection();
       httpURLConnection.setRequestMethod("DELETE");
       httpURLConnection.setUseCaches(false);
-      httpURLConnection.setRequestProperty("X-Auth-Email", cloudFlareConfig.getEmail());
-      httpURLConnection.setRequestProperty("X-Auth-Key", cloudFlareConfig.getApiToken());
+      httpURLConnection.setRequestProperty("X-Auth-Email", entry.getEmail());
+      httpURLConnection.setRequestProperty("X-Auth-Key", entry.getApiToken());
       httpURLConnection.setRequestProperty("Accept", "application/json");
       httpURLConnection.setRequestProperty("Content-Type", "application/json");
 
@@ -201,31 +211,33 @@ public final class CloudFlareHelper {
     }
   }
 
-  private static JsonConfiguration prepareConfig(ProcessInformation target) {
+  @NotNull
+  private static JsonConfiguration prepareSrvRecord(@NotNull ProcessInformation target, @NotNull CloudFlareConfig.Entry entry) {
     return JsonConfiguration.newJsonConfiguration()
       .add("type", "SRV")
-      .add("name", "_minecraft._tcp." + cloudFlareConfig.getDomainName())
+      .add("name", "_minecraft._tcp." + entry.getDomainName())
       .add("content", "SRV 1 1 " + target.getHost().getPort()
-        + " " + target.getId().getNodeName() + "." + cloudFlareConfig.getDomainName())
+        + " " + target.getId().getNodeName() + "." + entry.getDomainName())
       .add("ttl", 1)
       .add("priority", 1)
       .add("proxied", false)
       .add("data", JsonConfiguration.newJsonConfiguration()
         .add("service", "_minecraft")
         .add("proto", "_tcp")
-        .add("name", cloudFlareConfig.getSubDomain().equals("@") ? cloudFlareConfig.getDomainName() : cloudFlareConfig.getSubDomain())
+        .add("name", entry.getSubDomain().equals("@") ? entry.getDomainName() : entry.getSubDomain())
         .add("priority", 1)
         .add("weight", 1)
         .add("port", target.getHost().getPort())
-        .add("target", target.getId().getNodeName() + "." + cloudFlareConfig.getDomainName())
+        .add("target", target.getId().getNodeName() + "." + entry.getDomainName())
         .getBackingObject()
       );
   }
 
-  private static JsonConfiguration prepareARecord(ProcessInformation processInformation) {
+  @NotNull
+  private static JsonConfiguration prepareARecord(@NotNull ProcessInformation processInformation, @NotNull CloudFlareConfig.Entry entry) {
     return JsonConfiguration.newJsonConfiguration()
       .add("type", processInformation.getHost().toInetAddress() instanceof Inet6Address ? "AAAA" : "A")
-      .add("name", processInformation.getId().getNodeName() + "." + cloudFlareConfig.getDomainName())
+      .add("name", processInformation.getId().getNodeName() + "." + entry.getDomainName())
       .add("content", processInformation.getHost().getHost())
       .add("ttl", 1)
       .add("proxied", false)
@@ -240,8 +252,16 @@ public final class CloudFlareHelper {
     );
   }
 
+  @NotNull
+  private static Set<CloudFlareConfig.Entry> selectEntries(@NotNull ProcessGroup group, @NotNull CloudFlareConfig config) {
+    return config.getEntries()
+      .stream()
+      .filter(entry -> entry.getTargetProxyGroups().isEmpty() || entry.getTargetProxyGroups().contains(group.getName()))
+      .collect(Collectors.toSet());
+  }
+
   public static boolean hasEntry(@NotNull ProcessInformation processInformation) {
-    return CACHE.containsKey(processInformation.getId().getUniqueId());
+    return SRV_RECORD_CACHE.containsKey(processInformation.getId().getUniqueId());
   }
 
   public static boolean shouldHandle(@NotNull ProcessInformation process) {

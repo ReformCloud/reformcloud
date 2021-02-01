@@ -24,39 +24,60 @@
  */
 package systems.reformcloud.cloudflare.config;
 
+import java.util.Set;
+
 public class CloudFlareConfig {
 
-  private final String email;
-  private final String apiToken;
-  private final String domainName;
-  private final String zoneId;
-  private final String subDomain;
+  private final Set<Entry> entries;
 
-  public CloudFlareConfig(String email, String apiToken, String domainName, String zoneId, String subDomain) {
-    this.email = email;
-    this.apiToken = apiToken;
-    this.domainName = domainName;
-    this.zoneId = zoneId;
-    this.subDomain = subDomain;
+  public CloudFlareConfig(Set<Entry> entries) {
+    this.entries = entries;
   }
 
-  public String getEmail() {
-    return this.email;
+  public Set<Entry> getEntries() {
+    return this.entries;
   }
 
-  public String getApiToken() {
-    return this.apiToken;
-  }
+  public static class Entry {
 
-  public String getDomainName() {
-    return this.domainName;
-  }
+    private final String email;
+    private final String apiToken;
+    private final String domainName;
+    private final String zoneId;
+    private final String subDomain;
+    private final Set<String> targetProxyGroups;
 
-  public String getZoneId() {
-    return this.zoneId;
-  }
+    public Entry(String email, String apiToken, String domainName, String zoneId, String subDomain, Set<String> targetProxyGroups) {
+      this.email = email;
+      this.apiToken = apiToken;
+      this.domainName = domainName;
+      this.zoneId = zoneId;
+      this.subDomain = subDomain;
+      this.targetProxyGroups = targetProxyGroups;
+    }
 
-  public String getSubDomain() {
-    return this.subDomain;
+    public String getEmail() {
+      return this.email;
+    }
+
+    public String getApiToken() {
+      return this.apiToken;
+    }
+
+    public String getDomainName() {
+      return this.domainName;
+    }
+
+    public String getZoneId() {
+      return this.zoneId;
+    }
+
+    public String getSubDomain() {
+      return this.subDomain;
+    }
+
+    public Set<String> getTargetProxyGroups() {
+      return this.targetProxyGroups;
+    }
   }
 }

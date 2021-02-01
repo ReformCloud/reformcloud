@@ -29,6 +29,7 @@ import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.application.Application;
 import systems.reformcloud.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.cloudflare.api.CloudFlareHelper;
+import systems.reformcloud.cloudflare.config.CloudFlareConfig;
 import systems.reformcloud.cloudflare.listener.ProcessListener;
 import systems.reformcloud.cloudflare.update.CloudFlareAddonUpdater;
 import systems.reformcloud.event.EventManager;
@@ -41,9 +42,10 @@ import java.util.Properties;
 
 public class ReformCloudApplication extends Application {
 
-  private static final ProcessListener LISTENER = new ProcessListener();
-  private static boolean loaded = false;
   private final ApplicationUpdateRepository applicationUpdateRepository = new CloudFlareAddonUpdater(this);
+
+  private ProcessListener listener;
+  private CloudFlareConfig cloudFlareConfig;
 
   @Override
   public void onEnable() {
@@ -55,24 +57,24 @@ public class ReformCloudApplication extends Application {
       ex.printStackTrace();
     }
 
-    if (CloudFlareHelper.init(this.getDataDirectory().resolve("config.json"))) {
+    this.cloudFlareConfig = CloudFlareHelper.init(this.getDataDirectory().resolve("config.json"));
+    if (this.cloudFlareConfig == null) {
       System.err.println(TranslationHolder.translate("cloudflare-first-init"));
       return;
     }
 
-    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(LISTENER);
-    CloudFlareHelper.loadAlreadyRunning();
-    loaded = true;
+    CloudFlareHelper.loadAlreadyRunning(this.cloudFlareConfig);
+    ExecutorAPI.getInstance().getServiceRegistry()
+      .getProviderUnchecked(EventManager.class)
+      .registerListener(this.listener = new ProcessListener(this.cloudFlareConfig));
   }
 
   @Override
   public void onPreDisable() {
-    if (!loaded) {
-      return;
+    if (this.cloudFlareConfig != null) {
+      CloudFlareHelper.handleStop(this.cloudFlareConfig);
+      ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).unregisterListener(this.listener);
     }
-
-    CloudFlareHelper.handleStop();
-    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).unregisterListener(LISTENER);
   }
 
   @Nullable
