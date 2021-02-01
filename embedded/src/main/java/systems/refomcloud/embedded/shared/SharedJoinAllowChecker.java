@@ -78,8 +78,8 @@ public final class SharedJoinAllowChecker {
     }
 
     current.getPlayers().add(new DefaultPlayer(playerUniqueId, username, System.currentTimeMillis()));
-
     Embedded.getInstance().updateCurrentProcessInformation();
+
     return new Entry2<>(true, null);
   }
 }

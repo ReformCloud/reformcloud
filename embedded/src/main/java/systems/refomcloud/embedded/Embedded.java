@@ -284,6 +284,7 @@ public abstract class Embedded extends ExecutorAPI {
 
   public void updateCurrentProcessInformation() {
     this.processInformation.setRuntimeInformation(Platform.createProcessRuntimeInformation());
+    this.updatePlayersOfEnvironment(this.processInformation);
     this.processProvider.updateProcessInformation(this.processInformation);
   }
 
@@ -303,13 +304,14 @@ public abstract class Embedded extends ExecutorAPI {
 
   protected abstract int getMaxPlayersOfEnvironment();
 
+  protected abstract void updatePlayersOfEnvironment(@NotNull ProcessInformation information);
+
   public final class CurrentProcessUpdateEventListener {
 
     @Listener
     public void handle(@NotNull ProcessUpdateEvent event) {
       if (Embedded.this.processInformation.getId().getUniqueId().equals(event.getProcessInformation().getId().getUniqueId())) {
         Embedded.this.processInformation = event.getProcessInformation();
-        Embedded.this.updateMaxPlayers();
       }
     }
   }

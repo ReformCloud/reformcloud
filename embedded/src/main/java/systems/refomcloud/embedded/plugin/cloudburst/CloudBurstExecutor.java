@@ -25,10 +25,13 @@
 package systems.refomcloud.embedded.plugin.cloudburst;
 
 import org.cloudburstmc.server.Server;
+import org.cloudburstmc.server.player.Player;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.embedded.Embedded;
 import systems.refomcloud.embedded.shared.SharedInvalidPlayerFixer;
 import systems.reformcloud.ExecutorType;
+import systems.reformcloud.process.ProcessInformation;
+import systems.reformcloud.shared.process.DefaultPlayer;
 
 public final class CloudBurstExecutor extends Embedded {
 
@@ -57,6 +60,15 @@ public final class CloudBurstExecutor extends Embedded {
   @Override
   protected int getMaxPlayersOfEnvironment() {
     return Server.getInstance().getMaxPlayers();
+  }
+
+  @Override
+  protected void updatePlayersOfEnvironment(@NotNull ProcessInformation information) {
+    for (Player player : Server.getInstance().getOnlinePlayers().values()) {
+      if (!information.getPlayerByUniqueId(player.getServerId()).isPresent()) {
+        information.getPlayers().add(new DefaultPlayer(player.getServerId(), player.getName(), System.currentTimeMillis()));
+      }
+    }
   }
 
   private void fixInvalidPlayers() {

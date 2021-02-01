@@ -24,6 +24,7 @@
  */
 package systems.refomcloud.embedded.plugin.nukkit;
 
+import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +33,8 @@ import systems.refomcloud.embedded.executor.PlayerAPIExecutor;
 import systems.refomcloud.embedded.plugin.nukkit.executor.NukkitPlayerAPIExecutor;
 import systems.refomcloud.embedded.shared.SharedInvalidPlayerFixer;
 import systems.reformcloud.ExecutorType;
+import systems.reformcloud.process.ProcessInformation;
+import systems.reformcloud.shared.process.DefaultPlayer;
 
 public final class NukkitExecutor extends Embedded {
 
@@ -56,6 +59,15 @@ public final class NukkitExecutor extends Embedded {
   @Override
   protected int getMaxPlayersOfEnvironment() {
     return Server.getInstance().getMaxPlayers();
+  }
+
+  @Override
+  protected void updatePlayersOfEnvironment(@NotNull ProcessInformation information) {
+    for (Player player : Server.getInstance().getOnlinePlayers().values()) {
+      if (!information.getPlayerByUniqueId(player.getUniqueId()).isPresent()) {
+        information.getPlayers().add(new DefaultPlayer(player.getUniqueId(), player.getName(), System.currentTimeMillis()));
+      }
+    }
   }
 
   @NotNull

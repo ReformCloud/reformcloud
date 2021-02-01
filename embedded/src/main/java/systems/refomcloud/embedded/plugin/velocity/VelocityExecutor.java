@@ -24,6 +24,7 @@
  */
 package systems.refomcloud.embedded.plugin.velocity;
 
+import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
@@ -38,6 +39,7 @@ import systems.refomcloud.embedded.shared.SharedInvalidPlayerFixer;
 import systems.reformcloud.ExecutorType;
 import systems.reformcloud.event.EventManager;
 import systems.reformcloud.process.ProcessInformation;
+import systems.reformcloud.shared.process.DefaultPlayer;
 
 public final class VelocityExecutor extends Embedded {
 
@@ -74,6 +76,15 @@ public final class VelocityExecutor extends Embedded {
   @Override
   protected int getMaxPlayersOfEnvironment() {
     return this.proxyServer == null ? 0 : this.proxyServer.getConfiguration().getShowMaxPlayers();
+  }
+
+  @Override
+  protected void updatePlayersOfEnvironment(@NotNull ProcessInformation information) {
+    for (Player player : this.proxyServer.getAllPlayers()) {
+      if (!information.getPlayerByUniqueId(player.getUniqueId()).isPresent()) {
+        information.getPlayers().add(new DefaultPlayer(player.getUniqueId(), player.getUsername(), System.currentTimeMillis()));
+      }
+    }
   }
 
   @NotNull

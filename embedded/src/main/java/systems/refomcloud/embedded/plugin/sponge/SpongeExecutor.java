@@ -27,12 +27,15 @@ package systems.refomcloud.embedded.plugin.sponge;
 import net.kyori.adventure.platform.spongeapi.SpongeAudiences;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.SpongeExecutorService;
 import systems.refomcloud.embedded.Embedded;
 import systems.refomcloud.embedded.executor.PlayerAPIExecutor;
 import systems.refomcloud.embedded.plugin.sponge.executor.SpongePlayerExecutor;
 import systems.refomcloud.embedded.shared.SharedInvalidPlayerFixer;
 import systems.reformcloud.ExecutorType;
+import systems.reformcloud.process.ProcessInformation;
+import systems.reformcloud.shared.process.DefaultPlayer;
 
 public class SpongeExecutor extends Embedded {
 
@@ -59,6 +62,15 @@ public class SpongeExecutor extends Embedded {
   @Override
   protected int getMaxPlayersOfEnvironment() {
     return Sponge.getServer().getMaxPlayers();
+  }
+
+  @Override
+  protected void updatePlayersOfEnvironment(@NotNull ProcessInformation information) {
+    for (Player player : Sponge.getServer().getOnlinePlayers()) {
+      if (!information.getPlayerByUniqueId(player.getUniqueId()).isPresent()) {
+        information.getPlayers().add(new DefaultPlayer(player.getUniqueId(), player.getName(), System.currentTimeMillis()));
+      }
+    }
   }
 
   @NotNull

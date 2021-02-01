@@ -25,6 +25,7 @@
 package systems.refomcloud.embedded.plugin.bungee;
 
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.embedded.Embedded;
@@ -39,6 +40,7 @@ import systems.refomcloud.embedded.shared.SharedInvalidPlayerFixer;
 import systems.reformcloud.ExecutorType;
 import systems.reformcloud.event.EventManager;
 import systems.reformcloud.process.ProcessInformation;
+import systems.reformcloud.shared.process.DefaultPlayer;
 
 public final class BungeeExecutor extends Embedded {
 
@@ -80,6 +82,15 @@ public final class BungeeExecutor extends Embedded {
   @Override
   protected int getMaxPlayersOfEnvironment() {
     return ProxyServer.getInstance().getConfig().getPlayerLimit();
+  }
+
+  @Override
+  protected void updatePlayersOfEnvironment(@NotNull ProcessInformation information) {
+    for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+      if (!information.getPlayerByUniqueId(player.getUniqueId()).isPresent()) {
+        information.getPlayers().add(new DefaultPlayer(player.getUniqueId(), player.getName(), System.currentTimeMillis()));
+      }
+    }
   }
 
   @NotNull

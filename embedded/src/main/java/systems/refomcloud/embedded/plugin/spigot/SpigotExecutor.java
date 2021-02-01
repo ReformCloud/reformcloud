@@ -25,6 +25,7 @@
 package systems.refomcloud.embedded.plugin.spigot;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.embedded.Embedded;
@@ -32,6 +33,8 @@ import systems.refomcloud.embedded.executor.PlayerAPIExecutor;
 import systems.refomcloud.embedded.plugin.spigot.executor.SpigotPlayerAPIExecutor;
 import systems.refomcloud.embedded.shared.SharedInvalidPlayerFixer;
 import systems.reformcloud.ExecutorType;
+import systems.reformcloud.process.ProcessInformation;
+import systems.reformcloud.shared.process.DefaultPlayer;
 
 public final class SpigotExecutor extends Embedded {
 
@@ -56,6 +59,15 @@ public final class SpigotExecutor extends Embedded {
   @Override
   protected int getMaxPlayersOfEnvironment() {
     return Bukkit.getMaxPlayers();
+  }
+
+  @Override
+  protected void updatePlayersOfEnvironment(@NotNull ProcessInformation information) {
+    for (Player player : Bukkit.getOnlinePlayers()) {
+      if (!information.getPlayerByUniqueId(player.getUniqueId()).isPresent()) {
+        information.getPlayers().add(new DefaultPlayer(player.getUniqueId(), player.getName(), System.currentTimeMillis()));
+      }
+    }
   }
 
   @NotNull
