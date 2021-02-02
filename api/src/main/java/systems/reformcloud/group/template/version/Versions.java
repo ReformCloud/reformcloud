@@ -41,7 +41,7 @@ public final class Versions {
   // JAVA SERVERS
   // ----
   // spigot versions
-  public static final Version SPIGOT_1_8 = javaServer("SPIGOT_1_8", ProcessConfigurators.SPIGOT, "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.8.jar", false);
+  public static final Version SPIGOT_1_8 = javaServer("SPIGOT_1_8", ProcessConfigurators.SPIGOT, "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.8.8.jar", false);
   public static final Version SPIGOT_1_9_4 = javaServer("SPIGOT_1_9_4", ProcessConfigurators.SPIGOT, "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.9.4.jar");
   public static final Version SPIGOT_1_10_2 = javaServer("SPIGOT_1_10_2", ProcessConfigurators.SPIGOT, "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.10.2.jar");
   public static final Version SPIGOT_1_11_2 = javaServer("SPIGOT_1_11_2", ProcessConfigurators.SPIGOT, "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.11.2.jar");
