@@ -54,7 +54,7 @@
             <plugin>
                 <groupId>com.github.derklaro</groupId>
                 <artifactId>maven-dependency-list-plugin</artifactId>
-                <version>1.3.3</version>
+                <version>1.3.5</version>
                 <configuration>
                     <excludedScopes>
                         <excludedScope>test</excludedScope>
