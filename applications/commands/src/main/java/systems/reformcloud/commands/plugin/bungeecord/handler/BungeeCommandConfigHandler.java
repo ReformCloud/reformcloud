@@ -34,8 +34,14 @@ import systems.reformcloud.commands.plugin.bungeecord.commands.CommandReformClou
 
 public class BungeeCommandConfigHandler extends CommandConfigHandler {
 
+  private final BungeecordPlugin plugin;
+
   private CommandLeave leave;
   private CommandReformCloud reformCloud;
+
+  public BungeeCommandConfigHandler(BungeecordPlugin plugin) {
+    this.plugin = plugin;
+  }
 
   @Override
   public void handleCommandConfigRelease(@NotNull CommandsConfig commandsConfig) {
@@ -45,14 +51,14 @@ public class BungeeCommandConfigHandler extends CommandConfigHandler {
       String name = commandsConfig.getLeaveCommands().get(0);
       commandsConfig.getLeaveCommands().remove(name);
       this.leave = new CommandLeave(name, commandsConfig.getLeaveCommands());
-      ProxyServer.getInstance().getPluginManager().registerCommand(BungeecordPlugin.getInstance(), this.leave);
+      ProxyServer.getInstance().getPluginManager().registerCommand(this.plugin, this.leave);
     }
 
     if (commandsConfig.isReformCloudCommandEnabled() && !commandsConfig.getReformCloudCommands().isEmpty()) {
       String name = commandsConfig.getReformCloudCommands().get(0);
       commandsConfig.getReformCloudCommands().remove(name);
       this.reformCloud = new CommandReformCloud(name, commandsConfig.getReformCloudCommands());
-      ProxyServer.getInstance().getPluginManager().registerCommand(BungeecordPlugin.getInstance(), this.reformCloud);
+      ProxyServer.getInstance().getPluginManager().registerCommand(this.plugin, this.reformCloud);
     }
   }
 

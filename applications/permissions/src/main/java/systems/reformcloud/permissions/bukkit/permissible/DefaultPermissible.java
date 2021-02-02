@@ -33,7 +33,6 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.permissions.PermissionManagement;
-import systems.reformcloud.permissions.objects.PermissionUser;
 import systems.reformcloud.permissions.util.PermissionPluginUtil;
 
 import java.util.Set;
@@ -126,7 +125,7 @@ public class DefaultPermissible extends PermissibleBase {
   }
 
   private boolean has(String name) {
-    final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(this.uuid);
-    return permissionUser.hasPermission(name);
+    final Boolean hasPermission = PermissionManagement.getInstance().loadUser(this.uuid).hasPermission(name);
+    return hasPermission != null && hasPermission;
   }
 }

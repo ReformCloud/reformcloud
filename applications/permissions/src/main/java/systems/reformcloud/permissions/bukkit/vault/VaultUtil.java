@@ -32,7 +32,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.permissions.PermissionManagement;
-import systems.reformcloud.permissions.internal.UUIDFetcher;
+import systems.reformcloud.permissions.internal.UniqueIdFetcher;
 import systems.reformcloud.permissions.objects.PermissionUser;
 
 import java.util.Optional;
@@ -51,7 +51,7 @@ public final class VaultUtil {
       return PermissionManagement.getInstance().getExistingUser(player.getUniqueId());
     }
 
-    UUID uniqueID = UUIDFetcher.getUUIDFromName(name);
+    UUID uniqueID = UniqueIdFetcher.getUUIDFromName(name);
     if (uniqueID != null) {
       return PermissionManagement.getInstance().getExistingUser(uniqueID);
     }

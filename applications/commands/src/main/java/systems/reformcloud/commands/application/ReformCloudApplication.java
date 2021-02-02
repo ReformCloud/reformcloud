@@ -48,6 +48,7 @@ import java.util.Arrays;
 public class ReformCloudApplication extends Application {
 
   private static final ApplicationUpdateRepository REPOSITORY = new CommandAddonUpdater();
+
   private static ReformCloudApplication instance;
   private static CommandsConfig commandsConfig;
 

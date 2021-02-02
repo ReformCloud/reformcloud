@@ -40,12 +40,12 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
-public final class UUIDFetcher {
+public final class UniqueIdFetcher {
 
   private static final Pattern PATTERN = Pattern.compile("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})");
   private static final Map<String, UUID> CACHE = new ConcurrentHashMap<>();
 
-  private UUIDFetcher() {
+  private UniqueIdFetcher() {
     throw new UnsupportedOperationException();
   }
 

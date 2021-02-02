@@ -31,15 +31,9 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
-import systems.refomcloud.embedded.Embedded;
-import systems.reformcloud.ExecutorAPI;
-import systems.reformcloud.commands.application.packet.PacketGetCommandsConfig;
-import systems.reformcloud.commands.application.packet.PacketGetCommandsConfigResult;
 import systems.reformcloud.commands.plugin.CommandConfigHandler;
-import systems.reformcloud.commands.plugin.packet.PacketReleaseCommandsConfig;
+import systems.reformcloud.commands.plugin.CommandPluginUtil;
 import systems.reformcloud.commands.plugin.velocity.handler.VelocityCommandConfigHandler;
-import systems.reformcloud.network.PacketIds;
-import systems.reformcloud.network.packet.PacketProvider;
 
 @Plugin(
   id = "reformcloud_commands",
@@ -62,21 +56,11 @@ public class VelocityPlugin {
   @Subscribe
   public void handle(ProxyInitializeEvent event) {
     CommandConfigHandler.setInstance(new VelocityCommandConfigHandler(this.proxyServer));
-
-    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketGetCommandsConfigResult.class);
-    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketReleaseCommandsConfig.class);
-
-    Embedded.getInstance().sendSyncQuery(new PacketGetCommandsConfig()).ifPresent(e -> {
-      if (e instanceof PacketGetCommandsConfigResult) {
-        CommandConfigHandler.getInstance().handleCommandConfigRelease(((PacketGetCommandsConfigResult) e).getCommandsConfig());
-      }
-    });
+    CommandPluginUtil.init();
   }
 
   @Subscribe
   public void handle(ProxyShutdownEvent event) {
-    CommandConfigHandler.getInstance().unregisterAllCommands();
-    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketIds.RESERVED_EXTRA_BUS + 3);
-    ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketIds.RESERVED_EXTRA_BUS + 2);
+    CommandPluginUtil.close();
   }
 }

@@ -41,7 +41,7 @@ import systems.reformcloud.permissions.events.group.PermissionGroupUpdateEvent;
 import systems.reformcloud.permissions.events.user.PermissionUserCreateEvent;
 import systems.reformcloud.permissions.events.user.PermissionUserDeleteEvent;
 import systems.reformcloud.permissions.events.user.PermissionUserUpdateEvent;
-import systems.reformcloud.permissions.internal.UUIDFetcher;
+import systems.reformcloud.permissions.internal.UniqueIdFetcher;
 import systems.reformcloud.permissions.nodes.NodeGroup;
 import systems.reformcloud.permissions.nodes.PermissionNode;
 import systems.reformcloud.permissions.objects.PermissionGroup;
@@ -196,7 +196,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
 
   @Override
   public @NotNull Optional<PermissionUser> getFirstExistingUser(@NotNull String name) {
-    UUID uniqueID = UUIDFetcher.getUUIDFromName(name);
+    UUID uniqueID = UniqueIdFetcher.getUUIDFromName(name);
     if (uniqueID == null) {
       return Optional.empty();
     }
@@ -206,7 +206,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
 
   @Override
   public @NotNull Optional<PermissionUser> loadUser(@NotNull String name) {
-    UUID uniqueID = UUIDFetcher.getUUIDFromName(name);
+    UUID uniqueID = UniqueIdFetcher.getUUIDFromName(name);
     if (uniqueID == null) {
       return Optional.empty();
     }

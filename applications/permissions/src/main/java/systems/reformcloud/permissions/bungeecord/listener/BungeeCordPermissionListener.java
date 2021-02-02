@@ -32,7 +32,6 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.permissions.PermissionManagement;
-import systems.reformcloud.permissions.objects.PermissionUser;
 
 public class BungeeCordPermissionListener implements Listener {
 
@@ -49,9 +48,10 @@ public class BungeeCordPermissionListener implements Listener {
       return;
     }
 
-    ProxiedPlayer player = (ProxiedPlayer) event.getSender();
-    PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(player.getUniqueId());
-    event.setHasPermission(permissionUser.hasPermission(event.getPermission()));
+    final Boolean hasPermission = PermissionManagement.getInstance()
+      .loadUser(((ProxiedPlayer) event.getSender()).getUniqueId())
+      .hasPermission(event.getPermission());
+    event.setHasPermission(hasPermission != null && hasPermission);
   }
 
   @EventHandler
