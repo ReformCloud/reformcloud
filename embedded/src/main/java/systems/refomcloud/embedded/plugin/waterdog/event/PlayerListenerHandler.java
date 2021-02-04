@@ -22,46 +22,52 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.refomcloud.embedded.plugin.cloudburst.event;
+package systems.refomcloud.embedded.plugin.waterdog.event;
 
-import org.cloudburstmc.server.event.EventPriority;
-import org.cloudburstmc.server.event.Listener;
-import org.cloudburstmc.server.event.player.PlayerLoginEvent;
-import org.cloudburstmc.server.event.player.PlayerQuitEvent;
+import dev.waterdog.event.defaults.PlayerDisconnectEvent;
+import dev.waterdog.event.defaults.PlayerLoginEvent;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.embedded.Embedded;
-import systems.refomcloud.embedded.plugin.cloudburst.CloudBurstExecutor;
+import systems.refomcloud.embedded.controller.ProxyServerController;
+import systems.refomcloud.embedded.plugin.bungee.BungeeExecutor;
 import systems.refomcloud.embedded.shared.SharedDisconnectHandler;
 import systems.refomcloud.embedded.shared.SharedJoinAllowChecker;
+import systems.reformcloud.registry.service.ServiceRegistry;
 import systems.reformcloud.shared.collect.Entry2;
+
+import java.util.function.Consumer;
 
 public final class PlayerListenerHandler {
 
-  @Listener(priority = EventPriority.HIGH)
-  public void handle(final @NotNull PlayerLoginEvent event) {
-    if (!Embedded.getInstance().isReady()) {
-      event.setCancelled(true);
-      event.setKickMessage(CloudBurstExecutor.getInstance().getIngameMessages().format(
-        CloudBurstExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
-      ));
-      return;
-    }
-
-    Entry2<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
-      event.getPlayer()::hasPermission,
-      CloudBurstExecutor.getInstance().getIngameMessages(),
-      null,
-      event.getPlayer().getServerId(),
-      event.getPlayer().getName()
-    );
-    if (!checked.getFirst() && checked.getSecond() != null) {
-      event.setCancelled(true);
-      event.setKickMessage(checked.getSecond());
-    }
+  private PlayerListenerHandler() {
+    throw new UnsupportedOperationException();
   }
 
-  @Listener(priority = EventPriority.LOWEST)
-  public void handle(final @NotNull PlayerQuitEvent event) {
-    SharedDisconnectHandler.handleDisconnect(event.getPlayer().getServerId());
+  @NotNull
+  public static Consumer<PlayerLoginEvent> handlerForLogin() {
+    return event -> {
+      if (!Embedded.getInstance().isReady()) {
+        event.setCancelReason(Embedded.getInstance().getIngameMessages().format(Embedded.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()));
+        event.setCancelled(true);
+        return;
+      }
+
+      Entry2<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
+        event.getPlayer()::hasPermission,
+        BungeeExecutor.getInstance().getIngameMessages(),
+        ServiceRegistry.getUnchecked(ProxyServerController.class).getCachedProxies(),
+        event.getPlayer().getUniqueId(),
+        event.getPlayer().getName()
+      );
+      if (!checked.getFirst() && checked.getSecond() != null) {
+        event.setCancelReason(checked.getSecond());
+        event.setCancelled(true);
+      }
+    };
+  }
+
+  @NotNull
+  public static Consumer<PlayerDisconnectEvent> handlerForDisconnect() {
+    return event -> SharedDisconnectHandler.handleDisconnect(event.getPlayer().getUniqueId());
   }
 }

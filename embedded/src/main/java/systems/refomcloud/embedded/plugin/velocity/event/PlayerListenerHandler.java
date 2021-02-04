@@ -38,15 +38,14 @@ import systems.refomcloud.embedded.Embedded;
 import systems.refomcloud.embedded.controller.ProxyServerController;
 import systems.refomcloud.embedded.plugin.velocity.VelocityExecutor;
 import systems.refomcloud.embedded.plugin.velocity.fallback.VelocityFallbackExtraFilter;
+import systems.refomcloud.embedded.shared.SharedDisconnectHandler;
 import systems.refomcloud.embedded.shared.SharedJoinAllowChecker;
 import systems.refomcloud.embedded.shared.SharedPlayerFallbackFilter;
 import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.process.ProcessInformation;
-import systems.reformcloud.process.ProcessState;
 import systems.reformcloud.shared.collect.Entry2;
 
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 public final class PlayerListenerHandler {
 
@@ -126,17 +125,7 @@ public final class PlayerListenerHandler {
 
   @Subscribe(order = PostOrder.FIRST)
   public void handle(final DisconnectEvent event) {
-    VelocityExecutor.getInstance().getProxyServer().getScheduler().buildTask(VelocityExecutor.getInstance().getPlugin(), () -> {
-      ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-      if (VelocityExecutor.getInstance().getProxyServer().getPlayerCount() < Embedded.getInstance().getMaxPlayers()
-        && !current.getCurrentState().equals(ProcessState.READY)
-        && !current.getCurrentState().equals(ProcessState.INVISIBLE)) {
-        current.setCurrentState(ProcessState.READY);
-      }
-
-      current.getPlayers().removeIf(player -> player.getUniqueID().equals(event.getPlayer().getUniqueId()));
-      Embedded.getInstance().updateCurrentProcessInformation();
-    }).delay(20, TimeUnit.MILLISECONDS).schedule();
+    SharedDisconnectHandler.handleDisconnect(event.getPlayer().getUniqueId());
   }
 
   private @NotNull ProxyServerController getServerController() {

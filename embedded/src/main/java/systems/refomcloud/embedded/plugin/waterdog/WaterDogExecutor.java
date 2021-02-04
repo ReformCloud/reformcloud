@@ -22,80 +22,70 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.refomcloud.embedded.plugin.bungee;
+package systems.refomcloud.embedded.plugin.waterdog;
 
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Plugin;
+import dev.waterdog.ProxyServer;
+import dev.waterdog.event.EventPriority;
+import dev.waterdog.event.defaults.PlayerDisconnectEvent;
+import dev.waterdog.event.defaults.PlayerLoginEvent;
+import dev.waterdog.player.ProxiedPlayer;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.embedded.Embedded;
 import systems.refomcloud.embedded.controller.ProcessEventHandler;
 import systems.refomcloud.embedded.controller.ProxyServerController;
 import systems.refomcloud.embedded.executor.PlayerAPIExecutor;
-import systems.refomcloud.embedded.plugin.bungee.controller.BungeeProxyServerController;
-import systems.refomcloud.embedded.plugin.bungee.event.PlayerListenerHandler;
-import systems.refomcloud.embedded.plugin.bungee.executor.BungeePlayerAPIExecutor;
-import systems.refomcloud.embedded.plugin.bungee.reconnect.ReformCloudReconnectHandler;
+import systems.refomcloud.embedded.plugin.waterdog.controller.WaterDogProxyServerController;
+import systems.refomcloud.embedded.plugin.waterdog.event.PlayerListenerHandler;
+import systems.refomcloud.embedded.plugin.waterdog.executor.WaterDogPlayerExecutor;
+import systems.refomcloud.embedded.plugin.waterdog.reconnect.ReformCloudConnectionHandler;
 import systems.refomcloud.embedded.shared.SharedInvalidPlayerFixer;
 import systems.reformcloud.ExecutorType;
 import systems.reformcloud.event.EventManager;
 import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.shared.process.DefaultPlayer;
 
-public final class BungeeExecutor extends Embedded {
+public final class WaterDogExecutor extends Embedded {
 
-  private static BungeeExecutor instance;
-  private final Plugin plugin;
-
-  BungeeExecutor(Plugin plugin) {
+  public WaterDogExecutor() {
     super.type = ExecutorType.API;
 
-    instance = this;
-    this.plugin = plugin;
+    PlayerAPIExecutor.setInstance(new WaterDogPlayerExecutor());
 
-    PlayerAPIExecutor.setInstance(new BungeePlayerAPIExecutor(plugin));
-    ProxyServer.getInstance().setReconnectHandler(new ReformCloudReconnectHandler());
+    ProxyServer.getInstance().getEventManager().subscribe(PlayerLoginEvent.class, PlayerListenerHandler.handlerForLogin(), EventPriority.HIGH);
+    ProxyServer.getInstance().getEventManager().subscribe(PlayerDisconnectEvent.class, PlayerListenerHandler.handlerForDisconnect(), EventPriority.LOWEST);
 
-    super.getServiceRegistry().setProvider(ProxyServerController.class, new BungeeProxyServerController(), true);
+    ProxyServer.getInstance().setJoinHandler(ReformCloudConnectionHandler.INSTANCE);
+    ProxyServer.getInstance().setReconnectHandler(ReformCloudConnectionHandler.INSTANCE);
+
+    super.getServiceRegistry().setProvider(ProxyServerController.class, new WaterDogProxyServerController(), true);
     super.getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ProcessEventHandler());
 
-    ProxyServer.getInstance().getPluginManager().registerListener(this.plugin, new PlayerListenerHandler());
     this.fixInvalidPlayers();
-  }
-
-  @NotNull
-  public static BungeeExecutor getInstance() {
-    return instance;
   }
 
   @Override
   public int getPlayerCount() {
-    return ProxyServer.getInstance().getOnlineCount();
-  }
-
-  private void fixInvalidPlayers() {
-    SharedInvalidPlayerFixer.start(
-      uuid -> ProxyServer.getInstance().getPlayer(uuid) != null,
-      () -> ProxyServer.getInstance().getOnlineCount()
-    );
+    return ProxyServer.getInstance().getPlayers().size();
   }
 
   @Override
   protected int getMaxPlayersOfEnvironment() {
-    return ProxyServer.getInstance().getConfig().getPlayerLimit();
+    return ProxyServer.getInstance().getConfiguration().getMaxPlayerCount();
   }
 
   @Override
   protected void updatePlayersOfEnvironment(@NotNull ProcessInformation information) {
-    for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+    for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers().values()) {
       if (!information.getPlayerByUniqueId(player.getUniqueId()).isPresent()) {
         information.getPlayers().add(new DefaultPlayer(player.getUniqueId(), player.getName(), System.currentTimeMillis()));
       }
     }
   }
 
-  @NotNull
-  public Plugin getPlugin() {
-    return this.plugin;
+  private void fixInvalidPlayers() {
+    SharedInvalidPlayerFixer.start(
+      uuid -> ProxyServer.getInstance().getPlayer(uuid) != null,
+      () -> ProxyServer.getInstance().getPlayers().size()
+    );
   }
 }

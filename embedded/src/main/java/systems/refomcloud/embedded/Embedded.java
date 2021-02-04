@@ -302,6 +302,8 @@ public abstract class Embedded extends ExecutorAPI {
     return this.maxPlayers;
   }
 
+  public abstract int getPlayerCount();
+
   protected abstract int getMaxPlayersOfEnvironment();
 
   protected abstract void updatePlayersOfEnvironment(@NotNull ProcessInformation information);

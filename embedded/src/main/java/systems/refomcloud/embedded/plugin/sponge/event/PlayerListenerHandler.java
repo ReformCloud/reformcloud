@@ -25,19 +25,15 @@
 package systems.refomcloud.embedded.plugin.sponge.event;
 
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
 import systems.refomcloud.embedded.Embedded;
 import systems.refomcloud.embedded.plugin.sponge.SpongeExecutor;
+import systems.refomcloud.embedded.shared.SharedDisconnectHandler;
 import systems.refomcloud.embedded.shared.SharedJoinAllowChecker;
-import systems.reformcloud.process.ProcessInformation;
-import systems.reformcloud.process.ProcessState;
 import systems.reformcloud.shared.collect.Entry2;
-
-import java.util.concurrent.TimeUnit;
 
 public final class PlayerListenerHandler {
 
@@ -66,20 +62,6 @@ public final class PlayerListenerHandler {
 
   @Listener(order = Order.FIRST)
   public void handle(final @NotNull ClientConnectionEvent.Disconnect event) {
-    ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-    if (!current.getPlayerByUniqueId(event.getTargetEntity().getUniqueId()).isPresent()) {
-      return;
-    }
-
-    SpongeExecutor.getInstance().getExecutorService().schedule(() -> {
-      if (Sponge.getServer().getOnlinePlayers().size() < Embedded.getInstance().getMaxPlayers()
-        && !current.getCurrentState().equals(ProcessState.READY)
-        && !current.getCurrentState().equals(ProcessState.INVISIBLE)) {
-        current.setCurrentState(ProcessState.READY);
-      }
-
-      current.getPlayers().removeIf(player -> player.getUniqueID().equals(event.getTargetEntity().getUniqueId()));
-      Embedded.getInstance().updateCurrentProcessInformation();
-    }, 20, TimeUnit.MILLISECONDS);
+    SharedDisconnectHandler.handleDisconnect(event.getTargetEntity().getUniqueId());
   }
 }

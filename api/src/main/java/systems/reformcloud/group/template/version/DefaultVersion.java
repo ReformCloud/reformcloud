@@ -41,6 +41,7 @@ public final class DefaultVersion implements Version {
   private VersionType versionType;
   private int defaultStartPort;
   private boolean nativeTransportSupported;
+  private JavaVersion requiredJavaVersion;
   private transient VersionInfo versionInfo;
 
   @ApiStatus.Internal
@@ -52,6 +53,11 @@ public final class DefaultVersion implements Version {
   }
 
   DefaultVersion(String installer, String configurator, String versionName, String downloadUrl, VersionType versionType, int defaultStartPort, boolean nativeTransportSupported, VersionInfo info) {
+    this(installer, configurator, versionName, downloadUrl, versionType, defaultStartPort, nativeTransportSupported, JavaVersion.VERSION_1_8, info);
+  }
+
+  DefaultVersion(String installer, String configurator, String versionName, String downloadUrl, VersionType versionType,
+                 int defaultStartPort, boolean nativeTransportSupported, JavaVersion requiredJavaVersion, VersionInfo info) {
     this.installer = installer;
     this.configurator = configurator;
     this.versionName = versionName;
@@ -59,6 +65,7 @@ public final class DefaultVersion implements Version {
     this.versionType = versionType;
     this.defaultStartPort = defaultStartPort;
     this.nativeTransportSupported = nativeTransportSupported;
+    this.requiredJavaVersion = requiredJavaVersion;
     this.versionInfo = info == null ? VersionInfo.info(versionName) : info;
   }
 
@@ -133,8 +140,24 @@ public final class DefaultVersion implements Version {
   }
 
   @Override
+  public @NotNull JavaVersion getRequiredJavaVersion() {
+    return this.requiredJavaVersion;
+  }
+
+  @Override
+  public void setRequiredJavaVersion(@NotNull JavaVersion version) {
+    this.requiredJavaVersion = version;
+  }
+
+  @Override
+  public boolean isCompatibleWithJvm() {
+    return this.requiredJavaVersion.isCompatibleWithCurrent();
+  }
+
+  @Override
   public @NotNull Version clone() {
-    return Version.version(this.versionName, this.configurator, this.downloadUrl, this.installer, this.versionType, this.defaultStartPort, this.nativeTransportSupported, this.versionInfo);
+    return Version.version(this.versionName, this.configurator, this.downloadUrl, this.installer, this.versionType,
+      this.defaultStartPort, this.nativeTransportSupported, this.requiredJavaVersion, this.versionInfo);
   }
 
   @Override
@@ -173,6 +196,7 @@ public final class DefaultVersion implements Version {
     buffer.writeByte(this.versionType.ordinal());
     buffer.writeInt(this.defaultStartPort);
     buffer.writeBoolean(this.nativeTransportSupported);
+    buffer.writeByte(this.requiredJavaVersion.ordinal());
   }
 
   @Override
@@ -184,5 +208,6 @@ public final class DefaultVersion implements Version {
     this.versionType = EnumUtil.findEnumFieldByIndex(VersionType.class, buffer.readByte()).orElse(null);
     this.defaultStartPort = buffer.readInt();
     this.nativeTransportSupported = buffer.readBoolean();
+    this.requiredJavaVersion = EnumUtil.findEnumFieldByIndex(JavaVersion.class, buffer.readByte()).orElse(null);
   }
 }

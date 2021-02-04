@@ -22,22 +22,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.refomcloud.embedded.plugin.bungee.fallback;
+package systems.refomcloud.embedded.plugin.waterdog;
 
-import systems.reformcloud.group.template.version.VersionType;
-import systems.reformcloud.process.ProcessInformation;
+import dev.waterdog.plugin.Plugin;
 
-import java.util.function.Predicate;
-
-public final class BungeeFallbackExtraFilter implements Predicate<ProcessInformation> {
-
-  public static final BungeeFallbackExtraFilter INSTANCE = new BungeeFallbackExtraFilter();
-
-  private BungeeFallbackExtraFilter() {
-  }
+public final class WaterDogLauncher extends Plugin {
 
   @Override
-  public boolean test(ProcessInformation processInformation) {
-    return processInformation.getPrimaryTemplate().getVersion().getVersionType() == VersionType.JAVA_SERVER;
+  public void onEnable() {
+    new WaterDogExecutor();
   }
 }

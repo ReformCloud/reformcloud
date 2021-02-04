@@ -191,7 +191,7 @@ public class DefaultProcessFactory implements ProcessFactory {
 
     Template result = null;
     for (Template template : processGroup.getTemplates()) {
-      if (template.isGlobal()) {
+      if (template.isGlobal() || !template.getVersion().isCompatibleWithJvm()) {
         continue;
       }
 

@@ -27,42 +27,10 @@ package systems.refomcloud.embedded.plugin.bungee.controller;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.UnmodifiableView;
-import systems.refomcloud.embedded.controller.ProxyServerController;
-import systems.reformcloud.group.template.version.VersionType;
+import systems.refomcloud.embedded.controller.SharedProxyServerController;
 import systems.reformcloud.process.ProcessInformation;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.SocketAddress;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-public class BungeeProxyServerController implements ProxyServerController {
-
-  private static Method constructServerInfo;
-
-  static {
-    try {
-      constructServerInfo = ProxyServer.class.getMethod(
-        "constructServerInfo",
-        String.class,
-        SocketAddress.class,
-        String.class,
-        boolean.class,
-        boolean.class,
-        String.class
-      );
-      constructServerInfo.setAccessible(true);
-    } catch (NoSuchMethodException ignored) {
-      // we are not on a waterdog service
-    }
-  }
-
-  private final List<ProcessInformation> cachedLobbyServices = new CopyOnWriteArrayList<>();
-  private final List<ProcessInformation> cachedProxyServices = new CopyOnWriteArrayList<>();
+public class BungeeProxyServerController extends SharedProxyServerController {
 
   public BungeeProxyServerController() {
     ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().clear());
@@ -70,103 +38,28 @@ public class BungeeProxyServerController implements ProxyServerController {
   }
 
   @Override
-  public void registerProcess(@NotNull ProcessInformation processInformation) {
-    if (!processInformation.getPrimaryTemplate().getVersion().getVersionType().isServer()) {
-      this.cachedProxyServices.add(processInformation);
-      return;
-    }
-
-    if (!processInformation.getCurrentState().isOnline()) {
-      return;
-    }
-
-    if (processInformation.getProcessGroup().isLobbyGroup()) {
-      this.cachedLobbyServices.add(processInformation);
-    }
-
-    this.constructServerInfo(processInformation).ifPresent(
-      info -> ProxyServer.getInstance().getServers().put(info.getName(), info)
-    );
+  protected void registerServer(@NotNull ProcessInformation information) {
+    ProxyServer.getInstance().getServers().put(information.getName(), this.constructServerInfo(information));
   }
 
   @Override
-  public void handleProcessUpdate(@NotNull ProcessInformation processInformation) {
-    if (!processInformation.getCurrentState().isOnline()) {
-      this.cachedProxyServices.removeIf(e -> e.getId().getUniqueId().equals(processInformation.getId().getUniqueId()));
-      this.cachedLobbyServices.removeIf(e -> e.getId().getUniqueId().equals(processInformation.getId().getUniqueId()));
-      ProxyServer.getInstance().getServers().remove(processInformation.getName());
-      return;
+  protected void registerServerWhenUnknown(@NotNull ProcessInformation information) {
+    if (ProxyServer.getInstance().getServerInfo(information.getName()) == null) {
+      this.registerServer(information);
     }
-
-    if (processInformation.getPrimaryTemplate().getVersion().getVersionType().isProxy()) {
-      this.cachedProxyServices.removeIf(e -> e.getId().getUniqueId().equals(processInformation.getId().getUniqueId()));
-      this.cachedProxyServices.add(processInformation);
-      return;
-    }
-
-    if (processInformation.getProcessGroup().isLobbyGroup()) {
-      this.cachedLobbyServices.removeIf(e -> e.getId().getUniqueId().equals(processInformation.getId().getUniqueId()));
-      this.cachedLobbyServices.add(processInformation);
-    }
-
-    if (ProxyServer.getInstance().getServerInfo(processInformation.getName()) != null) {
-      return;
-    }
-
-    this.constructServerInfo(processInformation).ifPresent(
-      info -> ProxyServer.getInstance().getServers().put(info.getName(), info)
-    );
   }
 
   @Override
-  public void unregisterProcess(@NotNull ProcessInformation processInformation) {
-    if (processInformation.getPrimaryTemplate().getVersion().getVersionType().isProxy()) {
-      this.cachedProxyServices.removeIf(e -> e.getId().getUniqueId().equals(processInformation.getId().getUniqueId()));
-      return;
-    }
-
-    this.cachedLobbyServices.removeIf(e -> e.getId().getUniqueId().equals(processInformation.getId().getUniqueId()));
-    ProxyServer.getInstance().getServers().remove(processInformation.getName());
+  protected void unregisterServer(@NotNull ProcessInformation information) {
+    ProxyServer.getInstance().getServers().remove(information.getName());
   }
 
-  @Override
-  public @NotNull @UnmodifiableView List<ProcessInformation> getCachedLobbyServers() {
-    return Collections.unmodifiableList(this.cachedLobbyServices);
-  }
-
-  @Override
-  public @NotNull @UnmodifiableView List<ProcessInformation> getCachedProxies() {
-    return Collections.unmodifiableList(this.cachedProxyServices);
-  }
-
-  private @NotNull Optional<ServerInfo> constructServerInfo(@NotNull ProcessInformation processInformation) {
-    if (constructServerInfo != null) {
-      // WaterDog for Pocket Edition
-      if (processInformation.getPrimaryTemplate().getVersion().getVersionType() != VersionType.POCKET_SERVER) {
-        return Optional.empty();
-      }
-
-      try {
-        return Optional.of((ServerInfo) constructServerInfo.invoke(ProxyServer.getInstance(),
-          processInformation.getName(),
-          processInformation.getHost().toInetSocketAddress(),
-          "ReformCloud",
-          false,
-          processInformation.getPrimaryTemplate().getVersion().getVersionType() == VersionType.POCKET_SERVER,
-          "default"
-        ));
-      } catch (InvocationTargetException | IllegalAccessException exception) {
-        exception.printStackTrace();
-      }
-
-      return Optional.empty();
-    }
-
-    return Optional.of(ProxyServer.getInstance().constructServerInfo(
+  private @NotNull ServerInfo constructServerInfo(@NotNull ProcessInformation processInformation) {
+    return ProxyServer.getInstance().constructServerInfo(
       processInformation.getName(),
       processInformation.getHost().toInetSocketAddress(),
       "ReformCloud",
       false
-    ));
+    );
   }
 }

@@ -89,6 +89,35 @@ public interface Version extends ReNameable, SerializableObject, Cloneable {
   }
 
   /**
+   * Creates a new version.
+   *
+   * @param versionName              The name of the version to create.
+   * @param downloadUrl              The download url of the version.
+   * @param installer                The installer of the version.
+   * @param configurator             The configurator of the version.
+   * @param versionType              The version type of the version.
+   * @param defaultStartPort         The default start port of the version.
+   * @param nativeTransportSupported If native (epoll) transport is supported by the version.
+   * @param requiredJavaVersion      The minimum required java version for running this version.
+   * @param versionInfo              The version info about the version.
+   * @return The created version.
+   */
+  @NotNull
+  @Contract(pure = true)
+  static Version version(@NotNull String versionName,
+                         @NotNull String downloadUrl,
+                         @NotNull String installer,
+                         @NotNull String configurator,
+                         @NotNull VersionType versionType,
+                         @Range(from = 0, to = 65536) int defaultStartPort,
+                         boolean nativeTransportSupported,
+                         @NotNull JavaVersion requiredJavaVersion,
+                         @Nullable VersionInfo versionInfo
+  ) {
+    return new DefaultVersion(installer, configurator, versionName, downloadUrl, versionType, defaultStartPort, nativeTransportSupported, requiredJavaVersion, versionInfo);
+  }
+
+  /**
    * Get the download url of the version.
    *
    * @return The download url of the version.
@@ -191,6 +220,28 @@ public interface Version extends ReNameable, SerializableObject, Cloneable {
    * @param configurator The configurator to use.
    */
   void setConfigurator(@NotNull String configurator);
+
+  /**
+   * Gets the minimum required java version for running this version.
+   *
+   * @return the minimum required java version for running this version.
+   */
+  @NotNull
+  JavaVersion getRequiredJavaVersion();
+
+  /**
+   * Sets the minimum required java version for running this version.
+   *
+   * @param version the minimum required java version for running this version.
+   */
+  void setRequiredJavaVersion(@NotNull JavaVersion version);
+
+  /**
+   * Checks if this version is compatible to run in the current jvm.
+   *
+   * @return if this version is compatible to run in the current jvm.
+   */
+  boolean isCompatibleWithJvm();
 
   /**
    * Creates a clone of this version.

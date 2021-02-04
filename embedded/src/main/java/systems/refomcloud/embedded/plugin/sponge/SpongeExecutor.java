@@ -37,7 +37,7 @@ import systems.reformcloud.ExecutorType;
 import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.shared.process.DefaultPlayer;
 
-public class SpongeExecutor extends Embedded {
+public final class SpongeExecutor extends Embedded {
 
   private static SpongeExecutor instance;
   private final SpongeLauncher plugin;
@@ -57,6 +57,11 @@ public class SpongeExecutor extends Embedded {
   @NotNull
   public static SpongeExecutor getInstance() {
     return instance;
+  }
+
+  @Override
+  public int getPlayerCount() {
+    return Sponge.getServer().getOnlinePlayers().size();
   }
 
   @Override

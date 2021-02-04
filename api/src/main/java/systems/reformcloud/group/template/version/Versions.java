@@ -108,7 +108,7 @@ public final class Versions {
   // ----
   // POCKET PROXIES
   // ----
-  public static final Version WATERDOGPE = pocketProxy("WATERDOGPE", ProcessConfigurators.WATERDOG, "https://ci.codemc.org/job/yesdog/job/Waterdog/lastSuccessfulBuild/artifact/Waterfall-Proxy/bootstrap/target/Waterdog.jar");
+  public static final Version WATERDOGPE = pocketProxy("WATERDOGPE", ProcessConfigurators.WATERDOG, "https://jenkins.waterdog.dev/job/Waterdog/job/WaterdogPE/job/master/lastSuccessfulBuild/artifact/target/waterdog-1.0.0-SNAPSHOT.jar", JavaVersion.VERSION_11);
 
   private Versions() {
     throw new UnsupportedOperationException();
@@ -155,8 +155,20 @@ public final class Versions {
     return version(versionName, configurator, downloadUrl, VersionType.POCKET_PROXY, 19132, true);
   }
 
+  @SuppressWarnings("SameParameterValue")
+  private static Version pocketProxy(String versionName, String configurator, String downloadUrl, JavaVersion requiredJavaVersion) {
+    return version(versionName, configurator, downloadUrl, VersionType.POCKET_PROXY, 19132, true, requiredJavaVersion);
+  }
+
   private static Version version(String versionName, String configurator, String downloadUrl, VersionType versionType, int defaultStartPort, boolean nativeTransportSupported) {
     Version version = Version.version(versionName, downloadUrl, VersionInstaller.DOWNLOADING, configurator, versionType, defaultStartPort, nativeTransportSupported);
+    VERSIONS.put(versionName.toUpperCase(), version);
+    return version;
+  }
+
+  @SuppressWarnings("SameParameterValue")
+  private static Version version(String versionName, String configurator, String downloadUrl, VersionType versionType, int defaultStartPort, boolean nativeTransportSupported, JavaVersion requiredJavaVersion) {
+    Version version = Version.version(versionName, downloadUrl, VersionInstaller.DOWNLOADING, configurator, versionType, defaultStartPort, nativeTransportSupported, requiredJavaVersion, null);
     VERSIONS.put(versionName.toUpperCase(), version);
     return version;
   }

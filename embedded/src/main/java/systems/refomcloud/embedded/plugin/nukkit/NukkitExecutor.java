@@ -57,6 +57,11 @@ public final class NukkitExecutor extends Embedded {
   }
 
   @Override
+  public int getPlayerCount() {
+    return Server.getInstance().getOnlinePlayers().size();
+  }
+
+  @Override
   protected int getMaxPlayersOfEnvironment() {
     return Server.getInstance().getMaxPlayers();
   }

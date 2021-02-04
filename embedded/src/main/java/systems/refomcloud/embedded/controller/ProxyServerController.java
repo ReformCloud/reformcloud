@@ -28,17 +28,17 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.process.ProcessInformation;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface ProxyServerController {
 
-  void registerProcess(@NotNull ProcessInformation processInformation);
+  void registerProcess(@NotNull ProcessInformation information);
 
-  void handleProcessUpdate(@NotNull ProcessInformation processInformation);
+  void handleProcessUpdate(@NotNull ProcessInformation information);
 
-  void unregisterProcess(@NotNull ProcessInformation processInformation);
+  void unregisterProcess(@NotNull ProcessInformation information);
 
-  @NotNull @UnmodifiableView List<ProcessInformation> getCachedLobbyServers();
+  @NotNull @UnmodifiableView Collection<ProcessInformation> getCachedLobbyServers();
 
-  @NotNull @UnmodifiableView List<ProcessInformation> getCachedProxies();
+  @NotNull @UnmodifiableView Collection<ProcessInformation> getCachedProxies();
 }

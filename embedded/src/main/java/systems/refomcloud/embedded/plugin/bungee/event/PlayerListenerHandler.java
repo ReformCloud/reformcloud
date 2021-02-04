@@ -40,11 +40,11 @@ import systems.refomcloud.embedded.controller.ProxyServerController;
 import systems.refomcloud.embedded.plugin.bungee.BungeeExecutor;
 import systems.refomcloud.embedded.plugin.bungee.fallback.BungeeFallbackExtraFilter;
 import systems.refomcloud.embedded.plugin.bungee.util.EmptyProxiedPlayer;
+import systems.refomcloud.embedded.shared.SharedDisconnectHandler;
 import systems.refomcloud.embedded.shared.SharedJoinAllowChecker;
 import systems.refomcloud.embedded.shared.SharedPlayerFallbackFilter;
 import systems.reformcloud.ExecutorAPI;
 import systems.reformcloud.process.ProcessInformation;
-import systems.reformcloud.process.ProcessState;
 import systems.reformcloud.shared.collect.Entry2;
 
 import java.util.Optional;
@@ -120,16 +120,7 @@ public final class PlayerListenerHandler implements Listener {
 
   @EventHandler(priority = EventPriority.LOWEST)
   public void handle(final PlayerDisconnectEvent event) {
-    final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-
-    if (ProxyServer.getInstance().getOnlineCount() < Embedded.getInstance().getMaxPlayers()
-      && !current.getCurrentState().equals(ProcessState.READY)
-      && !current.getCurrentState().equals(ProcessState.INVISIBLE)) {
-      current.setCurrentState(ProcessState.READY);
-    }
-
-    current.getPlayers().removeIf(player -> player.getUniqueID().equals(event.getPlayer().getUniqueId()));
-    Embedded.getInstance().updateCurrentProcessInformation();
+    SharedDisconnectHandler.handleDisconnect(event.getPlayer().getUniqueId());
   }
 
   private @NotNull ProxyServerController getServerController() {

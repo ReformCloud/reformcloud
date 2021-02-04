@@ -60,10 +60,6 @@ public final class VelocityExecutor extends Embedded {
     super.getServiceRegistry().setProvider(ProxyServerController.class, new VelocityProxyServerController(proxyServer), true);
     super.getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ProcessEventHandler());
 
-    for (ProcessInformation process : super.getProcessProvider().getProcesses()) {
-      this.getServiceRegistry().getProviderUnchecked(ProxyServerController.class).registerProcess(process);
-    }
-
     proxyServer.getEventManager().register(launcher, new PlayerListenerHandler());
     this.fixInvalidPlayers();
   }
@@ -71,6 +67,11 @@ public final class VelocityExecutor extends Embedded {
   @NotNull
   public static VelocityExecutor getInstance() {
     return instance;
+  }
+
+  @Override
+  public int getPlayerCount() {
+    return this.proxyServer.getPlayerCount();
   }
 
   @Override

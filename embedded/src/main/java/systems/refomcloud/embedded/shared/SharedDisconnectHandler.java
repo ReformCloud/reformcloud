@@ -22,22 +22,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.refomcloud.embedded.plugin.bungee.fallback;
+package systems.refomcloud.embedded.shared;
 
-import systems.reformcloud.group.template.version.VersionType;
+import org.jetbrains.annotations.NotNull;
+import systems.refomcloud.embedded.Embedded;
 import systems.reformcloud.process.ProcessInformation;
+import systems.reformcloud.process.ProcessState;
 
-import java.util.function.Predicate;
+import java.util.UUID;
 
-public final class BungeeFallbackExtraFilter implements Predicate<ProcessInformation> {
+public final class SharedDisconnectHandler {
 
-  public static final BungeeFallbackExtraFilter INSTANCE = new BungeeFallbackExtraFilter();
-
-  private BungeeFallbackExtraFilter() {
+  private SharedDisconnectHandler() {
+    throw new UnsupportedOperationException();
   }
 
-  @Override
-  public boolean test(ProcessInformation processInformation) {
-    return processInformation.getPrimaryTemplate().getVersion().getVersionType() == VersionType.JAVA_SERVER;
+  public static void handleDisconnect(@NotNull UUID uniqueId) {
+    final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
+
+    if (Embedded.getInstance().getPlayerCount() < Embedded.getInstance().getMaxPlayers()
+      && !current.getCurrentState().equals(ProcessState.READY)
+      && !current.getCurrentState().equals(ProcessState.INVISIBLE)) {
+      current.setCurrentState(ProcessState.READY);
+    }
+
+    current.getPlayers().removeIf(player -> player.getUniqueID().equals(uniqueId));
+    Embedded.getInstance().updateCurrentProcessInformation();
   }
 }

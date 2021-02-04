@@ -45,6 +45,12 @@
       <url>https://repo.nukkitx.com/maven-snapshots/</url>
     </repository>
 
+    <!-- waterdog repo -->
+    <repository>
+      <id>waterdog-repo</id>
+      <url>https://repo.waterdog.dev/artifactory/main</url>
+    </repository>
+
     <!-- for development builds -->
     <repository>
       <id>sonatype-oss-snapshots</id>
@@ -123,6 +129,14 @@
       <groupId>org.cloudburstmc</groupId>
       <artifactId>cloudburst-server</artifactId>
       <version>0.0.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- WaterDog -->
+    <dependency>
+      <groupId>dev.waterdog</groupId>
+      <artifactId>waterdog</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
 

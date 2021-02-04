@@ -24,7 +24,6 @@
  */
 package systems.refomcloud.embedded.plugin.spigot.event;
 
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -33,9 +32,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.embedded.Embedded;
 import systems.refomcloud.embedded.plugin.spigot.SpigotExecutor;
+import systems.refomcloud.embedded.shared.SharedDisconnectHandler;
 import systems.refomcloud.embedded.shared.SharedJoinAllowChecker;
-import systems.reformcloud.process.ProcessInformation;
-import systems.reformcloud.process.ProcessState;
 import systems.reformcloud.shared.collect.Entry2;
 
 public final class PlayerListenerHandler implements Listener {
@@ -67,20 +65,6 @@ public final class PlayerListenerHandler implements Listener {
 
   @EventHandler(priority = EventPriority.LOWEST)
   public void handle(final @NotNull PlayerQuitEvent event) {
-    ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-    if (!current.getPlayerByUniqueId(event.getPlayer().getUniqueId()).isPresent()) {
-      return;
-    }
-
-    Bukkit.getScheduler().runTask(SpigotExecutor.getInstance().getPlugin(), () -> {
-      if (Bukkit.getOnlinePlayers().size() < Embedded.getInstance().getMaxPlayers()
-        && !current.getCurrentState().equals(ProcessState.READY)
-        && !current.getCurrentState().equals(ProcessState.INVISIBLE)) {
-        current.setCurrentState(ProcessState.READY);
-      }
-
-      current.getPlayers().removeIf(player -> player.getUniqueID().equals(event.getPlayer().getUniqueId()));
-      Embedded.getInstance().updateCurrentProcessInformation();
-    });
+    SharedDisconnectHandler.handleDisconnect(event.getPlayer().getUniqueId());
   }
 }

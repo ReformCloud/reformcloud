@@ -57,6 +57,11 @@ public final class SpigotExecutor extends Embedded {
   }
 
   @Override
+  public int getPlayerCount() {
+    return Bukkit.getOnlinePlayers().size();
+  }
+
+  @Override
   protected int getMaxPlayersOfEnvironment() {
     return Bukkit.getMaxPlayers();
   }

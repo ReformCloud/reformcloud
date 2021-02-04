@@ -22,44 +22,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.refomcloud.embedded.plugin.velocity.controller;
+package systems.refomcloud.embedded.plugin.waterdog.controller;
 
-import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.api.proxy.server.RegisteredServer;
-import com.velocitypowered.api.proxy.server.ServerInfo;
+import dev.waterdog.ProxyServer;
+import dev.waterdog.network.ServerInfo;
+import dev.waterdog.utils.config.ServerList;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.embedded.controller.SharedProxyServerController;
 import systems.reformcloud.process.ProcessInformation;
 
-import java.util.Optional;
+import java.util.ArrayList;
 
-public class VelocityProxyServerController extends SharedProxyServerController {
+public class WaterDogProxyServerController extends SharedProxyServerController {
 
-  private final ProxyServer proxyServer;
+  public WaterDogProxyServerController() {
+    ProxyServer.getInstance().getConfiguration().getPriorities().clear();
+    ProxyServer.getInstance().getConfiguration().getForcedHosts().clear();
 
-  public VelocityProxyServerController(ProxyServer proxyServer) {
-    this.proxyServer = proxyServer;
+    final ServerList serverList = ProxyServer.getInstance().getConfiguration().getServerInfoMap();
+    for (ServerInfo value : new ArrayList<>(serverList.values())) {
+      serverList.remove(value.getServerName());
+    }
   }
 
   @Override
   protected void registerServer(@NotNull ProcessInformation information) {
-    this.proxyServer.registerServer(this.constructServerInfo(information));
+    ProxyServer.getInstance().registerServerInfo(this.constructServerInfo(information));
   }
 
   @Override
   protected void registerServerWhenUnknown(@NotNull ProcessInformation information) {
-    final Optional<RegisteredServer> registeredServer = this.proxyServer.getServer(information.getName());
-    if (!registeredServer.isPresent()) {
+    if (ProxyServer.getInstance().getServerInfo(information.getName()) == null) {
       this.registerServer(information);
     }
   }
 
   @Override
   protected void unregisterServer(@NotNull ProcessInformation information) {
-    this.proxyServer.getServer(information.getName()).map(RegisteredServer::getServerInfo).ifPresent(this.proxyServer::unregisterServer);
+    ProxyServer.getInstance().removeServerInfo(information.getName());
   }
 
+  @NotNull
   private ServerInfo constructServerInfo(@NotNull ProcessInformation information) {
-    return new ServerInfo(information.getName(), information.getHost().toInetSocketAddress());
+    return new ServerInfo(information.getName(), information.getHost().toInetSocketAddress(), null);
   }
 }

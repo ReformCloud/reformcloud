@@ -52,6 +52,11 @@ public final class CloudBurstExecutor extends Embedded {
     return instance;
   }
 
+  @Override
+  public int getPlayerCount() {
+    return Server.getInstance().getOnlinePlayers().size();
+  }
+
   @NotNull
   public Object getPlugin() {
     return this.plugin;
