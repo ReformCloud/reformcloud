@@ -26,7 +26,6 @@ package systems.reformcloud.node.process.configurator.defaults.waterdog;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.group.template.ProcessConfigurators;
-import systems.reformcloud.group.template.version.Versions;
 import systems.reformcloud.node.process.DefaultNodeLocalProcessWrapper;
 import systems.reformcloud.node.process.configurator.ProcessConfigurator;
 import systems.reformcloud.node.process.configurator.defaults.ConfiguratorUtils;
@@ -38,18 +37,14 @@ public class WaterdogConfigurator implements ProcessConfigurator {
     ConfiguratorUtils.checkServerIcon(wrapper);
     ConfiguratorUtils.extractCompiledFile("files/mcpe/waterdog/config.yml", wrapper.getPath().resolve("config.yml"));
     ConfiguratorUtils.rewriteFile(wrapper.getPath().resolve("config.yml"), line -> {
-      if (line.trim().startsWith("host:")) {
-        line = "    host: '" + ConfiguratorUtils.formatHost(wrapper) + "'";
-      } else if (line.trim().startsWith("ip_forward:")) {
+      if (line.trim().startsWith("  host: ")) {
+        line = "  host: '" + ConfiguratorUtils.formatHost(wrapper) + "'";
+      } else if (line.trim().startsWith("use_login_extras: ")) {
+        line = "use_login_extras: true";
+      } else if (line.trim().startsWith("ip_forward: ")) {
         line = "ip_forward: true";
-      } else if (line.trim().startsWith("use_xuid_for_uuid:")) {
-        line = "use_xuid_for_uuid: true";
-      } else if (line.trim().startsWith("raknet:")) {
-        line = "    raknet: " + wrapper.getProcessInformation().getPrimaryTemplate().getVersion().equals(Versions.WATERDOGPE);
-      } else if (line.trim().startsWith("- query_port:")) {
-        line = "  - query_port: " + wrapper.getProcessInformation().getHost().getPort();
-      } else if (line.trim().startsWith("max_players:") && wrapper.getProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isUsePlayerLimit()) {
-        line = "    max_players: " + wrapper.getProcessInformation().getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers();
+      } else if (line.trim().startsWith("  max_players: ") && wrapper.getProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isUsePlayerLimit()) {
+        line = "  max_players: " + wrapper.getProcessInformation().getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers();
       }
       return line;
     });

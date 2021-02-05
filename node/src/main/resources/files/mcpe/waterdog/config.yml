@@ -1,54 +1,92 @@
-replace_username_spaces: true
-forge_support: true
-player_limit: -1
-use_xuid_for_uuid: true
-bedrock_encryption: true
-permissions:
-  default:
-    - bungeecord.command.server
-    - bungeecord.command.list
-  admin:
-    - bungeecord.command.alert
-    - bungeecord.command.end
-    - bungeecord.command.ip
-    - bungeecord.command.reload
-timeout: 30000
-log_commands: false
-online_mode: true
-disabled_commands:
-  - disabledcommandhere
+# Waterdog Main Configuration file
+# Configure your desired network settings here.
+
+
+# A list of all downstream proxies that are available right after starting
+# address field is formatted using ip:port
+# publicAddress is optional and can be set to the ip players can directly connect through
 servers:
-  lobby:
-    raknet: false
-    motd: '\n'
-    transfer_group: default
-    address: localhost:25565
-    restricted: false
-listeners:
-  - query_port: 19132
-    motd: '&1Another Bungee server'
-    tab_list: GLOBAL_PING
-    query_enabled: true
-    proxy_protocol: false
-    forced_hosts:
-      pvp.md-5.net: pvp
-    ping_passthrough: false
-    raknet: true
-    priorities:
-      - lobby
-    bind_local_address: true
-    host: 0.0.0.0:19132
-    max_players: 1
-    tab_size: 60
-    force_default_server: false
-ip_forward: true
-network_compression_threshold: 256
-max_mtu: -1
-prevent_proxy_connections: false
-groups:
-  md_5:
-    - admin
-connection_throttle: 4000
-stats: 55a8c2a1-827f-4619-9831-6b2a34fad2d5
-connection_throttle_limit: 3
-log_pings: true
+  lobby1:
+    address: 127.0.0.1:19133
+    public_address: play.myserver.com:19133
+listener:
+
+  # The Motd which will be displayed in the server tab of a player and returned during ping
+  motd: §bWaterdog§3PE
+
+  # The server priority list. if not changed by plugins, the proxy will connect the player to the first of those servers
+  priorities:
+    - lobby1
+
+  # The address to bind the server to
+  host: 0.0.0.0:19132
+
+  # The maximum amount of players that can connect to this proxy instance
+  max_players: 20
+
+  # Map the ip a player joined through to a specific server
+  # for example skywars.xyz.com => SkyWars-1
+  # when a player connects using skywars-xyz.com as the serverIp, he will be connected to SkyWars-1 directly
+  forced_hosts: {}
+
+# Case-Sensitive permission list for players
+permissions:
+  TobiasDev:
+    - waterdog.player.transfer
+    - waterdog.player.list
+  alemiz003:
+    - waterdog.player.transfer
+    - waterdog.player.list
+
+# List of permissions each player should get by default
+permissions_default:
+  - waterdog.command.help
+  - waterdog.command.info
+
+# Whether the debug output in the console should be enabled or not
+enable_debug: false
+
+# If enabled encrypted connection between client and proxy will be created
+upstream_encryption: true
+
+# If enabled, only players which are authenticated with XBOX Live can join. If disabled, anyone can connect *with any name*
+online_mode: true
+
+# If enabled, the proxy will pass information like XUID or IP to the downstream server using custom fields in the LoginPacket
+use_login_extras: true
+
+# Forward original address in client data under 'Waterdog_IP' attribute.
+ip_forward: false
+
+# Replaces username spaces with underscores if enabled
+replace_username_spaces: false
+
+# Whether server query should be enabled
+enable_query: true
+
+# If enabled, when receiving a McpeTransferPacket, the proxy will check if the target server is in the downstream list, and if yes, use the fast transfer mechanism
+prefer_fast_transfer: true
+
+# Fast-codec only decodes the packets required by the proxy, everything else will be passed rawly. Disabling this can create a performance hit
+use_fast_codec: true
+
+# If enabled, the proxy will inject all the proxy commands in the AvailableCommandsPacket, enabling autocompletion
+inject_proxy_commands: true
+
+# Upstream server compression ratio(proxy to client), higher = less bandwidth, more cpu, lower vice versa
+upstream_compression_level: 6
+
+# Upstream server compression ratio(proxy to downstream server), higher = less bandwidth, more cpu, lower vice versa
+downstream_compression_level: 2
+
+# Enable/Disable the resource pack system
+enable_packs: true
+
+# Whether texture packs should be enforced
+force_apply_packs: false
+
+# You can set maximum pack size in MB to be cached.
+pack_cache_size: 16
+
+# Creating threads may be in some situations expensive. Specify minimum count of idle threads per internal thread executors. Set to -1 to auto-detect by core count.
+default_idle_threads: -1
