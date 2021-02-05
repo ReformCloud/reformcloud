@@ -1,0 +1,4 @@
+name: 'ReformCloudWaterDogCommands'
+version: '3'
+author: 'derklaro'
+main: systems.refomcloud.commands.waterdog.WaterDogPlugin

@@ -23,6 +23,12 @@
       <id>velocity</id>
       <url>https://repo.velocitypowered.com/snapshots/</url>
     </repository>
+
+    <!-- waterdog repo -->
+    <repository>
+      <id>waterdog-repo</id>
+      <url>https://repo.waterdog.dev/artifactory/main</url>
+    </repository>
   </repositories>
 
   <dependencies>
@@ -39,6 +45,14 @@
       <groupId>com.velocitypowered</groupId>
       <artifactId>velocity-api</artifactId>
       <version>1.1.3</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- WaterDog -->
+    <dependency>
+      <groupId>dev.waterdog</groupId>
+      <artifactId>waterdog</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
 
