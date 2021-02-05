@@ -112,9 +112,32 @@ pipeline {
   }
 
   post {
-    always {
+    success {
       withCredentials([string(credentialsId: 'discord-webhook', variable: 'url')]) {
-        discordSend description: 'New build of ReformCloud', footer: 'Update', link: BUILD_URL, successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), title: JOB_NAME, webhookURL: url
+        discordSend(
+          description: "**Build:** ${env.BUILD_NUMBER}\nStatus: Success\n\n**Job-Url**:\n${env.BUILD_URL}",
+          footer: 'ReformCloud Jenkins',
+          link: "${env.BUILD_URL}",
+          successful: true,
+          title: "Build success: {env.JOB_NAME}",
+          webhookURL: "$url",
+          unstable: false,
+          result: "SUCCESS"
+        )
+      }
+    }
+    failure {
+      withCredentials([string(credentialsId: 'discord-webhook', variable: 'url')]) {
+        discordSend(
+          description: "**Build:** ${env.BUILD_NUMBER}\nStatus: Failure\n\n**Job-Url**:\n${env.BUILD_URL}",
+          footer: 'ReformCloud Jenkins',
+          link: "${env.BUILD_URL}",
+          successful: false,
+          title: "Build failure: {env.JOB_NAME}",
+          webhookURL: "$url",
+          unstable: false,
+          result: "FAILURE"
+        )
       }
     }
 
