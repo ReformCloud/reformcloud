@@ -123,8 +123,8 @@ pipeline {
           footer: 'ReformCloud Jenkins',
           link: "${env.BUILD_URL}",
           successful: true,
-          title: "Build success: {env.JOB_NAME}",
-          webhookURL: "$url",
+          title: "Build success: ${env.JOB_NAME}",
+          webhookURL: url,
           unstable: false,
           result: "SUCCESS"
         )
@@ -137,8 +137,8 @@ pipeline {
           footer: 'ReformCloud Jenkins',
           link: "${env.BUILD_URL}",
           successful: false,
-          title: "Build failure: {env.JOB_NAME}",
-          webhookURL: "$url",
+          title: "Build failure: ${env.JOB_NAME}",
+          webhookURL: url,
           unstable: false,
           result: "FAILURE"
         )
