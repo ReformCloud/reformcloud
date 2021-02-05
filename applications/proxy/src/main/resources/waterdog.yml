@@ -1,0 +1,6 @@
+name: 'ReformCloudWaterDogProxy'
+version: '3'
+author: 'derklaro'
+main: systems.reformcloud.proxy.waterdog.WaterDogPlugin
+depends:
+  - ReformCloudWaterDogExecutor

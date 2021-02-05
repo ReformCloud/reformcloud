@@ -2,3 +2,5 @@ name: 'ReformCloudWaterDogPermissions'
 version: '3'
 author: 'derklaro'
 main: systems.refomcloud.permissions.waterdog.WaterDogPermissionPlugin
+depends:
+  - ReformCloudWaterDogExecutor
