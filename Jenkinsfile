@@ -113,6 +113,10 @@ pipeline {
 
   post {
     success {
+      junit allowEmptyResults: true, testResults: 'api/target/surefire-reports/TEST-*.xml'
+      junit allowEmptyResults: true, testResults: 'protocol/target/surefire-reports/TEST-*.xml'
+      junit allowEmptyResults: true, testResults: 'shared/target/surefire-reports/TEST-*.xml'
+
       withCredentials([string(credentialsId: 'discord-webhook', variable: 'url')]) {
         discordSend(
           description: "**Build:** ${env.BUILD_NUMBER}\nStatus: Success\n\n**Job-Url**:\n${env.BUILD_URL}",
@@ -139,12 +143,6 @@ pipeline {
           result: "FAILURE"
         )
       }
-    }
-
-    success {
-      junit allowEmptyResults: true, testResults: 'api/target/surefire-reports/TEST-*.xml'
-      junit allowEmptyResults: true, testResults: 'protocol/target/surefire-reports/TEST-*.xml'
-      junit allowEmptyResults: true, testResults: 'shared/target/surefire-reports/TEST-*.xml'
     }
   }
 }
