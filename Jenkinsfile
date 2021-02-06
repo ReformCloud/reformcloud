@@ -11,8 +11,8 @@ pipeline {
   }
 
   environment {
-    PROJECT_VERSION = getProjectVersion().replace("-SNAPSHOT", "");
-    IS_SNAPSHOT = getProjectVersion().endsWith("-SNAPSHOT");
+    PROJECT_VERSION = getProjectVersion().replace("-SNAPSHOT", "")
+    IS_SNAPSHOT = getProjectVersion().endsWith("-SNAPSHOT")
   }
 
   stages {
@@ -24,25 +24,25 @@ pipeline {
       }
 
       steps {
-        sh 'mvn versions:set -DnewVersion="${PROJECT_VERSION}.${BUILD_NUMBER}-SNAPSHOT"';
+        sh 'mvn versions:set -DnewVersion="${PROJECT_VERSION}.${BUILD_NUMBER}-SNAPSHOT"'
       }
     }
 
     stage('Clean') {
       steps {
-        sh 'mvn clean';
+        sh 'mvn clean'
       }
     }
 
     stage('Build') {
       steps {
-        sh 'mvn package';
+        sh 'mvn package'
       }
     }
 
     stage('Verify') {
       steps {
-        sh 'mvn verify';
+        sh 'mvn verify'
       }
     }
 
@@ -55,47 +55,47 @@ pipeline {
       }
 
       steps {
-        echo "Deploy new release...";
-        sh 'mvn clean deploy -P deploy';
+        echo "Deploy new release..."
+        sh 'mvn clean deploy -P deploy'
       }
     }
 
     stage('Prepare cloud zip') {
       steps {
-        echo "Creating cloud zip...";
+        echo "Creating cloud zip..."
 
-        sh "rm -rf ReformCloud.zip";
-        sh "mkdir -p results";
-        sh "cp -r .templates/* results/";
-        sh "cp runner/target/runner.jar results/runner.jar";
+        sh "rm -rf ReformCloud.zip"
+        sh "mkdir -p results"
+        sh "cp -r .templates/* results/"
+        sh "cp runner/target/runner.jar results/runner.jar"
 
-        zip archive: true, dir: 'results', glob: '', zipFile: 'ReformCloud.zip';
+        zip archive: true, dir: 'results', glob: '', zipFile: 'ReformCloud.zip'
 
-        sh "rm -rf results/";
+        sh "rm -rf results/"
       }
     }
 
     stage('Prepare applications zip') {
       steps {
-        sh "rm -rf ReformCloud-Applications.zip";
-        sh "mkdir -p applications/";
+        sh "rm -rf ReformCloud-Applications.zip"
+        sh "mkdir -p applications-results/"
 
-        sh "find applications/ -type f -name \"*.jar\" -and -not -name \"*-sources.jar\" -and -not -name \"*-javadoc.jar\" -exec cp \"{}\" applications/ ';'";
-        zip archive: true, dir: 'applications', glob: '', zipFile: 'ReformCloud-Applications.zip'
+        sh "find applications/ -type f -name \"*.jar\" -and -not -name \"*-sources.jar\" -and -not -name \"*-javadoc.jar\" -exec cp \"{}\" applications-results/ ';'"
+        zip archive: true, dir: 'applications-results', glob: '', zipFile: 'ReformCloud-Applications.zip'
 
-        sh "rm -rf applications/";
+        sh "rm -rf applications-results/"
       }
     }
 
     stage('Prepare plugins zip') {
       steps {
-        sh "rm -rf ReformCloud-Plugins.zip";
-        sh "mkdir -p plugins/";
+        sh "rm -rf ReformCloud-Plugins.zip"
+        sh "mkdir -p plugins-results/"
 
-        sh "find plugins/ -type f -name \"*.jar\" -and -not -name \"*-sources.jar\" -and -not -name \"*-javadoc.jar\" -exec cp \"{}\" plugins/ ';'";
-        zip archive: true, dir: 'plugins', glob: '', zipFile: 'ReformCloud-Plugins.zip'
+        sh "find plugins/ -type f -name \"*.jar\" -and -not -name \"*-sources.jar\" -and -not -name \"*-javadoc.jar\" -exec cp \"{}\" plugins-results/ ';'"
+        zip archive: true, dir: 'plugins-results', glob: '', zipFile: 'ReformCloud-Plugins.zip'
 
-        sh "rm -rf plugins/";
+        sh "rm -rf plugins-results/"
       }
     }
 
