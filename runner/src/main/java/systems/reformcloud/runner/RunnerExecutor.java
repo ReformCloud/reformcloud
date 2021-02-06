@@ -30,6 +30,7 @@ public final class RunnerExecutor {
 
   public static synchronized void main(@NotNull String[] args) {
     System.setProperty("file.encoding", "UTF-8");
+    System.setSecurityManager(null); // eats performance
 
     Runner runner = new Runner(args);
     runner.bootstrap();
