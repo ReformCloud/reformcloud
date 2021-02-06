@@ -60,7 +60,7 @@ public class CloudLogger extends Logger {
 
       ColouredWriter colouredWriter = new ColouredWriter(lineReader);
       colouredWriter.setLevel(Level.parse(System.getProperty("systems.reformcloud.console-log-level", "ALL")));
-      colouredWriter.setFormatter(new DefaultFormatter(true));
+      colouredWriter.setFormatter(new DefaultFormatter(!Boolean.getBoolean("reformcloud.disable.colours")));
       colouredWriter.setEncoding(StandardCharsets.UTF_8.name());
       super.addHandler(colouredWriter);
     } catch (IOException exception) {
@@ -97,7 +97,7 @@ public class CloudLogger extends Logger {
    * @param logRecord The log record to check
    * @return {@code true} if the record should be printed, {@code false} otherwise
    */
-  @ApiStatus.AvailableSince("3.0.0-SNAPSHOT-SNAPSHOT")
+  @ApiStatus.AvailableSince("3.0.0-SNAPSHOT")
   protected boolean preProcessRecord(@NotNull LogRecord logRecord) {
     return !NodeExecutor.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class)
       .callEvent(new LogRecordProcessEvent(logRecord))

@@ -28,6 +28,7 @@ import org.fusesource.jansi.AnsiConsole;
 import org.jetbrains.annotations.NotNull;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.impl.LineReaderImpl;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.InfoCmp;
@@ -44,24 +45,27 @@ public class DefaultNodeConsole implements Console {
   private static final String USER = System.getProperty("user.name");
   private static final String VERSION = System.getProperty("reformcloud.runner.version");
 
-  private final ConsoleReadThread consoleReadThread = new ConsoleReadThread(this);
   private final Terminal terminal;
-  private final LineReader lineReader;
+  private final LineReaderImpl lineReader;
+
+  private final boolean colorSupport;
+  private final ConsoleReadThread consoleReadThread = new ConsoleReadThread(this);
 
   private String prompt = System.getProperty("systems.reformcloud.console-prompt-pattern", "[&crc&7-&b{0}&7@&b{1} &f~&r]$ ");
 
   public DefaultNodeConsole() {
-    System.setProperty("library.jansi.version", "ReformCloud");
-    AnsiConsole.systemInstall();
+    this.colorSupport = !Boolean.getBoolean("reformcloud.disable.colours") && this.tryInstallAnsi();
+    System.setProperty("reformcloud.disable.colours", Boolean.toString(!this.colorSupport));
 
-    this.prompt = ConsoleColour.toColouredString('&', this.prompt);
+    this.setPrompt(this.prompt);
     this.prompt = MessageFormat.format(this.prompt, USER, VERSION);
 
     try {
       this.terminal = TerminalBuilder.builder().system(true).encoding(StandardCharsets.UTF_8).build();
-      this.lineReader = LineReaderBuilder.builder()
+      this.lineReader = (LineReaderImpl) LineReaderBuilder.builder()
         .completer(new DefaultNodeCommandCompleter())
         .terminal(this.terminal)
+        .variable(LineReader.BELL_STYLE, "off")
         .option(LineReader.Option.DISABLE_EVENT_EXPANSION, true)
         .build();
     } catch (IOException exception) {
@@ -86,7 +90,12 @@ public class DefaultNodeConsole implements Console {
 
   @Override
   public void setPrompt(@NotNull String prompt) {
-    this.prompt = ConsoleColour.toColouredString('&', prompt);
+    this.prompt = this.colorSupport
+      ? ConsoleColour.toColouredString('&', this.prompt)
+      : ConsoleColour.stripColor('&', this.prompt);
+    if (this.lineReader != null) {
+      this.lineReader.setPrompt(this.prompt);
+    }
   }
 
   @Override
@@ -120,5 +129,16 @@ public class DefaultNodeConsole implements Console {
   @NotNull
   public LineReader getLineReader() {
     return this.lineReader;
+  }
+
+  private boolean tryInstallAnsi() {
+    try {
+      System.setProperty("library.jansi.version", "ReformCloud");
+      AnsiConsole.systemInstall();
+      return true;
+    } catch (UnsatisfiedLinkError error) {
+      System.err.println("Ansi support is disabled, running in an unsupported environment");
+      return false;
+    }
   }
 }

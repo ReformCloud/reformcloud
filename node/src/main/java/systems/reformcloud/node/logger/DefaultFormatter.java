@@ -51,7 +51,9 @@ public class DefaultFormatter extends Formatter {
     stringBuilder.append(" [");
     this.appendLevel(stringBuilder, record.getLevel());
     stringBuilder.append("] ");
-    stringBuilder.append(ConsoleColour.stripColor('&', super.formatMessage(record)));
+    stringBuilder.append(this.coloured
+      ? ConsoleColour.toColouredString('&', super.formatMessage(record))
+      : ConsoleColour.stripColor('&', super.formatMessage(record)));
     stringBuilder.append('\n');
 
     if (record.getThrown() != null) {

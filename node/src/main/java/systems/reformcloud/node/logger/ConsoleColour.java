@@ -77,20 +77,24 @@ public enum ConsoleColour {
 
   @NotNull
   public static String stripColor(char altColorChar, @NotNull String input) {
-    return stripColor(toColouredString(altColorChar, input));
+    return stripColor(replaceAlternateColorCodes(altColorChar, input));
   }
 
   @NotNull
-  public static String toColouredString(char altColorChar, @NotNull String textToTranslate) {
+  public static String replaceAlternateColorCodes(char colorChar, @NotNull String textToTranslate) {
     char[] b = textToTranslate.toCharArray();
     for (int i = 0; i < b.length - 1; i++) {
-      if (b[i] == altColorChar && ALL_CODES.indexOf(b[i + 1]) > -1) {
+      if (b[i] == colorChar && ALL_CODES.indexOf(b[i + 1]) > -1) {
         b[i] = ConsoleColour.COLOR_CHAR;
         b[i + 1] = Character.toLowerCase(b[i + 1]);
       }
     }
+    return new String(b);
+  }
 
-    String s = new String(b);
+  @NotNull
+  public static String toColouredString(char altColorChar, @NotNull String textToTranslate) {
+    String s = replaceAlternateColorCodes(altColorChar, textToTranslate);
     for (ConsoleColour value : EnumUtil.getEnumEntries(ConsoleColour.class)) {
       s = value.getPattern().matcher(s).replaceAll(value.getAnsi());
     }
