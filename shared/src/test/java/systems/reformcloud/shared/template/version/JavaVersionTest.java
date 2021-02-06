@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import systems.reformcloud.group.template.version.JavaVersion;
 
-public class JavaVersionText {
+public class JavaVersionTest {
 
   @Test
   void testCurrent() {
