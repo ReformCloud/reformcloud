@@ -35,9 +35,9 @@ PRINTLN
 # VARIABLE reformcloud.version.url=https://internal.reformcloud.systems/version.properties
 # VARIABLE reformcloud.debug-net=false
 # VARIABLE systems.reformcloud.IKnownWhatIDid=false
+# VARIABLE reformcloud.runner.version=3.0.0-SNAPSHOT
 
 # Default enabled system env variables (if you want to unset them write '# ' in front of the line)
-VARIABLE reformcloud.runner.version=3.0.0-SNAPSHOT
 VARIABLE reformcloud.indev.build.url=https://ci.reformcloud.systems/job/reformcloud2/job/indev/lastSuccessfulBuild/artifact/reformcloud2-node/target/executor.jar
 VARIABLE reformcloud.version.url=https://internal.reformcloud.systems/version.properties
 VARIABLE reformcloud.auto.update=true
