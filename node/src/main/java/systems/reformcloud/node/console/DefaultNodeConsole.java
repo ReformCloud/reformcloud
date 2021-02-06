@@ -51,7 +51,7 @@ public class DefaultNodeConsole implements Console {
   private final boolean colorSupport;
   private final ConsoleReadThread consoleReadThread = new ConsoleReadThread(this);
 
-  private String prompt = System.getProperty("systems.reformcloud.console-prompt-pattern", "[&crc&7-&b{0}&7@&b{1} &f~&r]$ ");
+  private String prompt = System.getProperty("reformcloud.console-prompt-pattern", "[&crc&7-&b{0}&7@&b{1} &f~&r]$ ");
 
   public DefaultNodeConsole() {
     this.colorSupport = !Boolean.getBoolean("reformcloud.disable.colours") && this.tryInstallAnsi();

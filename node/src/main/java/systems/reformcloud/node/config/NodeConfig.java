@@ -36,7 +36,7 @@ import java.util.UUID;
 
 public class NodeConfig {
 
-  protected static final Path PATH = Paths.get(System.getProperty("systems.reformcloud.node-config-path", "reformcloud/config.json"));
+  protected static final Path PATH = Paths.get(System.getProperty("reformcloud.node-config-path", "reformcloud/config.json"));
 
   private final String name;
   private final UUID uniqueID;

@@ -42,7 +42,7 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
   private static final Collection<String> EXCLUDED_LINE_STARTS = new ArrayList<>(); // No need to be thread save
 
   static {
-    String excluded = System.getProperty("systems.reformcloud.logging-excluded-line-starts", "SLF4J:");
+    String excluded = System.getProperty("reformcloud.logging-excluded-line-starts", "SLF4J:");
     EXCLUDED_LINE_STARTS.addAll(Arrays.asList(excluded.split(";")));
   }
 

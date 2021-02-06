@@ -33,7 +33,7 @@ import systems.reformcloud.shared.platform.Platform;
 final class SentryErrorReporter {
 
   private static final String SENTRY_DSN = System.getProperty(
-    "systems.reformcloud.sentry-log-dsn",
+    "reformcloud.sentry-log-dsn",
     "https://f9ac673179f7438ab441e3bd61a32a90@o440889.ingest.sentry.io/5416465?async=false"
   );
 

@@ -63,7 +63,7 @@ public abstract class SharedChannelListener implements ChannelListener {
 
   @Override
   public void exceptionCaught(@NotNull NetworkChannel channel, @NotNull Throwable cause) {
-    boolean debug = Boolean.getBoolean("systems.reformcloud.debug-net");
+    boolean debug = Boolean.getBoolean("reformcloud.debug-net");
     if (!(cause instanceof IOException) && debug) {
       System.err.println("Exception in channel " + channel.getRemoteAddress());
       cause.printStackTrace();

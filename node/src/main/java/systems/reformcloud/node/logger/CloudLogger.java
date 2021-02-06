@@ -50,7 +50,7 @@ public class CloudLogger extends Logger {
     super.setLevel(Level.ALL);
 
     try {
-      String logFile = System.getProperty("systems.reformcloud.console-log-file", "logs/cloud.log");
+      String logFile = System.getProperty("reformcloud.console-log-file", "logs/cloud.log");
       IOUtils.createDirectory(Paths.get(logFile).getParent());
 
       FileHandler fileHandler = new FileHandler(logFile, 1 << 24, 8, true);
@@ -59,7 +59,7 @@ public class CloudLogger extends Logger {
       super.addHandler(fileHandler);
 
       ColouredWriter colouredWriter = new ColouredWriter(lineReader);
-      colouredWriter.setLevel(Level.parse(System.getProperty("systems.reformcloud.console-log-level", "ALL")));
+      colouredWriter.setLevel(Level.parse(System.getProperty("reformcloud.console-log-level", "ALL")));
       colouredWriter.setFormatter(new DefaultFormatter(!Boolean.getBoolean("reformcloud.disable.colours")));
       colouredWriter.setEncoding(StandardCharsets.UTF_8.name());
       super.addHandler(colouredWriter);

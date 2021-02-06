@@ -42,7 +42,7 @@ import java.sql.SQLException;
 
 public class H2DatabaseProvider extends AbstractSQLDatabaseProvider {
 
-  private static final Path DB_PATH = Paths.get(System.getProperty("systems.reformcloud.h2-db-path", "reformcloud/.database/h2/h2_db"));
+  private static final Path DB_PATH = Paths.get(System.getProperty("reformcloud.h2-db-path", "reformcloud/.database/h2/h2_db"));
   private final Connection connection;
 
   public H2DatabaseProvider() {

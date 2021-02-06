@@ -207,8 +207,8 @@ public final class NodeExecutor extends ExecutorAPI {
     PacketRegister.register();
     this.registerDefaultPacketProcessors();
 
-    this.mainGroupProvider = new DefaultNodeMainGroupProvider(System.getProperty("systems.reformcloud.main-group-dir", "reformcloud/groups/main"));
-    this.processGroupProvider = new DefaultNodeProcessGroupProvider(System.getProperty("systems.reformcloud.sub-group-dir", "reformcloud/groups/sub"));
+    this.mainGroupProvider = new DefaultNodeMainGroupProvider(System.getProperty("reformcloud.main-group-dir", "reformcloud/groups/main"));
+    this.processGroupProvider = new DefaultNodeProcessGroupProvider(System.getProperty("reformcloud.sub-group-dir", "reformcloud/groups/sub"));
 
     this.nodeExecutorConfig.init();
     this.nodeConfig = this.nodeExecutorConfig.getNodeConfig();

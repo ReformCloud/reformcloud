@@ -11,7 +11,7 @@ PRINTLN
 PRINTLN                   Not just a cloud system, but an experience.
 PRINTLN
 
-# Default system env variables (if you want to unset them write '# ' in front of the line)
+# Default disabled system env variables (if you want to use them remove '# ' from the front of the line)
 # VARIABLE reformcloud.dev.mode=true
 # VARIABLE reformcloud.lib.path=.
 # VARIABLE reformcloud.disable.native=true
@@ -19,8 +19,26 @@ PRINTLN
 # VARIABLE reformcloud.runner.debug=true
 # VARIABLE reformcloud.disable.colours=true
 # VARIABLE reformcloud.indev.builds=true
-# VARIABLE reformcloud.runner.version=3.0.0-SNAPSHOT
-VARIABLE reformcloud.indev.build.url=https://ci.reformcloud.systems/job/reformcloud/job/indev/lastSuccessfulBuild/artifact/node/target/executor.jar
+# VARIABLE reformcloud.application-directory=reformcloud/applications
+# VARIABLE reformcloud.language-code=en
+# VARIABLE reformcloud.main-group-dir=reformcloud/groups/main
+# VARIABLE reformcloud.sub-group-dir=reformcloud/groups/sub
+# VARIABLE reformcloud.node-config-path=reformcloud/config.json
+# VARIABLE reformcloud.console-prompt-pattern=[&crc&7-&b{0}&7@&b{1} &f~&r]$
+# VARIABLE reformcloud.h2-db-path=reformcloud/.database/h2/h2_db
+# VARIABLE reformcloud.console-log-file=logs/cloud.log
+# VARIABLE reformcloud.console-log-level=ALL
+# VARIABLE reformcloud.log-date-format=dd.MM.yyyy kk:mm:ss
+# VARIABLE reformcloud.logging-excluded-line-starts=SLF4J:
+# VARIABLE reformcloud.sentry-log-dsn=https://f9ac673179f7438ab441e3bd61a32a90@o440889.ingest.sentry.io/5416465?async=false
+# VARIABLE reformcloud.process.path=reformcloud/.bin/executor.jar
+# VARIABLE reformcloud.version.url=https://internal.reformcloud.systems/version.properties
+# VARIABLE reformcloud.debug-net=false
+# VARIABLE systems.reformcloud.IKnownWhatIDid=false
+
+# Default enabled system env variables (if you want to unset them write '# ' in front of the line)
+VARIABLE reformcloud.runner.version=3.0.0-SNAPSHOT
+VARIABLE reformcloud.indev.build.url=https://ci.reformcloud.systems/job/reformcloud2/job/indev/lastSuccessfulBuild/artifact/reformcloud2-node/target/executor.jar
 VARIABLE reformcloud.version.url=https://internal.reformcloud.systems/version.properties
 VARIABLE reformcloud.auto.update=true
 

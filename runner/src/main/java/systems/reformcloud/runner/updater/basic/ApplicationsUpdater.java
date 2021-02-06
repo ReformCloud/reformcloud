@@ -47,7 +47,7 @@ public final class ApplicationsUpdater implements Updater {
   /**
    * The folder in which the installed applications of the cloud versions are located
    */
-  private static final Path APP_FOLDER = Paths.get(System.getProperty("systems.reformcloud.application-directory", "reformcloud/applications"));
+  private static final Path APP_FOLDER = Paths.get(System.getProperty("reformcloud.application-directory", "reformcloud/applications"));
 
   private final Path applicationUpdatesPath;
   private final Collection<Map.Entry<Path, Path>> oldToNewUpdates;

@@ -64,7 +64,7 @@ import java.util.stream.Collectors;
 
 public final class DefaultApplicationLoader implements ApplicationLoader {
 
-  private static final Path APPLICATION_DIRECTORY = Paths.get(System.getProperty("systems.reformcloud.application-directory", "reformcloud/applications"));
+  private static final Path APPLICATION_DIRECTORY = Paths.get(System.getProperty("reformcloud.application-directory", "reformcloud/applications"));
 
   private final Map<String, Application> loadedApplications = new ConcurrentHashMap<>();
   private final Collection<ApplicationConfig> detectedApplications = new CopyOnWriteArrayList<>();
