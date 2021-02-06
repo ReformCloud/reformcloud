@@ -132,7 +132,7 @@ public enum JavaVersion {
    * @return if this java version is compatible with the current jvm version.
    */
   public boolean isCompatibleWithCurrent() {
-    return this.compareTo(JavaVersion.current()) >= 0;
+    return JavaVersion.current().isCompatibleWith(this);
   }
 
   /**

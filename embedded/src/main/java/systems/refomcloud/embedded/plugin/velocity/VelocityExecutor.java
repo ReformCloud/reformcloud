@@ -81,9 +81,11 @@ public final class VelocityExecutor extends Embedded {
 
   @Override
   protected void updatePlayersOfEnvironment(@NotNull ProcessInformation information) {
-    for (Player player : this.proxyServer.getAllPlayers()) {
-      if (!information.getPlayerByUniqueId(player.getUniqueId()).isPresent()) {
-        information.getPlayers().add(new DefaultPlayer(player.getUniqueId(), player.getUsername(), System.currentTimeMillis()));
+    if (this.proxyServer != null) {
+      for (Player player : this.proxyServer.getAllPlayers()) {
+        if (!information.getPlayerByUniqueId(player.getUniqueId()).isPresent()) {
+          information.getPlayers().add(new DefaultPlayer(player.getUniqueId(), player.getUsername(), System.currentTimeMillis()));
+        }
       }
     }
   }
