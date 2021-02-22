@@ -90,7 +90,7 @@ public class DefaultFileRegistry implements FileRegistry {
       return;
     }
 
-    JsonConfiguration.newJsonConfiguration(this.backingAdapter).add("key", newValue).write(filePath);
+    JsonConfiguration.newJsonConfiguration().add("key", newValue).write(filePath);
   }
 
   @NotNull
