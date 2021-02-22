@@ -40,7 +40,7 @@ import systems.reformcloud.permissions.velocity.listener.VelocityPermissionListe
   description = "The reformcloud permission plugin",
   url = "https://reformcloud.systems",
   authors = {"derklaro"},
-  dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
+  dependencies = {@Dependency(id = "reformcloud_api_executor")}
 )
 public class VelocityPermissionPlugin {
 
