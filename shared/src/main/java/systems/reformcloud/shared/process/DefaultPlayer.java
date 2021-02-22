@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.network.data.ProtocolBuffer;
 import systems.reformcloud.process.Player;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class DefaultPlayer implements Player {
@@ -82,5 +83,22 @@ public class DefaultPlayer implements Player {
     this.uniqueId = buffer.readUniqueId();
     this.name = buffer.readString();
     this.joinTime = buffer.readLong();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || this.getClass() != o.getClass()) {
+      return false;
+    }
+    DefaultPlayer that = (DefaultPlayer) o;
+    return Objects.equals(this.uniqueId, that.uniqueId);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.uniqueId);
   }
 }

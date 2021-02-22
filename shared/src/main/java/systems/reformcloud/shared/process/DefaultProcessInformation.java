@@ -185,7 +185,7 @@ public class DefaultProcessInformation extends DefaultJsonDataHolder<ProcessInfo
       this.primaryTemplate.clone(),
       this.processGroup.clone(),
       this.runtimeInformation.clone(),
-      new ArrayList<>(this.players),
+      MoreCollections.newConcurrentSet(this.players),
       this.currentState,
       this.initialState,
       new ArrayList<>(this.inclusions)
@@ -222,7 +222,7 @@ public class DefaultProcessInformation extends DefaultJsonDataHolder<ProcessInfo
     this.primaryTemplate = buffer.readObject(DefaultTemplate.class, Template.class);
     this.processGroup = buffer.readObject(DefaultProcessGroup.class, ProcessGroup.class);
     this.runtimeInformation = buffer.readObject(DefaultProcessRuntimeInformation.class, ProcessRuntimeInformation.class);
-    this.players = buffer.readObjects(DefaultPlayer.class, Player.class);
+    this.players = MoreCollections.newConcurrentSet(buffer.readObjects(DefaultPlayer.class, Player.class));
     this.currentState = buffer.readEnum(ProcessState.class);
     this.initialState = buffer.readEnum(ProcessState.class);
     super.read(buffer);

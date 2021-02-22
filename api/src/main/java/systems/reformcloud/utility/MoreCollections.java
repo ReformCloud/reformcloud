@@ -40,6 +40,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -429,6 +430,13 @@ public final class MoreCollections {
     }
 
     return atomicInteger.get();
+  }
+
+  @NotNull
+  public static <T> Set<T> newConcurrentSet(@NotNull Collection<T> in) {
+    final Set<T> out = ConcurrentHashMap.newKeySet();
+    out.addAll(in);
+    return out;
   }
 
   @NotNull

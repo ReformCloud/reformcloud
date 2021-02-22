@@ -48,7 +48,7 @@ import systems.reformcloud.wrappers.NodeProcessWrapper;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultProcessFactory implements ProcessFactory {
 
@@ -94,7 +94,7 @@ public class DefaultProcessFactory implements ProcessFactory {
         template,
         configuration.getProcessGroup(),
         DefaultProcessRuntimeInformation.EMPTY,
-        new CopyOnWriteArrayList<>(),
+        ConcurrentHashMap.newKeySet(),
         ProcessState.CREATED,
         configuration.getInitialState(),
         configuration.getInclusions()
