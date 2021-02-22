@@ -28,12 +28,12 @@ import systems.reformcloud.node.NodeExecutor;
 import systems.reformcloud.node.process.DefaultNodeLocalProcessWrapper;
 import systems.reformcloud.process.ProcessState;
 
-public class ServerWatchdogRunnable implements Runnable {
+public class ProcessWatchdogRunnable implements Runnable {
 
   @Override
   public void run() {
     for (DefaultNodeLocalProcessWrapper processWrapper : NodeExecutor.getInstance().getDefaultNodeProcessProvider().getProcessWrappers()) {
-      if (processWrapper.isStarted() && !processWrapper.isAlive(10_000)) {
+      if (processWrapper.isStarted() && !processWrapper.isAlive(500)) {
         processWrapper.setRuntimeState(ProcessState.STOPPED);
       }
     }

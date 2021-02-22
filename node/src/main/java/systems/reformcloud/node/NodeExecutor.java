@@ -100,7 +100,7 @@ import systems.reformcloud.node.runnables.AutoStartRunnable;
 import systems.reformcloud.node.runnables.NodeInformationUpdateRunnable;
 import systems.reformcloud.node.runnables.OnlinePercentCheckerTask;
 import systems.reformcloud.node.runnables.ProcessScreenTickRunnable;
-import systems.reformcloud.node.runnables.ServerWatchdogRunnable;
+import systems.reformcloud.node.runnables.ProcessWatchdogRunnable;
 import systems.reformcloud.node.sentry.SentryLoggingLoader;
 import systems.reformcloud.node.template.TemplateBackendManager;
 import systems.reformcloud.node.template.VersionInstallerRegistry;
@@ -249,7 +249,7 @@ public final class NodeExecutor extends ExecutorAPI {
 
     this.taskScheduler.addPermanentTask(new AutoStartRunnable());
     this.taskScheduler.addPermanentTask(new NodeInformationUpdateRunnable());
-    this.taskScheduler.addPermanentTask(new ServerWatchdogRunnable());
+    this.taskScheduler.addPermanentTask(new ProcessWatchdogRunnable());
     this.taskScheduler.addPermanentTask(new ProcessScreenTickRunnable());
     this.taskScheduler.addPermanentTask(new OnlinePercentCheckerTask());
 

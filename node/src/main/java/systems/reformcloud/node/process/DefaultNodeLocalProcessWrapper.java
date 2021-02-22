@@ -329,7 +329,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
 
   public boolean isAlive(long millisSinceStart) {
     final long millis = this.startupTime + millisSinceStart;
-    return millis <= System.currentTimeMillis() || this.isAlive();
+    return millis > System.currentTimeMillis() || this.isAlive();
   }
 
   public int getMemory() {
