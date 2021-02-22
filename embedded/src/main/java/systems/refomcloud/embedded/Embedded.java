@@ -25,6 +25,8 @@
 package systems.refomcloud.embedded;
 
 import org.jetbrains.annotations.NotNull;
+import systems.refomcloud.embedded.cache.DefaultProcessCache;
+import systems.refomcloud.embedded.cache.ProcessCache;
 import systems.refomcloud.embedded.config.EmbeddedConfig;
 import systems.refomcloud.embedded.database.DefaultEmbeddedDatabaseProvider;
 import systems.refomcloud.embedded.group.DefaultEmbeddedMainGroupProvider;
@@ -108,13 +110,13 @@ public abstract class Embedded extends ExecutorAPI {
   protected final NetworkClient networkClient = new DefaultNetworkClient();
   protected final EmbeddedConfig config;
 
+  private final ProcessProvider processProvider;
   private final DatabaseProvider databaseProvider = new DefaultEmbeddedDatabaseProvider();
   private final ChannelMessageProvider channelMessageProvider = new DefaultEmbeddedChannelMessageProvider();
   private final NodeInformationProvider nodeInformationProvider = new DefaultEmbeddedNodeInformationProvider();
   private final PlayerProvider playerProvider = new DefaultEmbeddedPlayerProvider();
   private final MainGroupProvider mainGroupProvider = new DefaultEmbeddedMainGroupProvider();
   private final ProcessGroupProvider processGroupProvider = new DefaultEmbeddedProcessGroupProvider();
-  private final ProcessProvider processProvider = new DefaultEmbeddedProcessProvider();
   private final DependencyLoader dependencyLoader = new DefaultDependencyLoader();
 
   protected int maxPlayers;
@@ -129,7 +131,9 @@ public abstract class Embedded extends ExecutorAPI {
     this.serviceRegistry.setProvider(ChannelManager.class, new DefaultChannelManager(), true);
     this.serviceRegistry.setProvider(PacketProvider.class, new DefaultPacketProvider(), false, true);
     this.serviceRegistry.setProvider(QueryManager.class, new DefaultQueryManager(), false, true);
+    this.serviceRegistry.setProvider(ProcessCache.class, new DefaultProcessCache(), false, true);
 
+    this.processProvider = new DefaultEmbeddedProcessProvider(); // after service registry init
     this.serviceRegistry.getProviderUnchecked(EventManager.class).registerListener(new CurrentProcessUpdateEventListener());
 
     this.config = new EmbeddedConfig();
@@ -300,6 +304,11 @@ public abstract class Embedded extends ExecutorAPI {
   public int getMaxPlayers() {
     this.updateMaxPlayers();
     return this.maxPlayers;
+  }
+
+  @NotNull
+  public ProcessCache getProcessCache() {
+    return ServiceRegistry.getUnchecked(ProcessCache.class);
   }
 
   public abstract int getPlayerCount();

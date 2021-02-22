@@ -27,24 +27,23 @@ package systems.refomcloud.embedded.process;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.refomcloud.embedded.Embedded;
+import systems.refomcloud.embedded.cache.ProcessCache;
 import systems.reformcloud.group.template.version.Version;
 import systems.reformcloud.process.ProcessInformation;
 import systems.reformcloud.process.builder.ProcessBuilder;
 import systems.reformcloud.protocol.node.ApiToNodeGetProcessCount;
 import systems.reformcloud.protocol.node.ApiToNodeGetProcessCountByProcessGroup;
 import systems.reformcloud.protocol.node.ApiToNodeGetProcessCountResult;
-import systems.reformcloud.protocol.node.ApiToNodeGetProcessInformationByName;
-import systems.reformcloud.protocol.node.ApiToNodeGetProcessInformationByUniqueId;
 import systems.reformcloud.protocol.node.ApiToNodeGetProcessInformationObjects;
 import systems.reformcloud.protocol.node.ApiToNodeGetProcessInformationObjectsByMainGroup;
 import systems.reformcloud.protocol.node.ApiToNodeGetProcessInformationObjectsByProcessGroup;
 import systems.reformcloud.protocol.node.ApiToNodeGetProcessInformationObjectsByVersion;
 import systems.reformcloud.protocol.node.ApiToNodeGetProcessInformationObjectsResult;
-import systems.reformcloud.protocol.node.ApiToNodeGetProcessInformationResult;
 import systems.reformcloud.protocol.node.ApiToNodeGetProcessUniqueIds;
 import systems.reformcloud.protocol.node.ApiToNodeGetProcessUniqueIdsResult;
 import systems.reformcloud.protocol.node.ApiToNodeUpdateProcessInformation;
 import systems.reformcloud.provider.ProcessProvider;
+import systems.reformcloud.registry.service.ServiceRegistry;
 import systems.reformcloud.wrappers.ProcessWrapper;
 
 import java.util.ArrayList;
@@ -55,30 +54,22 @@ import java.util.UUID;
 
 public class DefaultEmbeddedProcessProvider implements ProcessProvider {
 
+  private final ProcessCache processCache;
+
+  public DefaultEmbeddedProcessProvider() {
+    this.processCache = ServiceRegistry.getUnchecked(ProcessCache.class);
+  }
+
   @NotNull
   @Override
   public Optional<ProcessWrapper> getProcessByName(@NotNull String name) {
-    return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessInformationByName(name))
-      .map(result -> {
-        if (result instanceof ApiToNodeGetProcessInformationResult) {
-          return new DefaultEmbeddedProcessWrapper(((ApiToNodeGetProcessInformationResult) result).getProcessInformation());
-        }
-
-        return null;
-      });
+    return this.processCache.provide(name).map(DefaultEmbeddedProcessWrapper::new);
   }
 
   @NotNull
   @Override
   public Optional<ProcessWrapper> getProcessByUniqueId(@NotNull UUID uniqueId) {
-    return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessInformationByUniqueId(uniqueId))
-      .map(result -> {
-        if (result instanceof ApiToNodeGetProcessInformationResult) {
-          return new DefaultEmbeddedProcessWrapper(((ApiToNodeGetProcessInformationResult) result).getProcessInformation());
-        }
-
-        return null;
-      });
+    return this.processCache.provide(uniqueId).map(DefaultEmbeddedProcessWrapper::new);
   }
 
   @NotNull

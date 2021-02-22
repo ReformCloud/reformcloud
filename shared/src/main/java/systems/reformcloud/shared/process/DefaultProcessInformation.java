@@ -47,6 +47,7 @@ import systems.reformcloud.utility.MoreCollections;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -235,5 +236,22 @@ public class DefaultProcessInformation extends DefaultJsonDataHolder<ProcessInfo
   @Override
   public @NotNull String getName() {
     return this.id.getName();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || this.getClass() != o.getClass()) {
+      return false;
+    }
+    DefaultProcessInformation that = (DefaultProcessInformation) o;
+    return Objects.equals(this.id.getUniqueId(), that.id.getUniqueId());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.id.getUniqueId());
   }
 }
