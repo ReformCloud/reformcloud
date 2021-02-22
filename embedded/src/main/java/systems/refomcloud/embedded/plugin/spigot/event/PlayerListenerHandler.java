@@ -24,6 +24,7 @@
  */
 package systems.refomcloud.embedded.plugin.spigot.event;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -65,6 +66,9 @@ public final class PlayerListenerHandler implements Listener {
 
   @EventHandler(priority = EventPriority.LOWEST)
   public void handle(final @NotNull PlayerQuitEvent event) {
-    SharedDisconnectHandler.handleDisconnect(event.getPlayer().getUniqueId());
+    Bukkit.getScheduler().runTask(
+      SpigotExecutor.getInstance().getPlugin(),
+      () -> SharedDisconnectHandler.handleDisconnect(event.getPlayer().getUniqueId())
+    );
   }
 }
