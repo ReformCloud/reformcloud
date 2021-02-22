@@ -318,6 +318,7 @@ public final class CommandCreate implements Command {
     final PlayerAccessConfiguration configuration = PlayerAccessConfiguration.enabled();
     configuration.setMaxPlayers(maxPlayers);
     configuration.setMaintenance(maintenance);
+    configuration.setJoinOnlyWithPermission(false);
 
     ExecutorAPI.getInstance().getProcessGroupProvider().createProcessGroup(name)
       .templates(Template.builder("default", version)
