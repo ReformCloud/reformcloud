@@ -139,6 +139,8 @@ public class ReformCloudTabPlugin extends JavaPlugin {
       }
 
       team.setPrefix(prefix);
+    } else {
+      team.setPrefix("");
     }
 
     String suffix = permissionUser.getSuffix().orElse(null);
@@ -151,6 +153,8 @@ public class ReformCloudTabPlugin extends JavaPlugin {
       }
 
       team.setSuffix(suffix);
+    } else {
+      team.setSuffix("");
     }
 
     team.addEntry(player.getName());
